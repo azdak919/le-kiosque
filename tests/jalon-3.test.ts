@@ -42,7 +42,8 @@ test('demoContent=false masque tous les articles fictifs sans les supprimer du m
   t.after(() => rm(out, { recursive: true, force: true }));
 
   const content = await bundle();
-  assert.equal(content.articles.length, 8, 'Le Quorum doit couvrir huit cas éditoriaux');
+  assert.equal(content.articles.length, 22, 'Le Quorum doit offrir vingt articles publiés et deux cas de travail');
+  assert.equal(content.articles.filter((article) => article.status === 'published').length, 20);
   assert.ok(content.articles.every((article) => article.isDemo), 'chaque article du Quorum doit être marqué fictif');
 
   const result = await build({ config: config({ demoContent: false }), bundle: content, outDir: out, logger: silent });
@@ -52,7 +53,7 @@ test('demoContent=false masque tous les articles fictifs sans les supprimer du m
   await assert.rejects(() => readdir(path.join(out, 'articles')));
 });
 
-test('la barre radio est différée et émet les paramètres documentés', async (t) => {
+test('la barre radio suit le contrat sombre et reste masquée avant la confirmation du RADAR', async (t) => {
   const out = await mkdtemp(path.join(os.tmpdir(), 'kiosque-radio-'));
   t.after(() => rm(out, { recursive: true, force: true }));
 
@@ -63,10 +64,41 @@ test('la barre radio est différée et émet les paramètres documentés', async
     logger: silent,
   });
   const home = await readFile(path.join(out, 'index.html'), 'utf8');
+  const client = await readFile(path.join(out, 'assets/kiosque.js'), 'utf8');
+  const theme = await readFile(path.join(out, 'assets/theme.css'), 'utf8');
   assert.match(home, /<radar-tuner/);
-  assert.match(home, /data-src="https:\/\/le-radar\.ca\/tuner-embed\.html\?station=chyz&amp;theme=auto"/);
-  assert.ok(!home.includes('<iframe'), 'l’iframe doit être créée seulement à l’approche de la zone visible');
+  assert.match(home, /data-src="https:\/\/le-radar\.ca\/tuner-embed\.html\?station=chyz&amp;surface=kiosque-v1"/);
+  assert.match(home, /<radar-tuner[^>]+hidden/);
+  assert.ok(!home.includes('<iframe'), 'l’iframe doit être créée par le composant client');
+  assert.match(client, /message\.protocol !== 1 \|\| message\.surface !== 'kiosque-v1'/);
+  assert.match(theme, /\.radar-tuner\[hidden\]\s*\{\s*display:\s*none/);
   assert.match(home, /href="\/depot-renomme\/assets\/theme\.css"/);
+});
+
+test('la vitrine expose le bandeau illustré, les outils et la composition magazine', async (t) => {
+  const out = await mkdtemp(path.join(os.tmpdir(), 'kiosque-magazine-'));
+  t.after(() => rm(out, { recursive: true, force: true }));
+
+  const content = await bundle();
+  assert.equal(content.publication.masthead?.weather?.localities[0], 'Québec');
+  assert.equal(content.publication.masthead?.tools?.pomodoro, true);
+  assert.equal(content.publication.masthead?.tools?.solitaire, true);
+
+  const result = await build({ config: config(), bundle: content, outDir: out, logger: silent });
+  assert.equal(result.articles, 20);
+  const home = await readFile(path.join(out, 'index.html'), 'utf8');
+  const feed = await readFile(path.join(out, 'feed.xml'), 'utf8');
+  assert.match(home, /id="masthead-backgrounds"/);
+  assert.match(home, /data-weather-localities="\[&quot;Québec&quot;\]"/);
+  assert.match(home, /href="https:\/\/le-radar\.ca\/pomo\/"/);
+  assert.match(home, /href="https:\/\/le-radar\.ca\/solitaire\/"/);
+  assert.match(home, /class="article article--lead"/);
+  assert.match(home, /class="article article--feature"/);
+  assert.match(home, /class="article article--brief"/);
+  assert.match(home, /5 octobre 2026, 06 h 00/, 'l’heure doit être présentée dans le fuseau éditorial du journal');
+  assert.match(feed, /<published>2026-10-05T10:00:00\.000Z<\/published>/);
+  assert.match(feed, /<media:content url="https:\/\/journal-exemple\.invalid\/media\//);
+  assert.match(feed, /<link href="https:\/\/journal-exemple\.invalid\/articles\/veille-sante-mentale\/" rel="alternate" type="text\/html"\/>/);
 });
 
 test('le déploiement et le configurateur du jalon 3 sont présents à la racine', async () => {

@@ -16,9 +16,12 @@ categories: ${JSON.stringify(article.categories || [])}
 tags: ${JSON.stringify(article.tags || [])}
 lang: ${yaml(article.lang || 'fr-CA')}
 status: ${yaml(article.status)}
+bodyFormat: ${yaml(article.body?.format || 'markdown')}
 demo: ${Boolean(article.isDemo)}
 publishedAt: ${yaml(article.publishedAt || '')}
 updatedAt: ${yaml(article.updatedAt)}
+lead: ${article.lead ? JSON.stringify(article.lead) : 'null'}
+media: ${JSON.stringify(article.media || [])}
 ---
 
 ${article.body?.raw || ''}
@@ -26,9 +29,21 @@ ${article.body?.raw || ''}
 }
 
 export async function markdownFiles(backup, publicBasePath = '') {
-  const bundle = backup.bundle;
+  const bundle = structuredClone(backup.bundle);
   const publication = bundle.publication;
   const files = [];
+  const dataAssets = [publication.logo, ...(publication.masthead?.backgrounds?.images || []), ...bundle.articles.flatMap((article) => [article.lead, ...(article.media || [])])].filter(Boolean);
+  for (const asset of dataAssets) {
+    const match = /^data:([^;,]+);base64,(.*)$/.exec(asset.src || '');
+    if (!match) continue;
+    const ext = { 'image/svg+xml': 'svg', 'image/png': 'png', 'image/webp': 'webp', 'image/jpeg': 'jpg' }[match[1]] || 'bin';
+    const previous = asset.src;
+    const target = `media/${asset.id || crypto.randomUUID()}.${ext}`;
+    asset.src = `/${target}`;
+    const bytes = Uint8Array.from(atob(match[2]), (character) => character.charCodeAt(0));
+    files.push({ path: target, content: bytes });
+    for (const article of bundle.articles) article.body.raw = String(article.body?.raw || '').split(previous).join(asset.src);
+  }
   files.push({ path: 'kiosque-export.json', content: JSON.stringify({ format: backup.format, version: backup.version, exportedAt: backup.exportedAt }, null, 2) });
   files.push({ path: 'content/publication.yml', content: `slug: ${yaml(publication.slug)}
 name: ${yaml(publication.name)}
@@ -38,10 +53,22 @@ institutionType: ${yaml(publication.institutionType || 'autre')}
 region: ${yaml(publication.region || '')}
 lang: ${yaml(publication.lang || 'fr-CA')}
 siteUrl: ${yaml(publication.siteUrl || '')}
+timeZone: ${yaml(publication.timeZone || 'America/Toronto')}
+logo: ${publication.logo ? JSON.stringify(publication.logo) : 'null'}
 theme:
   accent: ${yaml(publication.theme?.accent || '#6c2163')}
   accentDark: ${yaml(publication.theme?.accentDark || '#cf7ec1')}
   typography: ${yaml(publication.theme?.typography || 'modern-accessible')}
+masthead:
+  backgrounds:
+    enabled: ${publication.masthead?.backgrounds?.enabled !== false}
+    images: ${JSON.stringify(publication.masthead?.backgrounds?.images || [])}
+  weather:
+    enabled: ${Boolean(publication.masthead?.weather?.enabled)}
+    localities: ${JSON.stringify(publication.masthead?.weather?.localities || [])}
+  tools:
+    pomodoro: ${publication.masthead?.tools?.pomodoro !== false}
+    solitaire: ${publication.masthead?.tools?.solitaire !== false}
 radio:
   enabled: ${publication.radio?.enabled !== false}
   station: ${yaml(publication.radio?.station || '')}
@@ -68,16 +95,8 @@ governance:
     const month = String(date.getUTCMonth() + 1).padStart(2, '0');
     files.push({ path: `content/articles/${year}/${month}/${article.slug}.md`, content: articleMarkdown(article) });
   }
-  if (publication.logo?.src?.startsWith('data:')) {
-    const match = /^data:([^;,]+);base64,(.*)$/.exec(publication.logo.src);
-    if (match) {
-      const ext = { 'image/svg+xml': 'svg', 'image/png': 'png', 'image/webp': 'webp', 'image/jpeg': 'jpg' }[match[1]] || 'bin';
-      const bytes = Uint8Array.from(atob(match[2]), (character) => character.charCodeAt(0));
-      files.push({ path: `media/logo.${ext}`, content: bytes });
-    }
-  }
   const known = new Set(files.map((file) => file.path));
-  const remoteMedia = [publication.logo, ...bundle.articles.flatMap((article) => [article.lead, ...(article.media || [])])]
+  const remoteMedia = [publication.logo, ...(publication.masthead?.backgrounds?.images || []), ...bundle.articles.flatMap((article) => [article.lead, ...(article.media || [])])]
     .filter((asset) => asset?.src?.startsWith('/media/'));
   for (const asset of remoteMedia) {
     const target = asset.src.replace(/^\//, '');

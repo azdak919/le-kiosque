@@ -4,6 +4,7 @@
   var prefill = window.KIOSQUE_PREFILL || {};
   var publication = prefill.publication || {};
   var governance = prefill.governance || {};
+  var masthead = prefill.masthead || {};
 
   function detectBasePath() {
     var path = window.location.pathname.replace(/\/index\.html$/, '');
@@ -26,6 +27,7 @@
     repository: prefill.repository || 'nom-utilisateur/le-journal',
     deployment: prefill.deployment || 'github-pages',
     siteUrl: publication.siteUrl || 'https://journal-exemple.invalid',
+    timeZone: publication.timeZone || 'America/Toronto',
     cname: '',
     accent: publication.accent || '#6c2163',
     accentDark: publication.accentDark || '#cf7ec1',
@@ -39,8 +41,11 @@
     startEmpty: false,
     radioEnabled: !prefill.radio || prefill.radio.enabled !== false,
     station: (prefill.radio && prefill.radio.station) || 'station-exemple',
-    radioTheme: (prefill.radio && prefill.radio.theme) || 'auto',
-    radioPosition: (prefill.radio && prefill.radio.position) || 'top',
+    backgroundsEnabled: !masthead.backgrounds || masthead.backgrounds.enabled !== false,
+    weatherEnabled: Boolean(masthead.weather && masthead.weather.enabled),
+    weatherLocalities: (masthead.weather && masthead.weather.localities || ['Québec']).join(', '),
+    pomodoro: !masthead.tools || masthead.tools.pomodoro !== false,
+    solitaire: !masthead.tools || masthead.tools.solitaire !== false,
     users: (prefill.users || []).map(function (user) {
       return [user.name, user.email, user.role].join(' | ');
     }).join('\n'),
@@ -293,15 +298,26 @@
       'region: ' + yaml(state.region),
       'lang: fr-CA',
       'siteUrl: ' + yaml(state.siteUrl),
+      'timeZone: ' + yaml(state.timeZone || 'America/Toronto'),
       'theme:',
       '  accent: ' + yaml(normalizeHex(state.accent, '#6c2163')),
       '  accentDark: ' + yaml(normalizeHex(state.accentDark, '#cf7ec1')),
       '  typography: ' + yaml(state.typography || 'modern-accessible'),
+      'masthead:',
+      '  backgrounds:',
+      '    enabled: ' + Boolean(state.backgroundsEnabled),
+      '    images: []',
+      '  weather:',
+      '    enabled: ' + Boolean(state.weatherEnabled),
+      '    localities: [' + String(state.weatherLocalities || '').split(',').map(function (value) { return yaml(value.trim()); }).filter(function (value) { return value !== '\"\"'; }).slice(0, 4).join(', ') + ']',
+      '  tools:',
+      '    pomodoro: ' + Boolean(state.pomodoro),
+      '    solitaire: ' + Boolean(state.solitaire),
       'radio:',
       '  enabled: ' + Boolean(state.radioEnabled),
       '  station: ' + yaml(state.station),
-      '  theme: ' + yaml(state.radioTheme),
-      '  position: ' + yaml(state.radioPosition),
+      '  theme: dark',
+      '  position: top',
       'founded: ' + yaml(state.founded),
       'license: CC-BY-SA-4.0',
       'governance:',

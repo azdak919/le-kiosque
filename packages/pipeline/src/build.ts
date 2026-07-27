@@ -163,7 +163,7 @@ function renderBody(article: Article): string {
 function atomFeed(bundle: ContentBundle, articles: Article[], limit: number): string {
   const pub = bundle.publication;
   const base = pub.siteUrl.replace(/\/+$/, '');
-  const updated = articles[0]?.updatedAt ?? bundle.syncedAt;
+  const updated = articles.map((article) => article.updatedAt).sort().at(-1) ?? bundle.syncedAt;
 
   const entries = articles
     .slice(0, limit)
@@ -172,20 +172,30 @@ function atomFeed(bundle: ContentBundle, articles: Article[], limit: number): st
         .map((s) => bundle.authors.find((x) => x.slug === s)?.name ?? s)
         .map((n) => `    <author><name>${esc(n)}</name></author>`)
         .join('\n');
+      const leadUrl = a.lead
+        ? (/^https?:\/\//.test(a.lead.src) ? a.lead.src : `${base}${a.lead.src}`)
+        : undefined;
+      const leadType = a.lead?.mime
+        ?? (/\.svg(?:\?|$)/i.test(a.lead?.src ?? '') ? 'image/svg+xml'
+          : /\.png(?:\?|$)/i.test(a.lead?.src ?? '') ? 'image/png'
+            : /\.webp(?:\?|$)/i.test(a.lead?.src ?? '') ? 'image/webp' : 'image/jpeg');
+      const media = leadUrl
+        ? `\n    <media:content url="${esc(leadUrl)}" type="${esc(leadType)}" medium="image"/>`
+        : '';
       return `  <entry>
     <title>${esc(a.title)}</title>
-    <link href="${esc(a.canonicalUrl)}"/>
+    <link href="${esc(a.canonicalUrl)}" rel="alternate" type="text/html"/>
     <id>urn:uuid:${esc(a.id)}</id>
     <updated>${esc(a.updatedAt)}</updated>
     <published>${esc(a.publishedAt ?? a.updatedAt)}</published>
 ${authors}
-    <summary type="text">${esc(a.excerpt)}</summary>
+    <summary type="text">${esc(a.excerpt)}</summary>${media}
   </entry>`;
     })
     .join('\n');
 
   return `<?xml version="1.0" encoding="utf-8"?>
-<feed xmlns="http://www.w3.org/2005/Atom" xml:lang="${esc(pub.lang)}">
+<feed xmlns="http://www.w3.org/2005/Atom" xmlns:media="http://search.yahoo.com/mrss/" xml:lang="${esc(pub.lang)}">
   <title>${esc(pub.name)}</title>
   <subtitle>${esc(pub.tagline ?? pub.institution)}</subtitle>
   <link href="${esc(base)}/feed.xml" rel="self"/>

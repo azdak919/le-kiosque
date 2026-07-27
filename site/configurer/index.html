@@ -104,14 +104,14 @@
         </section>
 
         <section class="config-step" data-step="7" hidden>
-          <p class="step-count">Étape 7 sur 12</p><h1>Barre radio LE RADAR</h1>
+          <p class="step-count">Étape 7 sur 12</p><h1>Mât, météo et radio</h1>
+          <label class="choice-card"><input data-key="backgroundsEnabled" type="checkbox"><span><strong>Activer les images de fond</strong> Vous téléverserez vos propres photos depuis l’administration.</span></label>
+          <label class="choice-card"><input data-key="weatherEnabled" type="checkbox"><span><strong>Afficher la météo</strong> Le navigateur obtient les conditions sans clé ni compte.</span></label>
+          <label>Localités, séparées par des virgules<input data-key="weatherLocalities" placeholder="Québec"></label>
+          <div class="fields two-cols"><label class="choice-card"><input data-key="pomodoro" type="checkbox"><span><strong>Pomodoro</strong> Lien vers LE-RADAR.ca.</span></label><label class="choice-card"><input data-key="solitaire" type="checkbox"><span><strong>Solitaire</strong> Lien vers LE-RADAR.ca.</span></label></div>
           <label class="choice-card"><input data-key="radioEnabled" type="checkbox"><span><strong>Afficher la barre radio</strong> Activée par défaut et désactivable en tout temps.</span></label>
-          <div class="fields two-cols">
-            <label>Identifiant de station <span>exemple fictif</span><input data-key="station" placeholder="station-exemple"></label>
-            <label>Thème <select data-key="radioTheme"><option value="auto">Automatique</option><option value="light">Clair</option><option value="dark">Sombre</option></select></label>
-            <label>Position <select data-key="radioPosition"><option value="top">En haut</option><option value="bottom">En bas</option></select></label>
-          </div>
-          <div class="notice"><strong>Limites actuelles :</strong> le lecteur distant n’applique pas encore le paramètre de station, et sa synchronisation de thème est limitée à la même origine. KIOSQUE émet ces paramètres afin qu’ils soient honorés lorsque LE RADAR les acceptera.</div>
+          <label>Identifiant de station <span>exemple fictif</span><input data-key="station" placeholder="station-exemple"></label>
+          <div class="notice">La barre sombre est placée sous le mât. Si LE-RADAR.ca est indisponible, elle disparaît et le journal conserve son filet de séparation.</div>
         </section>
 
         <section class="config-step" data-step="8" hidden>

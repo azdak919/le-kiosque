@@ -50,6 +50,21 @@ export function buildCmsConfig(options: CmsConfigOptions): Record<string, unknow
   const sectionOptions = bundle.taxonomies.sections.map((s) => ({ label: s.name, value: s.slug }));
   const categoryOptions = bundle.taxonomies.categories.map((c) => ({ label: c.name, value: c.slug }));
   const tagOptions = bundle.taxonomies.tags.map((t) => ({ label: t.name, value: t.slug }));
+  const mediaFields = (imageLabel = 'Image') => [
+    { name: 'id', label: 'Identifiant média', widget: 'hidden', required: false },
+    { name: 'kind', label: 'Type', widget: 'hidden', default: 'image' },
+    { name: 'src', label: imageLabel, widget: 'image', required: true },
+    { name: 'remoteSrc', label: 'Origine distante', widget: 'hidden', required: false },
+    { name: 'alt', label: 'Description de l’image', widget: 'string', required: true },
+    { name: 'caption', label: 'Légende', widget: 'string', required: false },
+    { name: 'credit', label: 'Crédit photo', widget: 'string', required: false },
+    { name: 'creditUrl', label: 'Lien du crédit', widget: 'string', required: false },
+    { name: 'license', label: 'Licence', widget: 'string', required: false },
+    { name: 'width', label: 'Largeur', widget: 'hidden', required: false },
+    { name: 'height', label: 'Hauteur', widget: 'hidden', required: false },
+    { name: 'mime', label: 'Type MIME', widget: 'hidden', required: false },
+    { name: 'checksum', label: 'Somme de contrôle', widget: 'hidden', required: false },
+  ];
 
   return {
     backend: {
@@ -78,6 +93,68 @@ export function buildCmsConfig(options: CmsConfigOptions): Record<string, unknow
     // révision passe par le champ « statut » ci-dessous.
 
     collections: [
+      {
+        name: 'configuration',
+        label: 'Configuration du journal',
+        files: [{
+          name: 'publication',
+          label: 'Journal, mât et outils',
+          file: 'content/publication.yml',
+          fields: [
+            { name: 'id', label: 'Identifiant', widget: 'hidden', required: false },
+            { name: 'slug', label: 'Identifiant URL', widget: 'string', required: true },
+            { name: 'name', label: 'Nom', widget: 'string', required: true },
+            { name: 'tagline', label: 'Signature', widget: 'string', required: false },
+            { name: 'institution', label: 'Établissement', widget: 'string', required: true },
+            { name: 'institutionType', label: 'Type d’établissement', widget: 'select', options: ['cegep', 'universite', 'secondaire', 'autre'] },
+            { name: 'region', label: 'Région', widget: 'string', required: false },
+            { name: 'lang', label: 'Langue', widget: 'string', default: 'fr-CA' },
+            { name: 'langs', label: 'Autres langues', widget: 'list', required: false },
+            { name: 'siteUrl', label: 'Adresse du site', widget: 'string', required: true },
+            { name: 'timeZone', label: 'Fuseau horaire', widget: 'select', required: true, default: 'America/Toronto', options: [
+              { label: 'Heure de l’Est — majorité du Québec', value: 'America/Toronto' },
+              { label: 'Heure de l’Atlantique — Blanc-Sablon', value: 'America/Blanc-Sablon' },
+            ] },
+            { name: 'logo', label: 'Logo', widget: 'object', required: false, fields: mediaFields('Fichier du logo') },
+            { name: 'theme', label: 'Thème', widget: 'object', fields: [
+              { name: 'accent', label: 'Couleur principale', widget: 'color' },
+              { name: 'accentDark', label: 'Couleur sombre', widget: 'color', required: false },
+              { name: 'typography', label: 'Typographie', widget: 'select', options: ['editorial-classic', 'modern-accessible', 'institutional'] },
+            ] },
+            { name: 'masthead', label: 'Mât', widget: 'object', required: false, fields: [
+              { name: 'backgrounds', label: 'Arrière-plans', widget: 'object', fields: [
+                { name: 'enabled', label: 'Afficher les arrière-plans', widget: 'boolean', default: true },
+                { name: 'images', label: 'Images locales', widget: 'list', required: false, fields: mediaFields() },
+              ] },
+              { name: 'weather', label: 'Météo', widget: 'object', fields: [
+                { name: 'enabled', label: 'Afficher la météo', widget: 'boolean', default: false },
+                { name: 'localities', label: 'Localités (maximum quatre)', widget: 'list', required: false },
+              ] },
+              { name: 'tools', label: 'Outils LE-RADAR.ca', widget: 'object', fields: [
+                { name: 'pomodoro', label: 'Pomodoro', widget: 'boolean', default: true },
+                { name: 'solitaire', label: 'Solitaire', widget: 'boolean', default: true },
+              ] },
+            ] },
+            { name: 'radio', label: 'Radio LE-RADAR.ca', widget: 'object', required: false, fields: [
+              { name: 'enabled', label: 'Afficher la radio', widget: 'boolean', default: true },
+              { name: 'station', label: 'Identifiant de station', widget: 'string', required: false },
+              { name: 'theme', label: 'Ancien thème', widget: 'hidden', required: false },
+              { name: 'position', label: 'Ancienne position', widget: 'hidden', required: false },
+            ] },
+            { name: 'founded', label: 'Année de fondation', widget: 'string', required: false },
+            { name: 'license', label: 'Licence', widget: 'string', required: false },
+            { name: 'governance', label: 'Gouvernance', widget: 'object', fields: [
+              { name: 'owner', label: 'Organisation propriétaire', widget: 'string' },
+              { name: 'stewardEntity', label: 'Entité permanente', widget: 'string', required: false },
+              { name: 'contact', label: 'Contact', widget: 'string' },
+              { name: 'repo', label: 'Dépôt', widget: 'string' },
+              { name: 'domainRegistrar', label: 'Registraire', widget: 'string', required: false },
+              { name: 'domainExpiresAt', label: 'Échéance du domaine', widget: 'datetime', required: false },
+              { name: 'recoveryContacts', label: 'Contacts de récupération', widget: 'list', required: false },
+            ] },
+          ],
+        }],
+      },
       {
         name: 'articles',
         label: 'Articles',
@@ -154,12 +231,12 @@ export function buildCmsConfig(options: CmsConfigOptions): Record<string, unknow
           },
           {
             name: 'publishedAt',
-            label: 'Date de publication',
+            label: 'Date et heure de publication',
             widget: 'datetime',
             required: false,
             picker_utc: true,
             format: "yyyy-MM-dd'T'HH:mm:ss'Z'",
-            hint: 'Obligatoire pour publier.',
+            hint: 'Obligatoire pour publier. L’heure exacte alimente aussi le flux lu par LE RADAR.',
           },
           {
             name: 'updatedAt',
@@ -177,19 +254,7 @@ export function buildCmsConfig(options: CmsConfigOptions): Record<string, unknow
             required: false,
             collapsed: false,
             fields: [
-              { name: 'src', label: 'Image', widget: 'image', required: true },
-              {
-                name: 'alt',
-                label: 'Description de l’image',
-                widget: 'string',
-                // Non négociable : c'est ce que lisent les personnes aveugles,
-                // et ce qui s'affiche quand l'image ne charge pas.
-                // L'accessibilité se gagne à la saisie, pas à la relecture.
-                required: true,
-                hint: 'Décrire ce qu’on voit. Ex. : « Une assemblée étudiante dans un auditorium bondé ».',
-              },
-              { name: 'credit', label: 'Crédit photo', widget: 'string', required: false },
-              { name: 'caption', label: 'Légende', widget: 'string', required: false },
+              ...mediaFields(),
             ],
           },
           {
@@ -230,7 +295,11 @@ export function buildCmsConfig(options: CmsConfigOptions): Record<string, unknow
           { name: 'reviewedBy', label: 'Révisé par', widget: 'hidden', required: false },
           { name: 'translations', label: 'Traductions', widget: 'hidden', required: false },
           { name: 'canonicalUrl', label: 'URL canonique', widget: 'hidden', required: false },
-          { name: 'media', label: 'Médias', widget: 'hidden', required: false },
+          { name: 'media', label: 'Photos supplémentaires', widget: 'list', required: false, fields: mediaFields() },
+          { name: 'bodyFormat', label: 'Format du texte', widget: 'select', default: 'markdown', options: [
+            { label: 'Éditeur visuel et source Markdown', value: 'markdown' },
+            { label: 'HTML assaini (utiliser le mode source)', value: 'html' },
+          ] },
           {
             name: 'demo',
             label: 'Contenu de démonstration',
@@ -242,7 +311,7 @@ export function buildCmsConfig(options: CmsConfigOptions): Record<string, unknow
 
           // Le champ « body » est spécial : il représente tout ce qui suit le
           // front-matter. Il doit rester en dernier.
-          { name: 'body', label: 'Texte', widget: 'markdown', required: true },
+          { name: 'body', label: 'Texte', widget: 'richtext', modes: ['rich_text', 'raw'], editor_components: ['image'], sanitize_preview: true, required: true },
         ],
       },
 

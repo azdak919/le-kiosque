@@ -21,7 +21,8 @@ test('configurer, rédiger, prévisualiser, publier, persister et exporter sans 
   await page.getByRole('button', { name: 'Créer un article' }).click();
   await page.getByLabel('Titre').fill('Un article créé dans le navigateur');
   await page.getByLabel('Résumé').fill('Une validation complète du mode local.');
-  await page.getByLabel('Article en Markdown').fill('## Une vraie prévisualisation\n\nLe contenu demeure dans **ce navigateur**.');
+  await page.getByLabel('Date et heure de publication').fill('2026-07-27T08:45');
+  await page.getByLabel('Texte de l’article').fill('## Une vraie prévisualisation\n\nLe contenu demeure dans **ce navigateur**.');
   await page.getByLabel('Marie Tremblay').check();
   await page.getByRole('button', { name: 'Prévisualiser sans publier' }).click();
   await expect(page.getByText('Une vraie prévisualisation')).toBeVisible();
@@ -46,6 +47,7 @@ test('configurer, rédiger, prévisualiser, publier, persister et exporter sans 
   await expect(front.getByText('Un article créé dans le navigateur')).toBeVisible();
   await front.getByText('Un article créé dans le navigateur').click();
   await expect(front.getByRole('heading', { level: 1, name: 'Un article créé dans le navigateur' })).toBeVisible();
+  await expect(front.locator('.post-meta time')).toHaveAttribute('datetime', new Date('2026-07-27T08:45').toISOString());
 
   await page.locator('.entity-list li').filter({ hasText: 'Un article créé dans le navigateur' }).getByRole('button', { name: 'Modifier' }).click();
   await page.getByLabel('Titre').fill('Un article local mis à jour');
@@ -67,6 +69,7 @@ test('configurer, rédiger, prévisualiser, publier, persister et exporter sans 
   await page.getByRole('button', { name: 'Tableau de bord' }).click();
   page.once('dialog', (dialog) => dialog.accept());
   await page.getByRole('button', { name: 'Restaurer Le Quorum' }).click();
+  await expect(page.getByText('Les exemples du Quorum sont restaurés.')).toBeVisible({ timeout: 45_000 });
   await expect(page.locator('#publication-name')).toHaveText('La Relève locale');
   await page.getByRole('button', { name: 'Articles' }).click();
   await expect(page.getByText('Exemple local').first()).toBeVisible();

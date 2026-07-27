@@ -102,6 +102,8 @@ export interface MediaAsset {
   caption?: string;
   /** Le ou la photographe. */
   credit?: string;
+  /** Page qui documente le crédit ou la provenance du fichier. */
+  creditUrl?: string;
   license?: string;
   width?: number;
   height?: number;
@@ -202,12 +204,30 @@ export interface Publication {
   langs?: Lang[];
   /** Origine canonique, sans barre oblique finale. Ex. : 'https://exil.ca' */
   siteUrl: string;
+  /** Fuseau IANA utilisé pour présenter les heures éditoriales. */
+  timeZone: string;
   logo?: MediaAsset;
   theme: {
     accent: string;
     accentDark?: string;
     /** Trois piles locales : aucune police distante n'est requise. */
     typography?: 'editorial-classic' | 'modern-accessible' | 'institutional';
+  };
+  /** Mât éditorial : toutes les images restent dans l'archive locale. */
+  masthead?: {
+    backgrounds?: {
+      enabled?: boolean;
+      images: MediaAsset[];
+    };
+    weather?: {
+      enabled?: boolean;
+      /** Noms saisis par la rédaction; le navigateur fait le géocodage. */
+      localities: string[];
+    };
+    tools?: {
+      pomodoro?: boolean;
+      solitaire?: boolean;
+    };
   };
   /** Barre d'écoute facultative de LE RADAR. */
   radio?: {

@@ -78,21 +78,26 @@ const MOIS = [
   'juillet', 'août', 'septembre', 'octobre', 'novembre', 'décembre',
 ];
 
-/** « 12 septembre 2026 » — écrit à la main : `Intl` varie selon l'ICU installé. */
-export function formatDate(iso?: string): string {
-  if (!iso) return '';
+function dateParts(iso?: string, timeZone = 'America/Toronto'): Record<string, string> | undefined {
+  if (!iso) return undefined;
   const d = new Date(iso);
-  if (Number.isNaN(d.getTime())) return '';
-  return `${d.getUTCDate()} ${MOIS[d.getUTCMonth()]} ${d.getUTCFullYear()}`;
+  if (Number.isNaN(d.getTime())) return undefined;
+  return Object.fromEntries(new Intl.DateTimeFormat('fr-CA', {
+    timeZone, year: 'numeric', month: 'numeric', day: 'numeric', hour: '2-digit', minute: '2-digit', hourCycle: 'h23',
+  }).formatToParts(d).map((part) => [part.type, part.value]));
 }
 
-export function formatDateTime(iso?: string): string {
-  if (!iso) return '';
-  const d = new Date(iso);
-  if (Number.isNaN(d.getTime())) return '';
-  const hh = String(d.getUTCHours()).padStart(2, '0');
-  const mm = String(d.getUTCMinutes()).padStart(2, '0');
-  return `${formatDate(iso)}, ${hh} h ${mm}`;
+/** « 12 septembre 2026 » dans le fuseau éditorial du journal. */
+export function formatDate(iso?: string, timeZone = 'America/Toronto'): string {
+  const parts = dateParts(iso, timeZone);
+  if (!parts) return '';
+  return `${Number(parts.day)} ${MOIS[Number(parts.month) - 1]} ${parts.year}`;
+}
+
+export function formatDateTime(iso?: string, timeZone = 'America/Toronto'): string {
+  const parts = dateParts(iso, timeZone);
+  if (!parts) return '';
+  return `${formatDate(iso, timeZone)}, ${parts.hour} h ${parts.minute}`;
 }
 
 // ---------------------------------------------------------------------------
@@ -153,32 +158,86 @@ function radioTuner(ctx: RenderContext): string {
   if (!radio || radio.enabled === false) return '';
   const params = new URLSearchParams();
   if (radio.station) params.set('station', radio.station);
-  params.set('theme', radio.theme ?? 'auto');
+  params.set('surface', 'kiosque-v1');
   const src = `https://le-radar.ca/tuner-embed.html?${params.toString()}`;
-  return `<radar-tuner class="radar-tuner" data-src="${esc(src)}">
+  return `<radar-tuner class="radar-tuner" data-src="${esc(src)}" data-surface="kiosque-v1" hidden>
   <a href="https://le-radar.ca/" rel="noopener">Écouter LE RADAR</a>
 </radar-tuner>`;
+}
+
+function icon(label: 'home' | 'rss' | 'pomo' | 'solitaire' | 'shuffle'): string {
+  const paths = {
+    home: '<path d="M3 11.2 12 4l9 7.2v8.3a.5.5 0 0 1-.5.5H15v-6H9v6H3.5a.5.5 0 0 1-.5-.5z"/>',
+    rss: '<path d="M5 4a15 15 0 0 1 15 15h-3A12 12 0 0 0 5 7zm0 6a9 9 0 0 1 9 9h-3a6 6 0 0 0-6-6zm2 6.5A2.5 2.5 0 1 1 7 21a2.5 2.5 0 0 1 0-4.5z"/>',
+    pomo: '<path d="M9 2h6v2H9zm2 3h2v2.1a7 7 0 1 1-2 0zm1 4a5 5 0 1 0 5 5 5 5 0 0 0-5-5z"/>',
+    solitaire: '<path d="m12 2 5 5-5 5-5-5zm-6 9 5 5-5 5-5-5zm12 0 5 5-5 5-5-5zm-6 5 5 5-5 5-5-5z"/>',
+    shuffle: '<path d="M16 3h5v5h-2V6.4l-3.8 3.8-1.4-1.4L17.6 5H16zM3 6h4.2l10.4 10.4V15H20v5h-5v-2h1.6L6.4 8H3zm0 10h4.2l2.6-2.6 1.4 1.4L8 18H3z"/>',
+  };
+  return `<svg viewBox="0 0 24 24" aria-hidden="true">${paths[label]}</svg>`;
+}
+
+function mastheadBackground(ctx: RenderContext): string {
+  const settings = ctx.publication.masthead?.backgrounds;
+  if (settings?.enabled === false || !settings?.images?.length) return '';
+  const image = settings.images[0];
+  const credit = image.credit
+    ? image.creditUrl
+      ? `<a href="${safeUrl(image.creditUrl)}" rel="noopener">Photo : ${esc(image.credit)}</a>`
+      : `Photo : ${esc(image.credit)}`
+    : '';
+  const manifest = settings.images.map((item) => ({
+    src: asset(item.src, ctx), alt: item.alt, credit: item.credit ?? '', creditUrl: item.creditUrl ?? '',
+  }));
+  return `<img class="masthead-background" src="${safeUrl(asset(image.src, ctx))}" alt="" data-masthead-background>
+  <span class="masthead-background-shade" aria-hidden="true"></span>
+  <span class="masthead-photo-credit" data-masthead-credit>${credit}</span>
+  <script type="application/json" id="masthead-backgrounds">${JSON.stringify(manifest).replace(/</g, '\\u003c')}</script>`;
+}
+
+function mastheadTools(ctx: RenderContext): string {
+  const masthead = ctx.publication.masthead;
+  const weather = masthead?.weather;
+  const backgrounds = masthead?.backgrounds;
+  const tools = masthead?.tools;
+  const localities = weather?.enabled === false ? [] : (weather?.localities ?? []);
+  const button = (href: string, label: string, glyph: string) =>
+    `<a class="masthead-tool" href="${safeUrl(href)}" aria-label="${esc(label)}" title="${esc(label)}">${glyph}</a>`;
+  return `<div class="masthead-utility">
+    <p class="masthead-clock"><span data-masthead-date></span><time data-masthead-time></time></p>
+    ${localities.length ? `<div class="masthead-weather" data-weather-localities="${esc(JSON.stringify(localities))}" aria-label="Météo"></div>` : ''}
+    <div class="masthead-tools">
+      ${button(asset('/', ctx), 'Accueil', icon('home'))}
+      ${button(asset('/feed.xml', ctx), 'Flux RSS', icon('rss'))}
+      ${tools?.pomodoro !== false ? button('https://le-radar.ca/pomo/', 'Pomodoro', icon('pomo')) : ''}
+      ${tools?.solitaire !== false ? button('https://le-radar.ca/solitaire/', 'Solitaire', icon('solitaire')) : ''}
+      <button type="button" id="theme-toggle" class="masthead-tool" aria-label="Changer de thème" title="Changer de thème" aria-pressed="false" hidden><span aria-hidden="true">☼</span></button>
+      ${backgrounds?.enabled !== false && (backgrounds?.images?.length ?? 0) > 1 ? `<button type="button" id="masthead-shuffle" class="masthead-tool" aria-label="Changer l’image de fond" title="Changer l’image de fond">${icon('shuffle')}</button>` : ''}
+    </div>
+  </div>`;
 }
 
 // ---------------------------------------------------------------------------
 // Carte d'article
 // ---------------------------------------------------------------------------
 
-export function articleCard(article: Article, ctx: RenderContext, lead = false): string {
+export function articleCard(article: Article, ctx: RenderContext, variant: boolean | 'lead' | 'feature' | 'brief' | 'tail' = false): string {
+  const role = variant === true ? 'lead' : variant === false ? 'tail' : variant;
+  const lead = role === 'lead';
+  const showImage = role === 'lead' || role === 'feature' || role === 'tail';
   const section = sectionName(article.section, ctx);
   const href = relative(articleUrl(ctx.publication, article), ctx);
   const date = article.publishedAt ?? article.updatedAt;
 
   return `
-      <article class="article${lead ? ' article--lead' : ''}">
+      <article class="article article--${role}">
         ${lead ? '<span class="article-eyebrow">À la une</span>' : ''}
         <div class="article-meta">
           ${section ? `<span class="article-section">${esc(section.name)}</span>` : '<span></span>'}
-          <time class="article-time" datetime="${esc(date)}">${formatDate(date)}</time>
+          <time class="article-time" datetime="${esc(date)}">${formatDateTime(date, ctx.publication.timeZone)}</time>
         </div>
         <h2 class="article-title"><a href="${safeUrl(href)}" style="text-decoration:none;color:inherit">${esc(article.title)}</a></h2>
         ${byline(article, ctx, true)}
-        ${lead ? mediaFigure(article, ctx) : ''}
+        ${showImage ? mediaFigure(article, ctx) : ''}
         <p class="article-brief">${esc(article.excerpt)}</p>
       </article>`;
 }
@@ -214,7 +273,6 @@ export function page(content: string, options: PageOptions, ctx: RenderContext):
 
   const description = options.description ?? pub.tagline ?? pub.name;
   const radio = radioTuner(ctx);
-  const radioAtTop = radio && pub.radio?.position !== 'bottom';
 
   return `<!doctype html>
 <html lang="${esc(pub.lang)}">
@@ -246,9 +304,10 @@ ${options.jsonLd ? `<script type="application/ld+json">${options.jsonLd}</script
 <body${options.bodyClass ? ` class="${esc(options.bodyClass)}"` : ''}>
 <a class="skip-link" href="#contenu">Aller au contenu</a>
 ${ctx.demoNotice ? `<div class="demo-banner">${esc(ctx.demoNotice)}</div>` : ''}
-${radioAtTop ? radio : ''}
-<header class="masthead">
+<header class="masthead${pub.masthead?.backgrounds?.enabled !== false && pub.masthead?.backgrounds?.images?.length ? ' masthead--illustrated' : ''}">
+  ${mastheadBackground(ctx)}
   <div class="wrap">
+    ${mastheadTools(ctx)}
     <div class="masthead-top">
       <div>
         <p class="wordmark"><a href="${asset('/', ctx)}">${pub.logo ? `<img class="publication-logo" src="${safeUrl(asset(pub.logo.src, ctx))}" alt="${esc(pub.logo.alt || pub.name)}">` : esc(pub.name)}</a></p>
@@ -256,11 +315,11 @@ ${radioAtTop ? radio : ''}
       </div>
       <div class="masthead-meta">
         <span>${esc(pub.institution)}</span>
-        <button type="button" id="theme-toggle" class="theme-toggle" aria-pressed="false" hidden>Sombre</button>
       </div>
     </div>
   </div>
 </header>
+${radio}
 <nav class="nav-wrap" aria-label="Sections">
   <div class="wrap">
     <div class="nav">
@@ -276,7 +335,6 @@ ${radioAtTop ? radio : ''}
 <main id="contenu">
 ${content}
 </main>
-${radio && !radioAtTop ? radio : ''}
 <footer class="footer">
   <div class="wrap">
     <p><strong>${esc(pub.name)}</strong>${pub.founded ? ` — depuis ${esc(pub.founded)}` : ''}. ${esc(pub.institution)}.</p>
@@ -302,17 +360,24 @@ ${ctx.editorial ? `<script>window.KIOSQUE_EDITORIAL=${JSON.stringify({ mode: 'de
 
 export function homePage(articles: Article[], ctx: RenderContext): string {
   const [first, ...rest] = articles;
+  const features = rest.slice(0, 2);
+  const briefs = rest.slice(2, 9);
+  const tail = rest.slice(9);
   const body = !articles.length
     ? '<p class="empty">Aucun article publié pour le moment.</p>'
-    : `${articleCard(first, ctx, true)}
-      <div class="news-list">
-${rest.map((a) => articleCard(a, ctx)).join('\n')}
-      </div>`;
+    : `<div class="magazine-layout">
+      <section class="news-hero" aria-label="À la une">
+        ${articleCard(first, ctx, 'lead')}
+        <div class="news-features">${features.map((a) => articleCard(a, ctx, 'feature')).join('\n')}</div>
+      </section>
+      ${briefs.length ? `<aside class="brief-rail"><h2>En bref</h2>${briefs.map((a) => articleCard(a, ctx, 'brief')).join('\n')}</aside>` : ''}
+      ${tail.length ? `<section class="news-tail"><h2>Suite du fil</h2><div class="news-tail-grid">${tail.map((a) => articleCard(a, ctx, 'tail')).join('\n')}</div></section>` : ''}
+    </div>`;
 
   return page(
     `<div class="wrap wire">
       <div class="wire-head">
-        <h1 class="wire-title">Le fil</h1>
+        <h1 class="wire-title">À la une</h1>
         <span class="wire-status">${articles.length} article${articles.length > 1 ? 's' : ''}</span>
       </div>
       ${body}
@@ -382,10 +447,10 @@ export function articlePage(article: Article, ctx: RenderContext): string {
                 .join(', ')}</span>`
             : ''
         }
-        <time datetime="${esc(date)}">${formatDateTime(date)}</time>
+        <time datetime="${esc(date)}">${formatDateTime(date, pub.timeZone)}</time>
         ${
           article.updatedAt && article.publishedAt && article.updatedAt > article.publishedAt
-            ? `<span>Mis à jour le ${formatDate(article.updatedAt)}</span>`
+            ? `<span>Mis à jour le ${formatDateTime(article.updatedAt, pub.timeZone)}</span>`
             : ''
         }
       </div>

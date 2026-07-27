@@ -20,11 +20,17 @@ function markdown(value) {
   return sanitize(marked.parse(String(value || ''), { async: false }));
 }
 
+function articleBody(article) {
+  return article.body?.format === 'html'
+    ? sanitize(String(article.body.raw || ''))
+    : markdown(article.body?.raw || '');
+}
+
 async function render(push = false) {
   const backend = await getBackend();
   const bundle = await backend.getSnapshot({ audience: 'public' });
   applyBranding(bundle, config.publicBasePath);
-  const result = renderRoute(bundle, config.publicBasePath, location.pathname, markdown);
+  const result = renderRoute(bundle, config.publicBasePath, location.pathname, articleBody);
   if (!result) return;
   if (push) history.pushState({}, '', location.pathname);
   document.title = result.title;

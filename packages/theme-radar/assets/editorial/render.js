@@ -1,9 +1,9 @@
 const ESCAPES = { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' };
 export const esc = (value) => String(value ?? '').replace(/[&<>"']/g, (character) => ESCAPES[character]);
 
-function formatDate(value) {
+function formatDateTime(value, timeZone = 'America/Toronto') {
   if (!value) return '';
-  return new Intl.DateTimeFormat('fr-CA', { dateStyle: 'long', timeZone: 'UTC' }).format(new Date(value));
+  return new Intl.DateTimeFormat('fr-CA', { dateStyle: 'long', timeStyle: 'short', timeZone }).format(new Date(value));
 }
 
 function link(base, path) {
@@ -20,25 +20,38 @@ function byline(article, bundle) {
   return names.length ? `<p class="article-byline">Par ${names.map(esc).join(' et ')}</p>` : '';
 }
 
-function articleCard(article, bundle, base, lead = false) {
+function mediaFigure(article, base) {
+  if (!article.lead) return '';
+  const src = safeMediaUrl(article.lead.src);
+  if (!src) return '';
+  const resolved = src.startsWith('/') ? link(base, src) : src;
+  const credit = [article.lead.caption, article.lead.credit && `Photo : ${article.lead.credit}`].filter(Boolean).map(esc).join(' — ');
+  return `<div class="article-media"><img src="${esc(resolved)}" alt="${esc(article.lead.alt || '')}" loading="lazy"></div>${credit ? `<p class="article-media-credit">${credit}</p>` : ''}`;
+}
+
+function articleCard(article, bundle, base, variant = 'tail') {
+  const role = variant === true ? 'lead' : variant;
+  const lead = role === 'lead';
+  const showImage = role === 'lead' || role === 'feature' || role === 'tail';
   const section = bundle.taxonomies.sections.find((item) => item.slug === article.section);
-  return `<article class="article${lead ? ' article--lead' : ''}">
+  return `<article class="article article--${role}">
     ${lead ? '<span class="article-eyebrow">À la une</span>' : ''}
-    <div class="article-meta"><span class="article-section">${esc(section?.name || '')}</span><time>${esc(formatDate(article.publishedAt || article.updatedAt))}</time></div>
+    <div class="article-meta"><span class="article-section">${esc(section?.name || '')}</span><time datetime="${esc(article.publishedAt || article.updatedAt)}">${esc(formatDateTime(article.publishedAt || article.updatedAt, bundle.publication.timeZone))}</time></div>
     <h2 class="article-title"><a data-editorial-link href="${link(base, `/articles/${encodeURIComponent(article.slug)}/`)}">${esc(article.title)}</a></h2>
-    ${byline(article, bundle)}<p class="article-brief">${esc(article.excerpt || '')}</p>
+    ${byline(article, bundle)}${showImage ? mediaFigure(article, base) : ''}<p class="article-brief">${esc(article.excerpt || '')}</p>
   </article>`;
 }
 
-export function renderRoute(bundle, base, pathname, markdownToHtml) {
+export function renderRoute(bundle, base, pathname, renderBody) {
   const route = pathname.slice(base.length).replace(/^\/+|\/+$/g, '');
   const parts = route ? route.split('/') : [];
   const published = bundle.articles.filter((article) => article.status === 'published');
   if (!parts.length) {
     const [first, ...rest] = published;
+    const features = rest.slice(0, 2), briefs = rest.slice(2, 9), tail = rest.slice(9);
     return {
       title: `${bundle.publication.name} — ${bundle.publication.tagline || bundle.publication.institution}`,
-      html: `<div class="wrap wire"><div class="wire-head"><h1 class="wire-title">Le fil</h1><span class="wire-status">${published.length} article${published.length > 1 ? 's' : ''}</span></div>${first ? articleCard(first, bundle, base, true) + `<div class="news-list">${rest.map((item) => articleCard(item, bundle, base)).join('')}</div>` : '<p class="empty">Aucun article publié pour le moment.</p>'}</div>`,
+      html: `<div class="wrap wire"><div class="wire-head"><h1 class="wire-title">À la une</h1><span class="wire-status">${published.length} article${published.length > 1 ? 's' : ''}</span></div>${first ? `<div class="magazine-layout"><section class="news-hero" aria-label="À la une">${articleCard(first, bundle, base, 'lead')}<div class="news-features">${features.map((item) => articleCard(item, bundle, base, 'feature')).join('')}</div></section>${briefs.length ? `<aside class="brief-rail"><h2>En bref</h2>${briefs.map((item) => articleCard(item, bundle, base, 'brief')).join('')}</aside>` : ''}${tail.length ? `<section class="news-tail"><h2>Suite du fil</h2><div class="news-tail-grid">${tail.map((item) => articleCard(item, bundle, base, 'tail')).join('')}</div></section>` : ''}</div>` : '<p class="empty">Aucun article publié pour le moment.</p>'}</div>`,
     };
   }
   if (parts[0] === 'articles' && parts[1]) {
@@ -48,7 +61,7 @@ export function renderRoute(bundle, base, pathname, markdownToHtml) {
     const categories = article.categories.map((slug) => bundle.taxonomies.categories.find((item) => item.slug === slug)).filter(Boolean);
     return {
       title: `${article.title} — ${bundle.publication.name}`,
-      html: `<article class="wrap post"><h1 class="post-title">${esc(article.title)}</h1>${article.subtitle ? `<p class="post-subtitle">${esc(article.subtitle)}</p>` : ''}${article.dek ? `<p class="post-dek">${esc(article.dek)}</p>` : ''}<div class="post-meta"><span>Par ${authors.map(esc).join(', ')}</span><time>${esc(formatDate(article.publishedAt || article.updatedAt))}</time></div><div class="post-body">${markdownToHtml(article.body?.raw || '')}</div>${categories.length ? `<div class="post-tags">${categories.map((category) => `<a class="tag" data-editorial-link href="${link(base, `/categories/${encodeURIComponent(category.slug)}/`)}">${esc(category.name)}</a>`).join('')}</div>` : ''}</article>`,
+      html: `<article class="wrap post"><h1 class="post-title">${esc(article.title)}</h1>${article.subtitle ? `<p class="post-subtitle">${esc(article.subtitle)}</p>` : ''}${article.dek ? `<p class="post-dek">${esc(article.dek)}</p>` : ''}<div class="post-meta"><span>Par ${authors.map(esc).join(', ')}</span><time datetime="${esc(article.publishedAt || article.updatedAt)}">${esc(formatDateTime(article.publishedAt || article.updatedAt, bundle.publication.timeZone))}</time></div>${mediaFigure(article, base)}<div class="post-body">${renderBody(article)}</div>${categories.length ? `<div class="post-tags">${categories.map((category) => `<a class="tag" data-editorial-link href="${link(base, `/categories/${encodeURIComponent(category.slug)}/`)}">${esc(category.name)}</a>`).join('')}</div>` : ''}</article>`,
     };
   }
   const definitions = {
@@ -86,18 +99,41 @@ export function applyBranding(bundle, base) {
   });
   document.querySelectorAll('.masthead-tagline').forEach((node) => { node.textContent = publication.tagline || ''; });
   document.querySelectorAll('.masthead-meta > span').forEach((node) => { node.textContent = publication.institution || ''; });
+  const masthead = document.querySelector('.masthead');
+  const backgrounds = publication.masthead?.backgrounds;
+  const images = backgrounds?.enabled === false ? [] : (backgrounds?.images || []);
+  masthead?.classList.toggle('masthead--illustrated', Boolean(images.length));
+  masthead?.querySelectorAll('[data-masthead-background], .masthead-background-shade, [data-masthead-credit], #masthead-backgrounds').forEach((node) => node.remove());
+  if (masthead && images.length) {
+    const image = document.createElement('img'); image.className = 'masthead-background'; image.dataset.mastheadBackground = ''; image.alt = ''; image.src = safeMediaUrl(images[0].src.startsWith('/') ? link(base, images[0].src) : images[0].src);
+    const shade = document.createElement('span'); shade.className = 'masthead-background-shade'; shade.setAttribute('aria-hidden', 'true');
+    const credit = document.createElement('span'); credit.className = 'masthead-photo-credit'; credit.dataset.mastheadCredit = ''; credit.textContent = images[0].credit ? `Photo : ${images[0].credit}` : '';
+    const manifest = document.createElement('script'); manifest.type = 'application/json'; manifest.id = 'masthead-backgrounds'; manifest.textContent = JSON.stringify(images.map((item) => ({ ...item, src: item.src.startsWith('/') ? link(base, item.src) : item.src })));
+    masthead.prepend(image, shade); masthead.append(credit, manifest);
+  }
+  const weather = publication.masthead?.weather;
+  let weatherHost = document.querySelector('.masthead-weather');
+  if (weather?.enabled && weather.localities?.length) {
+    if (!weatherHost) { weatherHost = document.createElement('div'); weatherHost.className = 'masthead-weather'; document.querySelector('.masthead-tools')?.before(weatherHost); }
+    weatherHost.dataset.weatherLocalities = JSON.stringify(weather.localities.slice(0, 4));
+  } else weatherHost?.remove();
+  document.querySelector('a[href="https://le-radar.ca/pomo/"]')?.toggleAttribute('hidden', publication.masthead?.tools?.pomodoro === false);
+  document.querySelector('a[href="https://le-radar.ca/solitaire/"]')?.toggleAttribute('hidden', publication.masthead?.tools?.solitaire === false);
   const nav = document.querySelector('.nav');
   if (nav) nav.innerHTML = [`<a data-editorial-link href="${base}/">Accueil</a>`, ...bundle.taxonomies.sections.map((section) => `<a data-editorial-link href="${link(base, `/sections/${encodeURIComponent(section.slug)}/`)}">${esc(section.name)}</a>`), `<a data-editorial-link href="${link(base, '/auteurs/')}">Équipe</a>`].join('');
-  const currentRadio = document.querySelector('radar-tuner');
+  let currentRadio = document.querySelector('radar-tuner');
   if (publication.radio?.enabled === false) currentRadio?.remove();
-  else if (!currentRadio && publication.radio) {
-    const params = new URLSearchParams({ theme: publication.radio.theme || 'auto' });
+  else if (publication.radio) {
+    const params = new URLSearchParams({ surface: 'kiosque-v1' });
     if (publication.radio.station) params.set('station', publication.radio.station);
+    const src = `https://le-radar.ca/tuner-embed.html?${params}`;
+    if (currentRadio?.dataset.src !== src) { currentRadio?.remove(); currentRadio = null; }
+    if (currentRadio) return;
     const tuner = document.createElement('radar-tuner');
     tuner.className = 'radar-tuner';
-    tuner.dataset.src = `https://le-radar.ca/tuner-embed.html?${params}`;
+    tuner.dataset.src = src;
+    tuner.hidden = true;
     tuner.innerHTML = '<a href="https://le-radar.ca/" rel="noopener">Écouter LE RADAR</a>';
-    if (publication.radio.position === 'bottom') document.querySelector('footer')?.before(tuner);
-    else document.querySelector('header')?.before(tuner);
+    document.querySelector('header')?.after(tuner);
   }
 }

@@ -12,6 +12,7 @@ lang: fr-CA
 # Sans barre oblique finale. Avec un fork GitHub Pages :
 # https://mon-organisation.github.io/mon-journal
 siteUrl: https://journal-exemple.invalid
+timeZone: America/Toronto
 
 theme:
   # La couleur officielle de votre établissement.
@@ -20,12 +21,22 @@ theme:
   # Version éclaircie, lisible sur fond sombre.
   accentDark: '#cf7ec1'
 
-# Barre facultative de LE RADAR. Le paramètre de station sera honoré quand
-# le lecteur distant l'acceptera; il est déjà émis par KIOSQUE.
+masthead:
+  backgrounds:
+    enabled: false
+    images: [] # Ajoutez vos propres JPEG, PNG ou WebP depuis /admin/.
+  weather:
+    enabled: false
+    localities: [] # Un simple nom, ex. Québec; quatre maximum.
+  tools:
+    pomodoro: true
+    solitaire: true
+
+# Barre sombre facultative de LE-RADAR.ca, sous le mât.
 radio:
   enabled: true
   station: station-exemple
-  theme: auto
+  theme: dark
   position: top
 
 founded: '2026'

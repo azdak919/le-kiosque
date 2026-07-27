@@ -15,6 +15,11 @@ categories:
 tags:
   - sante-etudiante
 lang: fr-CA
+lead:
+  src: /media/2026/09/auditorium.svg
+  alt: Illustration fictive de personnes étudiantes réunies dans un auditorium
+  credit: Le Quorum, illustration fictive
+  license: CC-BY-SA-4.0
 excerpt: >-
   Deux journalistes expliquent ensemble les limites et les constats d'un
   sondage fictif sur le bien-être de la communauté étudiante.

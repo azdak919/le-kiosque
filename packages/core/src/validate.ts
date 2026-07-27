@@ -187,7 +187,20 @@ export function validatePublication(pub: Publication, path = 'publication'): Iss
   if (!pub.siteUrl || !/^https?:\/\//.test(pub.siteUrl)) {
     err(issues, `${path}.siteUrl`, 'siteUrl doit être une URL absolue');
   }
+  try {
+    new Intl.DateTimeFormat('fr-CA', { timeZone: pub.timeZone }).format(new Date());
+  } catch {
+    err(issues, `${path}.timeZone`, 'timeZone doit être un fuseau IANA valide (ex. America/Toronto)');
+  }
   if (!pub.theme?.accent) err(issues, `${path}.theme.accent`, 'couleur d’accent requise');
+  const localities = pub.masthead?.weather?.localities ?? [];
+  if (localities.length > 4) err(issues, `${path}.masthead.weather.localities`, 'quatre localités maximum');
+  for (const [i, locality] of localities.entries()) {
+    if (!locality.trim()) err(issues, `${path}.masthead.weather.localities[${i}]`, 'localité vide');
+  }
+  for (const [i, image] of (pub.masthead?.backgrounds?.images ?? []).entries()) {
+    issues.push(...validateMedia(image, `${path}.masthead.backgrounds.images[${i}]`));
+  }
 
   // Gouvernance : ces avertissements sont la raison d'être du projet. Ils ne
   // bloquent pas la publication — on n'empêche personne de démarrer vite — mais

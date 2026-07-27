@@ -9,6 +9,7 @@ institutionType: cegep
 region: Québec
 lang: fr-CA
 siteUrl: https://journal-exemple.invalid
+timeZone: America/Toronto
 
 theme:
   # Reprend le pourpre de marque de LE RADAR. Une équipe met ici la couleur
@@ -17,11 +18,32 @@ theme:
   accentDark: '#cf7ec1'
   typography: modern-accessible
 
+masthead:
+  backgrounds:
+    enabled: true
+    images:
+      - src: /media/2026/09/auditorium.svg
+        alt: Illustration fictive d'un auditorium étudiant
+        credit: Illustration fictive Le Kiosque
+      - src: /media/2026/10/serre.svg
+        alt: Illustration fictive d'une serre pédagogique
+        credit: Illustration fictive Le Kiosque
+      - src: /media/2026/10/terrain.svg
+        alt: Illustration fictive d'un terrain sportif étudiant
+        credit: Illustration fictive Le Kiosque
+  weather:
+    enabled: true
+    localities:
+      - Québec
+  tools:
+    pomodoro: true
+    solitaire: true
+
 # Station de campus à afficher dans la barre radio (jalon 3).
 radio:
   enabled: true
   station: chyz
-  theme: auto
+  theme: dark
   position: top
 
 founded: '2026'

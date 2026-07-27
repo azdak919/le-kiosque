@@ -29,8 +29,96 @@
     var btn = document.getElementById('theme-toggle');
     if (btn) {
       btn.setAttribute('aria-pressed', theme === 'dark' ? 'true' : 'false');
-      btn.textContent = theme === 'dark' ? 'Clair' : 'Sombre';
+      btn.setAttribute('aria-label', theme === 'dark' ? 'Passer au thème clair' : 'Passer au thème sombre');
+      btn.title = btn.getAttribute('aria-label');
+      var glyph = btn.querySelector('span');
+      if (glyph) glyph.textContent = theme === 'dark' ? '☾' : '☼';
     }
+  }
+
+  // ── Mât : heure, photos locales et météo facultative ───────────────────
+  function initMastheadClock() {
+    var date = document.querySelector('[data-masthead-date]');
+    var time = document.querySelector('[data-masthead-time]');
+    if (!date || !time) return;
+    function refresh() {
+      var now = new Date();
+      date.textContent = new Intl.DateTimeFormat('fr-CA', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' }).format(now);
+      time.textContent = new Intl.DateTimeFormat('fr-CA', { hour: '2-digit', minute: '2-digit', hour12: false }).format(now);
+      time.dateTime = now.toISOString();
+    }
+    refresh();
+    setInterval(refresh, 30000);
+  }
+
+  function initMastheadBackgrounds() {
+    var image = document.querySelector('[data-masthead-background]');
+    var data = document.getElementById('masthead-backgrounds');
+    if (!image || !data) return;
+    var images = [];
+    try { images = JSON.parse(data.textContent || '[]'); } catch (_) {}
+    if (!images.length) return;
+    var credit = document.querySelector('[data-masthead-credit]');
+    var index = Math.floor(Math.random() * images.length);
+    function show(next) {
+      index = (next + images.length) % images.length;
+      var item = images[index];
+      image.src = item.src;
+      if (credit) {
+        credit.replaceChildren();
+        if (item.credit) {
+          var label = 'Photo : ' + item.credit;
+          if (item.creditUrl && /^https:\/\//i.test(item.creditUrl)) {
+            var link = document.createElement('a');
+            link.href = item.creditUrl;
+            link.rel = 'noopener';
+            link.textContent = label;
+            credit.appendChild(link);
+          } else credit.textContent = label;
+        }
+      }
+    }
+    show(index);
+    document.getElementById('masthead-shuffle')?.addEventListener('click', function () {
+      show(images.length > 1 ? index + 1 + Math.floor(Math.random() * (images.length - 1)) : 0);
+    });
+  }
+
+  function weatherSymbol(code) {
+    if (code === 0) return '☀';
+    if (code <= 3) return '⛅';
+    if (code <= 48) return '☁';
+    if (code <= 67 || (code >= 80 && code <= 82)) return '☂';
+    if (code <= 77 || code >= 85) return '❄';
+    return '⚡';
+  }
+
+  function initMastheadWeather() {
+    var host = document.querySelector('[data-weather-localities]');
+    if (!host || typeof fetch !== 'function') return;
+    var localities = [];
+    try { localities = JSON.parse(host.dataset.weatherLocalities || '[]').slice(0, 4); } catch (_) {}
+    Promise.all(localities.map(async function (name) {
+      var cacheKey = 'kiosque-weather:' + name.toLowerCase();
+      try {
+        var cached = JSON.parse(localStorage.getItem(cacheKey) || 'null');
+        if (cached && Date.now() - cached.savedAt < 30 * 60 * 1000) return cached.value;
+      } catch (_) {}
+      var geocode = await fetch('https://geocoding-api.open-meteo.com/v1/search?count=1&language=fr&countryCode=CA&name=' + encodeURIComponent(name)).then(function (r) { if (!r.ok) throw new Error('geocoding'); return r.json(); });
+      var place = geocode.results && geocode.results[0];
+      if (!place) throw new Error('locality');
+      var forecast = await fetch('https://api.open-meteo.com/v1/forecast?current=temperature_2m,weather_code&timezone=auto&latitude=' + encodeURIComponent(place.latitude) + '&longitude=' + encodeURIComponent(place.longitude)).then(function (r) { if (!r.ok) throw new Error('forecast'); return r.json(); });
+      var value = { name: place.name || name, temperature: Math.round(forecast.current.temperature_2m), code: Number(forecast.current.weather_code) };
+      try { localStorage.setItem(cacheKey, JSON.stringify({ savedAt: Date.now(), value: value })); } catch (_) {}
+      return value;
+    })).then(function (values) {
+      values.forEach(function (value) {
+        var chip = document.createElement('span');
+        chip.className = 'weather-chip';
+        chip.textContent = weatherSymbol(value.code) + ' ' + value.name + '  ' + value.temperature + '°';
+        host.appendChild(chip);
+      });
+    }).catch(function () { host.remove(); });
   }
 
   function initTheme() {
@@ -93,9 +181,9 @@
   }
 
   // ── Barre radio LE RADAR ───────────────────────────────────────────────
-  // L'iframe n'est créée qu'à l'approche de la zone visible. Le paramètre de
-  // station et celui du thème sont déjà émis, même si l'intégration distante
-  // ne les honore pas encore tous les deux depuis un domaine tiers.
+  // Le composant reste invisible jusqu'à ce que LE RADAR confirme explicitement
+  // le protocole kiosque-v1. En cas de panne, il disparaît et laisse la simple
+  // ligne de séparation du thème à sa place.
   function initRadarTuner() {
     if (!('customElements' in window) || customElements.get('radar-tuner')) return;
 
@@ -107,6 +195,7 @@
     RadarTuner.prototype.connectedCallback = function () {
       var host = this;
       var loaded = false;
+      var timeout;
       function load() {
         if (loaded) return;
         loaded = true;
@@ -117,28 +206,30 @@
         frame.title = 'Barre d’écoute de LE RADAR';
         frame.loading = 'lazy';
         frame.allow = 'autoplay';
-        host.replaceChildren(frame);
+        host.appendChild(frame);
+        timeout = setTimeout(function () { host.remove(); }, 6500);
         window.addEventListener('message', function (event) {
           if (event.source !== frame.contentWindow || event.origin !== 'https://le-radar.ca') return;
           var message = event.data;
-          if (!message || message.type !== 'radar-embed') return;
+          if (!message || message.type !== 'radar-embed' || message.protocol !== 1 || message.surface !== 'kiosque-v1') return;
+          if (message.ready && message.available === false) {
+            clearTimeout(timeout);
+            host.remove();
+            return;
+          }
           var height = Number(message.height);
           if (Number.isFinite(height) && height >= 40 && height <= 500) {
             frame.style.height = Math.round(height) + 'px';
           }
+          if (message.ready && message.available === true) {
+            clearTimeout(timeout);
+            host.querySelector('a')?.remove();
+            host.hidden = false;
+            host.dataset.state = 'ready';
+          }
         });
       }
-      if ('IntersectionObserver' in window) {
-        var observer = new IntersectionObserver(function (entries) {
-          if (entries.some(function (entry) { return entry.isIntersecting; })) {
-            observer.disconnect();
-            load();
-          }
-        }, { rootMargin: '300px' });
-        observer.observe(host);
-      } else {
-        load();
-      }
+      load();
     };
 
     customElements.define('radar-tuner', RadarTuner);
@@ -146,6 +237,9 @@
 
   function init() {
     initTheme();
+    initMastheadClock();
+    initMastheadBackgrounds();
+    initMastheadWeather();
     initMarquees();
     initRadarTuner();
   }

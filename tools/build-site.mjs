@@ -69,6 +69,7 @@ function prefill(bundle) {
       region: publication.region,
       lang: publication.lang,
       siteUrl: publication.siteUrl,
+      timeZone: publication.timeZone,
       accent: publication.theme.accent,
       accentDark: publication.theme.accentDark,
       typography: publication.theme.typography ?? 'modern-accessible',
@@ -77,6 +78,7 @@ function prefill(bundle) {
     },
     governance: publication.governance,
     radio: publication.radio,
+    masthead: publication.masthead,
     sections: bundle.taxonomies.sections.map(({ name, slug, description, order }) => ({
       name, slug, description, order,
     })),

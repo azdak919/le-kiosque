@@ -37,7 +37,7 @@ function entityId(entity) {
 function withBootstrap(seed, bootstrap) {
   if (!bootstrap || typeof bootstrap !== 'object') return seed;
   const publication = { ...seed.publication };
-  const scalar = ['name', 'slug', 'tagline', 'institution', 'institutionType', 'region', 'siteUrl', 'founded'];
+  const scalar = ['name', 'slug', 'tagline', 'institution', 'institutionType', 'region', 'siteUrl', 'timeZone', 'founded'];
   for (const key of scalar) if (bootstrap[key]) publication[key] = bootstrap[key];
   publication.theme = {
     ...publication.theme,
@@ -51,6 +51,22 @@ function withBootstrap(seed, bootstrap) {
     station: bootstrap.station || publication.radio?.station,
     theme: bootstrap.radioTheme || publication.radio?.theme,
     position: bootstrap.radioPosition || publication.radio?.position,
+  };
+  publication.masthead = {
+    backgrounds: {
+      enabled: bootstrap.backgroundsEnabled === undefined ? publication.masthead?.backgrounds?.enabled : Boolean(bootstrap.backgroundsEnabled),
+      images: publication.masthead?.backgrounds?.images || [],
+    },
+    weather: {
+      enabled: bootstrap.weatherEnabled === undefined ? publication.masthead?.weather?.enabled : Boolean(bootstrap.weatherEnabled),
+      localities: typeof bootstrap.weatherLocalities === 'string'
+        ? bootstrap.weatherLocalities.split(',').map((value) => value.trim()).filter(Boolean).slice(0, 4)
+        : publication.masthead?.weather?.localities || [],
+    },
+    tools: {
+      pomodoro: bootstrap.pomodoro === undefined ? publication.masthead?.tools?.pomodoro : Boolean(bootstrap.pomodoro),
+      solitaire: bootstrap.solitaire === undefined ? publication.masthead?.tools?.solitaire : Boolean(bootstrap.solitaire),
+    },
   };
   if (bootstrap.logo && typeof bootstrap.logo === 'object') publication.logo = bootstrap.logo;
   const configuredSections = Array.isArray(bootstrap.sections) ? bootstrap.sections.map((section) => ({
@@ -160,41 +176,55 @@ export class DemoBackendPGlite {
       );
       for (const kind of ['section', 'category', 'tag']) {
         const table = TABLES[kind];
-        for (const raw of seed[table] || []) {
-          const entity = { ...raw, id: entityId(raw) };
+        const entities = (seed[table] || []).map((raw) => ({ ...raw, id: entityId(raw) }));
+        if (entities.length) {
+          const values = entities.map((_, index) => {
+            const offset = index * 3;
+            return `($${offset + 1}, $${offset + 2}, $${offset + 3}::jsonb)`;
+          }).join(',');
           await tx.query(
-            `INSERT INTO ${table}(id, slug, data) VALUES ($1, $2, $3::jsonb)
+            `INSERT INTO ${table}(id, slug, data) VALUES ${values}
              ON CONFLICT(id) DO UPDATE SET slug = excluded.slug, data = excluded.data`,
-            [entity.id, entity.slug, JSON.stringify(entity)],
+            entities.flatMap((entity) => [entity.id, entity.slug, JSON.stringify(entity)]),
           );
         }
       }
-      for (const raw of seed.settings?.startEmpty ? [] : (seed.authors || [])) {
-        const entity = { ...raw, id: entityId(raw), isDemo: true, isUserModified: false };
+      const demoAuthors = (seed.settings?.startEmpty ? [] : (seed.authors || [])).map((raw) => ({
+        ...raw, id: entityId(raw), isDemo: true, isUserModified: false,
+      }));
+      const configuredAuthors = (seed.configuredAuthors || []).map((raw) => ({
+        ...raw, id: entityId(raw), isDemo: false, isUserModified: true,
+      }));
+      const authors = [...demoAuthors, ...configuredAuthors];
+      if (authors.length) {
+        const values = authors.map((_, index) => {
+          const offset = index * 5;
+          return `($${offset + 1}, $${offset + 2}, $${offset + 3}, $${offset + 4}, $${offset + 5}::jsonb)`;
+        }).join(',');
         await tx.query(
-          `INSERT INTO authors(id, slug, is_demo, is_user_modified, data) VALUES ($1, $2, true, false, $3::jsonb)
-           ON CONFLICT(id) DO UPDATE SET slug = excluded.slug, is_demo = true,
-             is_user_modified = false, data = excluded.data`,
-          [entity.id, entity.slug, JSON.stringify(entity)],
+          `INSERT INTO authors(id, slug, is_demo, is_user_modified, data) VALUES ${values}
+           ON CONFLICT(id) DO UPDATE SET slug = excluded.slug,
+             is_demo = excluded.is_demo, is_user_modified = excluded.is_user_modified, data = excluded.data`,
+          authors.flatMap((entity) => [entity.id, entity.slug, entity.isDemo, entity.isUserModified, JSON.stringify(entity)]),
         );
       }
-      for (const raw of seed.configuredAuthors || []) {
-        const entity = { ...raw, id: entityId(raw), isDemo: false, isUserModified: true };
-        await tx.query(
-          `INSERT INTO authors(id, slug, is_demo, is_user_modified, data) VALUES ($1, $2, false, true, $3::jsonb)
-           ON CONFLICT(id) DO UPDATE SET slug = excluded.slug, data = excluded.data`,
-          [entity.id, entity.slug, JSON.stringify(entity)],
-        );
-      }
-      for (const raw of seed.settings?.startEmpty ? [] : (seed.articles || [])) {
+      const articles = (seed.settings?.startEmpty ? [] : (seed.articles || [])).map((raw) => {
         const entity = { ...raw, id: entityId(raw), isDemo: true, isUserModified: false };
         const status = ['draft', 'in-review', 'published'].includes(entity.status) ? entity.status : 'draft';
+        return { ...entity, status };
+      });
+      if (articles.length) {
+        const values = articles.map((_, index) => {
+          const offset = index * 7;
+          return `($${offset + 1}, $${offset + 2}, $${offset + 3}, $${offset + 4}, $${offset + 5}, $${offset + 6}, $${offset + 7}::jsonb)`;
+        }).join(',');
         await tx.query(
           `INSERT INTO articles(id, slug, status, is_demo, is_user_modified, updated_at, data)
-           VALUES ($1, $2, $3, true, false, $4, $5::jsonb)
+           VALUES ${values}
            ON CONFLICT(id) DO UPDATE SET slug = excluded.slug, status = excluded.status,
-             is_demo = true, is_user_modified = false, updated_at = excluded.updated_at, data = excluded.data`,
-          [entity.id, entity.slug, status, entity.updatedAt || now(), JSON.stringify({ ...entity, status })],
+             is_demo = excluded.is_demo, is_user_modified = excluded.is_user_modified,
+             updated_at = excluded.updated_at, data = excluded.data`,
+          articles.flatMap((entity) => [entity.id, entity.slug, entity.status, true, false, entity.updatedAt || now(), JSON.stringify(entity)]),
         );
       }
       await tx.query(

@@ -42,6 +42,14 @@ function sanitizePreview(html) {
   return template.innerHTML;
 }
 
+function localDateTime(iso) {
+  if (!iso) return '';
+  const date = new Date(iso);
+  if (Number.isNaN(date.getTime())) return '';
+  const local = new Date(date.getTime() - date.getTimezoneOffset() * 60_000);
+  return local.toISOString().slice(0, 16);
+}
+
 async function refresh() {
   bundle = await backend.getSnapshot({ audience: 'editorial', includeDemo: true });
   document.getElementById('publication-name').textContent = bundle.publication.name;
@@ -71,6 +79,17 @@ function articles() {
   return `<section class="panel"><div class="toolbar"><div><h2>Articles</h2><p>Seul le statut Publié apparaît dans le journal.</p></div><button class="primary" data-action="new-article">Nouvel article</button></div><ul class="entity-list">${bundle.articles.map((article) => `<li><div><strong>${esc(article.title)}</strong>${article.isDemo ? ' <small>Exemple local' + (article.isUserModified ? ' modifié' : '') + '</small>' : ''}<small>/${esc(article.slug)} · <span class="status-pill status-${esc(article.status)}">${statusLabel(article.status)}</span></small></div><div><button data-edit-article="${esc(article.id)}">Modifier</button> <button class="danger" data-delete-article="${esc(article.id)}">Supprimer</button></div></li>`).join('')}</ul></section>`;
 }
 
+async function readArticleImage(file, details = {}) {
+  const allowed = ['image/png', 'image/webp', 'image/jpeg'];
+  if (!allowed.includes(file.type)) throw new Error('Utilisez une photo JPEG, PNG ou WebP.');
+  if (file.size > 10 * 1024 * 1024) throw new Error('La photo dépasse 10 Mo.');
+  const data = await new Promise((resolve, reject) => { const reader = new FileReader(); reader.onload = () => resolve(reader.result); reader.onerror = reject; reader.readAsDataURL(file); });
+  const dimensions = await new Promise((resolve, reject) => { const image = new Image(); image.onload = () => resolve({ width: image.naturalWidth, height: image.naturalHeight }); image.onerror = reject; image.src = data; });
+  const digest = await crypto.subtle.digest('SHA-256', await file.arrayBuffer());
+  const checksum = [...new Uint8Array(digest)].map((value) => value.toString(16).padStart(2, '0')).join('');
+  return { id: crypto.randomUUID(), kind: 'image', src: data, alt: details.alt || '', caption: details.caption || '', credit: details.credit || '', license: details.license || '', mime: file.type, checksum, ...dimensions, source: source('media', file.name) };
+}
+
 function articleEditor(article) {
   const current = article || {
     id: crypto.randomUUID(), slug: '', title: '', excerpt: '', subtitle: '', dek: '', authors: [], section: bundle.taxonomies.sections[0]?.slug || '', categories: [], tags: [], lang: bundle.publication.lang || 'fr-CA', status: 'draft', body: { format: 'markdown', raw: '' }, media: [], publication: bundle.publication.slug, updatedAt: new Date().toISOString(), canonicalUrl: '', source: source('article', 'local'),
@@ -80,27 +99,70 @@ function articleEditor(article) {
     <div class="field full"><label for="article-excerpt">Résumé</label><textarea id="article-excerpt" name="excerpt" required>${esc(current.excerpt)}</textarea></div>
     <div class="field"><label for="article-section">Section</label><select id="article-section" name="section">${bundle.taxonomies.sections.map((item) => `<option value="${esc(item.slug)}" ${item.slug === current.section ? 'selected' : ''}>${esc(item.name)}</option>`).join('')}</select></div>
     <div class="field"><label for="article-status">Statut</label><select id="article-status" name="status"><option value="draft" ${current.status === 'draft' ? 'selected' : ''}>Brouillon</option><option value="in-review" ${current.status === 'in-review' ? 'selected' : ''}>En révision</option><option value="published" ${current.status === 'published' ? 'selected' : ''}>Publié</option></select></div>
+    <div class="field full"><label for="article-published-at">Date et heure de publication</label><input id="article-published-at" name="publishedAt" type="datetime-local" value="${esc(localDateTime(current.publishedAt))}"><small>L’heure locale exacte sera conservée avec son fuseau et transmise au flux de LE RADAR.</small></div>
     <fieldset class="field"><legend>Auteurs</legend>${bundle.authors.map((author) => `<label><input type="checkbox" name="authors" value="${esc(author.slug)}" ${current.authors.includes(author.slug) ? 'checked' : ''}> ${esc(author.name)}</label>`).join('')}</fieldset>
     <fieldset class="field"><legend>Catégories</legend>${bundle.taxonomies.categories.map((item) => `<label><input type="checkbox" name="categories" value="${esc(item.slug)}" ${current.categories.includes(item.slug) ? 'checked' : ''}> ${esc(item.name)}</label>`).join('')}</fieldset>
     <fieldset class="field full"><legend>Mots-clés</legend>${bundle.taxonomies.tags.map((item) => `<label><input type="checkbox" name="tags" value="${esc(item.slug)}" ${current.tags.includes(item.slug) ? 'checked' : ''}> ${esc(item.name)}</label>`).join('')}</fieldset>
-    <div class="field full"><label for="article-body">Article en Markdown</label><textarea class="body" id="article-body" name="body">${esc(current.body?.raw || '')}</textarea></div>
+    <fieldset class="field full media-editor"><legend>Photo principale</legend><label>Photo JPEG, PNG ou WebP<input id="article-lead-file" type="file" accept="image/jpeg,image/png,image/webp"></label><label>Description accessible<input name="leadAlt" value="${esc(current.lead?.alt || '')}"></label><label>Crédit<input name="leadCredit" value="${esc(current.lead?.credit || '')}"></label><label>Légende<input name="leadCaption" value="${esc(current.lead?.caption || '')}"></label><label>Licence<input name="leadLicense" value="${esc(current.lead?.license || '')}"></label>${current.lead ? `<p class="media-quality">Photo actuelle : ${current.lead.width || '?'} × ${current.lead.height || '?'} px${current.lead.width && (current.lead.width < 720 || current.lead.height < 405) ? ' — résolution faible pour la vedette' : ''}.</p>` : ''}</fieldset>
+    <div class="field full"><label for="article-format">Format du texte</label><select id="article-format" name="bodyFormat"><option value="markdown" ${current.body?.format !== 'html' ? 'selected' : ''}>Markdown</option><option value="html" ${current.body?.format === 'html' ? 'selected' : ''}>HTML assaini</option></select></div>
+    <div class="field full editor-shell"><div class="editor-toolbar"><button type="button" data-editor-mode="visual">Visuel</button><button type="button" data-editor-mode="source">Source</button><span data-html-tools><button type="button" data-command="bold"><strong>G</strong></button><button type="button" data-command="italic"><em>I</em></button><button type="button" data-command="formatBlock" data-value="h2">Titre</button><button type="button" data-command="createLink">Lien</button></span><label class="button">Ajouter une photo<input id="article-inline-file" type="file" accept="image/jpeg,image/png,image/webp" hidden></label></div><label for="article-body" class="sr-only">Texte de l’article</label><textarea class="body" id="article-body" name="body">${esc(current.body?.raw || '')}</textarea><div id="article-visual" class="visual-editor" contenteditable="true"></div><p class="media-quality">Les photos téléversées restent dans ce navigateur et seront incluses dans les exports. Recommandation : 720 × 405 px pour une vedette.</p></div>
     <div class="actions full"><button class="primary" type="submit">Enregistrer</button><button type="button" data-action="preview">Prévisualiser sans publier</button></div></form><div id="article-preview"></div></section>`;
   const title = document.getElementById('article-title');
   const slug = document.getElementById('article-slug');
   title.addEventListener('input', () => { if (!article && !slug.dataset.touched) slug.value = slugify(title.value); });
   slug.addEventListener('input', () => { slug.dataset.touched = 'true'; });
+  const format = document.getElementById('article-format');
+  const body = document.getElementById('article-body');
+  const visual = document.getElementById('article-visual');
+  let editorMode = current.body?.format === 'html' ? 'visual' : 'source';
+  visual.innerHTML = current.body?.format === 'html' ? sanitizePreview(current.body.raw || '') : sanitizePreview(marked.parse(current.body?.raw || '', { async: false }));
+  const syncEditor = (next = editorMode) => {
+    if (editorMode === 'visual' && next === 'source' && format.value === 'html') body.value = sanitizePreview(visual.innerHTML);
+    if (editorMode === 'source' && next === 'visual') visual.innerHTML = format.value === 'html' ? sanitizePreview(body.value) : sanitizePreview(marked.parse(body.value, { async: false }));
+    editorMode = next;
+    body.hidden = next !== 'source';
+    visual.hidden = next !== 'visual';
+    main.querySelector('[data-html-tools]').hidden = format.value !== 'html' || next !== 'visual';
+  };
+  main.querySelectorAll('[data-editor-mode]').forEach((button) => button.onclick = () => syncEditor(button.dataset.editorMode));
+  format.onchange = () => { if (editorMode === 'visual') syncEditor('source'); syncEditor(format.value === 'html' ? 'visual' : 'source'); };
+  main.querySelectorAll('[data-command]').forEach((button) => button.onclick = () => { visual.focus(); const value = button.dataset.command === 'createLink' ? prompt('Adresse du lien (https://…)') : button.dataset.value || null; if (value !== null) document.execCommand(button.dataset.command, false, value); });
+  document.getElementById('article-inline-file').onchange = async (event) => {
+    const file = event.target.files[0]; if (!file) return;
+    const alt = prompt('Décrivez ce que montre la photo.'); if (!alt?.trim()) { notify('Description obligatoire.'); return; }
+    try {
+      const media = await readArticleImage(file, { alt: alt.trim(), credit: prompt('Crédit photo (facultatif)') || '' });
+      current.media.push(media);
+      if (format.value === 'html') {
+        syncEditor('visual'); visual.focus(); document.execCommand('insertHTML', false, `<figure><img src="${media.src}" alt="${esc(media.alt)}"><figcaption>${esc(media.credit ? `Photo : ${media.credit}` : '')}</figcaption></figure>`);
+      } else {
+        syncEditor('source'); const insertion = `\n\n![${media.alt}](${media.src})${media.credit ? `\n\n*Photo : ${media.credit}*` : ''}\n\n`; body.setRangeText(insertion, body.selectionStart, body.selectionEnd, 'end');
+      }
+      notify(media.width < 640 || media.height < 360 ? 'Photo ajoutée — résolution faible.' : 'Photo ajoutée.');
+    } catch (error) { notify(error.message); }
+  };
   document.getElementById('article-form').addEventListener('submit', async (event) => {
     event.preventDefault();
     const form = new FormData(event.currentTarget);
+    if (editorMode === 'visual' && format.value === 'html') body.value = sanitizePreview(visual.innerHTML);
+    let lead = current.lead;
+    const leadFile = document.getElementById('article-lead-file').files[0];
+    if (leadFile) lead = await readArticleImage(leadFile, { alt: form.get('leadAlt').trim(), credit: form.get('leadCredit').trim(), caption: form.get('leadCaption').trim(), license: form.get('leadLicense').trim() });
+    else if (lead) lead = { ...lead, alt: form.get('leadAlt').trim(), credit: form.get('leadCredit').trim(), caption: form.get('leadCaption').trim(), license: form.get('leadLicense').trim() };
+    if (form.get('status') === 'published' && lead && !lead.alt.trim()) { notify('La description de la photo principale est obligatoire.'); return; }
+    const requestedPublication = form.get('publishedAt');
+    const enteredPublication = requestedPublication ? new Date(requestedPublication).toISOString() : undefined;
     const saved = {
-      ...current, id: form.get('id'), title: form.get('title').trim(), slug: slugify(form.get('slug')), excerpt: form.get('excerpt').trim(), section: form.get('section'), status: form.get('status'), authors: form.getAll('authors'), categories: form.getAll('categories'), tags: form.getAll('tags'), body: { format: 'markdown', raw: form.get('body') }, canonicalUrl: `${bundle.publication.siteUrl.replace(/\/$/, '')}/articles/${slugify(form.get('slug'))}/`, source: current.source || source('article', form.get('id')),
+      ...current, id: form.get('id'), title: form.get('title').trim(), slug: slugify(form.get('slug')), excerpt: form.get('excerpt').trim(), section: form.get('section'), status: form.get('status'), authors: form.getAll('authors'), categories: form.getAll('categories'), tags: form.getAll('tags'), body: { format: format.value, raw: body.value }, lead, media: current.media, publishedAt: enteredPublication || (form.get('status') === 'published' ? (current.publishedAt || new Date().toISOString()) : current.publishedAt), updatedAt: new Date().toISOString(), canonicalUrl: `${bundle.publication.siteUrl.replace(/\/$/, '')}/articles/${slugify(form.get('slug'))}/`, source: current.source || source('article', form.get('id')),
     };
     await backend.save('article', saved); await refresh(); notify('Article enregistré.'); setView('articles');
   });
   main.querySelector('[data-action="preview"]').addEventListener('click', () => {
-    const html = sanitizePreview(marked.parse(document.getElementById('article-body').value, { async: false }));
+    if (editorMode === 'visual' && format.value === 'html') body.value = sanitizePreview(visual.innerHTML);
+    const html = format.value === 'html' ? sanitizePreview(body.value) : sanitizePreview(marked.parse(body.value, { async: false }));
     document.getElementById('article-preview').innerHTML = `<article class="preview-frame"><p class="status-pill">Prévisualisation privée</p><h1>${esc(title.value)}</h1>${html}</article>`;
   });
+  syncEditor(editorMode);
 }
 
 function authors() {
@@ -120,7 +182,17 @@ function taxonomies() {
 
 function settings() {
   const publication = bundle.publication;
-  return `<section class="panel"><h2>Configuration du journal</h2><form id="settings-form" class="grid"><div class="field"><label>Nom<input name="name" required value="${esc(publication.name)}"></label></div><div class="field"><label>Signature<input name="tagline" value="${esc(publication.tagline || '')}"></label></div><div class="field"><label>Institution<input name="institution" value="${esc(publication.institution || '')}"></label></div><div class="field"><label>Typographie<select name="typography"><option value="modern-accessible">Moderne accessible</option><option value="editorial-classic" ${publication.theme?.typography === 'editorial-classic' ? 'selected' : ''}>Éditoriale classique</option><option value="institutional" ${publication.theme?.typography === 'institutional' ? 'selected' : ''}>Institutionnelle</option></select></label></div><div class="field"><label>Couleur principale<input name="accent" type="color" value="${esc(publication.theme?.accent || '#6c2163')}"></label></div><div class="field"><label>Couleur sombre<input name="accentDark" type="color" value="${esc(publication.theme?.accentDark || '#cf7ec1')}"></label></div><div id="admin-contrast" class="notice full" role="status"></div><div class="field"><label><input name="radioEnabled" type="checkbox" ${publication.radio?.enabled !== false ? 'checked' : ''}> Barre radio LE RADAR</label></div><div class="field"><label>Station<input name="station" value="${esc(publication.radio?.station || '')}"></label></div><div class="field full"><label>Logo local (SVG, PNG, WebP ou JPEG)<input id="logo-file" type="file" accept="image/svg+xml,image/png,image/webp,image/jpeg"></label><label>Texte alternatif<input name="logoAlt" value="${esc(publication.logo?.alt || publication.name)}"></label><small>Demandez à votre établissement s’il publie officiellement les normes et couleurs de son identité visuelle. Vérifiez aussi vos droits d’utilisation.</small></div><div class="actions full"><button class="primary">Enregistrer</button><button type="button" data-action="recommended-theme">Réinitialiser le thème recommandé</button></div></form></section>`;
+  const masthead = publication.masthead || {};
+  return `<section class="panel"><h2>Configuration du journal</h2><form id="settings-form" class="grid">
+    <div class="field"><label>Nom<input name="name" required value="${esc(publication.name)}"></label></div><div class="field"><label>Signature<input name="tagline" value="${esc(publication.tagline || '')}"></label></div><div class="field"><label>Institution<input name="institution" value="${esc(publication.institution || '')}"></label></div><div class="field"><label>Typographie<select name="typography"><option value="modern-accessible">Moderne accessible</option><option value="editorial-classic" ${publication.theme?.typography === 'editorial-classic' ? 'selected' : ''}>Éditoriale classique</option><option value="institutional" ${publication.theme?.typography === 'institutional' ? 'selected' : ''}>Institutionnelle</option></select></label></div>
+    <div class="field"><label>Fuseau horaire<select name="timeZone"><option value="America/Toronto" ${publication.timeZone !== 'America/Blanc-Sablon' ? 'selected' : ''}>Heure de l’Est — majorité du Québec</option><option value="America/Blanc-Sablon" ${publication.timeZone === 'America/Blanc-Sablon' ? 'selected' : ''}>Heure de l’Atlantique — Blanc-Sablon</option></select></label></div>
+    <div class="field"><label>Couleur principale<input name="accent" type="color" value="${esc(publication.theme?.accent || '#6c2163')}"></label></div><div class="field"><label>Couleur sombre<input name="accentDark" type="color" value="${esc(publication.theme?.accentDark || '#cf7ec1')}"></label></div><div id="admin-contrast" class="notice full" role="status"></div>
+    <fieldset class="field full"><legend>Mât illustré</legend><label><input name="backgroundsEnabled" type="checkbox" ${masthead.backgrounds?.enabled !== false ? 'checked' : ''}> Afficher les images de fond</label><label>Ajouter mes propres images<input id="background-files" type="file" accept="image/jpeg,image/png,image/webp" multiple></label><p>${masthead.backgrounds?.images?.length || 0} image(s) enregistrée(s). Un nouvel envoi les ajoute à la rotation.</p><button type="button" data-action="clear-backgrounds">Retirer toutes les images</button></fieldset>
+    <fieldset class="field"><legend>Météo</legend><label><input name="weatherEnabled" type="checkbox" ${masthead.weather?.enabled ? 'checked' : ''}> Afficher la météo</label><label>Localités, séparées par des virgules<input name="weatherLocalities" value="${esc((masthead.weather?.localities || []).join(', '))}" placeholder="Québec"></label><small>Maximum quatre.</small></fieldset>
+    <fieldset class="field"><legend>Outils</legend><label><input name="pomodoro" type="checkbox" ${masthead.tools?.pomodoro !== false ? 'checked' : ''}> Pomodoro LE-RADAR.ca</label><label><input name="solitaire" type="checkbox" ${masthead.tools?.solitaire !== false ? 'checked' : ''}> Solitaire LE-RADAR.ca</label></fieldset>
+    <div class="field"><label><input name="radioEnabled" type="checkbox" ${publication.radio?.enabled !== false ? 'checked' : ''}> Barre radio sombre LE-RADAR.ca</label></div><div class="field"><label>Station<input name="station" value="${esc(publication.radio?.station || '')}"></label></div>
+    <div class="field full"><label>Logo local (SVG, PNG, WebP ou JPEG)<input id="logo-file" type="file" accept="image/svg+xml,image/png,image/webp,image/jpeg"></label><label>Texte alternatif<input name="logoAlt" value="${esc(publication.logo?.alt || publication.name)}"></label><small>Vérifiez vos droits d’utilisation pour chaque image téléversée.</small></div>
+    <div class="actions full"><button class="primary">Enregistrer</button><button type="button" data-action="recommended-theme">Réinitialiser le thème recommandé</button></div></form></section>`;
 }
 
 async function readLogo(file, alt) {
@@ -160,7 +232,16 @@ function render() {
   if (view === 'dashboard') {
     document.getElementById('demo-visible').onchange = async (event) => { await backend.setDemoVisibility(event.target.checked); await refresh(); notify('Affichage des exemples mis à jour.'); };
     main.querySelector('[data-action="remove-demo"]').onclick = async () => { if (!confirm('Supprimer uniquement les exemples jamais modifiés? Vos contenus seront conservés.')) return; await backend.removeDemo(); await refresh(); render(); };
-    main.querySelector('[data-action="reset-demo"]').onclick = async () => { if (!confirm('Restaurer une copie propre des exemples du Quorum? La configuration et vos contenus seront conservés.')) return; await backend.resetDemo(); await refresh(); render(); };
+    main.querySelector('[data-action="reset-demo"]').onclick = async (event) => {
+      if (!confirm('Restaurer une copie propre des exemples du Quorum? La configuration et vos contenus seront conservés.')) return;
+      const button = event.currentTarget;
+      button.disabled = true;
+      button.textContent = 'Restauration en cours…';
+      await backend.resetDemo();
+      await refresh();
+      notify('Les exemples du Quorum sont restaurés.');
+      render();
+    };
   }
   if (view === 'taxonomies') {
     main.querySelectorAll('[data-add-taxonomy]').forEach((button) => button.onclick = async () => { const name = prompt('Nom'); if (!name) return; const kind = button.dataset.addTaxonomy; await backend.save(kind, { id: crypto.randomUUID(), name, slug: slugify(name), order: kind === 'section' ? bundle.taxonomies.sections.length + 1 : undefined }); await refresh(); render(); });
@@ -171,7 +252,8 @@ function render() {
     const form = document.getElementById('settings-form');
     const updateContrast = () => { const ratio = contrastRatio(form.elements.accent.value); document.getElementById('admin-contrast').textContent = ratio >= 4.5 ? `Contraste AA avec du texte blanc : ${ratio.toFixed(2)}:1.` : `Avertissement : contraste de ${ratio.toFixed(2)}:1 avec du texte blanc. La sauvegarde reste permise.`; };
     form.elements.accent.addEventListener('input', updateContrast); updateContrast();
-    form.onsubmit = async (event) => { event.preventDefault(); const data = new FormData(form); const publication = structuredClone(bundle.publication); publication.name = data.get('name').trim(); publication.tagline = data.get('tagline').trim(); publication.institution = data.get('institution').trim(); publication.theme = { accent: data.get('accent'), accentDark: data.get('accentDark'), typography: data.get('typography') }; publication.radio = { ...publication.radio, enabled: data.has('radioEnabled'), station: data.get('station').trim() }; const logoFile = document.getElementById('logo-file').files[0]; if (logoFile) publication.logo = await readLogo(logoFile, data.get('logoAlt').trim()); else if (publication.logo) publication.logo.alt = data.get('logoAlt').trim() || publication.name; await backend.savePublication(publication); await refresh(); notify('Configuration enregistrée.'); render(); };
+    form.onsubmit = async (event) => { event.preventDefault(); const data = new FormData(form); const publication = structuredClone(bundle.publication); publication.name = data.get('name').trim(); publication.tagline = data.get('tagline').trim(); publication.institution = data.get('institution').trim(); publication.timeZone = data.get('timeZone'); publication.theme = { accent: data.get('accent'), accentDark: data.get('accentDark'), typography: data.get('typography') }; publication.radio = { ...publication.radio, enabled: data.has('radioEnabled'), station: data.get('station').trim(), theme: 'dark', position: 'top' }; const localities = data.get('weatherLocalities').split(',').map((value) => value.trim()).filter(Boolean).slice(0, 4); publication.masthead = { backgrounds: { enabled: data.has('backgroundsEnabled'), images: publication.masthead?.backgrounds?.images || [] }, weather: { enabled: data.has('weatherEnabled'), localities }, tools: { pomodoro: data.has('pomodoro'), solitaire: data.has('solitaire') } }; for (const file of document.getElementById('background-files').files) publication.masthead.backgrounds.images.push(await readArticleImage(file, { alt: `Arrière-plan du journal ${publication.name}` })); const logoFile = document.getElementById('logo-file').files[0]; if (logoFile) publication.logo = await readLogo(logoFile, data.get('logoAlt').trim()); else if (publication.logo) publication.logo.alt = data.get('logoAlt').trim() || publication.name; await backend.savePublication(publication); await refresh(); notify('Configuration enregistrée.'); render(); };
+    main.querySelector('[data-action="clear-backgrounds"]').onclick = () => { bundle.publication.masthead ||= {}; bundle.publication.masthead.backgrounds = { enabled: false, images: [] }; notify('Les images seront retirées à l’enregistrement.'); render(); };
     main.querySelector('[data-action="recommended-theme"]').onclick = () => { form.elements.typography.value = 'modern-accessible'; form.elements.accent.value = '#6c2163'; form.elements.accentDark.value = '#cf7ec1'; };
   }
   if (view === 'exports') {

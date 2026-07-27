@@ -147,6 +147,7 @@ function mediaFrom(
     alt: str(raw.alt) ?? '',
     caption: str(raw.caption),
     credit: str(raw.credit),
+    creditUrl: str(raw.creditUrl),
     license: str(raw.license),
     width: typeof raw.width === 'number' ? raw.width : undefined,
     height: typeof raw.height === 'number' ? raw.height : undefined,
@@ -250,6 +251,11 @@ export class MarkdownSource implements ContentSource<MarkdownConfig> {
     const slug = str(raw.slug) ?? slugify(str(raw.name) ?? 'journal');
     const governance = (raw.governance ?? {}) as Record<string, unknown>;
     const theme = (raw.theme ?? {}) as Record<string, unknown>;
+    const masthead = (raw.masthead ?? {}) as Record<string, unknown>;
+    const backgrounds = (masthead.backgrounds ?? {}) as Record<string, unknown>;
+    const weather = (masthead.weather ?? {}) as Record<string, unknown>;
+    const tools = (masthead.tools ?? {}) as Record<string, unknown>;
+    const attribution = this.#attribution('publication.yml');
 
     this.#publication = {
       id: str(raw.id) ?? derivedId('publication', slug),
@@ -262,7 +268,8 @@ export class MarkdownSource implements ContentSource<MarkdownConfig> {
       lang: str(raw.lang) ?? 'fr-CA',
       langs: list(raw.langs),
       siteUrl: (str(raw.siteUrl) ?? '').replace(/\/+$/, ''),
-      logo: mediaFrom(raw.logo, this.#attribution('publication.yml'), 'publication'),
+      timeZone: str(raw.timeZone) ?? 'America/Toronto',
+      logo: mediaFrom(raw.logo, attribution, 'publication'),
       theme: {
         accent: str(theme.accent) ?? '#6c2163',
         accentDark: str(theme.accentDark),
@@ -273,6 +280,24 @@ export class MarkdownSource implements ContentSource<MarkdownConfig> {
             : 'modern-accessible';
         })(),
       },
+      masthead: raw.masthead
+        ? {
+            backgrounds: {
+              enabled: backgrounds.enabled === undefined ? true : Boolean(backgrounds.enabled),
+              images: ((backgrounds.images as unknown[]) ?? [])
+                .map((image, index) => mediaFrom(image, attribution, `masthead:${index}`))
+                .filter((image): image is MediaAsset => Boolean(image)),
+            },
+            weather: {
+              enabled: weather.enabled === undefined ? false : Boolean(weather.enabled),
+              localities: list(weather.localities).slice(0, 4),
+            },
+            tools: {
+              pomodoro: tools.pomodoro === undefined ? true : Boolean(tools.pomodoro),
+              solitaire: tools.solitaire === undefined ? true : Boolean(tools.solitaire),
+            },
+          }
+        : undefined,
       radio: raw.radio
         ? (() => {
             const radio = raw.radio as Record<string, unknown>;
@@ -414,7 +439,7 @@ export class MarkdownSource implements ContentSource<MarkdownConfig> {
         dek: str(data.dek),
         excerpt: str(data.excerpt) ?? deriveExcerpt(body),
         body: {
-          format: 'markdown',
+          format: str(data.bodyFormat) === 'html' ? 'html' : 'markdown',
           raw: body,
           wordCount: body.split(/\s+/).filter(Boolean).length,
         },
