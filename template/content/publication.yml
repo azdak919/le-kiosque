@@ -11,7 +11,7 @@ lang: fr-CA
 
 # Sans barre oblique finale. Avec un fork GitHub Pages :
 # https://mon-organisation.github.io/mon-journal
-siteUrl: https://mon-journal.ca
+siteUrl: https://journal-exemple.invalid
 
 theme:
   # La couleur officielle de votre établissement.
@@ -20,9 +20,13 @@ theme:
   # Version éclaircie, lisible sur fond sombre.
   accentDark: '#cf7ec1'
 
-# Votre station de campus (jalon 3).
-# radio:
-#   stationId: chyz
+# Barre facultative de LE RADAR. Le paramètre de station sera honoré quand
+# le lecteur distant l'acceptera; il est déjà émis par KIOSQUE.
+radio:
+  enabled: true
+  station: station-exemple
+  theme: auto
+  position: top
 
 founded: '2026'
 license: CC-BY-SA-4.0
@@ -34,10 +38,10 @@ license: CC-BY-SA-4.0
 governance:
   owner: mon-organisation              # une ORGANISATION, jamais un compte perso
   stewardEntity: Association étudiante # l'entité qui survit aux cohortes
-  contact: journal@moncegep.qc.ca      # une adresse institutionnelle
+  contact: redaction@journal-exemple.invalid # remplacer par une adresse institutionnelle
   repo: https://github.com/mon-organisation/mon-journal
   domainRegistrar: ...
   domainExpiresAt: '2030-01-01T00:00:00Z'   # la cause de mort n°1
   recoveryContacts:                    # deux personnes minimum
-    - journal@moncegep.qc.ca
-    - vie.etudiante@moncegep.qc.ca
+    - redaction@journal-exemple.invalid
+    - releve@journal-exemple.invalid

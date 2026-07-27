@@ -3,6 +3,7 @@ id: 018f2c1a-7b3e-5000-9a4d-2f1e5c8b0d32
 title: La radio de campus souffle ses cinquante bougies
 slug: radio-campus-cinquante-ans
 status: published
+demo: true
 publishedAt: 2026-09-28T11:00:00Z
 updatedAt: 2026-09-28T11:00:00Z
 authors:
@@ -21,8 +22,8 @@ excerpt: >-
 # journal avant la migration. `previousUrls` garantit que les liens partagés
 # à l'époque continuent de fonctionner.
 previousUrls:
-  - https://demo.le-radar.ca/2026/09/radio-campus-50-ans.html
-  - https://demo.le-radar.ca/blogue/radio-campus-cinquante-ans/
+  - https://journal-exemple.invalid/2026/09/radio-campus-50-ans.html
+  - https://journal-exemple.invalid/blogue/radio-campus-cinquante-ans/
 ---
 
 La station de radio étudiante fête cette année un demi-siècle de diffusion. Ses

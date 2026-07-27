@@ -24,8 +24,8 @@ site, qui est le problème facile.
 > **[`AGENTS.md`](AGENTS.md)** (architecture, invariants, pièges déjà payés)
 > puis **[`SUITE.md`](SUITE.md)** (la mission en cours et son prompt d'amorçage).
 
-**État : jalon 2.** Le socle, la chaîne complète et l'interface de rédaction
-fonctionnent. Voir la [feuille de route](#feuille-de-route).
+**État : jalon 3.** La vitrine, Le Quorum, le configurateur, la chaîne complète
+et l'interface de rédaction fonctionnent. Voir la [feuille de route](#feuille-de-route).
 
 ---
 
@@ -56,8 +56,10 @@ projet découle de cette seule frontière :
 
 ## Démarrer
 
-**Faites un fork.** Vous héritez ainsi du bouton « Sync fork » et des
-propositions de mise à jour de la plateforme.
+**Choisissez « Use this template ».** C'est la voie principale : votre dépôt
+sera indépendant et pourra recevoir vos fichiers générés. Un fork demeure
+possible, mais GitHub y désactive les Actions par défaut et impose donc une
+activation manuelle supplémentaire.
 
 ```bash
 git clone https://github.com/<votre-organisation>/<votre-journal>.git
@@ -138,7 +140,7 @@ survie.
 |---|---|---|
 | **1** | Noyau, adaptateur Markdown, thème, chaîne complète, test de continuité | **fait** |
 | **2** | Sveltia CMS, statut éditorial, identifiants permanents | **fait** |
-| 3 | Barre radio LE RADAR + API publique | à venir |
+| **3** | Vitrine, Le Quorum, configurateur et barre radio LE RADAR | **fait** |
 | 4 | `doctor`, `adopt`, passation, `export` | à venir |
 | 5 | Adaptateur WordPress/Newspack | à venir |
 | 6 | Premier pilote avec une vraie équipe | à venir |
@@ -147,22 +149,20 @@ survie.
 
 ## Ce que Le Kiosque fournit — et ce qu'il ne fournit pas
 
-**Fourni gratuitement, selon les ressources disponibles :** le gabarit libre, la
-documentation d'installation et de reprise, une aide bénévole au déploiement
-initial, des recommandations d'hébergeur / domaine / CMS, l'architecture
-multi-backend, les guides de passation, la procédure de restauration, la barre
-radio, l'inscription à l'annuaire [LE RADAR](https://le-radar.ca), et lorsque
-possible une orientation vers des fournisseurs partenaires ou des solutions
-d'économie sociale.
+**Disponible aujourd’hui :** le code libre, le gabarit Markdown/Git, la vitrine,
+Le Quorum, le configurateur local, la documentation d'installation et de
+reprise, les guides de passation, la procédure de restauration et la barre
+radio facultative. Les autres backends et outils de migration restent une
+feuille de route.
 
 **Chaque journal demeure responsable de :** son hébergement, son domaine, ses
 comptes d'administration, ses sauvegardes, sa sécurité, ses dépenses, et la
 gestion et la publication de son contenu.
 
-**Le Kiosque et LE RADAR n'hébergent pas les sites** et ne garantissent aucune
-infrastructure, aucune maintenance permanente, aucun niveau de service ni aucun
-service commercial. L'accompagnement est bénévole et offert selon les
-disponibilités.
+**Le Kiosque et LE RADAR n'hébergent pas les sites.** Le projet est expérimental
+et développé avec des ressources limitées. Il ne garantit aucune infrastructure,
+maintenance permanente, niveau de service ni service commercial.
+L'accompagnement est bénévole et offert selon les disponibilités.
 
 L'architecture laisse la porte ouverte à des partenariats, des services payants
 facultatifs ou une coopérative — **sans qu'aucun journal ne devienne dépendant

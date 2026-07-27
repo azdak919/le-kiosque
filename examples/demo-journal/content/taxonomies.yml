@@ -8,6 +8,8 @@ categories:
   - name: Culture
   - name: Actualité locale
     slug: actualite-locale
+  - name: Sports
+  - name: Opinion
 
 tags:
   - name: assemblée générale
@@ -16,3 +18,8 @@ tags:
   - name: radio étudiante
     slug: radio-etudiante
   - name: archives
+  - name: transition écologique
+    slug: transition-ecologique
+  - name: santé étudiante
+    slug: sante-etudiante
+  - name: soccer

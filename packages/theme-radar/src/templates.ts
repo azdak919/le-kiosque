@@ -141,6 +141,18 @@ function mediaFigure(article: Article, ctx: RenderContext): string {
         </div>${credit ? `\n        <p class="article-media-credit">${credit}</p>` : ''}`;
 }
 
+function radioTuner(ctx: RenderContext): string {
+  const radio = ctx.publication.radio;
+  if (!radio || radio.enabled === false) return '';
+  const params = new URLSearchParams();
+  if (radio.station) params.set('station', radio.station);
+  params.set('theme', radio.theme ?? 'auto');
+  const src = `https://le-radar.ca/tuner-embed.html?${params.toString()}`;
+  return `<radar-tuner class="radar-tuner" data-src="${esc(src)}">
+  <a href="https://le-radar.ca/" rel="noopener">Écouter LE RADAR</a>
+</radar-tuner>`;
+}
+
 // ---------------------------------------------------------------------------
 // Carte d'article
 // ---------------------------------------------------------------------------
@@ -194,6 +206,8 @@ export function page(content: string, options: PageOptions, ctx: RenderContext):
   ];
 
   const description = options.description ?? pub.tagline ?? pub.name;
+  const radio = radioTuner(ctx);
+  const radioAtTop = radio && pub.radio?.position !== 'bottom';
 
   return `<!doctype html>
 <html lang="${esc(pub.lang)}">
@@ -228,6 +242,7 @@ ${options.jsonLd ? `<script type="application/ld+json">${options.jsonLd}</script
 <body${options.bodyClass ? ` class="${esc(options.bodyClass)}"` : ''}>
 <a class="skip-link" href="#contenu">Aller au contenu</a>
 ${ctx.demoNotice ? `<div class="demo-banner">${esc(ctx.demoNotice)}</div>` : ''}
+${radioAtTop ? radio : ''}
 <header class="masthead">
   <div class="wrap">
     <div class="masthead-top">
@@ -257,6 +272,7 @@ ${ctx.demoNotice ? `<div class="demo-banner">${esc(ctx.demoNotice)}</div>` : ''}
 <main id="contenu">
 ${content}
 </main>
+${radio && !radioAtTop ? radio : ''}
 <footer class="footer">
   <div class="wrap">
     <p><strong>${esc(pub.name)}</strong>${pub.founded ? ` — depuis ${esc(pub.founded)}` : ''}. ${esc(pub.institution)}.</p>

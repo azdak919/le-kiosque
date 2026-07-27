@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 675" role="img" aria-labelledby="title desc">
+  <title id="title">Terrain de soccer</title>
+  <desc id="desc">Vue aérienne stylisée d'un terrain avec un ballon au centre.</desc>
+  <rect width="1200" height="675" fill="#285943"/>
+  <path d="M90 70h1020v535H90zM600 70v535" fill="none" stroke="#f5f1e8" stroke-width="12"/>
+  <circle cx="600" cy="337.5" r="105" fill="none" stroke="#f5f1e8" stroke-width="12"/>
+  <circle cx="600" cy="337.5" r="48" fill="#f5f1e8"/>
+  <path d="M600 300l35 25-13 41h-44l-13-41z" fill="#252525"/>
+  <path d="M565 325l-30-22M635 325l30-22M578 366l-14 34M622 366l14 34" stroke="#252525" stroke-width="12"/>
+</svg>

@@ -25,8 +25,11 @@ const config: Partial<KiosqueConfig> = {
     //   fork GitHub Pages   →  basePath: '/mon-journal'
     //   domaine dédié       →  basePath: ''  +  cname ci-dessous
     basePath: '',
-    // cname: 'mon-journal.ca',
+    // cname: 'journal-exemple.invalid',
   },
+
+  // Passez à false dès que votre premier vrai article est publié.
+  demoContent: true,
 
   feedLimit: 30,
 };

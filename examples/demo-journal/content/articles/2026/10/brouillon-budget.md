@@ -6,6 +6,7 @@ slug: brouillon-budget
 # publié, ni dans le flux RSS, ni dans le plan du site. Le test de continuité
 # le vérifie explicitement.
 status: draft
+demo: true
 updatedAt: 2026-10-02T16:20:00Z
 authors:
   - marie-tremblay

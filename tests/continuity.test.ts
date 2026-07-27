@@ -20,7 +20,7 @@ import test from 'node:test';
 import { fileURLToPath } from 'node:url';
 
 import { createSourceContext } from '../packages/core/src/source.ts';
-import type { Article, ContentBundle } from '../packages/core/src/model.ts';
+import { isListed, type Article, type ContentBundle } from '../packages/core/src/model.ts';
 import { MarkdownSource } from '../packages/adapters/markdown/src/index.ts';
 import { build, EmptyingError } from '../packages/pipeline/src/build.ts';
 import { sync, BackendUnavailableError } from '../packages/pipeline/src/sync.ts';
@@ -94,7 +94,7 @@ test('1. le backend est injoignable → le site se construit quand même, entier
   const out = path.join(root, 'dist');
   const result = await build({ config: configFor(root), bundle, outDir: out, logger: silent });
 
-  assert.equal(result.articles, 2, 'les deux articles publiés doivent survivre');
+  assert.equal(result.articles, bundle.articles.filter(isListed).length, 'tous les articles publiés doivent survivre');
   const home = await readFile(path.join(out, 'index.html'), 'utf8');
   assert.match(home, /assemblée générale|assembl&#39;?ée/i);
   assert.ok(
@@ -108,7 +108,8 @@ test('2. le backend répond « 0 article » → le build REFUSE de vider le site
   t.after(() => rm(root, { recursive: true, force: true }));
 
   const bundle = await readMirror(root);
-  await writeIndex(root, bundle); // état connu : 2 articles publics
+  await writeIndex(root, bundle);
+  const publicCount = bundle.articles.filter(isListed).length;
 
   // Le scénario exact qui tue un journal : l'API répond 200 avec une liste vide.
   const emptied: ContentBundle = { ...bundle, articles: [] };
@@ -117,7 +118,7 @@ test('2. le backend répond « 0 article » → le build REFUSE de vider le site
     () => build({ config: configFor(root), bundle: emptied, outDir: path.join(root, 'dist'), logger: silent }),
     (err: unknown) => {
       assert.ok(err instanceof EmptyingError, 'doit lever EmptyingError');
-      assert.equal(err.previous, 2);
+      assert.equal(err.previous, publicCount);
       assert.equal(err.next, 0);
       assert.match(err.message, /--allow-deletions/);
       return true;
@@ -153,7 +154,7 @@ test('3. plus aucune configuration de backend → le site se reconstruit', async
   const out = path.join(root, 'dist');
   const result = await build({ config: orphan, bundle, outDir: out, logger: silent });
 
-  assert.equal(result.articles, 2);
+  assert.equal(result.articles, bundle.articles.filter(isListed).length);
   assert.ok(await readFile(path.join(out, 'feed.xml'), 'utf8'));
 });
 
@@ -165,7 +166,7 @@ test('4. les URL ont changé → aucun lien mort, en trois formats', async (t) =
   const out = path.join(root, 'dist');
   await build({ config: configFor(root), bundle, outDir: out, logger: silent });
 
-  const target = 'https://demo.le-radar.ca/articles/radio-campus-cinquante-ans/';
+  const target = 'https://journal-exemple.invalid/articles/radio-campus-cinquante-ans/';
 
   // (a) page HTML de redirection — la seule qui fonctionne sur GitHub Pages
   const html = await readFile(path.join(out, 'blogue/radio-campus-cinquante-ans/index.html'), 'utf8');
@@ -295,7 +296,7 @@ test('8b. les contournements par caractères de contrôle sont neutralisés', ()
     '<a href="java\nscript:alert(1)">x</a>',
     '<a href=" javascript:alert(1)">x</a>',
     '<a href="JaVaScRiPt:alert(1)">x</a>',
-    '<a href=" javascript:alert(1)">x</a>',
+    '<a href="\0javascript:alert(1)">x</a>',
     '<img src="data:text/html;base64,PHNjcmlwdD4=" alt="x">',
     '<a href="vbscript:msgbox(1)">x</a>',
   ];

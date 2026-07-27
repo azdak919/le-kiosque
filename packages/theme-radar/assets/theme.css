@@ -153,6 +153,33 @@ a { color: inherit; }
 }
 .demo-banner a { color: #fff; }
 
+/* ─────────────── BARRE RADIO LE RADAR ─────────────── */
+
+.radar-tuner {
+  display: block;
+  width: 100%;
+  min-height: 42px;
+  background: var(--bg-soft);
+  border-bottom: 1px solid var(--rule);
+  overflow: hidden;
+}
+.radar-tuner > a {
+  display: block;
+  max-width: var(--maxw);
+  margin: 0 auto;
+  padding: 9px var(--pad);
+  color: var(--accent);
+  font-size: 0.84rem;
+  font-weight: 700;
+}
+.radar-tuner iframe {
+  display: block;
+  width: 100%;
+  height: 72px;
+  border: 0;
+  transition: height 120ms ease;
+}
+
 /* ─────────────── FIL D'ARTICLES ─────────────── */
 
 .wire { padding-bottom: 80px; }

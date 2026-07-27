@@ -99,13 +99,16 @@ export async function guardAgainstEmptying(
   root: string,
   nextPublicCount: number,
   allowDeletions: boolean,
+  includeDemo = true,
 ): Promise<void> {
   if (allowDeletions) return;
   const index = await readIndex(root);
   // Le filtre DOIT correspondre exactement à ce qu'on compte du côté du build,
   // sinon le garde-fou se déclenche à tort — ou pire, ne se déclenche pas.
   // Ici : les articles qui comptent dans les listes, donc `published` seul.
-  const previous = index?.articles?.filter((a) => LISTED_STATUSES.includes(a.status as EditorialStatus)).length;
+  const previous = index?.articles?.filter(
+    (a) => LISTED_STATUSES.includes(a.status as EditorialStatus) && (includeDemo || !a.demo),
+  ).length;
   if (previous === undefined) return; // premier build : rien à comparer
   if (nextPublicCount < previous) throw new EmptyingError(previous, nextPublicCount);
 }
@@ -195,10 +198,18 @@ export async function build(options: BuildOptions): Promise<BuildResult> {
   // partagés, soit la confidentialité des brouillons.
   //   listed : ce qui apparaît dans les listes (published seul)
   //   paged  : ce qui garde une page à son URL (published + archived)
-  const listed = bundle.articles.filter(isListed).sort(byDateDesc);
-  const paged = bundle.articles.filter(hasPublicPage).sort(byDateDesc);
+  const eligible = config.demoContent === false
+    ? bundle.articles.filter((article) => !article.isDemo)
+    : bundle.articles;
+  const listed = eligible.filter(isListed).sort(byDateDesc);
+  const paged = eligible.filter(hasPublicPage).sort(byDateDesc);
 
-  await guardAgainstEmptying(config.root, listed.length, options.allowDeletions ?? false);
+  await guardAgainstEmptying(
+    config.root,
+    listed.length,
+    options.allowDeletions ?? false,
+    config.demoContent !== false,
+  );
 
   await rm(outDir, { recursive: true, force: true });
   await mkdir(outDir, { recursive: true });

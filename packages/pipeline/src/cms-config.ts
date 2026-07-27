@@ -231,6 +231,14 @@ export function buildCmsConfig(options: CmsConfigOptions): Record<string, unknow
           { name: 'translations', label: 'Traductions', widget: 'hidden', required: false },
           { name: 'canonicalUrl', label: 'URL canonique', widget: 'hidden', required: false },
           { name: 'media', label: 'Médias', widget: 'hidden', required: false },
+          {
+            name: 'demo',
+            label: 'Contenu de démonstration',
+            widget: 'boolean',
+            default: false,
+            required: false,
+            hint: 'Cochez seulement pour un article fictif fourni avec le gabarit.',
+          },
 
           // Le champ « body » est spécial : il représente tout ce qui suit le
           // front-matter. Il doit rester en dernier.

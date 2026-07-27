@@ -92,9 +92,62 @@
     }, { passive: true });
   }
 
+  // ── Barre radio LE RADAR ───────────────────────────────────────────────
+  // L'iframe n'est créée qu'à l'approche de la zone visible. Le paramètre de
+  // station et celui du thème sont déjà émis, même si l'intégration distante
+  // ne les honore pas encore tous les deux depuis un domaine tiers.
+  function initRadarTuner() {
+    if (!('customElements' in window) || customElements.get('radar-tuner')) return;
+
+    function RadarTuner() { return Reflect.construct(HTMLElement, [], RadarTuner); }
+    RadarTuner.prototype = Object.create(HTMLElement.prototype);
+    RadarTuner.prototype.constructor = RadarTuner;
+    Object.setPrototypeOf(RadarTuner, HTMLElement);
+
+    RadarTuner.prototype.connectedCallback = function () {
+      var host = this;
+      var loaded = false;
+      function load() {
+        if (loaded) return;
+        loaded = true;
+        var src = host.getAttribute('data-src');
+        if (!src) return;
+        var frame = document.createElement('iframe');
+        frame.src = src;
+        frame.title = 'Barre d’écoute de LE RADAR';
+        frame.loading = 'lazy';
+        frame.allow = 'autoplay';
+        host.replaceChildren(frame);
+        window.addEventListener('message', function (event) {
+          if (event.source !== frame.contentWindow || event.origin !== 'https://le-radar.ca') return;
+          var message = event.data;
+          if (!message || message.type !== 'radar-embed') return;
+          var height = Number(message.height);
+          if (Number.isFinite(height) && height >= 40 && height <= 500) {
+            frame.style.height = Math.round(height) + 'px';
+          }
+        });
+      }
+      if ('IntersectionObserver' in window) {
+        var observer = new IntersectionObserver(function (entries) {
+          if (entries.some(function (entry) { return entry.isIntersecting; })) {
+            observer.disconnect();
+            load();
+          }
+        }, { rootMargin: '300px' });
+        observer.observe(host);
+      } else {
+        load();
+      }
+    };
+
+    customElements.define('radar-tuner', RadarTuner);
+  }
+
   function init() {
     initTheme();
     initMarquees();
+    initRadarTuner();
   }
 
   if (document.readyState === 'loading') {

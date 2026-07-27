@@ -13,6 +13,8 @@
     "demo:sync": "node packages/pipeline/src/cli.ts sync --root examples/demo-journal",
     "demo:build": "node packages/pipeline/src/cli.ts build --root examples/demo-journal",
     "demo:serve": "python3 -m http.server 8080 --directory examples/demo-journal/dist",
+    "site": "node tools/build-site.mjs",
+    "build": "npm run site",
     "test": "node --test 'tests/**/*.test.ts'",
     "test:continuity": "node --test tests/continuity.test.ts",
     "typecheck": "tsc --noEmit"

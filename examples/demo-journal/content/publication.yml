@@ -8,7 +8,7 @@ institution: Cégep de démonstration
 institutionType: cegep
 region: Québec
 lang: fr-CA
-siteUrl: https://demo.le-radar.ca
+siteUrl: https://journal-exemple.invalid
 
 theme:
   # Reprend le pourpre de marque de LE RADAR. Une équipe met ici la couleur
@@ -18,7 +18,10 @@ theme:
 
 # Station de campus à afficher dans la barre radio (jalon 3).
 radio:
-  stationId: chyz
+  enabled: true
+  station: chyz
+  theme: auto
+  position: top
 
 founded: '2026'
 license: CC-BY-SA-4.0
@@ -33,11 +36,11 @@ governance:
   # L'entité permanente qui survit aux cohortes.
   stewardEntity: Association étudiante (exemple)
   # Une adresse institutionnelle, pas celle d'une personne.
-  contact: journal@exemple-cegep.qc.ca
+  contact: redaction@journal-exemple.invalid
   repo: https://github.com/kiosque-demo/le-quorum
   domainRegistrar: exemple
   domainExpiresAt: '2030-08-01T00:00:00Z'
   # Deux personnes minimum, toujours.
   recoveryContacts:
-    - journal@exemple-cegep.qc.ca
-    - vie.etudiante@exemple-cegep.qc.ca
+    - redaction@journal-exemple.invalid
+    - vie-etudiante@journal-exemple.invalid

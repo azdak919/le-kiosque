@@ -1,39 +1,86 @@
 {
   "_comment": "Index dérivé, régénéré par `kiosque sync`. Reconstructible à 100 % depuis content/. Ne pas éditer à la main.",
-  "syncedAt": "2026-07-27T07:40:37.332Z",
+  "syncedAt": "2026-07-27T09:10:02.653Z",
   "publication": "le-quorum",
   "counts": {
-    "articles": 3,
+    "articles": 8,
     "authors": 3,
-    "sections": 3
+    "sections": 5
   },
   "articles": [
     {
       "id": "018f2c1a-7b3e-5000-9a4d-2f1e5c8b0d31",
       "slug": "assemblee-generale-reconduction",
       "status": "published",
+      "demo": true,
       "publishedAt": "2026-09-12T14:30:00.000Z",
       "updatedAt": "2026-09-13T09:05:00.000Z",
-      "canonicalUrl": "https://demo.le-radar.ca/articles/assemblee-generale-reconduction/"
+      "canonicalUrl": "https://journal-exemple.invalid/articles/assemblee-generale-reconduction/"
     },
     {
       "id": "018f2c1a-7b3e-5000-9a4d-2f1e5c8b0d33",
       "slug": "brouillon-budget",
       "status": "draft",
+      "demo": true,
       "updatedAt": "2026-10-02T16:20:00.000Z",
-      "canonicalUrl": "https://demo.le-radar.ca/articles/brouillon-budget/"
+      "canonicalUrl": "https://journal-exemple.invalid/articles/brouillon-budget/"
     },
     {
       "id": "018f2c1a-7b3e-5000-9a4d-2f1e5c8b0d32",
       "slug": "radio-campus-cinquante-ans",
       "status": "published",
+      "demo": true,
       "publishedAt": "2026-09-28T11:00:00.000Z",
       "updatedAt": "2026-09-28T11:00:00.000Z",
-      "canonicalUrl": "https://demo.le-radar.ca/articles/radio-campus-cinquante-ans/",
+      "canonicalUrl": "https://journal-exemple.invalid/articles/radio-campus-cinquante-ans/",
       "previousUrls": [
-        "https://demo.le-radar.ca/2026/09/radio-campus-50-ans.html",
-        "https://demo.le-radar.ca/blogue/radio-campus-cinquante-ans/"
+        "https://journal-exemple.invalid/2026/09/radio-campus-50-ans.html",
+        "https://journal-exemple.invalid/blogue/radio-campus-cinquante-ans/"
       ]
+    },
+    {
+      "id": "018f2c1a-7b3e-5000-9a4d-2f1e5c8b0d38",
+      "slug": "revision-festival-automne",
+      "status": "in-review",
+      "demo": true,
+      "updatedAt": "2026-10-06T09:00:00.000Z",
+      "canonicalUrl": "https://journal-exemple.invalid/articles/revision-festival-automne/"
+    },
+    {
+      "id": "018f2c1a-7b3e-5000-9a4d-2f1e5c8b0d34",
+      "slug": "serre-pedagogique-campus",
+      "status": "published",
+      "demo": true,
+      "publishedAt": "2026-10-01T13:15:00.000Z",
+      "updatedAt": "2026-10-01T13:15:00.000Z",
+      "canonicalUrl": "https://journal-exemple.invalid/articles/serre-pedagogique-campus/"
+    },
+    {
+      "id": "018f2c1a-7b3e-5000-9a4d-2f1e5c8b0d36",
+      "slug": "tournoi-soccer-interprogramme",
+      "status": "published",
+      "demo": true,
+      "publishedAt": "2026-10-04T15:30:00.000Z",
+      "updatedAt": "2026-10-04T15:30:00.000Z",
+      "canonicalUrl": "https://journal-exemple.invalid/articles/tournoi-soccer-interprogramme/"
+    },
+    {
+      "id": "018f2c1a-7b3e-5000-9a4d-2f1e5c8b0d35",
+      "slug": "transport-collectif-editorial",
+      "status": "published",
+      "demo": true,
+      "publishedAt": "2026-10-03T12:00:00.000Z",
+      "updatedAt": "2026-10-03T12:00:00.000Z",
+      "canonicalUrl": "https://journal-exemple.invalid/articles/transport-collectif-editorial/"
+    },
+    {
+      "id": "018f2c1a-7b3e-5000-9a4d-2f1e5c8b0d37",
+      "slug": "veille-sante-mentale",
+      "status": "published",
+      "demo": true,
+      "publishedAt": "2026-10-05T10:00:00.000Z",
+      "updatedAt": "2026-10-05T10:00:00.000Z",
+      "canonicalUrl": "https://journal-exemple.invalid/articles/veille-sante-mentale/"
     }
   ]
 }

@@ -2,6 +2,7 @@
 title: Le journal est en ligne
 slug: bienvenue
 status: published
+demo: true
 publishedAt: 2026-01-15T12:00:00Z
 updatedAt: 2026-01-15T12:00:00Z
 authors: [redaction]

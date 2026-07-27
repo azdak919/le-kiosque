@@ -53,6 +53,7 @@ export async function writeIndex(root: string, bundle: ContentBundle): Promise<v
         id: a.id,
         slug: a.slug,
         status: a.status,
+        demo: a.isDemo || undefined,
         publishedAt: a.publishedAt,
         updatedAt: a.updatedAt,
         canonicalUrl: a.canonicalUrl,
@@ -67,7 +68,7 @@ export async function writeIndex(root: string, bundle: ContentBundle): Promise<v
 export interface MirrorIndex {
   syncedAt?: string;
   counts?: { articles?: number; authors?: number; sections?: number };
-  articles?: Array<{ id: string; slug: string; status: string }>;
+  articles?: Array<{ id: string; slug: string; status: string; demo?: boolean }>;
 }
 
 export async function readIndex(root: string): Promise<MirrorIndex | undefined> {

@@ -203,8 +203,13 @@ export interface Publication {
     accent: string;
     accentDark?: string;
   };
-  /** Rattachement à une station de LE RADAR (voir radios.json). */
-  radio?: { stationId?: string };
+  /** Barre d'écoute facultative de LE RADAR. */
+  radio?: {
+    enabled?: boolean;
+    station?: string;
+    theme?: 'auto' | 'light' | 'dark';
+    position?: 'top' | 'bottom';
+  };
   founded?: string;
   governance: Governance;
   license?: string;
@@ -239,6 +244,8 @@ export interface Article {
   lang: Lang;
   translations?: Record<Lang, Slug>;
   status: EditorialStatus;
+  /** Contenu fictif fourni avec le gabarit, désactivable sans le supprimer. */
+  isDemo?: boolean;
   publishedAt?: ISODate;
   updatedAt: ISODate;
 

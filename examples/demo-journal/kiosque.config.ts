@@ -21,11 +21,13 @@ const config: Partial<KiosqueConfig> = {
     // Domaine dédié → laisser vide.
     // Fork servi par GitHub Pages sur <org>.github.io/<depot>/ → mettre '/<depot>'.
     basePath: '',
-    // cname: 'demo.le-radar.ca',
+    // cname: 'journal-exemple.invalid',
   },
 
   demoNotice:
     'Journal de démonstration — contenu fictif, produit pour illustrer Le Kiosque',
+
+  demoContent: true,
 
   feedLimit: 30,
 };

@@ -1,4 +1,8 @@
-# SUITE.md — la mission en cours
+# SUITE.md — jalon 3 livré
+
+> **État au 27 juillet 2026 :** le jalon 3 décrit ci-dessous est implémenté.
+> Les 38 tests et `npm run site` passent. Conserver cette mission comme contrat
+> d’acceptation et préparer le jalon 4 avant de remplacer ce fichier.
 
 > **Pour reprendre le travail, copie-colle ce prompt à ton agent :**
 >
@@ -18,7 +22,7 @@
 |---|---|---|
 | 1 | Noyau, adaptateur Markdown, thème, pipeline, test de continuité | **fait** |
 | 2 | Sveltia CMS, statut éditorial strict, identifiants permanents | **fait** |
-| **3** | **Vitrine, démonstration Le Quorum, configurateur** | **à faire — cette mission** |
+| **3** | **Vitrine, démonstration Le Quorum, configurateur** | **fait** |
 | 4 | `doctor`, `adopt`, passation, `export` | à venir |
 | 5 | Adaptateur WordPress/Newspack | à venir |
 | 6 | Premier pilote avec une vraie équipe étudiante | à venir |

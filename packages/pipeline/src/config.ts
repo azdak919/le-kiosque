@@ -58,6 +58,9 @@ export interface KiosqueConfig {
   /** Bandeau affiché en tête de chaque page. Sert au journal de démonstration. */
   demoNotice?: string;
 
+  /** false retire du site les articles portant `demo: true`, sans les effacer. */
+  demoContent?: boolean;
+
   /** Nombre d'articles dans le flux Atom. */
   feedLimit?: number;
 }

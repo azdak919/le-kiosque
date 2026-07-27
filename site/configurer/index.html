@@ -1,0 +1,170 @@
+<!doctype html>
+<html lang="fr-CA">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Configurer mon journal — LE KIOSQUE</title>
+  <meta name="description" content="Assistant local en 12 étapes pour préparer les fichiers d’un journal KIOSQUE.">
+  <link rel="stylesheet" href="{{BASE_PATH}}/assets/tokens.css">
+  <link rel="stylesheet" href="{{BASE_PATH}}/assets/theme.css">
+  <link rel="stylesheet" href="{{BASE_PATH}}/assets/configurateur.css">
+</head>
+<body class="config-body">
+  <a class="skip-link" href="#assistant">Aller au configurateur</a>
+  <header class="config-head">
+    <a href="{{BASE_PATH}}/">← LE KIOSQUE</a>
+    <div>
+      <strong>Configurer mon journal</strong>
+      <span id="save-status" role="status">Enregistré localement</span>
+    </div>
+    <button type="button" id="clear-data" class="danger-link">Effacer mes données</button>
+  </header>
+
+  <main id="assistant" class="config-layout">
+    <aside class="config-progress" aria-label="Progression">
+      <p>Votre parcours</p>
+      <ol id="steps-list">
+        <li>Bienvenue</li><li>Identité</li><li>Domaine</li><li>Identité visuelle</li>
+        <li>Structure</li><li>Démonstration</li><li>Barre radio</li><li>Utilisateurs</li>
+        <li>Services</li><li>Révision</li><li>Génération</li><li>Terminé</li>
+      </ol>
+    </aside>
+
+    <div class="config-main">
+      <div class="example-banner"><strong>Démonstration fictive.</strong> Chaque valeur préremplie vient du journal fictif Le Quorum. Remplacez-la avant d’utiliser les fichiers.</div>
+      <form id="config-form" novalidate>
+        <section class="config-step" data-step="1">
+          <p class="step-count">Étape 1 sur 12</p>
+          <h1>Bienvenue dans votre atelier.</h1>
+          <p class="lede">Cet assistant prépare des fichiers que vous déposerez vous-même dans votre dépôt GitHub. Il fonctionne entièrement dans votre navigateur.</p>
+          <div class="promise-grid">
+            <article><strong>Aucun compte créé</strong><span>Les accès réels se gèrent ensuite avec les collaborateurs GitHub.</span></article>
+            <article><strong>Aucun secret demandé</strong><span>Ni mot de passe, ni jeton GitHub, ni clé privée.</span></article>
+            <article><strong>Rien n’est envoyé</strong><span>Les réponses restent dans le localStorage de ce navigateur.</span></article>
+          </div>
+          <p class="notice">Prévoyez le nom du journal, le nom de l’établissement, vos couleurs et une adresse institutionnelle de relève.</p>
+        </section>
+
+        <section class="config-step" data-step="2" hidden>
+          <p class="step-count">Étape 2 sur 12</p><h1>Identité du journal</h1>
+          <div class="fields two-cols">
+            <label>Nom du journal <span>exemple fictif</span><input data-key="name" autocomplete="organization" required></label>
+            <label>Identifiant court <span>exemple fictif</span><input data-key="slug" pattern="[a-z0-9-]+" required></label>
+            <label class="wide">Signature éditoriale <span>exemple fictif</span><input data-key="tagline"></label>
+            <label>Établissement <span>exemple fictif</span><input data-key="institution"></label>
+            <label>Type d’établissement <select data-key="institutionType"><option value="cegep">Cégep</option><option value="universite">Université</option><option value="autre">Autre</option></select></label>
+            <label>Région <span>exemple fictif</span><input data-key="region"></label>
+            <label>Année de fondation <span>exemple fictif</span><input data-key="founded" inputmode="numeric"></label>
+          </div>
+        </section>
+
+        <section class="config-step" data-step="3" hidden>
+          <p class="step-count">Étape 3 sur 12</p><h1>Domaine et déploiement</h1>
+          <div class="fields">
+            <label>Dépôt GitHub, au format propriétaire/dépôt <span>exemple fictif</span><input data-key="repository" placeholder="nom-utilisateur/le-journal"></label>
+            <label>Mode de publication <select data-key="deployment"><option value="github-pages">GitHub Pages, sous /nom-du-depot</option><option value="custom-domain">Domaine personnalisé</option></select></label>
+            <label>Adresse publique prévue <span>exemple fictif</span><input data-key="siteUrl" type="url" placeholder="https://journal-exemple.invalid"></label>
+            <label>Domaine personnalisé, sans https:// <span>laisser vide sinon</span><input data-key="cname" placeholder="journal-exemple.invalid"></label>
+          </div>
+          <p class="notice">Les domaines d’exemple utilisent uniquement <code>.invalid</code> ou <code>.example</code>. GitHub Pages doit être activé dans les paramètres du dépôt et un fork exige aussi d’activer les Actions manuellement.</p>
+        </section>
+
+        <section class="config-step visual-step" data-step="4" hidden>
+          <p class="step-count">Étape 4 sur 12</p><h1>Identité visuelle</h1>
+          <div class="visual-grid">
+            <div class="fields">
+              <label>Couleur principale <span>exemple fictif</span><div class="color-field"><input data-key="accent" type="color"><input data-key="accentText" pattern="#[0-9a-fA-F]{6}"></div></label>
+              <label>Couleur en mode sombre <span>exemple fictif</span><div class="color-field"><input data-key="accentDark" type="color"><input data-key="accentDarkText" pattern="#[0-9a-fA-F]{6}"></div></label>
+              <p>Demandez à votre établissement s’il publie officiellement les normes et couleurs de son identité visuelle. L’assistant ne copie jamais automatiquement l’identité d’une institution.</p>
+              <div id="contrast-result" class="contrast" role="status"></div>
+            </div>
+            <div class="live-preview" id="live-preview" aria-label="Prévisualisation du journal">
+              <span>Prévisualisation locale</span><strong id="preview-name">Le Quorum</strong>
+              <nav>Actualités&nbsp;&nbsp; Culture&nbsp;&nbsp; Opinion</nav>
+              <article><small>À la une</small><h2>Un titre d’article se transforme avec votre journal</h2><p id="preview-tagline">Journal de démonstration du Kiosque</p></article>
+            </div>
+          </div>
+        </section>
+
+        <section class="config-step" data-step="5" hidden>
+          <p class="step-count">Étape 5 sur 12</p><h1>Structure éditoriale</h1>
+          <p>Une section par ligne : <code>Nom | identifiant | description</code>.</p>
+          <label class="block-label">Sections <span>exemples fictifs</span><textarea data-key="sections" rows="9"></textarea></label>
+          <p class="hint">Les cinq sections du Quorum sont préremplies. Vous pourrez en ajouter plus tard dans <code>content/sections/</code>.</p>
+        </section>
+
+        <section class="config-step" data-step="6" hidden>
+          <p class="step-count">Étape 6 sur 12</p><h1>Articles de démonstration</h1>
+          <label class="choice-card"><input data-key="demoContent" type="checkbox"><span><strong>Garder les articles fictifs au départ</strong> Recommandé pour comprendre le thème avant de publier. Ils portent <code>demo: true</code> et se désactivent sans être supprimés.</span></label>
+          <p class="notice">Désactiver ce contenu rend tous les articles de démonstration invisibles. Vos vrais articles ne seront jamais touchés.</p>
+        </section>
+
+        <section class="config-step" data-step="7" hidden>
+          <p class="step-count">Étape 7 sur 12</p><h1>Barre radio LE RADAR</h1>
+          <label class="choice-card"><input data-key="radioEnabled" type="checkbox"><span><strong>Afficher la barre radio</strong> Activée par défaut et désactivable en tout temps.</span></label>
+          <div class="fields two-cols">
+            <label>Identifiant de station <span>exemple fictif</span><input data-key="station" placeholder="station-exemple"></label>
+            <label>Thème <select data-key="radioTheme"><option value="auto">Automatique</option><option value="light">Clair</option><option value="dark">Sombre</option></select></label>
+            <label>Position <select data-key="radioPosition"><option value="top">En haut</option><option value="bottom">En bas</option></select></label>
+          </div>
+          <div class="notice"><strong>Limites actuelles :</strong> le lecteur distant n’applique pas encore le paramètre de station, et sa synchronisation de thème est limitée à la même origine. KIOSQUE émet ces paramètres afin qu’ils soient honorés lorsque LE RADAR les acceptera.</div>
+        </section>
+
+        <section class="config-step" data-step="8" hidden>
+          <p class="step-count">Étape 8 sur 12</p><h1>Utilisateurs initiaux</h1>
+          <p>Cette étape <strong>génère une liste de passation</strong>; elle ne crée aucun compte et n’accorde aucun accès. Ajoutez ensuite ces personnes comme collaborateurs du dépôt GitHub.</p>
+          <label class="block-label">Une personne par ligne : nom | courriel | rôle <span>exemples fictifs</span><textarea data-key="users" rows="6"></textarea></label>
+          <p class="notice"><strong>Aucun mot de passe ni jeton.</strong> Recommandez une adresse institutionnelle et au moins deux personnes capables de récupérer les accès afin de faciliter la passation.</p>
+        </section>
+
+        <section class="config-step" data-step="9" hidden>
+          <p class="step-count">Étape 9 sur 12</p><h1>Services externes</h1>
+          <p>Le site public n’en a besoin d’aucun. L’authentification facultative de l’administration demande actuellement un service séparé.</p>
+          <div class="fields">
+            <label>URL du service d’authentification CMS <span>exemple fictif; vide = non configuré</span><input data-key="authBaseUrl" type="url" placeholder="https://service.example"></label>
+            <label>Valeur d’illustration publique <span>ne sera pas exportée</span><input value="DEMO_ONLY_DO_NOT_USE" readonly></label>
+          </div>
+          <p class="notice">Ne collez jamais ici de mot de passe, de jeton GitHub, de clé privée ni de secret. Une page statique ne peut pas écrire dans un dépôt sans authentification.</p>
+        </section>
+
+        <section class="config-step" data-step="10" hidden>
+          <p class="step-count">Étape 10 sur 12</p><h1>Révision</h1>
+          <div id="review-summary" class="review-summary"></div>
+          <p class="notice">Vérifiez particulièrement le dépôt, l’adresse publique et les courriels. Les valeurs fictives encore présentes seront signalées sans bloquer la génération.</p>
+        </section>
+
+        <section class="config-step" data-step="11" hidden>
+          <p class="step-count">Étape 11 sur 12</p><h1>Génération des fichiers</h1>
+          <p>Ces fichiers suivent les formats déjà lus par KIOSQUE. Téléchargez-les séparément ou dans une archive ZIP sans compression.</p>
+          <div class="generation-actions">
+            <button type="button" id="copy-all">Copier les instructions</button>
+            <button type="button" id="download-zip" class="primary-action">Télécharger l’archive .zip</button>
+          </div>
+          <div id="generated-files" class="generated-files"></div>
+          <div class="instructions" id="exact-instructions"></div>
+        </section>
+
+        <section class="config-step" data-step="12" hidden>
+          <p class="step-count">Étape 12 sur 12</p><h1>Votre prochaine étape est concrète.</h1>
+          <div id="finish-links" class="finish-grid"></div>
+          <ol class="final-checklist">
+            <li>Créez le dépôt avec <strong>Use this template</strong>.</li>
+            <li>Ajoutez les fichiers téléchargés en conservant leurs chemins.</li>
+            <li>Activez GitHub Pages et autorisez les Actions si GitHub le demande.</li>
+            <li>Ajoutez les collaborateurs réels, sans partager de mot de passe.</li>
+            <li>Publiez votre premier article puis désactivez le contenu fictif.</li>
+          </ol>
+        </section>
+
+        <div class="config-controls">
+          <button type="button" id="previous" disabled>Précédent</button>
+          <span id="step-live" class="sr-only" aria-live="polite"></span>
+          <button type="button" id="next" class="primary-action">Commencer</button>
+        </div>
+      </form>
+    </div>
+  </main>
+  <script src="{{BASE_PATH}}/configurer/prefill.js"></script>
+  <script src="{{BASE_PATH}}/configurer/configurateur.js" defer></script>
+</body>
+</html>

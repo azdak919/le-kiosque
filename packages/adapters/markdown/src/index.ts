@@ -267,7 +267,20 @@ export class MarkdownSource implements ContentSource<MarkdownConfig> {
         accent: str(theme.accent) ?? '#6c2163',
         accentDark: str(theme.accentDark),
       },
-      radio: raw.radio ? { stationId: str((raw.radio as Record<string, unknown>).stationId) } : undefined,
+      radio: raw.radio
+        ? (() => {
+            const radio = raw.radio as Record<string, unknown>;
+            const theme = str(radio.theme);
+            const position = str(radio.position);
+            return {
+              enabled: radio.enabled === undefined ? true : Boolean(radio.enabled),
+              // `stationId` reste accepté pour les miroirs créés avant le jalon 3.
+              station: str(radio.station) ?? str(radio.stationId),
+              theme: theme === 'light' || theme === 'dark' ? theme : 'auto',
+              position: position === 'bottom' ? 'bottom' : 'top',
+            } as NonNullable<Publication['radio']>;
+          })()
+        : undefined,
       founded: str(raw.founded),
       governance: {
         owner: str(governance.owner) ?? '',
@@ -404,6 +417,7 @@ export class MarkdownSource implements ContentSource<MarkdownConfig> {
         lang: str(data.lang) ?? pub.lang,
         translations: (data.translations as Record<string, string> | undefined) ?? undefined,
         status,
+        isDemo: data.demo === undefined ? false : Boolean(data.demo),
         publishedAt: isoDate(data.publishedAt),
         updatedAt,
         canonicalUrl: str(data.canonicalUrl) ?? `${base}/articles/${slug}/`,

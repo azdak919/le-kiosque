@@ -48,7 +48,7 @@ adaptateur : c'est vérifié par un test.
 ## Commandes
 
 ```bash
-npm test                    # 35 tests — doit rester vert
+npm test                    # 38 tests — doit rester vert
 npm run test:continuity     # le test décisif du projet (voir plus bas)
 npm run typecheck           # tsc --noEmit (typage seul, aucune compilation)
 
