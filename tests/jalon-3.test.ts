@@ -71,6 +71,7 @@ test('la barre radio suit le contrat sombre et reste masquée avant la confirmat
   assert.match(home, /<radar-tuner[^>]+hidden/);
   assert.ok(!home.includes('<iframe'), 'l’iframe doit être créée par le composant client');
   assert.match(client, /message\.protocol !== 1 \|\| message\.surface !== 'kiosque-v1'/);
+  assert.match(client, /frame\.loading = 'eager'/, 'un iframe masqué ne doit pas attendre le lazy loading pour confirmer sa disponibilité');
   assert.match(theme, /\.radar-tuner\[hidden\]\s*\{\s*display:\s*none/);
   assert.match(home, /href="\/depot-renomme\/assets\/theme\.css"/);
 });

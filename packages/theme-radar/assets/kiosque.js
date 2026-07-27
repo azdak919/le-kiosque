@@ -204,7 +204,10 @@
         var frame = document.createElement('iframe');
         frame.src = src;
         frame.title = 'Barre d’écoute de LE RADAR';
-        frame.loading = 'lazy';
+        // Le parent est volontairement masqué jusqu'au message de disponibilité.
+        // Un iframe lazy sous [hidden] peut ne jamais être chargé par le navigateur,
+        // ce qui empêcherait précisément ce message d'arriver.
+        frame.loading = 'eager';
         frame.allow = 'autoplay';
         host.appendChild(frame);
         timeout = setTimeout(function () { host.remove(); }, 6500);
