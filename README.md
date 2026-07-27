@@ -20,6 +20,10 @@ sont partis avec.
 Le Kiosque est une réponse à ce problème-là — pas à celui de fabriquer un joli
 site, qui est le problème facile.
 
+> **Agents et personnes qui reprennent le projet :** lire
+> **[`AGENTS.md`](AGENTS.md)** (architecture, invariants, pièges déjà payés)
+> puis **[`SUITE.md`](SUITE.md)** (la mission en cours et son prompt d'amorçage).
+
 **État : jalon 2.** Le socle, la chaîne complète et l'interface de rédaction
 fonctionnent. Voir la [feuille de route](#feuille-de-route).
 
