@@ -90,3 +90,7 @@ export function adminPage(options: AdminPageOptions): string {
 </html>
 `;
 }
+
+export function unavailableExternalAdminPage(options: AdminPageOptions, backend = 'PocketBase'): string {
+  return `<!doctype html><html lang="${esc(options.lang)}"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="robots" content="noindex,nofollow"><title>Backend externe indisponible — ${esc(options.publicationName)}</title></head><body style="font-family:system-ui,sans-serif;max-width:42rem;margin:4rem auto;padding:1rem;line-height:1.6"><h1>${esc(backend)} n’est pas encore disponible</h1><p>Ce point d’extension prépare une option future. Aucun serveur, compte, OAuth ou stockage distant n’a été configuré.</p><p><a href="${options.basePath}/">Retour au journal</a></p></body></html>`;
+}

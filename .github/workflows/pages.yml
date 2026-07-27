@@ -3,6 +3,7 @@ name: Publier la vitrine KIOSQUE
 on:
   push:
     branches: [main]
+  pull_request:
   workflow_dispatch:
 
 permissions:
@@ -26,12 +27,27 @@ jobs:
       - run: npm ci
       - run: npm test
       - run: npm run site
-      - uses: actions/configure-pages@v5
-      - uses: actions/upload-pages-artifact@v3
+      - run: npx playwright install --with-deps chromium
+      - run: BASE=/autre-nom npm run site && npx playwright test
+      - if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: rapport-playwright
+          path: |
+            playwright-report/
+            test-results/
+          if-no-files-found: ignore
+      - if: github.event_name != 'pull_request'
+        run: npm run site
+      - if: github.event_name != 'pull_request'
+        uses: actions/configure-pages@v5
+      - if: github.event_name != 'pull_request'
+        uses: actions/upload-pages-artifact@v3
         with:
           path: dist
 
   deployer:
+    if: github.event_name != 'pull_request'
     needs: construire
     runs-on: ubuntu-latest
     environment:

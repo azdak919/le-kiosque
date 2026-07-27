@@ -75,6 +75,9 @@
             <div class="fields">
               <label>Couleur principale <span>exemple fictif</span><div class="color-field"><input data-key="accent" type="color"><input data-key="accentText" pattern="#[0-9a-fA-F]{6}"></div></label>
               <label>Couleur en mode sombre <span>exemple fictif</span><div class="color-field"><input data-key="accentDark" type="color"><input data-key="accentDarkText" pattern="#[0-9a-fA-F]{6}"></div></label>
+              <label>Typographie <select data-key="typography"><option value="modern-accessible">Moderne accessible — recommandé</option><option value="editorial-classic">Éditoriale classique</option><option value="institutional">Institutionnelle</option></select></label>
+              <label>Logo facultatif <input id="config-logo" type="file" accept="image/svg+xml,image/png,image/webp,image/jpeg"><span>SVG 512 Kio max.; images 2 Mio max.</span></label>
+              <label>Texte alternatif du logo <input data-key="logoAlt"></label>
               <p>Demandez à votre établissement s’il publie officiellement les normes et couleurs de son identité visuelle. L’assistant ne copie jamais automatiquement l’identité d’une institution.</p>
               <div id="contrast-result" class="contrast" role="status"></div>
             </div>
@@ -96,6 +99,7 @@
         <section class="config-step" data-step="6" hidden>
           <p class="step-count">Étape 6 sur 12</p><h1>Articles de démonstration</h1>
           <label class="choice-card"><input data-key="demoContent" type="checkbox"><span><strong>Garder les articles fictifs au départ</strong> Recommandé pour comprendre le thème avant de publier. Ils portent <code>demo: true</code> et se désactivent sans être supprimés.</span></label>
+          <label class="choice-card"><input data-key="startEmpty" type="checkbox"><span><strong>Commencer avec un journal vide</strong> Les exemples resteront disponibles avec le bouton « Restaurer Le Quorum ».</span></label>
           <p class="notice">Désactiver ce contenu rend tous les articles de démonstration invisibles. Vos vrais articles ne seront jamais touchés.</p>
         </section>
 

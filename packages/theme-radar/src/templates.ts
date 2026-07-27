@@ -33,6 +33,13 @@ export interface RenderContext {
   demoNotice?: string;
   /** Année de génération, pour le pied de page. */
   buildYear: number;
+  /** Active uniquement pour la démonstration éditoriale PGlite. */
+  editorial?: {
+    mode: 'demo-local';
+    assetsBase: string;
+    seedUrl: string;
+    databaseKey: string;
+  };
 }
 
 // ---------------------------------------------------------------------------
@@ -230,9 +237,6 @@ export function page(content: string, options: PageOptions, ctx: RenderContext):
 <meta name="twitter:card" content="${options.image ? 'summary_large_image' : 'summary'}">
 
 <link rel="alternate" type="application/atom+xml" title="${esc(pub.name)}" href="${asset('/feed.xml', ctx)}">
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:opsz,wght@8..60,400;8..60,600;8..60,700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="${asset('/assets/tokens.css', ctx)}">
 <link rel="stylesheet" href="${asset('/assets/theme.css', ctx)}">
 <style>:root{--accent:${esc(pub.theme.accent)}}${
@@ -247,7 +251,7 @@ ${radioAtTop ? radio : ''}
   <div class="wrap">
     <div class="masthead-top">
       <div>
-        <p class="wordmark"><a href="${asset('/', ctx)}">${esc(pub.name)}</a></p>
+        <p class="wordmark"><a href="${asset('/', ctx)}">${pub.logo ? `<img class="publication-logo" src="${safeUrl(asset(pub.logo.src, ctx))}" alt="${esc(pub.logo.alt || pub.name)}">` : esc(pub.name)}</a></p>
         ${pub.tagline ? `<p class="masthead-tagline">${esc(pub.tagline)}</p>` : ''}
       </div>
       <div class="masthead-meta">
@@ -285,6 +289,8 @@ ${radio && !radioAtTop ? radio : ''}
   </div>
 </footer>
 <script src="${asset('/assets/kiosque.js', ctx)}" defer></script>
+${ctx.editorial ? `<script>window.KIOSQUE_EDITORIAL=${JSON.stringify({ mode: 'demo-local', publicBasePath: ctx.basePath, adminBasePath: `${ctx.basePath}/admin`, assetsBase: ctx.editorial.assetsBase, seedUrl: ctx.editorial.seedUrl, publicationSlug: pub.slug, databaseKey: ctx.editorial.databaseKey }).replace(/</g, '\\u003c')};</script>
+<script type="module" src="${ctx.editorial.assetsBase}/front.js"></script>` : ''}
 </body>
 </html>
 `;
@@ -348,6 +354,11 @@ export function articlePage(article: Article, ctx: RenderContext): string {
     .filter(Boolean)
     .map((t) => `<span class="tag">${esc(t!.name)}</span>`)
     .join('\n      ');
+  const categories = article.categories
+    .map((slug) => ctx.taxonomies.categories.find((category) => category.slug === slug))
+    .filter(Boolean)
+    .map((category) => `<a class="tag" href="${asset(`/categories/${category!.slug}/`, ctx)}">${esc(category!.name)}</a>`)
+    .join('\n      ');
 
   const caption = [lead?.caption, lead?.credit && `Photo : ${lead.credit}`]
     .filter(Boolean)
@@ -389,7 +400,7 @@ export function articlePage(article: Article, ctx: RenderContext): string {
       <div class="post-body">
 ${article.body.html ?? ''}
       </div>
-      ${tags ? `<div class="post-tags">\n      ${tags}\n      </div>` : ''}
+      ${categories || tags ? `<div class="post-tags">\n      ${categories}\n      ${tags}\n      </div>` : ''}
     </article>`,
     {
       title: `${article.title} — ${pub.name}`,
@@ -423,6 +434,14 @@ export function sectionPage(section: Section, articles: Article[], ctx: RenderCo
       canonical: sectionUrl(ctx.publication, section.slug),
       current: asset(`/sections/${section.slug}/`, ctx),
     },
+    ctx,
+  );
+}
+
+export function categoryPage(category: { slug: string; name: string }, articles: Article[], ctx: RenderContext): string {
+  return page(
+    `<div class="wrap wire"><div class="wire-head"><h1 class="wire-title">${esc(category.name)}</h1><span class="wire-status">${articles.length} article${articles.length > 1 ? 's' : ''}</span></div>${articles.length ? `<div class="news-list">${articles.map((article) => articleCard(article, ctx)).join('\n')}</div>` : '<p class="empty">Aucun article dans cette catégorie.</p>'}</div>`,
+    { title: `${category.name} — ${ctx.publication.name}`, canonical: `${ctx.publication.siteUrl.replace(/\/+$/, '')}/categories/${category.slug}/` },
     ctx,
   );
 }

@@ -266,6 +266,12 @@ export class MarkdownSource implements ContentSource<MarkdownConfig> {
       theme: {
         accent: str(theme.accent) ?? '#6c2163',
         accentDark: str(theme.accentDark),
+        typography: (() => {
+          const value = str(theme.typography);
+          return value === 'editorial-classic' || value === 'institutional'
+            ? value
+            : 'modern-accessible';
+        })(),
       },
       radio: raw.radio
         ? (() => {
@@ -317,6 +323,10 @@ export class MarkdownSource implements ContentSource<MarkdownConfig> {
         slug,
         name: str(data.name) ?? slug,
         role: str(data.role),
+        editorialRole: (() => {
+          const value = str(data.editorialRole);
+          return value === 'reviseur' || value === 'editeur' ? value : value === 'auteur' ? value : undefined;
+        })(),
         bio: str(data.bio) ?? (body || undefined),
         avatar: mediaFrom(data.avatar, attribution, `author:${slug}`),
         email: str(data.email),

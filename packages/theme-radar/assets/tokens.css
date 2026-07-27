@@ -35,8 +35,8 @@
   --radio-bright: #5d9be0;
 
   /* Typographie */
-  --serif: "Source Serif 4", Georgia, "Times New Roman", serif;
-  --sans: "Inter", system-ui, -apple-system, sans-serif;
+  --serif: Georgia, "Times New Roman", serif;
+  --sans: system-ui, -apple-system, "Segoe UI", sans-serif;
 
   /* Mesure — 800px : la largeur de lecture confortable d'un texte long */
   --maxw: 800px;
@@ -47,6 +47,10 @@
   --wordmark-size: clamp(2.05rem, 6.8vw + 0.3rem, 4.25rem);
   --lead-title-size: clamp(1.55rem, 4.1vw + 0.15rem, 2.55rem);
 }
+
+:root[data-typography="editorial-classic"] { --serif: Georgia, "Times New Roman", serif; --sans: system-ui, sans-serif; }
+:root[data-typography="modern-accessible"] { --serif: ui-serif, Georgia, serif; --sans: system-ui, -apple-system, "Segoe UI", sans-serif; }
+:root[data-typography="institutional"] { --serif: Arial, Helvetica, sans-serif; --sans: Arial, Helvetica, sans-serif; }
 
 /*
  * Mode sombre. Le pourpre est éclairci : à 4.5:1 sur fond sombre, le pourpre de

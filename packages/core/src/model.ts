@@ -134,6 +134,10 @@ export interface Author {
   cohort?: string;
   /** false = a gradué. On garde la signature, on la retire des listes actives. */
   active?: boolean;
+  /** Donnée fictive livrée avec une démonstration locale. */
+  isDemo?: boolean;
+  /** Distingue un exemple personnalisé de sa copie initiale. */
+  isUserModified?: boolean;
   source: SourceAttribution;
 }
 
@@ -202,6 +206,8 @@ export interface Publication {
   theme: {
     accent: string;
     accentDark?: string;
+    /** Trois piles locales : aucune police distante n'est requise. */
+    typography?: 'editorial-classic' | 'modern-accessible' | 'institutional';
   };
   /** Barre d'écoute facultative de LE RADAR. */
   radio?: {
@@ -246,6 +252,8 @@ export interface Article {
   status: EditorialStatus;
   /** Contenu fictif fourni avec le gabarit, désactivable sans le supprimer. */
   isDemo?: boolean;
+  /** Vrai dès qu'une personne modifie un exemple dans le mode local. */
+  isUserModified?: boolean;
   publishedAt?: ISODate;
   updatedAt: ISODate;
 

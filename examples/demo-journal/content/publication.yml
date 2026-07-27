@@ -15,6 +15,7 @@ theme:
   # officielle de son établissement (voir brand-colors.json de LE RADAR).
   accent: '#6c2163'
   accentDark: '#cf7ec1'
+  typography: modern-accessible
 
 # Station de campus à afficher dans la barre radio (jalon 3).
 radio:

@@ -1,8 +1,10 @@
-# SUITE.md — jalon 3 livré
+# SUITE.md — démonstration locale PGlite livrée
 
-> **État au 27 juillet 2026 :** le jalon 3 décrit ci-dessous est implémenté.
-> Les 38 tests et `npm run site` passent. Conserver cette mission comme contrat
-> d’acceptation et préparer le jalon 4 avant de remplacer ce fichier.
+> **État au 27 juillet 2026 :** le jalon 3 décrit ci-dessous et le mode
+> `demo-local` PGlite sont implémentés. Les 41 tests, le parcours Playwright
+> Chromium et `npm run site` passent. `/admin/` est l’administration locale
+> canonique; `/demo/admin/` demeure un alias. Les données restent dans IndexedDB
+> et les builds `git-sveltia` ne contiennent aucun artefact PGlite.
 
 > **Pour reprendre le travail, copie-colle ce prompt à ton agent :**
 >

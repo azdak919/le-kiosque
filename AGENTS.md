@@ -48,7 +48,8 @@ adaptateur : c'est vérifié par un test.
 ## Commandes
 
 ```bash
-npm test                    # 38 tests — doit rester vert
+npm test                    # 41 tests — doit rester vert
+npm run test:e2e            # parcours Chromium PGlite sous un basePath renommé
 npm run test:continuity     # le test décisif du projet (voir plus bas)
 npm run typecheck           # tsc --noEmit (typage seul, aucune compilation)
 
@@ -72,7 +73,9 @@ compile pas. Donc : pas d'`enum`, pas de `namespace`, pas de propriétés de
 paramètre (`constructor(private x)`). Utilise des types union et des `const`
 objects. *Un fichier qui viole ça plante au chargement, pas au build.*
 
-**Deux dépendances de production, `yaml` et `marked`.** N'en ajoute pas sans
+**Deux dépendances de production, `yaml` et `marked`.** PGlite et Playwright
+sont des dépendances de développement verrouillées : PGlite est copié seulement
+dans une sortie `demo-local`, Playwright ne sert qu’aux tests. N'en ajoute pas sans
 raison forte. Chaque dépendance est une dette de survie : le projet doit se
 reconstruire dans dix ans.
 
@@ -113,6 +116,8 @@ packages/
   core/               modèle commun + contrats — ZÉRO dépendance, zéro réseau
     model.ts          Article, Author, Publication, Section, MediaAsset…
     source.ts         l'interface ContentSource (la seule frontière réseau)
+    editorial.ts      EditorialBackend, distinct de ContentSource
+    editorial-backends.ts  Git/Markdown + point d’extension PocketBase
     validate.ts       ce qui entre dans le miroir est valide
     testkit.ts        suite de conformité que tout adaptateur doit passer
   adapters/
@@ -131,10 +136,11 @@ packages/
     src/templates.ts   gabarits (fonctions pures : modèle → HTML)
     src/admin.ts       page /admin
     assets/admin/      Sveltia CMS figé (2 Mo, MIT)
+    assets/editorial/  PGlite local, administration, rendu et exports navigateur
 template/             ce que les équipes clonent
 examples/demo-journal/  Le Quorum — journal de démonstration
 tools/vendor-cms.mjs  fige Sveltia dans le dépôt
-tests/                35 tests
+tests/                41 tests + parcours navigateur Playwright
 ```
 
 ---
@@ -163,6 +169,10 @@ du shell. Cibler par port ou par PID.
 **`public_folder` du CMS ne doit PAS inclure le `basePath`.** Le front-matter
 stocke `/media/…` et c'est le thème qui préfixe au rendu. L'inclure produirait
 `/depot/depot/media/…`.
+
+**PGlite ne doit jamais contaminer `git-sveltia`.** Ses modules JS, WASM et
+`pglite.data` sont copiés depuis `node_modules` pendant un build `demo-local`.
+Ils ne sont pas committés, chargés depuis un CDN ou émis dans un build Git.
 
 ---
 

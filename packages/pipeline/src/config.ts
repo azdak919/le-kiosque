@@ -45,6 +45,13 @@ export interface KiosqueConfig {
   /** Interface de rédaction. Facultative : un journal peut n'écrire qu'en Markdown. */
   cms?: CmsConfig;
 
+  /** Interface de rédaction proposée par le site généré. */
+  editorial?: {
+    mode: 'demo-local' | 'git-sveltia' | 'external';
+    /** Réservé aux intégrations futures, par exemple PocketBase. */
+    externalBackend?: string;
+  };
+
   /** Quel backend éditorial alimente le miroir. */
   source: {
     /** 'markdown' au jalon 1. 'wordpress', 'ghost'… ensuite. */

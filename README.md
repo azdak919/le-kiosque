@@ -24,8 +24,9 @@ site, qui est le problème facile.
 > **[`AGENTS.md`](AGENTS.md)** (architecture, invariants, pièges déjà payés)
 > puis **[`SUITE.md`](SUITE.md)** (la mission en cours et son prompt d'amorçage).
 
-**État : jalon 3.** La vitrine, Le Quorum, le configurateur, la chaîne complète
-et l'interface de rédaction fonctionnent. Voir la [feuille de route](#feuille-de-route).
+**État : démonstration locale PGlite.** La vitrine, Le Quorum, le configurateur
+et une interface de rédaction persistante dans le navigateur fonctionnent sans
+compte ni serveur. Voir la [feuille de route](#feuille-de-route).
 
 ---
 
@@ -93,6 +94,10 @@ deploy: { basePath: '/<depot>' }   // laisser vide avec un domaine dédié
 **Pour que votre équipe écrive sans jamais voir Git :**
 [`docs/brancher-sveltia.md`](docs/brancher-sveltia.md)
 
+**Pour essayer sans compte, jeton ni terminal :** terminez le configurateur,
+puis ouvrez `/admin/`. Le [mode de démonstration local](docs/demo-local-pglite.md)
+conserve les données uniquement dans IndexedDB, dans ce navigateur.
+
 ---
 
 ## Mises à jour de la plateforme
@@ -128,9 +133,10 @@ examples/          journal de démonstration
 docs/              guides
 ```
 
-Deux dépendances en tout (`yaml`, `marked`), aucune étape de compilation :
+Deux dépendances de production (`yaml`, `marked`), aucune étape de compilation :
 Node exécute le TypeScript directement. Chaque dépendance est une dette de
-survie.
+survie. PGlite et Playwright sont verrouillés comme dépendances de développement
+et ne sont copiés que pour construire et tester la démonstration locale.
 
 ---
 
@@ -141,6 +147,7 @@ survie.
 | **1** | Noyau, adaptateur Markdown, thème, chaîne complète, test de continuité | **fait** |
 | **2** | Sveltia CMS, statut éditorial, identifiants permanents | **fait** |
 | **3** | Vitrine, Le Quorum, configurateur et barre radio LE RADAR | **fait** |
+| **Démo locale** | PGlite, administration navigateur, import/export et front vivant | **fait** |
 | 4 | `doctor`, `adopt`, passation, `export` | à venir |
 | 5 | Adaptateur WordPress/Newspack | à venir |
 | 6 | Premier pilote avec une vraie équipe | à venir |
@@ -150,7 +157,7 @@ survie.
 ## Ce que Le Kiosque fournit — et ce qu'il ne fournit pas
 
 **Disponible aujourd’hui :** le code libre, le gabarit Markdown/Git, la vitrine,
-Le Quorum, le configurateur local, la documentation d'installation et de
+Le Quorum, le configurateur et la démonstration éditoriale locale, la documentation d'installation et de
 reprise, les guides de passation, la procédure de restauration et la barre
 radio facultative. Les autres backends et outils de migration restent une
 feuille de route.

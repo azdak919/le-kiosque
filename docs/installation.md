@@ -23,9 +23,15 @@ disponibilités.
    configurateur remplacent les exemples de même nom.
 7. Enregistrez les changements dans GitHub.
 
-Une page statique ne peut pas écrire elle-même dans un dépôt sans
-authentification. Le configurateur prépare donc les fichiers et les liens, puis
-vous laisse confirmer l’écriture dans GitHub.
+Le configurateur peut d’abord ouvrir le **mode démonstration local** à
+`/admin/`. Vous pouvez y créer, réviser et publier des articles immédiatement.
+Ces changements restent dans IndexedDB, dans ce navigateur seulement. Ils ne
+sont ni partagés ni publiés dans GitHub.
+
+Quand le résultat vous convient, exportez le ZIP Markdown depuis
+« Exporter et poursuivre ». Une page statique ne peut pas écrire elle-même dans
+un dépôt sans authentification : vous confirmez donc vous-même l’import dans
+GitHub avant de passer à Sveltia.
 
 ## Activer GitHub Pages et les Actions
 
@@ -48,7 +54,8 @@ Utilisez une organisation plutôt qu’un compte personnel et conservez au moins
 deux personnes capables de récupérer les accès. Une adresse institutionnelle
 facilite la passation entre cohortes.
 
-L’interface `/admin/` est générée avec le site, mais sa connexion GitHub exige
+En mode `demo-local`, `/admin/` ne demande aucun compte et ne donne aucun droit
+réel. En mode `git-sveltia`, l’interface `/admin/` est générée avec le site, mais sa connexion GitHub exige
 un service `sveltia-cms-auth` séparé. Suivez
 [`brancher-sveltia.md`](brancher-sveltia.md), puis ajoutez son URL dans
 `cms.authBaseUrl`. Tant que cette valeur est absente, ne présentez pas
@@ -56,7 +63,8 @@ l’administration comme fonctionnelle.
 
 ## Publier le premier article
 
-1. Ouvrez `/admin/` une fois l’authentification branchée, ou ajoutez un fichier
+1. Dans la démonstration, ouvrez `/admin/` immédiatement. Dans un journal Git,
+   ouvrez-la une fois l’authentification branchée, ou ajoutez un fichier
    Markdown en suivant `AJOUTER-UN-ARTICLE.md`.
 2. Gardez le statut `draft` pendant l’écriture, puis `in-review` pendant la
    révision. Seul `published` apparaît publiquement.
@@ -97,6 +105,10 @@ renouvelle et ne garantit aucun domaine.
 
 ## Sauvegarde, restauration et passation
 
+- En démonstration locale, téléchargez régulièrement la sauvegarde JSON et le
+  ZIP Markdown. Vider les données du navigateur efface la base locale.
+- L’import JSON remplace atomiquement l’état local; exportez l’état courant
+  avant de confirmer.
 - Sauvegardez le dépôt complet, surtout `content/` et `media/`, sur au moins un
   support indépendant. Le dépôt Git est l’archive de référence, pas l’unique
   copie souhaitable.
@@ -112,6 +124,8 @@ renouvelle et ne garantit aucun domaine.
 - GitHub Pages doit être activé dans les paramètres du dépôt.
 - Les Actions doivent être activées à la main dans un fork.
 - Une page statique ne peut pas enregistrer dans GitHub sans authentification.
+- Le mode PGlite n’est ni une authentification, ni une rédaction collaborative,
+  ni une sauvegarde distante, ni une publication GitHub automatique.
 - La publication GitHub Pages a un délai incompressible.
 - WordPress/Newspack et les autres backends sont une feuille de route, pas des
   intégrations disponibles.

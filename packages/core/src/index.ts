@@ -8,6 +8,8 @@
 
 export * from './model.ts';
 export * from './source.ts';
+export * from './editorial.ts';
+export * from './editorial-backends.ts';
 export * from './validate.ts';
 export { runConformanceSuite, formatConformanceReport } from './testkit.ts';
 export type { ConformanceOptions, ConformanceReport, CheckResult } from './testkit.ts';

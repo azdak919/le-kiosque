@@ -4,6 +4,7 @@ import type { KiosqueConfig } from './packages/pipeline/src/config.ts';
 const config: Partial<KiosqueConfig> = {
   root: './examples/demo-journal',
   source: { adapter: 'markdown' },
+  editorial: { mode: 'demo-local' },
   deploy: { basePath: '/le-kiosque' },
   demoNotice: 'Journal de démonstration — toutes les personnes et tous les faits sont fictifs',
   demoContent: true,

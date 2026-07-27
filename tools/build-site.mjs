@@ -13,6 +13,7 @@ import { MarkdownSource } from '../packages/adapters/markdown/src/index.ts';
 import { createSourceContext } from '../packages/core/src/source.ts';
 import { build } from '../packages/pipeline/src/build.ts';
 import { normalizeBasePath, withBase } from '../packages/pipeline/src/config.ts';
+import { localAdminPage } from '../packages/theme-radar/src/local-admin.ts';
 
 const repoRoot = path.resolve(fileURLToPath(new URL('..', import.meta.url)));
 const outDir = path.join(repoRoot, 'dist');
@@ -20,6 +21,7 @@ const siteDir = path.join(repoRoot, 'site');
 const journalRoot = path.resolve(repoRoot, rootConfig.root ?? 'examples/demo-journal');
 const basePath = normalizeBasePath(process.env.BASE ?? rootConfig.deploy?.basePath);
 const demoBase = normalizeBasePath(`${basePath}/demo`);
+const demoDatabaseKey = (slug) => `kiosque-${demoBase.replace(/[^a-z0-9]+/gi, '-') || 'root'}-${slug}`;
 
 const log = {
   info: (message) => console.log(`[site] ${message}`),
@@ -69,6 +71,7 @@ function prefill(bundle) {
       siteUrl: publication.siteUrl,
       accent: publication.theme.accent,
       accentDark: publication.theme.accentDark,
+      typography: publication.theme.typography ?? 'modern-accessible',
       founded: publication.founded,
       license: publication.license,
     },
@@ -89,6 +92,9 @@ function prefill(bundle) {
     serviceUrl: 'https://service.example',
     serviceKey: 'DEMO_ONLY_DO_NOT_USE',
     exampleNotice: 'Toutes les valeurs préremplies sont fictives et servent uniquement de démonstration.',
+    databaseKey: demoDatabaseKey(publication.slug),
+    demoPath: withBase(basePath, '/demo/'),
+    adminPath: withBase(basePath, '/admin/'),
   };
 }
 
@@ -119,9 +125,29 @@ await build({
   logger: log,
 });
 
+// La vitrine place l'administration locale à la racine. L'alias historique
+// /demo/admin/ reste utilisable sans maintenir deux applications distinctes.
+await mkdir(path.join(outDir, 'admin'), { recursive: true });
+await writeFile(path.join(outDir, 'admin', 'index.html'), localAdminPage({
+  publicationName: demoBundle.publication.name,
+  lang: demoBundle.publication.lang,
+  publicBasePath: demoBase,
+  adminBasePath: normalizeBasePath(`${basePath}/admin`),
+  assetsBase: `${demoBase}/assets/editorial`,
+  seedUrl: `${demoBase}/assets/editorial/seed.json`,
+  publicationSlug: demoBundle.publication.slug,
+  databaseKey: demoDatabaseKey(demoBundle.publication.slug),
+}), 'utf8');
+await writeFile(path.join(outDir, 'demo', 'admin', 'index.html'), `<!doctype html><html lang="fr"><head><meta charset="utf-8"><meta name="robots" content="noindex"><meta http-equiv="refresh" content="0;url=${withBase(basePath, '/admin/')}"><link rel="canonical" href="${withBase(basePath, '/admin/')}"><title>Administration déplacée</title></head><body><p><a href="${withBase(basePath, '/admin/')}">Ouvrir l’administration locale</a></p></body></html>`, 'utf8');
+
+// GitHub Pages sert ce fichier pour une URL créée après le build. Le front
+// PGlite remplace ce 404 seulement si la route appartient au journal.
+const demoFallback = await readFile(path.join(outDir, 'demo', 'index.html'), 'utf8');
+await writeFile(path.join(outDir, '404.html'), demoFallback.replace(/<main id="contenu">[\s\S]*?<\/main>/, '<main id="contenu"><div class="wrap wire"><h1>Page introuvable</h1><p>Cette adresse ne correspond à aucune page du journal.</p></div></main>'), 'utf8');
+
 await cp(path.join(repoRoot, 'packages/theme-radar/assets'), path.join(outDir, 'assets'), {
   recursive: true,
-  filter: (source) => path.basename(source) !== 'admin',
+  filter: (source) => !['admin', 'editorial'].includes(path.basename(source)),
 });
 await cp(path.join(siteDir, 'assets'), path.join(outDir, 'assets'), { recursive: true });
 

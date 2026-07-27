@@ -29,10 +29,14 @@
     cname: '',
     accent: publication.accent || '#6c2163',
     accentDark: publication.accentDark || '#cf7ec1',
+    typography: publication.typography || 'modern-accessible',
+    logoAlt: publication.name || 'Le Quorum',
+    logo: null,
     sections: (prefill.sections || []).map(function (section) {
       return [section.name, section.slug, section.description || ''].join(' | ');
     }).join('\n'),
     demoContent: prefill.demoContent !== false,
+    startEmpty: false,
     radioEnabled: !prefill.radio || prefill.radio.enabled !== false,
     station: (prefill.radio && prefill.radio.station) || 'station-exemple',
     radioTheme: (prefill.radio && prefill.radio.theme) || 'auto',
@@ -201,6 +205,41 @@
     field.addEventListener('change', function () { field.dispatchEvent(new Event('input')); });
   });
 
+  var logoInput = document.getElementById('config-logo');
+  logoInput.addEventListener('change', function () {
+    var file = logoInput.files && logoInput.files[0];
+    if (!file) return;
+    var allowed = ['image/svg+xml', 'image/png', 'image/webp', 'image/jpeg'];
+    var limit = file.type === 'image/svg+xml' ? 512 * 1024 : 2 * 1024 * 1024;
+    if (allowed.indexOf(file.type) < 0 || file.size > limit) {
+      window.alert('Ce logo est trop lourd ou utilise un format non pris en charge.');
+      logoInput.value = '';
+      return;
+    }
+    function keepLogo(data) {
+      state.logo = { id: crypto.randomUUID(), kind: 'image', src: data, alt: state.logoAlt || state.name, mime: file.type, source: { backend: 'configurateur', backendId: file.name, fetchedAt: new Date().toISOString() } };
+      save();
+    }
+    if (file.type === 'image/svg+xml') {
+      file.text().then(function (raw) {
+        var svg = new DOMParser().parseFromString(raw, 'image/svg+xml');
+        svg.querySelectorAll('script,foreignObject').forEach(function (node) { node.remove(); });
+        svg.querySelectorAll('*').forEach(function (node) {
+          Array.from(node.attributes).forEach(function (attribute) {
+            if (/^on/i.test(attribute.name) || /^(?:https?:|javascript:)/i.test(attribute.value)) node.removeAttribute(attribute.name);
+          });
+        });
+        keepLogo('data:image/svg+xml;base64,' + btoa(unescape(encodeURIComponent(new XMLSerializer().serializeToString(svg.documentElement)))));
+      });
+      return;
+    }
+    var reader = new FileReader();
+    reader.onload = function () {
+      keepLogo(reader.result);
+    };
+    reader.readAsDataURL(file);
+  });
+
   previous.addEventListener('click', function () { if (step > 1) { step--; showStep(); } });
   next.addEventListener('click', function () { if (step < 12) { step++; showStep(); } });
   document.getElementById('clear-data').addEventListener('click', function () {
@@ -230,6 +269,7 @@
       '',
       'const config: Partial<KiosqueConfig> = {',
       "  source: { adapter: 'markdown', options: { root: new URL('.', import.meta.url).pathname } },",
+      "  editorial: { mode: 'git-sveltia' },",
       '  deploy: {',
       '    basePath: ' + JSON.stringify(deployBase) + ',',
       state.deployment === 'custom-domain' && state.cname ? '    cname: ' + JSON.stringify(state.cname) + ',' : '',
@@ -256,6 +296,7 @@
       'theme:',
       '  accent: ' + yaml(normalizeHex(state.accent, '#6c2163')),
       '  accentDark: ' + yaml(normalizeHex(state.accentDark, '#cf7ec1')),
+      '  typography: ' + yaml(state.typography || 'modern-accessible'),
       'radio:',
       '  enabled: ' + Boolean(state.radioEnabled),
       '  station: ' + yaml(state.station),
@@ -292,8 +333,8 @@
       '  --accent-dark: ' + normalizeHex(state.accentDark, '#cf7ec1') + ';',
       '  --live: #c8102e; --live-dark: #9c0c24;',
       '  --radio: #003da5; --radio-bright: #5d9be0;',
-      '  --serif: "Source Serif 4", Georgia, "Times New Roman", serif;',
-      '  --sans: "Inter", system-ui, -apple-system, sans-serif;',
+      '  --serif: ' + (state.typography === 'institutional' ? 'Arial, Helvetica, sans-serif' : 'Georgia, "Times New Roman", serif') + ';',
+      '  --sans: system-ui, -apple-system, "Segoe UI", sans-serif;',
       '  --maxw: 800px; --pad: 24px;',
       '  --wordmark-size: clamp(2.05rem, 6.8vw + .3rem, 4.25rem);',
       '  --lead-title-size: clamp(1.55rem, 4.1vw + .15rem, 2.55rem);',
@@ -426,7 +467,9 @@
     var site = String(state.siteUrl || '').replace(/\/+$/, '');
     var front = /^https?:\/\//.test(site) ? site + '/' : '#';
     var repo = repoParts();
+    persistDemoBootstrap();
     var cards = [
+      '<article><strong>Administration locale</strong><span>Créez et publiez maintenant, sans compte ni jeton. Les données restent dans ce navigateur.</span><a href="' + escapeHtml(prefill.adminPath || (basePath + '/admin/')) + '">Ouvrir /admin/</a></article>',
       '<article><strong>Front end</strong><span>Votre futur site public.</span><a href="' + escapeHtml(front) + '">Adresse configurée</a></article>',
       '<article><strong>Fichiers</strong><span>Modifiez-les sans terminal.</span><a href="https://github.dev/' + escapeHtml(repo.owner + '/' + repo.repo) + '">Ouvrir github.dev</a></article>',
     ];
@@ -436,6 +479,21 @@
       cards.push('<article><strong>Administration</strong><span>Étape restante : déployer sveltia-cms-auth, puis ajouter son URL dans <code>cms.authBaseUrl</code>. Aucun lien de connexion n’est actif pour le moment.</span></article>');
     }
     document.getElementById('finish-links').innerHTML = cards.join('');
+  }
+
+  function persistDemoBootstrap() {
+    var bootstrap = Object.assign({}, state, {
+      sections: parseSections(),
+      users: parseUsers(),
+      demoContent: state.startEmpty ? false : state.demoContent,
+    });
+    var request = indexedDB.open('kiosque-configurateur', 1);
+    request.onupgradeneeded = function () { request.result.createObjectStore('bootstraps'); };
+    request.onsuccess = function () {
+      var tx = request.result.transaction('bootstraps', 'readwrite');
+      tx.objectStore('bootstraps').put(bootstrap, prefill.databaseKey || ('kiosque-' + (basePath || 'root') + '-le-quorum'));
+      tx.oncomplete = function () { request.result.close(); };
+    };
   }
 
   fillFields();

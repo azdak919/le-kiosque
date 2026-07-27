@@ -27,6 +27,7 @@ import {
 } from '../../core/src/model.ts';
 import {
   articlePage,
+  categoryPage,
   authorPage,
   authorsIndexPage,
   homePage,
@@ -36,7 +37,8 @@ import {
   esc,
   type RenderContext,
 } from '../../theme-radar/src/templates.ts';
-import { adminPage } from '../../theme-radar/src/admin.ts';
+import { adminPage, unavailableExternalAdminPage } from '../../theme-radar/src/admin.ts';
+import { localAdminPage } from '../../theme-radar/src/local-admin.ts';
 import { renderCmsConfig } from './cms-config.ts';
 import { sanitizeHtml } from './sanitize.ts';
 import { normalizeBasePath, type KiosqueConfig } from './config.ts';
@@ -45,6 +47,37 @@ import { readIndex } from './mirror.ts';
 const THEME_ASSETS = path.resolve(
   fileURLToPath(new URL('../../theme-radar/assets', import.meta.url)),
 );
+const PGLITE_DIST = path.resolve(fileURLToPath(new URL('../../../node_modules/@electric-sql/pglite/dist', import.meta.url)));
+const MARKED_BROWSER = path.resolve(fileURLToPath(new URL('../../../node_modules/marked/lib/marked.esm.js', import.meta.url)));
+
+async function copyPgliteModule(entry: string, sourceRoot: string, targetRoot: string, seen = new Set<string>()): Promise<void> {
+  const relative = path.relative(sourceRoot, entry);
+  if (seen.has(relative)) return;
+  seen.add(relative);
+  const code = await readFile(entry, 'utf8').catch(() => {
+    throw new Error(`Ressource PGlite absente : ${relative}. Relancer « npm ci » avant le build.`);
+  });
+  const target = path.join(targetRoot, relative);
+  await mkdir(path.dirname(target), { recursive: true });
+  await writeFile(target, code, 'utf8');
+  const references = [...code.matchAll(/(?:from\s*|import\s*)[(']*["'](\.{1,2}\/[^"']+\.js)["']/g)].map((match) => match[1]);
+  for (const reference of references) await copyPgliteModule(path.resolve(path.dirname(entry), reference), sourceRoot, targetRoot, seen);
+}
+
+async function copyDemoRuntime(outDir: string): Promise<void> {
+  const editorialDir = path.join(outDir, 'assets', 'editorial');
+  const pgliteDir = path.join(editorialDir, 'pglite');
+  await copyPgliteModule(path.join(PGLITE_DIST, 'index.js'), PGLITE_DIST, pgliteDir);
+  await copyPgliteModule(path.join(PGLITE_DIST, 'worker', 'index.js'), PGLITE_DIST, pgliteDir);
+  for (const file of ['pglite.wasm', 'pglite.data', 'initdb.wasm']) {
+    await cp(path.join(PGLITE_DIST, file), path.join(pgliteDir, file)).catch(() => {
+      throw new Error(`Ressource PGlite absente : ${file}. Relancer « npm ci » avant le build.`);
+    });
+  }
+  await cp(MARKED_BROWSER, path.join(editorialDir, 'marked.esm.js')).catch(() => {
+    throw new Error('Module navigateur marked absent. Relancer « npm ci » avant le build.');
+  });
+}
 
 export interface BuildOptions {
   config: KiosqueConfig;
@@ -193,6 +226,9 @@ export async function build(options: BuildOptions): Promise<BuildResult> {
   const { config, bundle, outDir } = options;
   const log = options.logger ?? { info: () => {}, warn: () => {} };
   const basePath = normalizeBasePath(config.deploy?.basePath);
+  const editorialMode = config.editorial?.mode ?? 'git-sveltia';
+  const editorialAssetsBase = `${basePath}/assets/editorial`;
+  const databaseKey = `kiosque-${basePath.replace(/[^a-z0-9]+/gi, '-') || 'root'}-${bundle.publication.slug}`;
 
   // Deux ensembles, deux usages — les confondre casse soit les liens
   // partagés, soit la confidentialité des brouillons.
@@ -221,6 +257,12 @@ export async function build(options: BuildOptions): Promise<BuildResult> {
     authorsBySlug: new Map(bundle.authors.map((a) => [a.slug, a])),
     demoNotice: config.demoNotice,
     buildYear: new Date().getUTCFullYear(),
+    editorial: editorialMode === 'demo-local' ? {
+      mode: 'demo-local',
+      assetsBase: editorialAssetsBase,
+      seedUrl: `${editorialAssetsBase}/seed.json`,
+      databaseKey,
+    } : undefined,
   };
 
   const base = bundle.publication.siteUrl.replace(/\/+$/, '');
@@ -229,6 +271,16 @@ export async function build(options: BuildOptions): Promise<BuildResult> {
 
   // Accueil
   await emit(outDir, '/', homePage(listed, ctx));
+  if (editorialMode === 'demo-local') {
+    await writeFile(
+      path.join(outDir, '404.html'),
+      homePage(listed, ctx).replace(
+        /<main id="contenu">[\s\S]*?<\/main>/,
+        '<main id="contenu"><div class="wrap wire"><h1>Page introuvable</h1><p>Cette adresse ne correspond à aucune page du journal.</p></div></main>',
+      ),
+      'utf8',
+    );
+  }
   urls.push({ loc: `${base}/`, lastmod: listed[0]?.updatedAt });
   pages++;
 
@@ -258,6 +310,14 @@ export async function build(options: BuildOptions): Promise<BuildResult> {
     const inSection = listed.filter((a) => a.section === section.slug);
     await emit(outDir, `/sections/${section.slug}/`, sectionPage(section, inSection, ctx));
     urls.push({ loc: `${base}/sections/${section.slug}/` });
+    pages++;
+  }
+
+  // Catégories : même espace de routes dans le site statique et le front local.
+  for (const category of bundle.taxonomies.categories) {
+    const inCategory = listed.filter((article) => article.categories.includes(category.slug));
+    await emit(outDir, `/categories/${category.slug}/`, categoryPage(category, inCategory, ctx));
+    urls.push({ loc: `${base}/categories/${category.slug}/` });
     pages++;
   }
 
@@ -343,36 +403,48 @@ export async function build(options: BuildOptions): Promise<BuildResult> {
   // apparaître dans le CMS sans que personne n'y pense, et le CMS ne peut pas
   // diverger du format que `sync` sait relire.
   await mkdir(path.join(outDir, 'admin'), { recursive: true });
-  await writeFile(
-    path.join(outDir, 'admin', 'index.html'),
-    adminPage({
-      publicationName: bundle.publication.name,
-      lang: bundle.publication.lang,
-      basePath,
-      accent: bundle.publication.theme.accent,
-    }),
-    'utf8',
-  );
-  await writeFile(
-    path.join(outDir, 'admin', 'config.yml'),
-    renderCmsConfig({ config, bundle, authBaseUrl: config.cms?.authBaseUrl, branch: config.cms?.branch }),
-    'utf8',
-  );
-  // Le script du CMS est vendu dans le dépôt (voir tools/vendor-cms.mjs).
-  await cp(path.join(THEME_ASSETS, 'admin'), path.join(outDir, 'admin'), {
-    recursive: true,
-    force: true,
-  }).catch(() => {
-    log.warn('Sveltia CMS absent — lancer « node tools/vendor-cms.mjs ». Le site publié n’est pas affecté.');
-  });
+  if (editorialMode === 'demo-local') {
+    await writeFile(path.join(outDir, 'admin', 'index.html'), localAdminPage({
+      publicationName: bundle.publication.name, lang: bundle.publication.lang,
+      publicBasePath: basePath, adminBasePath: `${basePath}/admin`, assetsBase: editorialAssetsBase,
+      seedUrl: `${editorialAssetsBase}/seed.json`, publicationSlug: bundle.publication.slug, databaseKey,
+    }), 'utf8');
+  } else if (editorialMode === 'git-sveltia') {
+    await writeFile(path.join(outDir, 'admin', 'index.html'), adminPage({ publicationName: bundle.publication.name, lang: bundle.publication.lang, basePath, accent: bundle.publication.theme.accent }), 'utf8');
+    await writeFile(path.join(outDir, 'admin', 'config.yml'), renderCmsConfig({ config, bundle, authBaseUrl: config.cms?.authBaseUrl, branch: config.cms?.branch }), 'utf8');
+    await cp(path.join(THEME_ASSETS, 'admin'), path.join(outDir, 'admin'), { recursive: true, force: true }).catch(() => {
+      log.warn('Sveltia CMS absent — lancer « node tools/vendor-cms.mjs ». Le site publié n’est pas affecté.');
+    });
+  } else {
+    await writeFile(path.join(outDir, 'admin', 'index.html'), unavailableExternalAdminPage(
+      { publicationName: bundle.publication.name, lang: bundle.publication.lang, basePath, accent: bundle.publication.theme.accent },
+      config.editorial?.externalBackend ?? 'PocketBase',
+    ), 'utf8');
+  }
   pages++;
 
   // Fichiers statiques du thème et médias du miroir. `admin/` est exclu : il a
   // déjà été copié ci-dessus, à sa place.
   await cp(THEME_ASSETS, path.join(outDir, 'assets'), {
     recursive: true,
-    filter: (src) => path.basename(src) !== 'admin',
+    filter: (src) => {
+      const name = path.basename(src);
+      if (name === 'admin') return false;
+      if (editorialMode !== 'demo-local' && name === 'editorial') return false;
+      return true;
+    },
   });
+  if (editorialMode === 'demo-local') {
+    await copyDemoRuntime(outDir);
+    await writeFile(path.join(outDir, 'assets', 'editorial', 'seed.json'), JSON.stringify({
+      format: 'kiosque-demo-seed', version: 1,
+      publication: { ...bundle.publication, theme: { ...bundle.publication.theme, typography: bundle.publication.theme.typography ?? 'modern-accessible' } },
+      articles: bundle.articles.map((article) => ({ ...article, isDemo: true, isUserModified: false })),
+      authors: bundle.authors.map((author) => ({ ...author, isDemo: true, isUserModified: false })),
+      sections: bundle.taxonomies.sections, categories: bundle.taxonomies.categories, tags: bundle.taxonomies.tags,
+      settings: { demoVisible: config.demoContent !== false },
+    }).replace(/</g, '\\u003c'), 'utf8');
+  }
   await cp(path.join(config.root, 'media'), path.join(outDir, 'media'), {
     recursive: true,
     force: true,

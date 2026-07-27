@@ -1,0 +1,196 @@
+import { marked } from './marked.esm.js';
+import { markdownFiles, zipStore } from './export.js';
+import { download, getBackend, slugify } from './runtime.js';
+import { esc } from './render.js';
+
+const config = window.KIOSQUE_EDITORIAL;
+const main = document.getElementById('admin-main');
+const toast = document.getElementById('toast');
+let backend;
+let bundle;
+let view = 'dashboard';
+
+function notify(message) {
+  toast.textContent = message;
+  toast.classList.add('visible');
+  setTimeout(() => toast.classList.remove('visible'), 2200);
+}
+
+function contrastRatio(hex, other = '#ffffff') {
+  const luminance = (color) => {
+    const channels = [1, 3, 5].map((offset) => {
+      const value = parseInt(color.slice(offset, offset + 2), 16) / 255;
+      return value <= 0.03928 ? value / 12.92 : ((value + 0.055) / 1.055) ** 2.4;
+    });
+    return 0.2126 * channels[0] + 0.7152 * channels[1] + 0.0722 * channels[2];
+  };
+  const first = luminance(hex), second = luminance(other);
+  return (Math.max(first, second) + 0.05) / (Math.min(first, second) + 0.05);
+}
+
+function source(kind, id) {
+  return { backend: 'demo-pglite', backendId: id, fetchedAt: new Date().toISOString() };
+}
+
+function sanitizePreview(html) {
+  const template = document.createElement('template');
+  template.innerHTML = html;
+  template.content.querySelectorAll('script,iframe,object,embed,form,style,link,meta').forEach((node) => node.remove());
+  template.content.querySelectorAll('*').forEach((node) => [...node.attributes].forEach((attribute) => {
+    if (/^on/i.test(attribute.name) || ((attribute.name === 'href' || attribute.name === 'src') && /^javascript:/i.test(attribute.value))) node.removeAttribute(attribute.name);
+  }));
+  return template.innerHTML;
+}
+
+async function refresh() {
+  bundle = await backend.getSnapshot({ audience: 'editorial', includeDemo: true });
+  document.getElementById('publication-name').textContent = bundle.publication.name;
+}
+
+function setView(next) {
+  view = next;
+  document.querySelectorAll('[data-view]').forEach((button) => button.setAttribute('aria-current', button.dataset.view === view ? 'page' : 'false'));
+  render();
+}
+
+function statusLabel(status) {
+  return { draft: 'Brouillon', 'in-review': 'En révision', published: 'Publié' }[status] || status;
+}
+
+function dashboard() {
+  const counts = Object.fromEntries(['draft', 'in-review', 'published'].map((status) => [status, bundle.articles.filter((item) => item.status === status).length]));
+  return `<section class="panel"><h2>Tableau de bord</h2><div class="notice demo-notice"><strong>Contenu de démonstration</strong> — remplacez ou supprimez ces articles avant la mise en production.</div>
+    <div class="grid"><article><h3>${counts.draft}</h3><p>Brouillons, invisibles du public.</p></article><article><h3>${counts['in-review']}</h3><p>Articles en révision, invisibles du public.</p></article><article><h3>${counts.published}</h3><p>Articles publiés dans le front end.</p></article><article><h3>${bundle.authors.length}</h3><p>Signatures éditoriales, sans compte ni mot de passe.</p></article></div>
+    <div class="actions"><button class="primary" data-action="new-article">Créer un article</button><a class="button" href="${config.publicBasePath}/">Voir le front end</a></div>
+    <h3 style="margin-top:2rem">Données d’exemple</h3><label><input id="demo-visible" type="checkbox" ${bundle.demoVisible !== false ? 'checked' : ''}> Afficher les exemples publiés dans le front end</label>
+    <div class="actions"><button data-action="remove-demo">Supprimer les exemples non modifiés</button><button data-action="reset-demo">Restaurer Le Quorum</button></div>
+  </section>`;
+}
+
+function articles() {
+  return `<section class="panel"><div class="toolbar"><div><h2>Articles</h2><p>Seul le statut Publié apparaît dans le journal.</p></div><button class="primary" data-action="new-article">Nouvel article</button></div><ul class="entity-list">${bundle.articles.map((article) => `<li><div><strong>${esc(article.title)}</strong>${article.isDemo ? ' <small>Exemple local' + (article.isUserModified ? ' modifié' : '') + '</small>' : ''}<small>/${esc(article.slug)} · <span class="status-pill status-${esc(article.status)}">${statusLabel(article.status)}</span></small></div><div><button data-edit-article="${esc(article.id)}">Modifier</button> <button class="danger" data-delete-article="${esc(article.id)}">Supprimer</button></div></li>`).join('')}</ul></section>`;
+}
+
+function articleEditor(article) {
+  const current = article || {
+    id: crypto.randomUUID(), slug: '', title: '', excerpt: '', subtitle: '', dek: '', authors: [], section: bundle.taxonomies.sections[0]?.slug || '', categories: [], tags: [], lang: bundle.publication.lang || 'fr-CA', status: 'draft', body: { format: 'markdown', raw: '' }, media: [], publication: bundle.publication.slug, updatedAt: new Date().toISOString(), canonicalUrl: '', source: source('article', 'local'),
+  };
+  main.innerHTML = `<section class="panel"><div class="toolbar"><h2>${article ? 'Modifier' : 'Créer'} un article</h2><button data-action="articles">Retour à la liste</button></div><form id="article-form" class="grid">
+    <input type="hidden" name="id" value="${esc(current.id)}"><div class="field"><label for="article-title">Titre</label><input id="article-title" name="title" required value="${esc(current.title)}"></div><div class="field"><label for="article-slug">Identifiant URL</label><input id="article-slug" name="slug" required value="${esc(current.slug)}"></div>
+    <div class="field full"><label for="article-excerpt">Résumé</label><textarea id="article-excerpt" name="excerpt" required>${esc(current.excerpt)}</textarea></div>
+    <div class="field"><label for="article-section">Section</label><select id="article-section" name="section">${bundle.taxonomies.sections.map((item) => `<option value="${esc(item.slug)}" ${item.slug === current.section ? 'selected' : ''}>${esc(item.name)}</option>`).join('')}</select></div>
+    <div class="field"><label for="article-status">Statut</label><select id="article-status" name="status"><option value="draft" ${current.status === 'draft' ? 'selected' : ''}>Brouillon</option><option value="in-review" ${current.status === 'in-review' ? 'selected' : ''}>En révision</option><option value="published" ${current.status === 'published' ? 'selected' : ''}>Publié</option></select></div>
+    <fieldset class="field"><legend>Auteurs</legend>${bundle.authors.map((author) => `<label><input type="checkbox" name="authors" value="${esc(author.slug)}" ${current.authors.includes(author.slug) ? 'checked' : ''}> ${esc(author.name)}</label>`).join('')}</fieldset>
+    <fieldset class="field"><legend>Catégories</legend>${bundle.taxonomies.categories.map((item) => `<label><input type="checkbox" name="categories" value="${esc(item.slug)}" ${current.categories.includes(item.slug) ? 'checked' : ''}> ${esc(item.name)}</label>`).join('')}</fieldset>
+    <fieldset class="field full"><legend>Mots-clés</legend>${bundle.taxonomies.tags.map((item) => `<label><input type="checkbox" name="tags" value="${esc(item.slug)}" ${current.tags.includes(item.slug) ? 'checked' : ''}> ${esc(item.name)}</label>`).join('')}</fieldset>
+    <div class="field full"><label for="article-body">Article en Markdown</label><textarea class="body" id="article-body" name="body">${esc(current.body?.raw || '')}</textarea></div>
+    <div class="actions full"><button class="primary" type="submit">Enregistrer</button><button type="button" data-action="preview">Prévisualiser sans publier</button></div></form><div id="article-preview"></div></section>`;
+  const title = document.getElementById('article-title');
+  const slug = document.getElementById('article-slug');
+  title.addEventListener('input', () => { if (!article && !slug.dataset.touched) slug.value = slugify(title.value); });
+  slug.addEventListener('input', () => { slug.dataset.touched = 'true'; });
+  document.getElementById('article-form').addEventListener('submit', async (event) => {
+    event.preventDefault();
+    const form = new FormData(event.currentTarget);
+    const saved = {
+      ...current, id: form.get('id'), title: form.get('title').trim(), slug: slugify(form.get('slug')), excerpt: form.get('excerpt').trim(), section: form.get('section'), status: form.get('status'), authors: form.getAll('authors'), categories: form.getAll('categories'), tags: form.getAll('tags'), body: { format: 'markdown', raw: form.get('body') }, canonicalUrl: `${bundle.publication.siteUrl.replace(/\/$/, '')}/articles/${slugify(form.get('slug'))}/`, source: current.source || source('article', form.get('id')),
+    };
+    await backend.save('article', saved); await refresh(); notify('Article enregistré.'); setView('articles');
+  });
+  main.querySelector('[data-action="preview"]').addEventListener('click', () => {
+    const html = sanitizePreview(marked.parse(document.getElementById('article-body').value, { async: false }));
+    document.getElementById('article-preview').innerHTML = `<article class="preview-frame"><p class="status-pill">Prévisualisation privée</p><h1>${esc(title.value)}</h1>${html}</article>`;
+  });
+}
+
+function authors() {
+  return `<section class="panel"><div class="toolbar"><h2>Auteurs et rôles informatifs</h2><button class="primary" data-action="new-author">Nouvelle signature</button></div><div class="notice">Ces rôles ne donnent aucun accès et ne constituent pas une authentification.</div><ul class="entity-list">${bundle.authors.map((author) => `<li><div><strong>${esc(author.name)}</strong><small>${esc(author.role || '')} · ${esc(author.editorialRole || 'auteur')}</small></div><div><button data-edit-author="${esc(author.id)}">Modifier</button> <button class="danger" data-delete-author="${esc(author.id)}">Supprimer</button></div></li>`).join('')}</ul></section>`;
+}
+
+function authorEditor(author) {
+  const current = author || { id: crypto.randomUUID(), name: '', slug: '', role: '', editorialRole: 'auteur', bio: '', cohort: '', active: true, source: source('author', 'local') };
+  main.innerHTML = `<section class="panel"><h2>${author ? 'Modifier' : 'Créer'} une signature</h2><form id="author-form" class="grid"><div class="field"><label>Nom<input name="name" required value="${esc(current.name)}"></label></div><div class="field"><label>Identifiant URL<input name="slug" required value="${esc(current.slug)}"></label></div><div class="field"><label>Fonction affichée<input name="role" value="${esc(current.role || '')}"></label></div><div class="field"><label>Rôle informatif<select name="editorialRole"><option>auteur</option><option ${current.editorialRole === 'reviseur' ? 'selected' : ''}>reviseur</option><option ${current.editorialRole === 'editeur' ? 'selected' : ''}>editeur</option></select></label></div><div class="field full"><label>Biographie<textarea name="bio">${esc(current.bio || '')}</textarea></label></div><div class="actions full"><button class="primary">Enregistrer</button><button type="button" data-action="authors">Annuler</button></div></form></section>`;
+  main.querySelector('form').onsubmit = async (event) => { event.preventDefault(); const data = new FormData(event.currentTarget); await backend.save('author', { ...current, name: data.get('name').trim(), slug: slugify(data.get('slug')), role: data.get('role').trim(), editorialRole: data.get('editorialRole'), bio: data.get('bio').trim() }); await refresh(); notify('Signature enregistrée.'); setView('authors'); };
+}
+
+function taxonomies() {
+  const group = (title, kind, values) => `<section><div class="toolbar"><h3>${title}</h3><button data-add-taxonomy="${kind}">Ajouter</button></div><ul class="entity-list">${values.map((item) => `<li><div><strong>${esc(item.name)}</strong><small>/${esc(item.slug)}</small></div><div><button data-edit-taxonomy="${kind}:${esc(item.id)}">Modifier</button> <button class="danger" data-delete-taxonomy="${kind}:${esc(item.id)}">Supprimer</button></div></li>`).join('')}</ul></section>`;
+  return `<section class="panel"><h2>Structure éditoriale</h2>${group('Sections', 'section', bundle.taxonomies.sections)}${group('Catégories', 'category', bundle.taxonomies.categories)}${group('Mots-clés', 'tag', bundle.taxonomies.tags)}</section>`;
+}
+
+function settings() {
+  const publication = bundle.publication;
+  return `<section class="panel"><h2>Configuration du journal</h2><form id="settings-form" class="grid"><div class="field"><label>Nom<input name="name" required value="${esc(publication.name)}"></label></div><div class="field"><label>Signature<input name="tagline" value="${esc(publication.tagline || '')}"></label></div><div class="field"><label>Institution<input name="institution" value="${esc(publication.institution || '')}"></label></div><div class="field"><label>Typographie<select name="typography"><option value="modern-accessible">Moderne accessible</option><option value="editorial-classic" ${publication.theme?.typography === 'editorial-classic' ? 'selected' : ''}>Éditoriale classique</option><option value="institutional" ${publication.theme?.typography === 'institutional' ? 'selected' : ''}>Institutionnelle</option></select></label></div><div class="field"><label>Couleur principale<input name="accent" type="color" value="${esc(publication.theme?.accent || '#6c2163')}"></label></div><div class="field"><label>Couleur sombre<input name="accentDark" type="color" value="${esc(publication.theme?.accentDark || '#cf7ec1')}"></label></div><div id="admin-contrast" class="notice full" role="status"></div><div class="field"><label><input name="radioEnabled" type="checkbox" ${publication.radio?.enabled !== false ? 'checked' : ''}> Barre radio LE RADAR</label></div><div class="field"><label>Station<input name="station" value="${esc(publication.radio?.station || '')}"></label></div><div class="field full"><label>Logo local (SVG, PNG, WebP ou JPEG)<input id="logo-file" type="file" accept="image/svg+xml,image/png,image/webp,image/jpeg"></label><label>Texte alternatif<input name="logoAlt" value="${esc(publication.logo?.alt || publication.name)}"></label><small>Demandez à votre établissement s’il publie officiellement les normes et couleurs de son identité visuelle. Vérifiez aussi vos droits d’utilisation.</small></div><div class="actions full"><button class="primary">Enregistrer</button><button type="button" data-action="recommended-theme">Réinitialiser le thème recommandé</button></div></form></section>`;
+}
+
+async function readLogo(file, alt) {
+  const allowed = ['image/svg+xml', 'image/png', 'image/webp', 'image/jpeg'];
+  if (!allowed.includes(file.type)) throw new Error('Format de logo non pris en charge.');
+  const limit = file.type === 'image/svg+xml' ? 512 * 1024 : 2 * 1024 * 1024;
+  if (file.size > limit) throw new Error('Le logo dépasse la taille maximale permise.');
+  let data = await new Promise((resolve, reject) => { const reader = new FileReader(); reader.onload = () => resolve(reader.result); reader.onerror = reject; reader.readAsDataURL(file); });
+  if (file.type === 'image/svg+xml') {
+    const raw = await file.text();
+    const documentSvg = new DOMParser().parseFromString(raw, 'image/svg+xml');
+    documentSvg.querySelectorAll('script,foreignObject').forEach((node) => node.remove());
+    documentSvg.querySelectorAll('*').forEach((node) => [...node.attributes].forEach((attribute) => { if (/^on/i.test(attribute.name) || /^(?:https?:|javascript:)/i.test(attribute.value)) node.removeAttribute(attribute.name); }));
+    data = `data:image/svg+xml;base64,${btoa(unescape(encodeURIComponent(new XMLSerializer().serializeToString(documentSvg.documentElement))))}`;
+  }
+  return { id: crypto.randomUUID(), kind: 'image', src: data, alt: alt || bundle.publication.name, mime: file.type, source: source('media', file.name) };
+}
+
+function exportsView() {
+  return `<section class="panel"><h2>Exporter mon journal</h2><p>Les archives sont créées dans ce navigateur. Elles ne contiennent aucun mot de passe, jeton ou secret.</p><div class="field"><label>Contenu de l’export<select id="export-filter"><option value="all">Tout, exemples compris</option><option value="without-demo">Exclure les exemples</option><option value="user-content">Créé ou modifié par moi</option></select></label></div><div class="actions"><button class="primary" data-action="export-zip">Télécharger le journal Markdown</button><button data-action="export-json">Télécharger la sauvegarde JSON</button><button data-action="import-json">Importer une sauvegarde</button><input id="import-file" type="file" accept="application/json" hidden></div><hr><h2>Après la démonstration</h2><div class="post-demo"><article><h3>1. Exporter mon journal</h3><p>Gardez le ZIP Markdown et une sauvegarde JSON.</p></article><article><h3>2. Passer à Sveltia + GitHub</h3><p>Créez un dépôt avec « Use this template », copiez l’export, puis activez Actions et Pages. Cette étape est manuelle et demande les droits GitHub du dépôt.</p><a href="https://github.com/azdak919/le-kiosque/generate">Créer le dépôt</a></article><article><h3>3. Future option PocketBase</h3><p>Point d’extension prévu, mais aucun backend PocketBase, compte ou hébergement n’est offert actuellement.</p></article></div><section class="panel danger-zone"><h3>Réinitialiser Le Quorum</h3><p>La réinitialisation complète efface les changements locaux de ce navigateur. Exportez-les d’abord.</p><button class="danger" data-action="full-reset">Réinitialiser Le Quorum</button></section></section>`;
+}
+
+function bindCommon() {
+  main.querySelectorAll('[data-action="new-article"]').forEach((button) => button.onclick = () => articleEditor());
+  main.querySelectorAll('[data-action="articles"]').forEach((button) => button.onclick = () => setView('articles'));
+  main.querySelectorAll('[data-action="authors"]').forEach((button) => button.onclick = () => setView('authors'));
+  main.querySelectorAll('[data-edit-article]').forEach((button) => button.onclick = () => articleEditor(bundle.articles.find((item) => item.id === button.dataset.editArticle)));
+  main.querySelectorAll('[data-delete-article]').forEach((button) => button.onclick = async () => { if (!confirm('Supprimer cet article de ce navigateur?')) return; await backend.remove('article', button.dataset.deleteArticle); await refresh(); render(); });
+  main.querySelectorAll('[data-edit-author]').forEach((button) => button.onclick = () => authorEditor(bundle.authors.find((item) => item.id === button.dataset.editAuthor)));
+  main.querySelectorAll('[data-delete-author]').forEach((button) => button.onclick = async () => { if (!confirm('Supprimer cette signature?')) return; await backend.remove('author', button.dataset.deleteAuthor); await refresh(); render(); });
+  main.querySelector('[data-action="new-author"]')?.addEventListener('click', () => authorEditor());
+}
+
+function render() {
+  main.innerHTML = ({ dashboard, articles, authors, taxonomies, settings, exports: exportsView }[view] || dashboard)();
+  bindCommon();
+  if (view === 'dashboard') {
+    document.getElementById('demo-visible').onchange = async (event) => { await backend.setDemoVisibility(event.target.checked); await refresh(); notify('Affichage des exemples mis à jour.'); };
+    main.querySelector('[data-action="remove-demo"]').onclick = async () => { if (!confirm('Supprimer uniquement les exemples jamais modifiés? Vos contenus seront conservés.')) return; await backend.removeDemo(); await refresh(); render(); };
+    main.querySelector('[data-action="reset-demo"]').onclick = async () => { if (!confirm('Restaurer une copie propre des exemples du Quorum? La configuration et vos contenus seront conservés.')) return; await backend.resetDemo(); await refresh(); render(); };
+  }
+  if (view === 'taxonomies') {
+    main.querySelectorAll('[data-add-taxonomy]').forEach((button) => button.onclick = async () => { const name = prompt('Nom'); if (!name) return; const kind = button.dataset.addTaxonomy; await backend.save(kind, { id: crypto.randomUUID(), name, slug: slugify(name), order: kind === 'section' ? bundle.taxonomies.sections.length + 1 : undefined }); await refresh(); render(); });
+    main.querySelectorAll('[data-edit-taxonomy]').forEach((button) => button.onclick = async () => { const [kind, id] = button.dataset.editTaxonomy.split(':'); const values = kind === 'section' ? bundle.taxonomies.sections : kind === 'category' ? bundle.taxonomies.categories : bundle.taxonomies.tags; const current = values.find((item) => item.id === id); const name = prompt('Nom', current.name); if (!name) return; await backend.save(kind, { ...current, name, slug: current.slug }); await refresh(); render(); });
+    main.querySelectorAll('[data-delete-taxonomy]').forEach((button) => button.onclick = async () => { const [kind, id] = button.dataset.deleteTaxonomy.split(':'); if (!confirm('Supprimer cette entrée?')) return; await backend.remove(kind, id); await refresh(); render(); });
+  }
+  if (view === 'settings') {
+    const form = document.getElementById('settings-form');
+    const updateContrast = () => { const ratio = contrastRatio(form.elements.accent.value); document.getElementById('admin-contrast').textContent = ratio >= 4.5 ? `Contraste AA avec du texte blanc : ${ratio.toFixed(2)}:1.` : `Avertissement : contraste de ${ratio.toFixed(2)}:1 avec du texte blanc. La sauvegarde reste permise.`; };
+    form.elements.accent.addEventListener('input', updateContrast); updateContrast();
+    form.onsubmit = async (event) => { event.preventDefault(); const data = new FormData(form); const publication = structuredClone(bundle.publication); publication.name = data.get('name').trim(); publication.tagline = data.get('tagline').trim(); publication.institution = data.get('institution').trim(); publication.theme = { accent: data.get('accent'), accentDark: data.get('accentDark'), typography: data.get('typography') }; publication.radio = { ...publication.radio, enabled: data.has('radioEnabled'), station: data.get('station').trim() }; const logoFile = document.getElementById('logo-file').files[0]; if (logoFile) publication.logo = await readLogo(logoFile, data.get('logoAlt').trim()); else if (publication.logo) publication.logo.alt = data.get('logoAlt').trim() || publication.name; await backend.savePublication(publication); await refresh(); notify('Configuration enregistrée.'); render(); };
+    main.querySelector('[data-action="recommended-theme"]').onclick = () => { form.elements.typography.value = 'modern-accessible'; form.elements.accent.value = '#6c2163'; form.elements.accentDark.value = '#cf7ec1'; };
+  }
+  if (view === 'exports') {
+    const backup = () => backend.createBackup({ filter: document.getElementById('export-filter').value });
+    main.querySelector('[data-action="export-json"]').onclick = async () => download(`${bundle.publication.slug}-sauvegarde.json`, JSON.stringify(await backup(), null, 2), 'application/json');
+    main.querySelector('[data-action="export-zip"]').onclick = async () => { const data = await backup(); download(`${bundle.publication.slug}-journal.zip`, zipStore(await markdownFiles(data, config.publicBasePath))); };
+    const input = document.getElementById('import-file'); main.querySelector('[data-action="import-json"]').onclick = () => input.click(); input.onchange = async () => { const file = input.files[0]; if (!file) return; const data = JSON.parse(await file.text()); if (!confirm(`Importer la sauvegarde « ${data.bundle?.publication?.name || file.name} »? Les données locales actuelles seront remplacées.`)) return; await backend.restoreBackup(data); await refresh(); notify('Sauvegarde importée.'); setView('dashboard'); };
+    main.querySelector('[data-action="full-reset"]').onclick = async () => { if (!confirm('Réinitialiser complètement Le Quorum et effacer tous les changements locaux? Cette action est irréversible sans sauvegarde.')) return; await backend.resetDemo({ full: true }); await refresh(); notify('Le Quorum a été réinitialisé.'); setView('dashboard'); };
+  }
+}
+
+document.querySelectorAll('[data-view]').forEach((button) => button.addEventListener('click', () => setView(button.dataset.view)));
+
+try {
+  backend = await getBackend();
+  backend.subscribe(async () => { await refresh(); if (!main.querySelector('form')) render(); });
+  await refresh();
+  render();
+} catch (error) {
+  console.error(error);
+  main.innerHTML = `<section class="panel"><h2>Impossible d’ouvrir les données locales</h2><p>${esc(error.message)}</p><div class="actions"><button onclick="location.reload()">Réessayer</button><a class="button" href="${config.publicBasePath}/">Utiliser le journal statique</a></div></section>`;
+}
