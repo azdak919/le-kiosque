@@ -1,0 +1,27 @@
+{
+  "name": "kiosque",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Le Kiosque — socle libre pour les journaux étudiants",
+  "license": "GPL-2.0-only",
+  "type": "module",
+  "bin": {
+    "kiosque": "packages/pipeline/src/cli.ts"
+  },
+  "scripts": {
+    "kiosque": "node packages/pipeline/src/cli.ts",
+    "demo:sync": "node packages/pipeline/src/cli.ts sync --root examples/demo-journal",
+    "demo:build": "node packages/pipeline/src/cli.ts build --root examples/demo-journal",
+    "demo:serve": "python3 -m http.server 8080 --directory examples/demo-journal/dist",
+    "test": "node --test 'tests/**/*.test.ts'",
+    "test:continuity": "node --test tests/continuity.test.ts",
+    "typecheck": "tsc --noEmit"
+  },
+  "engines": {
+    "node": ">=22.18"
+  },
+  "dependencies": {
+    "marked": "^18.0.7",
+    "yaml": "^2.9.0"
+  }
+}

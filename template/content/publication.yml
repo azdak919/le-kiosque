@@ -1,0 +1,43 @@
+# Carte d'identité du journal. Le premier fichier à remplir,
+# et le seul à relire à chaque passation.
+
+slug: mon-journal
+name: Mon Journal
+tagline: Le journal étudiant du Cégep de ...
+institution: Cégep de ...
+institutionType: cegep      # cegep | universite | autre
+region: ...
+lang: fr-CA
+
+# Sans barre oblique finale. Avec un fork GitHub Pages :
+# https://mon-organisation.github.io/mon-journal
+siteUrl: https://mon-journal.ca
+
+theme:
+  # La couleur officielle de votre établissement.
+  # Voir brand-colors.json de LE RADAR.
+  accent: '#6c2163'
+  # Version éclaircie, lisible sur fond sombre.
+  accentDark: '#cf7ec1'
+
+# Votre station de campus (jalon 3).
+# radio:
+#   stationId: chyz
+
+founded: '2026'
+license: CC-BY-SA-4.0
+
+# ---------------------------------------------------------------------------
+# Ce qui décide si le journal existe encore dans cinq ans.
+# `sync` vous avertit tant que c'est incomplet. Voir OWNERS.md.
+# ---------------------------------------------------------------------------
+governance:
+  owner: mon-organisation              # une ORGANISATION, jamais un compte perso
+  stewardEntity: Association étudiante # l'entité qui survit aux cohortes
+  contact: journal@moncegep.qc.ca      # une adresse institutionnelle
+  repo: https://github.com/mon-organisation/mon-journal
+  domainRegistrar: ...
+  domainExpiresAt: '2030-01-01T00:00:00Z'   # la cause de mort n°1
+  recoveryContacts:                    # deux personnes minimum
+    - journal@moncegep.qc.ca
+    - vie.etudiante@moncegep.qc.ca

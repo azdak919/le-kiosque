@@ -1,0 +1,94 @@
+# Mises à jour de la plateforme Le Kiosque.
+#
+# Personne ne peut écrire dans votre dépôt — pas même l'équipe du Kiosque.
+# Ce workflow va chercher les améliorations en amont et vous les propose sous
+# forme de PULL REQUEST. Vous la lisez, vous la mergez, ou vous l'ignorez.
+# Votre journal ne dépend de personne.
+#
+# Pourquoi ça ne crée presque jamais de conflit : l'amont ne touche JAMAIS aux
+# fichiers qui vous appartiennent.
+#
+#   À VOUS, jamais modifié par l'amont :
+#     content/  media/  theme/tokens.css  kiosque.config.ts  OWNERS.md
+#
+#   À LA PLATEFORME, ne pas modifier à la main :
+#     packages/  tools/  .github/workflows/
+#
+# Si vous devez absolument modifier un fichier de plateforme, notez-le dans
+# OWNERS.md : la personne qui reprendra le journal saura pourquoi la mise à
+# jour coince.
+
+name: Mise à jour de la plateforme
+
+on:
+  schedule:
+    # Lundi 8 h UTC, une fois par semaine. Assez souvent pour ne pas dériver,
+    # assez rare pour ne pas être du bruit.
+    - cron: '0 8 * * 1'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  proposer:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Récupérer l'amont
+        id: amont
+        run: |
+          git remote add upstream https://github.com/kiosque/kiosque.git 2>/dev/null || true
+          git fetch upstream main
+          if git merge-base --is-ancestor upstream/main HEAD; then
+            echo "a_jour=true" >> "$GITHUB_OUTPUT"
+            echo "Déjà à jour — rien à proposer."
+          else
+            echo "a_jour=false" >> "$GITHUB_OUTPUT"
+            git log --oneline HEAD..upstream/main | head -30
+          fi
+
+      - name: Préparer la branche de mise à jour
+        if: steps.amont.outputs.a_jour == 'false'
+        run: |
+          git config user.name  "kiosque-bot"
+          git config user.email "kiosque-bot@users.noreply.github.com"
+          git checkout -B maj-plateforme
+
+          # `-X ours` protège votre contenu : en cas de collision, c'est TOUJOURS
+          # votre version qui gagne. Un journal ne doit jamais perdre un article
+          # à cause d'une mise à jour d'outillage.
+          if ! git merge upstream/main -X ours -m "Mise à jour de la plateforme Le Kiosque"; then
+            echo "::warning::Conflit non résolu automatiquement — la PR listera les fichiers concernés."
+            git merge --abort || true
+            git merge upstream/main --no-commit --no-ff || true
+            git status --short > .conflits.txt || true
+          fi
+          git push --force origin maj-plateforme
+
+      - name: Ouvrir la pull request
+        if: steps.amont.outputs.a_jour == 'false'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh pr create \
+            --base main --head maj-plateforme \
+            --title "Mise à jour de la plateforme Le Kiosque" \
+            --body "$(cat <<'TXT'
+Des améliorations sont disponibles en amont (corrections, accessibilité, sécurité).
+
+**Avant de merger**
+1. Vérifiez que les tests passent ci-dessous.
+2. Regardez l'aperçu du site produit.
+3. Si quelque chose vous déplaît : fermez simplement cette PR. Rien ne casse.
+
+Votre contenu (`content/`, `media/`, `theme/tokens.css`, `kiosque.config.ts`)
+n'est jamais modifié par cette mise à jour.
+
+_Proposition automatique — aucune obligation de l'accepter._
+TXT
+)" 2>/dev/null || echo "Une PR est déjà ouverte."

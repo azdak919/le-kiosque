@@ -1,0 +1,43 @@
+# Carte d'identité du journal. Le premier fichier que remplit une nouvelle
+# équipe, et le seul qu'il faut relire à chaque passation.
+
+slug: le-quorum
+name: Le Quorum
+tagline: Journal de démonstration du Kiosque
+institution: Cégep de démonstration
+institutionType: cegep
+region: Québec
+lang: fr-CA
+siteUrl: https://demo.le-radar.ca
+
+theme:
+  # Reprend le pourpre de marque de LE RADAR. Une équipe met ici la couleur
+  # officielle de son établissement (voir brand-colors.json de LE RADAR).
+  accent: '#6c2163'
+  accentDark: '#cf7ec1'
+
+# Station de campus à afficher dans la barre radio (jalon 3).
+radio:
+  stationId: chyz
+
+founded: '2026'
+license: CC-BY-SA-4.0
+
+# ---------------------------------------------------------------------------
+# Gouvernance — la partie qui décide si le journal existe encore dans cinq ans.
+# `kiosque sync` avertit tant qu'elle est incomplète.
+# ---------------------------------------------------------------------------
+governance:
+  # Une ORGANISATION, jamais un compte personnel.
+  owner: kiosque-demo
+  # L'entité permanente qui survit aux cohortes.
+  stewardEntity: Association étudiante (exemple)
+  # Une adresse institutionnelle, pas celle d'une personne.
+  contact: journal@exemple-cegep.qc.ca
+  repo: https://github.com/kiosque-demo/le-quorum
+  domainRegistrar: exemple
+  domainExpiresAt: '2030-08-01T00:00:00Z'
+  # Deux personnes minimum, toujours.
+  recoveryContacts:
+    - journal@exemple-cegep.qc.ca
+    - vie.etudiante@exemple-cegep.qc.ca

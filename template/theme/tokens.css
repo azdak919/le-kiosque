@@ -1,0 +1,88 @@
+/*
+ * LE KIOSQUE — jetons de conception (thème « radar »).
+ *
+ * Repris de LE RADAR : style.css (:root, ligne 7) et docs/identite-visuelle.md.
+ * Les valeurs sont COPIÉES, pas liées : LE RADAR garde sa liberté d'évoluer et
+ * un journal garde la sienne. C'est le seul fichier qu'une équipe doit modifier
+ * pour s'approprier le site.
+ *
+ * Système SÉMANTIQUE : chaque couleur a un rôle, pas seulement une esthétique.
+ *   pourpre = qui nous sommes · rouge = c'est en direct · bleu = c'est la radio
+ *
+ * Pour s'approprier le journal : remplacer --accent par la couleur officielle de
+ * l'établissement (voir brand-colors.json de LE RADAR) et --accent-dark par sa
+ * version éclaircie, lisible sur fond sombre. Ne rien toucher d'autre suffit.
+ */
+
+:root {
+  /* Neutres */
+  --bg: #ffffff;
+  --bg-soft: #f6f6f4;
+  --ink: #16181c;
+  --ink-soft: #44474d;
+  --muted: #80858c;
+  --rule: #e7e7e3;
+  --rule-strong: #14161a;
+
+  /* Marque — remplacé par la couleur de l'établissement */
+  --accent: #6c2163;
+  --accent-dark: #4f1749;
+
+  /* Sémantique de diffusion — à ne pas détourner */
+  --live: #c8102e;
+  --live-dark: #9c0c24;
+  --radio: #003da5;
+  --radio-bright: #5d9be0;
+
+  /* Typographie */
+  --serif: "Source Serif 4", Georgia, "Times New Roman", serif;
+  --sans: "Inter", system-ui, -apple-system, sans-serif;
+
+  /* Mesure — 800px : la largeur de lecture confortable d'un texte long */
+  --maxw: 800px;
+  --pad: 24px;
+
+  /* Échelle fluide (LE RADAR style.css:978). La manchette reste toujours
+     inférieure au bloc-titre du journal. */
+  --wordmark-size: clamp(2.05rem, 6.8vw + 0.3rem, 4.25rem);
+  --lead-title-size: clamp(1.55rem, 4.1vw + 0.15rem, 2.55rem);
+}
+
+/*
+ * Mode sombre. Le pourpre est éclairci : à 4.5:1 sur fond sombre, le pourpre de
+ * marque devient illisible. C'est une correction d'accessibilité, pas un goût.
+ */
+:root[data-theme="dark"] {
+  --bg: #0e0f12;
+  --bg-soft: #181a1e;
+  --ink: #f1f2f4;
+  --ink-soft: #c2c6cd;
+  --muted: #888d96;
+  --rule: #26282d;
+  --rule-strong: #f1f2f4;
+  --accent: #cf7ec1;
+  --accent-dark: #b85fa8;
+}
+
+/* Suit le système tant que la personne n'a pas choisi explicitement. */
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #0e0f12;
+    --bg-soft: #181a1e;
+    --ink: #f1f2f4;
+    --ink-soft: #c2c6cd;
+    --muted: #888d96;
+    --rule: #26282d;
+    --rule-strong: #f1f2f4;
+    --accent: #cf7ec1;
+    --accent-dark: #b85fa8;
+  }
+}
+
+@media (max-width: 560px) {
+  :root {
+    --pad: 18px;
+    --wordmark-size: clamp(1.85rem, 7.6vw, 2.95rem);
+    --lead-title-size: clamp(1.55rem, 4.8vw, 1.85rem);
+  }
+}

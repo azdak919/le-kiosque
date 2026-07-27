@@ -1,0 +1,87 @@
+# Publication du journal.
+#
+# Deux étapes volontairement séparées, et c'est tout le principe du Kiosque :
+#
+#   sync   parle au CMS       → peut échouer
+#   build  ne parle à rien    → doit TOUJOURS réussir
+#
+# Si `sync` échoue (jeton expiré, quota dépassé, CMS hors service), on continue
+# quand même : le site est reconstruit depuis le miroir déjà dans Git. Le
+# journal reste en ligne, entier. Seule l'écriture est suspendue.
+
+name: Publier le journal
+
+on:
+  push:
+    branches: [main]
+  schedule:
+    # Filet de sécurité quotidien : un webhook manqué ne doit pas créer de
+    # dérive silencieuse entre le CMS et le site publié.
+    - cron: '0 9 * * *'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  pages: write
+  id-token: write
+
+concurrency:
+  group: publication
+  cancel-in-progress: false
+
+jobs:
+  publier:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - run: npm ci --omit=dev
+
+      # ── Étape qui a le droit d'échouer ──────────────────────────────────
+      - name: Synchroniser depuis le CMS
+        id: sync
+        continue-on-error: true
+        run: node packages/pipeline/src/cli.ts sync
+
+      - name: Signaler une source indisponible
+        if: steps.sync.outcome == 'failure'
+        run: |
+          echo "::warning::Le backend éditorial n'a pas répondu."
+          echo "::warning::Le site est reconstruit depuis le miroir Git — il reste EN LIGNE et complet."
+          echo "::warning::Seule la publication de nouveaux articles est suspendue le temps de rétablir l'accès."
+
+      - name: Enregistrer le contenu rapatrié
+        if: steps.sync.outcome == 'success'
+        run: |
+          git config user.name  "kiosque-bot"
+          git config user.email "kiosque-bot@users.noreply.github.com"
+          if [ -n "$(git status --porcelain content media)" ]; then
+            git add content media
+            git commit -m "sync: contenu éditorial (auto)"
+            git push
+          fi
+
+      # ── Étape qui ne doit jamais échouer ────────────────────────────────
+      - name: Construire le site
+        run: node packages/pipeline/src/cli.ts build
+
+      - name: Vérifier l'intégrité de l'archive
+        continue-on-error: true
+        run: node packages/pipeline/src/cli.ts verify
+
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: dist
+
+  deployer:
+    needs: publier
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.pages.outputs.page_url }}
+    steps:
+      - id: pages
+        uses: actions/deploy-pages@v4

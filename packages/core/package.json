@@ -1,0 +1,17 @@
+{
+  "name": "@kiosque/core",
+  "version": "0.1.0",
+  "description": "Modèle de contenu commun et contrats des sources — aucune dépendance",
+  "license": "GPL-2.0-only",
+  "type": "module",
+  "exports": {
+    ".": "./src/index.ts",
+    "./model": "./src/model.ts",
+    "./source": "./src/source.ts",
+    "./validate": "./src/validate.ts",
+    "./testkit": "./src/testkit.ts"
+  },
+  "engines": {
+    "node": ">=22.18"
+  }
+}

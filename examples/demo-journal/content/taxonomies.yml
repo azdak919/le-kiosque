@@ -1,0 +1,18 @@
+# Catégories et mots-clés déclarés du journal.
+# Un article qui en utilise un non déclaré passe quand même, mais `sync` le
+# signale — c'est ce qui évite la prolifération de doublons ("cegep", "Cégep",
+# "cégeps") qui rend une archive inutilisable après quelques années.
+
+categories:
+  - name: Vie étudiante
+  - name: Culture
+  - name: Actualité locale
+    slug: actualite-locale
+
+tags:
+  - name: assemblée générale
+    slug: assemblee-generale
+  - name: financement
+  - name: radio étudiante
+    slug: radio-etudiante
+  - name: archives

@@ -1,0 +1,265 @@
+/**
+ * LE KIOSQUE — modèle de contenu commun.
+ *
+ * Ce fichier est le contrat que TOUT adaptateur doit produire, quel que soit le
+ * CMS d'origine (Markdown/Git, WordPress, Ghost, Superdesk, Drupal…).
+ *
+ * Deux champs portent toute la stratégie anti-casse :
+ *   - `Article.id`        UUID figé, indépendant du CMS → une migration ne duplique rien
+ *   - `Article.previousUrls`  → aucun lien mort quand les permaliens changent
+ *
+ * Contrainte : syntaxe TypeScript « effaçable » uniquement (pas de `enum`, pas de
+ * `namespace`, pas de propriétés de paramètre) — Node exécute ces fichiers
+ * directement, sans compilateur.
+ */
+
+export type ID = string;
+export type Slug = string;
+/** RFC 3339, UTC. Ex. : '2026-09-12T14:30:00Z' */
+export type ISODate = string;
+/** BCP-47. Ex. : 'fr-CA', 'en-CA' */
+export type Lang = string;
+
+export type EditorialStatus =
+  | 'draft'
+  | 'in-review'
+  | 'scheduled'
+  | 'published'
+  | 'archived'
+  | 'retracted';
+
+export const EDITORIAL_STATUSES: readonly EditorialStatus[] = [
+  'draft',
+  'in-review',
+  'scheduled',
+  'published',
+  'archived',
+  'retracted',
+];
+
+/** Seuls ces statuts produisent une page publique. */
+export const PUBLIC_STATUSES: readonly EditorialStatus[] = ['published', 'archived'];
+
+export type MediaKind = 'image' | 'audio' | 'video' | 'document';
+
+export type InstitutionType = 'cegep' | 'universite' | 'autre';
+
+/**
+ * D'où vient la donnée. Indispensable pour l'audit, la reprise et le sync
+ * incrémental — c'est ce qui permet de rebrancher un CMS des années plus tard
+ * sans dupliquer ni perdre l'historique.
+ */
+export interface SourceAttribution {
+  /** 'markdown' | 'wordpress' | 'ghost' | … */
+  backend: string;
+  /** Identifiant natif dans ce backend. */
+  backendId: string;
+  backendUrl?: string;
+  fetchedAt: ISODate;
+  /** etag / hash / date de modification — permet le sync incrémental. */
+  revision?: string;
+  license?: string;
+  /** Renseigné si le contenu est syndiqué depuis un autre média. */
+  originalPublisher?: string;
+}
+
+export interface MediaAsset {
+  id: ID;
+  kind: MediaKind;
+  /** Chemin local APRÈS miroir. Ex. : '/media/2026/09/greve.jpg' */
+  src: string;
+  /** Origine distante — conservée pour l'audit et le re-téléchargement. */
+  remoteSrc?: string;
+  /** Requis pour publier une image. Vide = échec de validation. */
+  alt: string;
+  caption?: string;
+  /** Le ou la photographe. */
+  credit?: string;
+  license?: string;
+  width?: number;
+  height?: number;
+  mime?: string;
+  /** sha256 du fichier — vérification d'intégrité de l'archive. */
+  checksum?: string;
+  source: SourceAttribution;
+}
+
+export interface Author {
+  id: ID;
+  slug: Slug;
+  name: string;
+  /** 'journaliste', 'rédaction en chef', 'photographe'… */
+  role?: string;
+  bio?: string;
+  avatar?: MediaAsset;
+  email?: string;
+  social?: Record<string, string>;
+  /** Spécifique au monde étudiant. Ex. : '2026-2028'. */
+  cohort?: string;
+  /** false = a gradué. On garde la signature, on la retire des listes actives. */
+  active?: boolean;
+  source: SourceAttribution;
+}
+
+export interface Section {
+  id: ID;
+  slug: Slug;
+  name: string;
+  description?: string;
+  order?: number;
+  parent?: Slug;
+}
+
+export interface Category {
+  id: ID;
+  slug: Slug;
+  name: string;
+  parent?: Slug;
+}
+
+export interface Tag {
+  id: ID;
+  slug: Slug;
+  name: string;
+}
+
+export interface Taxonomies {
+  sections: Section[];
+  categories: Category[];
+  tags: Tag[];
+}
+
+/**
+ * La gouvernance des ressources critiques. Ces champs ne décorent pas : ils sont
+ * lus par `kiosque doctor` (jalon 4) pour alerter avant qu'un journal ne meure
+ * d'un domaine expiré ou d'un compte personnel perdu.
+ */
+export interface Governance {
+  /** Organisation propriétaire du dépôt — JAMAIS un compte personnel. */
+  owner: string;
+  /** Association étudiante, coopérative, OBNL : l'entité permanente. */
+  stewardEntity?: string;
+  /** Courriel institutionnel, pas celui d'un individu. */
+  contact: string;
+  repo: string;
+  domainRegistrar?: string;
+  /** Date d'échéance du domaine — la cause de mort n°1. */
+  domainExpiresAt?: ISODate;
+  /** Personnes capables de récupérer les accès. Deux minimum. */
+  recoveryContacts?: string[];
+}
+
+/** Le journal lui-même. */
+export interface Publication {
+  id: ID;
+  slug: Slug;
+  name: string;
+  tagline?: string;
+  institution: string;
+  institutionType: InstitutionType;
+  region?: string;
+  lang: Lang;
+  langs?: Lang[];
+  /** Origine canonique, sans barre oblique finale. Ex. : 'https://exil.ca' */
+  siteUrl: string;
+  logo?: MediaAsset;
+  theme: {
+    accent: string;
+    accentDark?: string;
+  };
+  /** Rattachement à une station de LE RADAR (voir radios.json). */
+  radio?: { stationId?: string };
+  founded?: string;
+  governance: Governance;
+  license?: string;
+}
+
+export interface ArticleBody {
+  format: 'markdown' | 'html';
+  /** La source portable — la vérité. Ce qui reste lisible dans 20 ans. */
+  raw: string;
+  /** Rendu assaini. Dérivé, régénérable, jamais la source. */
+  html?: string;
+  wordCount?: number;
+}
+
+export interface Article {
+  /** UUID figé à la création, survit à toutes les migrations de CMS. */
+  id: ID;
+  slug: Slug;
+  publication: Slug;
+  title: string;
+  subtitle?: string;
+  /** Le chapeau. */
+  dek?: string;
+  excerpt: string;
+  body: ArticleBody;
+  lead?: MediaAsset;
+  media: MediaAsset[];
+  authors: Slug[];
+  section?: Slug;
+  categories: Slug[];
+  tags: Slug[];
+  lang: Lang;
+  translations?: Record<Lang, Slug>;
+  status: EditorialStatus;
+  publishedAt?: ISODate;
+  updatedAt: ISODate;
+  /** Absolue et permanente. */
+  canonicalUrl: string;
+  /** Anciennes URL → alimente les redirections lors des migrations. */
+  previousUrls?: string[];
+  source: SourceAttribution;
+}
+
+/** Ce que `sync` écrit et ce que `build` lit. Le miroir, en mémoire. */
+export interface ContentBundle {
+  publication: Publication;
+  articles: Article[];
+  authors: Author[];
+  taxonomies: Taxonomies;
+  syncedAt: ISODate;
+}
+
+// ---------------------------------------------------------------------------
+// Aides sans effet de bord, partagées par les adaptateurs et le pipeline.
+// ---------------------------------------------------------------------------
+
+export function isPublic(article: Article): boolean {
+  return PUBLIC_STATUSES.includes(article.status);
+}
+
+/**
+ * Slug normalisé : minuscules, accents retirés, ponctuation en tirets.
+ * « Grève : les étudiant·e·s votent » → 'greve-les-etudiant-e-s-votent'
+ */
+export function slugify(input: string): Slug {
+  return input
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '') // diacritiques combinantes
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, '-')
+    .replace(/^-+|-+$/g, '')
+    .slice(0, 96);
+}
+
+/** URL canonique d'un article. Une seule définition, partout. */
+export function articleUrl(pub: Publication, article: Article): string {
+  const base = pub.siteUrl.replace(/\/+$/, '');
+  return `${base}/articles/${article.slug}/`;
+}
+
+export function sectionUrl(pub: Publication, slug: Slug): string {
+  return `${pub.siteUrl.replace(/\/+$/, '')}/sections/${slug}/`;
+}
+
+export function authorUrl(pub: Publication, slug: Slug): string {
+  return `${pub.siteUrl.replace(/\/+$/, '')}/auteurs/${slug}/`;
+}
+
+/** Tri éditorial : le plus récent d'abord, `updatedAt` en repli. */
+export function byDateDesc(a: Article, b: Article): number {
+  const da = a.publishedAt ?? a.updatedAt;
+  const db = b.publishedAt ?? b.updatedAt;
+  return db.localeCompare(da);
+}

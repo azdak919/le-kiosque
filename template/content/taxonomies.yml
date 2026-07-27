@@ -1,0 +1,10 @@
+# Catégories et mots-clés du journal.
+# Déclarer les vôtres évite la prolifération de doublons
+# ("cegep", "Cégep", "cégeps") qui rend une archive inutilisable.
+
+categories:
+  - name: Vie étudiante
+  - name: Culture
+
+tags:
+  - name: exemple

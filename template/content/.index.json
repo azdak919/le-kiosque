@@ -1,0 +1,20 @@
+{
+  "_comment": "Index dérivé, régénéré par `kiosque sync`. Reconstructible à 100 % depuis content/. Ne pas éditer à la main.",
+  "syncedAt": "2026-07-27T07:57:24.521Z",
+  "publication": "mon-journal",
+  "counts": {
+    "articles": 1,
+    "authors": 1,
+    "sections": 3
+  },
+  "articles": [
+    {
+      "id": "92b04109-7d3c-5cb8-8b01-c4cc7496fa8f",
+      "slug": "bienvenue",
+      "status": "published",
+      "publishedAt": "2026-01-15T12:00:00.000Z",
+      "updatedAt": "2026-01-15T12:00:00.000Z",
+      "canonicalUrl": "https://mon-journal.ca/articles/bienvenue/"
+    }
+  ]
+}
