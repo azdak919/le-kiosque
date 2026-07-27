@@ -59,11 +59,15 @@
     try { images = JSON.parse(data.textContent || '[]'); } catch (_) {}
     if (!images.length) return;
     var credit = document.querySelector('[data-masthead-credit]');
+    var masthead = image.closest('.masthead');
+    image.addEventListener('error', function () { masthead?.classList.add('masthead--image-error'); });
+    image.addEventListener('load', function () { masthead?.classList.remove('masthead--image-error'); });
     var index = Math.floor(Math.random() * images.length);
     function show(next) {
       index = (next + images.length) % images.length;
       var item = images[index];
       image.src = item.src;
+      image.style.objectPosition = item.backgroundPosition || '50% 50%';
       if (credit) {
         credit.replaceChildren();
         if (item.credit) {

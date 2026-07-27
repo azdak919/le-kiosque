@@ -14,6 +14,7 @@ import {
   sectionUrl,
   type Article,
   type Author,
+  type MediaAsset,
   type Publication,
   type Section,
   type Taxonomies,
@@ -39,6 +40,41 @@ export interface RenderContext {
     assetsBase: string;
     seedUrl: string;
     databaseKey: string;
+  };
+}
+
+export interface MastheadOptions {
+  name: string;
+  signature?: string;
+  institution: string;
+  logo?: MediaAsset;
+  image?: MediaAsset;
+  backgroundPosition: string;
+  overlayStrength: number;
+  textAlignment: 'left' | 'center' | 'right';
+  theme: Publication['theme'];
+}
+
+function clampPercent(value: number | undefined): number {
+  return Number.isFinite(value) ? Math.min(100, Math.max(0, value!)) : 50;
+}
+
+export function mastheadOptions(publication: Publication): MastheadOptions {
+  const images = publication.masthead?.backgrounds?.enabled === false
+    ? [] : (publication.masthead?.backgrounds?.images ?? []);
+  const image = images[0];
+  const focal = image?.focalPoint;
+  const overlay = publication.masthead?.overlayStrength;
+  return {
+    name: publication.name,
+    signature: publication.tagline,
+    institution: publication.institution,
+    logo: publication.logo,
+    image,
+    backgroundPosition: `${clampPercent(focal?.x)}% ${clampPercent(focal?.y)}%`,
+    overlayStrength: Number.isFinite(overlay) ? Math.min(0.9, Math.max(0, overlay!)) : 0.55,
+    textAlignment: publication.masthead?.textAlignment ?? 'left',
+    theme: publication.theme,
   };
 }
 
@@ -147,7 +183,7 @@ function mediaFigure(article: Article, ctx: RenderContext): string {
     .join(' — ');
   return `
         <div class="article-media">
-          <img src="${safeUrl(asset(lead.src, ctx))}" alt="${esc(lead.alt)}" loading="lazy" decoding="async"${
+          <img src="${safeUrl(asset(lead.src, ctx))}" alt="${esc(lead.alt)}" loading="lazy" decoding="async" style="object-position:${clampPercent(lead.focalPoint?.x)}% ${clampPercent(lead.focalPoint?.y)}%"${
             lead.width ? ` width="${lead.width}"` : ''
           }${lead.height ? ` height="${lead.height}"` : ''}>
         </div>${credit ? `\n        <p class="article-media-credit">${credit}</p>` : ''}`;
@@ -176,7 +212,7 @@ function icon(label: 'home' | 'rss' | 'pomo' | 'solitaire' | 'shuffle'): string 
   return `<svg viewBox="0 0 24 24" aria-hidden="true">${paths[label]}</svg>`;
 }
 
-function mastheadBackground(ctx: RenderContext): string {
+function mastheadBackground(ctx: RenderContext, options: MastheadOptions): string {
   const settings = ctx.publication.masthead?.backgrounds;
   if (settings?.enabled === false || !settings?.images?.length) return '';
   const image = settings.images[0];
@@ -187,8 +223,9 @@ function mastheadBackground(ctx: RenderContext): string {
     : '';
   const manifest = settings.images.map((item) => ({
     src: asset(item.src, ctx), alt: item.alt, credit: item.credit ?? '', creditUrl: item.creditUrl ?? '',
+    backgroundPosition: `${clampPercent(item.focalPoint?.x)}% ${clampPercent(item.focalPoint?.y)}%`,
   }));
-  return `<img class="masthead-background" src="${safeUrl(asset(image.src, ctx))}" alt="" data-masthead-background>
+  return `<img class="masthead-background" src="${safeUrl(asset(image.src, ctx))}" alt="" data-masthead-background style="object-position:${esc(options.backgroundPosition)}">
   <span class="masthead-background-shade" aria-hidden="true"></span>
   <span class="masthead-photo-credit" data-masthead-credit>${credit}</span>
   <script type="application/json" id="masthead-backgrounds">${JSON.stringify(manifest).replace(/</g, '\\u003c')}</script>`;
@@ -262,6 +299,7 @@ export interface PageOptions {
 
 export function page(content: string, options: PageOptions, ctx: RenderContext): string {
   const pub = ctx.publication;
+  const masthead = mastheadOptions(pub);
   const nav = [
     { href: asset('/', ctx), label: 'Accueil' },
     ...ctx.taxonomies.sections.map((s) => ({
@@ -304,17 +342,17 @@ ${options.jsonLd ? `<script type="application/ld+json">${options.jsonLd}</script
 <body${options.bodyClass ? ` class="${esc(options.bodyClass)}"` : ''}>
 <a class="skip-link" href="#contenu">Aller au contenu</a>
 ${ctx.demoNotice ? `<div class="demo-banner">${esc(ctx.demoNotice)}</div>` : ''}
-<header class="masthead${pub.masthead?.backgrounds?.enabled !== false && pub.masthead?.backgrounds?.images?.length ? ' masthead--illustrated' : ''}">
-  ${mastheadBackground(ctx)}
+<header class="masthead${masthead.image ? ' masthead--illustrated' : ''}" data-text-alignment="${masthead.textAlignment}" style="--masthead-overlay:${masthead.overlayStrength}">
+  ${mastheadBackground(ctx, masthead)}
   <div class="wrap">
     ${mastheadTools(ctx)}
     <div class="masthead-top">
       <div>
-        <p class="wordmark"><a href="${asset('/', ctx)}">${pub.logo ? `<img class="publication-logo" src="${safeUrl(asset(pub.logo.src, ctx))}" alt="${esc(pub.logo.alt || pub.name)}">` : esc(pub.name)}</a></p>
-        ${pub.tagline ? `<p class="masthead-tagline">${esc(pub.tagline)}</p>` : ''}
+        <p class="wordmark"><a href="${asset('/', ctx)}">${masthead.logo ? `<img class="publication-logo" src="${safeUrl(asset(masthead.logo.src, ctx))}" alt="${esc(masthead.logo.alt || masthead.name)}">` : esc(masthead.name)}</a></p>
+        ${masthead.signature ? `<p class="masthead-tagline">${esc(masthead.signature)}</p>` : ''}
       </div>
       <div class="masthead-meta">
-        <span>${esc(pub.institution)}</span>
+        <span>${esc(masthead.institution)}</span>
       </div>
     </div>
   </div>
@@ -457,7 +495,7 @@ export function articlePage(article: Article, ctx: RenderContext): string {
       ${
         lead
           ? `<figure class="post-lead">
-        <img src="${safeUrl(asset(lead.src, ctx))}" alt="${esc(lead.alt)}"${lead.width ? ` width="${lead.width}"` : ''}${lead.height ? ` height="${lead.height}"` : ''}>
+        <img src="${safeUrl(asset(lead.src, ctx))}" alt="${esc(lead.alt)}" style="object-position:${clampPercent(lead.focalPoint?.x)}% ${clampPercent(lead.focalPoint?.y)}%"${lead.width ? ` width="${lead.width}"` : ''}${lead.height ? ` height="${lead.height}"` : ''}>
         ${caption ? `<figcaption>${caption}</figcaption>` : ''}
       </figure>`
           : ''

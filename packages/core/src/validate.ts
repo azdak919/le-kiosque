@@ -15,6 +15,7 @@ import {
   type Article,
   type Author,
   type MediaAsset,
+  type SharedMediaAsset,
   type Publication,
   type Taxonomies,
 } from './model.ts';
@@ -75,7 +76,42 @@ export function validateMedia(asset: MediaAsset, path: string): Issue[] {
   if (asset.kind === 'image' && !asset.credit?.trim()) {
     warn(issues, `${path}.credit`, 'crédit photo absent');
   }
+  if (asset.focalPoint && (!Number.isFinite(asset.focalPoint.x) || !Number.isFinite(asset.focalPoint.y)
+      || asset.focalPoint.x < 0 || asset.focalPoint.x > 100 || asset.focalPoint.y < 0 || asset.focalPoint.y > 100)) {
+    err(issues, `${path}.focalPoint`, 'x et y doivent être compris entre 0 et 100');
+  }
   checkAttribution(issues, `${path}.source`, asset.source);
+  return issues;
+}
+
+const SHARED_MEDIA_LICENSES = new Set(['CC BY-SA 3.0', 'CC BY 2.0 Canada', 'CC BY-SA 2.5']);
+const SHARED_MEDIA_USAGES = new Set(['exterior', 'interior', 'sport', 'masthead', 'article']);
+
+export function validateSharedMedia(asset: SharedMediaAsset, path = 'media'): Issue[] {
+  const issues = validateMedia(asset, path);
+  for (const [field, value] of [
+    ['remoteSrc', asset.remoteSrc], ['sourceUrl', asset.sourceUrl],
+    ['creditUrl', asset.creditUrl], ['licenseUrl', asset.licenseUrl],
+  ] as const) {
+    if (!/^https:\/\//.test(value ?? '')) err(issues, `${path}.${field}`, 'une URL HTTPS est requise');
+  }
+  if (!asset.credit?.trim()) err(issues, `${path}.credit`, 'auteur ou autrice requis');
+  if (!SHARED_MEDIA_LICENSES.has(asset.license)) {
+    err(issues, `${path}.license`, `licence non reconnue : « ${asset.license ?? ''} »`);
+  }
+  if (!Number.isInteger(asset.width) || asset.width <= 0) err(issues, `${path}.width`, 'largeur positive requise');
+  if (!Number.isInteger(asset.height) || asset.height <= 0) err(issues, `${path}.height`, 'hauteur positive requise');
+  if (!asset.institution?.trim()) err(issues, `${path}.institution`, 'établissement requis');
+  if (!asset.campus?.trim()) err(issues, `${path}.campus`, 'campus requis');
+  if (!asset.keywords?.length) err(issues, `${path}.keywords`, 'au moins un mot-clé requis');
+  if (!asset.usages?.length || asset.usages.some((usage) => !SHARED_MEDIA_USAGES.has(usage))) {
+    err(issues, `${path}.usages`, 'usage absent ou inconnu');
+  }
+  const focal = asset.focalPoint;
+  if (!focal || !Number.isFinite(focal.x) || !Number.isFinite(focal.y)
+      || focal.x < 0 || focal.x > 100 || focal.y < 0 || focal.y > 100) {
+    err(issues, `${path}.focalPoint`, 'x et y doivent être compris entre 0 et 100');
+  }
   return issues;
 }
 
@@ -201,6 +237,14 @@ export function validatePublication(pub: Publication, path = 'publication'): Iss
   for (const [i, image] of (pub.masthead?.backgrounds?.images ?? []).entries()) {
     issues.push(...validateMedia(image, `${path}.masthead.backgrounds.images[${i}]`));
   }
+  const overlay = pub.masthead?.overlayStrength;
+  if (overlay !== undefined && (!Number.isFinite(overlay) || overlay < 0 || overlay > 0.9)) {
+    err(issues, `${path}.masthead.overlayStrength`, 'le voile doit être compris entre 0 et 0,9');
+  }
+  const alignment = pub.masthead?.textAlignment;
+  if (alignment && !['left', 'center', 'right'].includes(alignment)) {
+    err(issues, `${path}.masthead.textAlignment`, 'alignement inconnu');
+  }
 
   // Gouvernance : ces avertissements sont la raison d'être du projet. Ils ne
   // bloquent pas la publication — on n'empêche personne de démarrer vite — mais
@@ -246,6 +290,9 @@ export function validateBundle(bundle: {
   }
   for (const [i, a] of bundle.articles.entries()) {
     issues.push(...validateArticle(a, `articles[${i}]`));
+  }
+  for (const [i, media] of (bundle.media ?? []).entries()) {
+    issues.push(...validateSharedMedia(media, `media[${i}]`));
   }
 
   const authorSlugs = new Set(bundle.authors.map((a) => a.slug));

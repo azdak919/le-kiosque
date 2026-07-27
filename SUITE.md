@@ -1,7 +1,72 @@
-# SUITE.md — démonstration locale PGlite livrée
+# SUITE.md — ledger de livraison
+
+## Dernière passe ciblée — Le Quorum (27 juillet 2026)
+
+| État | Livrable |
+|---|---|
+| **DONE** | Mesures LE‑RADAR reprises sans modifier son dépôt : breakpoint `1100px`, largeur `1180px`, padding `32px`, grille `minmax(0, 1.15fr) minmax(300px, 370px)`, filets, « En bref », suite du fil et pied de page. Mesure `800px` conservée sous 1100px et repli 720px conservé. |
+| **DONE** | Masthead compact, aligné à gauche par défaut, fond neutre en cas d'erreur, point focal appliqué à `object-position`, voile borné à 0–0,9 et contrat `MastheadOptions` dérivé de `Publication`. |
+| **DONE** | Iframe radio inchangée dans son protocole et ses contrôles; hauteur initiale alignée à 62 px, surface sombre et station `chyz` conservée. |
+| **DEMO ONLY** | Banque PGlite de six photos Wikimedia locales, recherche/filtres, sélection article/masthead et aperçus de recadrage ordinateur/tablette/mobile. Elle n'est pas copiée dans un build `git-sveltia`. |
+| **DEMO ONLY** | Points focaux X/Y et cadres `object-fit: cover` dans l'administration locale. Ils simulent le recadrage sans produire de nouvelle image. |
+| **DONE** | Table `media` alimentée au seed et incluse dans les snapshots, sauvegardes, restaurations et réinitialisations. L'upload local existant reste disponible. |
+| **DONE** | Champs média et masthead déclarés dans la configuration CMS; tests anti-dérive, licences, dimensions, HTTPS, sommes et points focaux ajoutés. |
+| **NOT STARTED** | API distante, stockage distant, rôles d'autorisation, transformations d'images, DAM, installation automatisée et fédération LE‑RADAR. |
+| **BLOCKED** | Aucun blocage local. La vérification de la GitHub Page publique dépend du déploiement Actions après le push. |
+
+### Fichiers et composants de référence
+
+Les mesures visuelles viennent de `style.css` dans LE‑RADAR, notamment ses
+blocs bureau `@media (min-width: 1100px)`, `.news-list`, `.news-hero`,
+`.brief-rail`, `.news-tail`, `.masthead-inner` et `.site-foot`. Aucun fichier de
+LE‑RADAR n'a été modifié.
+
+Les changements KIOSQUE se trouvent dans :
+
+- `packages/core/src/{model,validate}.ts`;
+- `packages/adapters/markdown/src/index.ts`;
+- `packages/pipeline/src/{build,cli,cms-config,shared-media}.ts`;
+- `packages/theme-radar/src/{templates,local-admin}.ts`;
+- `packages/theme-radar/assets/{theme.css,kiosque.js}` et
+  `packages/theme-radar/assets/editorial/{admin.css,admin.js,demo-backend.js,export.js,render.js}`;
+- `examples/demo-journal/content/publication.yml`, son `kiosque.config.ts` et
+  `media/demo-library/manifest.json`;
+- `tools/build-site.mjs`, `tests/media-library.test.ts`,
+  `tests/cms-config.test.ts`, `tests/editorial-backends.test.ts`,
+  `tests/jalon-3.test.ts` et `tests/e2e/demo-local.spec.js`.
+
+### Changer la photo du masthead
+
+Dans `/admin/`, ouvrir **Configuration**, puis **Choisir dans la banque de
+démonstration**. Ajuster X/Y dans les trois cadres et enregistrer. Une photo
+personnelle peut toujours être ajoutée avec **Ajouter mes propres images**.
+Dans le miroir Markdown, la même opération consiste à placer une entrée
+`MediaAsset` dans `masthead.backgrounds.images` et son point focal dans
+`focalPoint: { x, y }`.
+
+### Manifeste et licences
+
+`examples/demo-journal/media/demo-library/manifest.json` est la source
+versionnée des métadonnées. Ces campus sont réels et illustrent uniquement la
+démonstration; ils ne représentent pas l'établissement fictif Le Quorum.
+
+- Khayman : quatre photos, CC BY‑SA 3.0;
+- Pierre‑Paul Beaumont : campus de Québec du Cégep Limoilou, CC BY 2.0 Canada;
+- Stéphane Voyer : Cégep de Rimouski, CC BY‑SA 2.5.
+
+Les pages sources, liens de crédit, liens de licence, dimensions, points focaux
+et sommes SHA‑256 sont conservés dans le manifeste.
+
+### État responsive et radio
+
+La grille bureau s'active à 1100px. Entre 721px et 1099px, le fil conserve sa
+mesure de lecture de 800px et repasse sur une colonne; à 720px, les vedettes et
+outils reprennent les replis mobiles existants. La barre radio reste cachée
+jusqu'au message `radar-embed` `ready`, puis conserve le rendu sombre
+`kiosque-v1` et la station configurée.
 
 > **État au 27 juillet 2026 :** le jalon 3 décrit ci-dessous et le mode
-> `demo-local` PGlite sont implémentés. Les 41 tests, le parcours Playwright
+> `demo-local` PGlite sont implémentés. Les 46 tests, le parcours Playwright
 > Chromium et `npm run site` passent. `/admin/` est l’administration locale
 > canonique; `/demo/admin/` demeure un alias. Les données restent dans IndexedDB
 > et les builds `git-sveltia` ne contiennent aucun artefact PGlite.
@@ -29,7 +94,7 @@
 | 5 | Adaptateur WordPress/Newspack | à venir |
 | 6 | Premier pilote avec une vraie équipe étudiante | à venir |
 
-35 tests verts. Dépôt public : `github.com/azdak919/le-kiosque`.
+46 tests verts. Dépôt public : `github.com/azdak919/le-kiosque`.
 
 ---
 

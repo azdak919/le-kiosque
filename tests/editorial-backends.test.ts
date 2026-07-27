@@ -56,6 +56,7 @@ test('le build PGlite est autonome et le build Git/Sveltia en est exempt', async
 
   await build({ config: { root: DEMO, source: { adapter: 'markdown' }, editorial: { mode: 'git-sveltia' } }, bundle, outDir: gitOut, logger: silent });
   await assert.rejects(() => stat(path.join(gitOut, 'assets/editorial')));
+  await assert.rejects(() => stat(path.join(gitOut, 'media/demo-library')));
   const gitAdmin = await readFile(path.join(gitOut, 'admin/index.html'), 'utf8');
   assert.match(gitAdmin, /sveltia-cms\.js/);
   assert.doesNotMatch(gitAdmin, /PGlite|demo-pglite/);

@@ -239,6 +239,16 @@ export async function build(options: BuildOptions): Promise<BuildResult> {
   const editorialMode = config.editorial?.mode ?? 'git-sveltia';
   const editorialAssetsBase = `${basePath}/assets/editorial`;
   const databaseKey = `kiosque-${basePath.replace(/[^a-z0-9]+/gi, '-') || 'root'}-${bundle.publication.slug}`;
+  const publicationForRender = editorialMode === 'demo-local' ? bundle.publication : {
+    ...bundle.publication,
+    masthead: bundle.publication.masthead ? {
+      ...bundle.publication.masthead,
+      backgrounds: bundle.publication.masthead.backgrounds ? {
+        ...bundle.publication.masthead.backgrounds,
+        images: bundle.publication.masthead.backgrounds.images.filter((image) => !image.src.startsWith('/media/demo-library/')),
+      } : undefined,
+    } : undefined,
+  };
 
   // Deux ensembles, deux usages — les confondre casse soit les liens
   // partagés, soit la confidentialité des brouillons.
@@ -261,7 +271,7 @@ export async function build(options: BuildOptions): Promise<BuildResult> {
   await mkdir(outDir, { recursive: true });
 
   const ctx: RenderContext = {
-    publication: bundle.publication,
+    publication: publicationForRender,
     basePath,
     taxonomies: bundle.taxonomies,
     authorsBySlug: new Map(bundle.authors.map((a) => [a.slug, a])),
@@ -447,10 +457,11 @@ export async function build(options: BuildOptions): Promise<BuildResult> {
   if (editorialMode === 'demo-local') {
     await copyDemoRuntime(outDir);
     await writeFile(path.join(outDir, 'assets', 'editorial', 'seed.json'), JSON.stringify({
-      format: 'kiosque-demo-seed', version: 1,
+      format: 'kiosque-demo-seed', version: 2,
       publication: { ...bundle.publication, theme: { ...bundle.publication.theme, typography: bundle.publication.theme.typography ?? 'modern-accessible' } },
       articles: bundle.articles.map((article) => ({ ...article, isDemo: true, isUserModified: false })),
       authors: bundle.authors.map((author) => ({ ...author, isDemo: true, isUserModified: false })),
+      media: bundle.media ?? [],
       sections: bundle.taxonomies.sections, categories: bundle.taxonomies.categories, tags: bundle.taxonomies.tags,
       settings: { demoVisible: config.demoContent !== false },
     }).replace(/</g, '\\u003c'), 'utf8');
@@ -460,7 +471,12 @@ export async function build(options: BuildOptions): Promise<BuildResult> {
     force: true,
     // Les fichiers cachés du miroir (.checksums.json) sont de l'outillage
     // interne : ils ne regardent pas les lectrices et lecteurs du journal.
-    filter: (src) => !path.basename(src).startsWith('.'),
+    filter: (src) => {
+      if (path.basename(src).startsWith('.')) return false;
+      const relative = path.relative(path.join(config.root, 'media'), src);
+      if (editorialMode !== 'demo-local' && relative.split(path.sep)[0] === 'demo-library') return false;
+      return true;
+    },
   }).catch(() => {
     log.warn('aucun dossier media/ — le site n’aura pas d’images');
   });

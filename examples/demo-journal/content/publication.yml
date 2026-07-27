@@ -22,15 +22,42 @@ masthead:
   backgrounds:
     enabled: true
     images:
-      - src: /media/2026/09/auditorium.svg
-        alt: Illustration fictive d'un auditorium étudiant
-        credit: Illustration fictive Le Kiosque
-      - src: /media/2026/10/serre.svg
-        alt: Illustration fictive d'une serre pédagogique
-        credit: Illustration fictive Le Kiosque
-      - src: /media/2026/10/terrain.svg
-        alt: Illustration fictive d'un terrain sportif étudiant
-        credit: Illustration fictive Le Kiosque
+      - id: 2012f561-8b64-5a21-ae6e-a1fc175b0760
+        src: /media/demo-library/campus-sainte-foy.jpg
+        alt: Vue extérieure du campus du Cégep de Sainte-Foy à Québec
+        caption: Campus réel utilisé uniquement pour illustrer la démonstration Le Quorum.
+        credit: Khayman
+        creditUrl: https://commons.wikimedia.org/wiki/User:Khayman
+        license: CC BY-SA 3.0
+        licenseUrl: https://creativecommons.org/licenses/by-sa/3.0/
+        sourceUrl: https://commons.wikimedia.org/wiki/File:Campus_du_C%C3%A9gep_de_Sainte-Foy01.JPG
+        width: 1280
+        height: 857
+        focalPoint: { x: 52, y: 48 }
+      - id: ac260250-22fe-5a19-b045-d90aaf01c294
+        src: /media/demo-library/interieur-sainte-foy.jpg
+        alt: Espace intérieur du Cégep de Sainte-Foy à Québec
+        caption: Campus réel utilisé uniquement pour illustrer la démonstration Le Quorum.
+        credit: Khayman
+        creditUrl: https://commons.wikimedia.org/wiki/User:Khayman
+        license: CC BY-SA 3.0
+        licenseUrl: https://creativecommons.org/licenses/by-sa/3.0/
+        sourceUrl: https://commons.wikimedia.org/wiki/File:C%C3%A9gep_de_Sainte-Foy_(int%C3%A9rieur).JPG
+        width: 1280
+        height: 857
+        focalPoint: { x: 50, y: 45 }
+      - id: ef0b00fd-05e4-580d-84c0-96bf2abf729f
+        src: /media/demo-library/football-jonquiere.jpg
+        alt: Terrain de football du Cégep de Jonquière
+        caption: Campus réel utilisé uniquement pour illustrer la démonstration Le Quorum.
+        credit: Khayman
+        creditUrl: https://commons.wikimedia.org/wiki/User:Khayman
+        license: CC BY-SA 3.0
+        licenseUrl: https://creativecommons.org/licenses/by-sa/3.0/
+        sourceUrl: https://commons.wikimedia.org/wiki/File:Terrain_de_football_du_C%C3%A9gep_de_Jonqui%C3%A8re.JPG
+        width: 1280
+        height: 857
+        focalPoint: { x: 48, y: 59 }
   weather:
     enabled: true
     localities:
@@ -38,6 +65,8 @@ masthead:
   tools:
     pomodoro: true
     solitaire: true
+  overlayStrength: 0.55
+  textAlignment: left
 
 # Station de campus à afficher dans la barre radio (jalon 3).
 radio:

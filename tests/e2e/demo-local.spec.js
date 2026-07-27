@@ -18,12 +18,25 @@ test('configurer, rédiger, prévisualiser, publier, persister et exporter sans 
   await expect(page.getByRole('heading', { name: 'Tableau de bord' })).toBeVisible({ timeout: 45_000 });
   await expect(page.locator('#publication-name')).toHaveText('La Relève locale');
 
+  await page.getByRole('button', { name: 'Médias de démonstration' }).click();
+  await expect(page.locator('.media-card')).toHaveCount(6);
+  await page.getByLabel('Rechercher un établissement, un campus ou un mot-clé').fill('Jonquière');
+  await expect(page.locator('.media-card:visible')).toHaveCount(2);
+  await page.getByRole('button', { name: 'Tableau de bord' }).click();
+
   await page.getByRole('button', { name: 'Créer un article' }).click();
   await page.getByLabel('Titre').fill('Un article créé dans le navigateur');
   await page.getByLabel('Résumé').fill('Une validation complète du mode local.');
   await page.getByLabel('Date et heure de publication').fill('2026-07-27T08:45');
   await page.getByLabel('Texte de l’article').fill('## Une vraie prévisualisation\n\nLe contenu demeure dans **ce navigateur**.');
   await page.getByLabel('Marie Tremblay').check();
+  await page.getByRole('button', { name: 'Choisir dans la banque de démonstration' }).click();
+  const articlePicker = page.locator('.media-picker');
+  await articlePicker.getByLabel('Rechercher un établissement, un campus ou un mot-clé').fill('Limoilou');
+  await articlePicker.getByRole('button', { name: 'Choisir cette photo' }).click();
+  await expect(page.locator('#article-lead-preview .crop-preview')).toHaveCount(3);
+  await page.getByLabel('Point focal X').fill('71');
+  await page.getByLabel('Point focal Y').fill('38');
   await page.getByRole('button', { name: 'Prévisualiser sans publier' }).click();
   await expect(page.getByText('Une vraie prévisualisation')).toBeVisible();
   await page.getByRole('button', { name: 'Enregistrer' }).click();
@@ -74,6 +87,16 @@ test('configurer, rédiger, prévisualiser, publier, persister et exporter sans 
   await page.getByRole('button', { name: 'Articles' }).click();
   await expect(page.getByText('Exemple local').first()).toBeVisible();
 
+  await page.getByRole('button', { name: 'Configuration' }).click();
+  await page.getByRole('button', { name: 'Choisir dans la banque de démonstration' }).click();
+  const mastheadPicker = page.locator('.media-picker');
+  await mastheadPicker.getByLabel('Rechercher un établissement, un campus ou un mot-clé').fill('Rimouski');
+  await mastheadPicker.getByRole('button', { name: 'Choisir cette photo' }).click();
+  await page.getByLabel('Point focal X').fill('73');
+  await page.getByLabel('Point focal Y').fill('42');
+  await page.getByRole('button', { name: 'Enregistrer' }).click();
+  await expect(front.locator('.masthead-background')).toHaveAttribute('src', /cegep-rimouski\.jpg/);
+
   await page.getByRole('button', { name: 'Exporter et poursuivre' }).click();
   const jsonEvent = page.waitForEvent('download');
   await page.getByRole('button', { name: 'Télécharger la sauvegarde JSON' }).click();
@@ -81,6 +104,11 @@ test('configurer, rédiger, prévisualiser, publier, persister et exporter sans 
   const jsonPath = await jsonDownload.path();
   const json = JSON.parse((await (await jsonDownload.createReadStream()).toArray()).map((chunk) => chunk.toString()).join(''));
   expect(json.format).toBe('kiosque-editorial-backup');
+  expect(json.bundle.media).toHaveLength(6);
+  expect(json.bundle.publication.masthead.backgrounds.images[0].institution).toBe('Cégep de Rimouski');
+  expect(json.bundle.publication.masthead.backgrounds.images[0].focalPoint).toEqual({ x: 73, y: 42 });
+  expect(json.bundle.articles.find((article) => article.title === 'Un article local mis à jour').lead.institution).toBe('Cégep Limoilou');
+  expect(json.bundle.articles.find((article) => article.title === 'Un article local mis à jour').lead.focalPoint).toEqual({ x: 71, y: 38 });
   expect(JSON.stringify(json)).not.toMatch(/token|password|secret/i);
   const zipEvent = page.waitForEvent('download');
   await page.getByRole('button', { name: 'Télécharger le journal Markdown' }).click();
@@ -99,6 +127,8 @@ test('configurer, rédiger, prévisualiser, publier, persister et exporter sans 
   await expect(page.getByRole('heading', { name: 'Tableau de bord' })).toBeVisible();
   await page.getByRole('button', { name: 'Articles' }).click();
   await expect(page.getByText('Un article local mis à jour')).toBeVisible();
+  await page.getByRole('button', { name: 'Configuration' }).click();
+  await expect(page.locator('#masthead-crop-preview img').first()).toHaveAttribute('src', /cegep-rimouski\.jpg/);
 });
 
 test('l’alias admin redirige et le bandeau ne promet aucun service distant', async ({ page }) => {

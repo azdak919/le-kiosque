@@ -60,10 +60,21 @@ export function buildCmsConfig(options: CmsConfigOptions): Record<string, unknow
     { name: 'credit', label: 'Crédit photo', widget: 'string', required: false },
     { name: 'creditUrl', label: 'Lien du crédit', widget: 'string', required: false },
     { name: 'license', label: 'Licence', widget: 'string', required: false },
+    { name: 'licenseUrl', label: 'Lien de la licence', widget: 'string', required: false },
+    { name: 'sourceUrl', label: 'Page source', widget: 'string', required: false },
     { name: 'width', label: 'Largeur', widget: 'hidden', required: false },
     { name: 'height', label: 'Hauteur', widget: 'hidden', required: false },
+    { name: 'focalPoint', label: 'Point focal', widget: 'object', required: false, fields: [
+      { name: 'x', label: 'Position horizontale (%)', widget: 'number', min: 0, max: 100, value_type: 'int' },
+      { name: 'y', label: 'Position verticale (%)', widget: 'number', min: 0, max: 100, value_type: 'int' },
+    ] },
+    { name: 'institution', label: 'Établissement source', widget: 'hidden', required: false },
+    { name: 'campus', label: 'Campus source', widget: 'hidden', required: false },
+    { name: 'keywords', label: 'Mots-clés de la banque', widget: 'hidden', required: false },
+    { name: 'usages', label: 'Usages de la banque', widget: 'hidden', required: false },
     { name: 'mime', label: 'Type MIME', widget: 'hidden', required: false },
     { name: 'checksum', label: 'Somme de contrôle', widget: 'hidden', required: false },
+    { name: 'source', label: 'Traçabilité du média', widget: 'hidden', required: false },
   ];
 
   return {
@@ -133,6 +144,10 @@ export function buildCmsConfig(options: CmsConfigOptions): Record<string, unknow
               { name: 'tools', label: 'Outils LE-RADAR.ca', widget: 'object', fields: [
                 { name: 'pomodoro', label: 'Pomodoro', widget: 'boolean', default: true },
                 { name: 'solitaire', label: 'Solitaire', widget: 'boolean', default: true },
+              ] },
+              { name: 'overlayStrength', label: 'Force du voile photo', widget: 'number', required: false, min: 0, max: 0.9, value_type: 'float', default: 0.55 },
+              { name: 'textAlignment', label: 'Alignement du titre', widget: 'select', required: false, default: 'left', options: [
+                { label: 'Gauche', value: 'left' }, { label: 'Centre', value: 'center' }, { label: 'Droite', value: 'right' },
               ] },
             ] },
             { name: 'radio', label: 'Radio LE-RADAR.ca', widget: 'object', required: false, fields: [

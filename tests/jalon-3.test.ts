@@ -85,7 +85,7 @@ test('la vitrine expose le bandeau illustré, les outils et la composition magaz
   assert.equal(content.publication.masthead?.tools?.pomodoro, true);
   assert.equal(content.publication.masthead?.tools?.solitaire, true);
 
-  const result = await build({ config: config(), bundle: content, outDir: out, logger: silent });
+  const result = await build({ config: config({ editorial: { mode: 'demo-local' } }), bundle: content, outDir: out, logger: silent });
   assert.equal(result.articles, 20);
   const home = await readFile(path.join(out, 'index.html'), 'utf8');
   const feed = await readFile(path.join(out, 'feed.xml'), 'utf8');

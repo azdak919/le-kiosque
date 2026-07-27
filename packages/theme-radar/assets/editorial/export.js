@@ -69,6 +69,8 @@ masthead:
   tools:
     pomodoro: ${publication.masthead?.tools?.pomodoro !== false}
     solitaire: ${publication.masthead?.tools?.solitaire !== false}
+  overlayStrength: ${Number(publication.masthead?.overlayStrength ?? 0.55)}
+  textAlignment: ${yaml(publication.masthead?.textAlignment || 'left')}
 radio:
   enabled: ${publication.radio?.enabled !== false}
   station: ${yaml(publication.radio?.station || '')}

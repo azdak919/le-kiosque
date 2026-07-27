@@ -79,6 +79,73 @@ function articles() {
   return `<section class="panel"><div class="toolbar"><div><h2>Articles</h2><p>Seul le statut Publié apparaît dans le journal.</p></div><button class="primary" data-action="new-article">Nouvel article</button></div><ul class="entity-list">${bundle.articles.map((article) => `<li><div><strong>${esc(article.title)}</strong>${article.isDemo ? ' <small>Exemple local' + (article.isUserModified ? ' modifié' : '') + '</small>' : ''}<small>/${esc(article.slug)} · <span class="status-pill status-${esc(article.status)}">${statusLabel(article.status)}</span></small></div><div><button data-edit-article="${esc(article.id)}">Modifier</button> <button class="danger" data-delete-article="${esc(article.id)}">Supprimer</button></div></li>`).join('')}</ul></section>`;
 }
 
+const MEDIA_USAGE_LABELS = {
+  exterior: 'Extérieur', interior: 'Intérieur', sport: 'Sport', masthead: 'Masthead', article: 'Article',
+};
+
+function mediaSrc(media) {
+  const src = String(media?.src || '');
+  return src.startsWith('/') ? `${config.publicBasePath}${src}` : src;
+}
+
+function cropFrames(media, prefix) {
+  if (!media) return `<p class="media-quality" data-empty-crop>Aucune photo sélectionnée.</p>`;
+  const position = `${media.focalPoint?.x ?? 50}% ${media.focalPoint?.y ?? 50}%`;
+  return `<div class="crop-previews" data-crop-prefix="${esc(prefix)}" style="--crop-position:${esc(position)}">
+    <figure class="crop-preview crop-desktop"><img src="${esc(mediaSrc(media))}" alt=""><figcaption>Ordinateur</figcaption></figure>
+    <figure class="crop-preview crop-tablet"><img src="${esc(mediaSrc(media))}" alt=""><figcaption>Tablette</figcaption></figure>
+    <figure class="crop-preview crop-mobile"><img src="${esc(mediaSrc(media))}" alt=""><figcaption>Mobile</figcaption></figure>
+  </div>`;
+}
+
+function mediaCards(selectable = false) {
+  return (bundle.media || []).map((media) => `<article class="media-card" data-media-card data-search="${esc([media.institution, media.campus, ...(media.keywords || [])].join(' ').toLowerCase())}" data-usages="${esc((media.usages || []).join(' '))}">
+    <img src="${esc(mediaSrc(media))}" alt="${esc(media.alt)}" loading="lazy" style="object-position:${media.focalPoint?.x ?? 50}% ${media.focalPoint?.y ?? 50}%">
+    <div class="media-card-body"><h3>${esc(media.institution)}</h3><p>${esc(media.campus)}</p><p class="media-tags">${(media.usages || []).map((usage) => esc(MEDIA_USAGE_LABELS[usage] || usage)).join(' · ')}</p>
+    <p><a href="${esc(media.creditUrl)}" target="_blank" rel="noopener">Photo : ${esc(media.credit)}</a> · <a href="${esc(media.licenseUrl)}" target="_blank" rel="noopener">${esc(media.license)}</a></p>
+    ${selectable ? `<button type="button" class="primary" data-select-media="${esc(media.id)}">Choisir cette photo</button>` : `<a href="${esc(media.sourceUrl)}" target="_blank" rel="noopener">Voir la source</a>`}</div>
+  </article>`).join('');
+}
+
+function mediaFilters() {
+  return `<div class="media-filters"><label>Rechercher un établissement, un campus ou un mot-clé<input type="search" data-media-search placeholder="Ex. : Jonquière, sport, intérieur"></label><label>Usage<select data-media-usage><option value="">Tous</option>${Object.entries(MEDIA_USAGE_LABELS).map(([value, label]) => `<option value="${value}">${label}</option>`).join('')}</select></label></div>`;
+}
+
+function bindMediaFilters(host) {
+  const search = host.querySelector('[data-media-search]');
+  const usage = host.querySelector('[data-media-usage]');
+  const filter = () => {
+    const needle = search.value.trim().toLowerCase();
+    host.querySelectorAll('[data-media-card]').forEach((card) => {
+      card.hidden = Boolean((needle && !card.dataset.search.includes(needle)) || (usage.value && !card.dataset.usages.split(' ').includes(usage.value)));
+    });
+  };
+  search.addEventListener('input', filter);
+  usage.addEventListener('change', filter);
+}
+
+function mediaLibrary() {
+  return `<section class="panel"><div class="toolbar"><div><h2>Médias de démonstration</h2><p>Ces campus réels illustrent la démonstration et ne représentent pas l'établissement fictif Le Quorum.</p></div></div>${mediaFilters()}<div class="media-grid">${mediaCards()}</div></section>`;
+}
+
+function chooseSharedMedia(onSelect, usage = '') {
+  const dialog = document.createElement('dialog');
+  dialog.className = 'media-picker';
+  dialog.innerHTML = `<div class="toolbar"><h2>Choisir dans la banque</h2><button type="button" data-close-media aria-label="Fermer">×</button></div><p>La sélection copie une référence locale; aucun téléversement ni traitement distant n'est lancé.</p>${mediaFilters()}<div class="media-grid">${mediaCards(true)}</div>`;
+  document.body.appendChild(dialog);
+  if (usage) dialog.querySelector('[data-media-usage]').value = usage;
+  bindMediaFilters(dialog);
+  dialog.querySelector('[data-media-usage]').dispatchEvent(new Event('change'));
+  dialog.querySelector('[data-close-media]').onclick = () => dialog.close();
+  dialog.querySelectorAll('[data-select-media]').forEach((button) => button.onclick = () => {
+    const media = bundle.media.find((item) => item.id === button.dataset.selectMedia);
+    if (media) onSelect(structuredClone(media));
+    dialog.close();
+  });
+  dialog.addEventListener('close', () => dialog.remove());
+  dialog.showModal();
+}
+
 async function readArticleImage(file, details = {}) {
   const allowed = ['image/png', 'image/webp', 'image/jpeg'];
   if (!allowed.includes(file.type)) throw new Error('Utilisez une photo JPEG, PNG ou WebP.');
@@ -103,7 +170,7 @@ function articleEditor(article) {
     <fieldset class="field"><legend>Auteurs</legend>${bundle.authors.map((author) => `<label><input type="checkbox" name="authors" value="${esc(author.slug)}" ${current.authors.includes(author.slug) ? 'checked' : ''}> ${esc(author.name)}</label>`).join('')}</fieldset>
     <fieldset class="field"><legend>Catégories</legend>${bundle.taxonomies.categories.map((item) => `<label><input type="checkbox" name="categories" value="${esc(item.slug)}" ${current.categories.includes(item.slug) ? 'checked' : ''}> ${esc(item.name)}</label>`).join('')}</fieldset>
     <fieldset class="field full"><legend>Mots-clés</legend>${bundle.taxonomies.tags.map((item) => `<label><input type="checkbox" name="tags" value="${esc(item.slug)}" ${current.tags.includes(item.slug) ? 'checked' : ''}> ${esc(item.name)}</label>`).join('')}</fieldset>
-    <fieldset class="field full media-editor"><legend>Photo principale</legend><label>Photo JPEG, PNG ou WebP<input id="article-lead-file" type="file" accept="image/jpeg,image/png,image/webp"></label><label>Description accessible<input name="leadAlt" value="${esc(current.lead?.alt || '')}"></label><label>Crédit<input name="leadCredit" value="${esc(current.lead?.credit || '')}"></label><label>Légende<input name="leadCaption" value="${esc(current.lead?.caption || '')}"></label><label>Licence<input name="leadLicense" value="${esc(current.lead?.license || '')}"></label>${current.lead ? `<p class="media-quality">Photo actuelle : ${current.lead.width || '?'} × ${current.lead.height || '?'} px${current.lead.width && (current.lead.width < 720 || current.lead.height < 405) ? ' — résolution faible pour la vedette' : ''}.</p>` : ''}</fieldset>
+    <fieldset class="field full media-editor"><legend>Photo principale</legend><label>Photo JPEG, PNG ou WebP<input id="article-lead-file" type="file" accept="image/jpeg,image/png,image/webp"></label><button type="button" data-action="choose-lead-media">Choisir dans la banque de démonstration</button><label>Description accessible<input name="leadAlt" value="${esc(current.lead?.alt || '')}"></label><label>Crédit<input name="leadCredit" value="${esc(current.lead?.credit || '')}"></label><label>Légende<input name="leadCaption" value="${esc(current.lead?.caption || '')}"></label><label>Licence<input name="leadLicense" value="${esc(current.lead?.license || '')}"></label><label>Point focal X<input name="leadFocalX" type="range" min="0" max="100" value="${current.lead?.focalPoint?.x ?? 50}"></label><label>Point focal Y<input name="leadFocalY" type="range" min="0" max="100" value="${current.lead?.focalPoint?.y ?? 50}"></label><div id="article-lead-preview" class="full">${cropFrames(current.lead, 'article')}</div>${current.lead ? `<p class="media-quality">Photo actuelle : ${current.lead.width || '?'} × ${current.lead.height || '?'} px${current.lead.width && (current.lead.width < 720 || current.lead.height < 405) ? ' — résolution faible pour la vedette' : ''}.</p>` : ''}</fieldset>
     <div class="field full"><label for="article-format">Format du texte</label><select id="article-format" name="bodyFormat"><option value="markdown" ${current.body?.format !== 'html' ? 'selected' : ''}>Markdown</option><option value="html" ${current.body?.format === 'html' ? 'selected' : ''}>HTML assaini</option></select></div>
     <div class="field full editor-shell"><div class="editor-toolbar"><button type="button" data-editor-mode="visual">Visuel</button><button type="button" data-editor-mode="source">Source</button><span data-html-tools><button type="button" data-command="bold"><strong>G</strong></button><button type="button" data-command="italic"><em>I</em></button><button type="button" data-command="formatBlock" data-value="h2">Titre</button><button type="button" data-command="createLink">Lien</button></span><label class="button">Ajouter une photo<input id="article-inline-file" type="file" accept="image/jpeg,image/png,image/webp" hidden></label></div><label for="article-body" class="sr-only">Texte de l’article</label><textarea class="body" id="article-body" name="body">${esc(current.body?.raw || '')}</textarea><div id="article-visual" class="visual-editor" contenteditable="true"></div><p class="media-quality">Les photos téléversées restent dans ce navigateur et seront incluses dans les exports. Recommandation : 720 × 405 px pour une vedette.</p></div>
     <div class="actions full"><button class="primary" type="submit">Enregistrer</button><button type="button" data-action="preview">Prévisualiser sans publier</button></div></form><div id="article-preview"></div></section>`;
@@ -114,6 +181,21 @@ function articleEditor(article) {
   const format = document.getElementById('article-format');
   const body = document.getElementById('article-body');
   const visual = document.getElementById('article-visual');
+  const articleForm = document.getElementById('article-form');
+  const refreshLeadCrop = () => {
+    const x = Number(articleForm.elements.leadFocalX.value), y = Number(articleForm.elements.leadFocalY.value);
+    articleForm.querySelector('.crop-previews')?.style.setProperty('--crop-position', `${x}% ${y}%`);
+  };
+  articleForm.elements.leadFocalX.addEventListener('input', refreshLeadCrop);
+  articleForm.elements.leadFocalY.addEventListener('input', refreshLeadCrop);
+  main.querySelector('[data-action="choose-lead-media"]').onclick = () => chooseSharedMedia((media) => {
+    current.lead = media;
+    for (const [name, value] of [['leadAlt', media.alt], ['leadCredit', media.credit], ['leadCaption', media.caption], ['leadLicense', media.license]]) articleForm.elements[name].value = value || '';
+    articleForm.elements.leadFocalX.value = media.focalPoint?.x ?? 50;
+    articleForm.elements.leadFocalY.value = media.focalPoint?.y ?? 50;
+    document.getElementById('article-lead-preview').innerHTML = cropFrames(media, 'article');
+    notify('Photo de démonstration sélectionnée.');
+  }, 'article');
   let editorMode = current.body?.format === 'html' ? 'visual' : 'source';
   visual.innerHTML = current.body?.format === 'html' ? sanitizePreview(current.body.raw || '') : sanitizePreview(marked.parse(current.body?.raw || '', { async: false }));
   const syncEditor = (next = editorMode) => {
@@ -147,8 +229,8 @@ function articleEditor(article) {
     if (editorMode === 'visual' && format.value === 'html') body.value = sanitizePreview(visual.innerHTML);
     let lead = current.lead;
     const leadFile = document.getElementById('article-lead-file').files[0];
-    if (leadFile) lead = await readArticleImage(leadFile, { alt: form.get('leadAlt').trim(), credit: form.get('leadCredit').trim(), caption: form.get('leadCaption').trim(), license: form.get('leadLicense').trim() });
-    else if (lead) lead = { ...lead, alt: form.get('leadAlt').trim(), credit: form.get('leadCredit').trim(), caption: form.get('leadCaption').trim(), license: form.get('leadLicense').trim() };
+    if (leadFile) lead = { ...await readArticleImage(leadFile, { alt: form.get('leadAlt').trim(), credit: form.get('leadCredit').trim(), caption: form.get('leadCaption').trim(), license: form.get('leadLicense').trim() }), focalPoint: { x: Number(form.get('leadFocalX')), y: Number(form.get('leadFocalY')) } };
+    else if (lead) lead = { ...lead, alt: form.get('leadAlt').trim(), credit: form.get('leadCredit').trim(), caption: form.get('leadCaption').trim(), license: form.get('leadLicense').trim(), focalPoint: { x: Number(form.get('leadFocalX')), y: Number(form.get('leadFocalY')) } };
     if (form.get('status') === 'published' && lead && !lead.alt.trim()) { notify('La description de la photo principale est obligatoire.'); return; }
     const requestedPublication = form.get('publishedAt');
     const enteredPublication = requestedPublication ? new Date(requestedPublication).toISOString() : undefined;
@@ -187,7 +269,7 @@ function settings() {
     <div class="field"><label>Nom<input name="name" required value="${esc(publication.name)}"></label></div><div class="field"><label>Signature<input name="tagline" value="${esc(publication.tagline || '')}"></label></div><div class="field"><label>Institution<input name="institution" value="${esc(publication.institution || '')}"></label></div><div class="field"><label>Typographie<select name="typography"><option value="modern-accessible">Moderne accessible</option><option value="editorial-classic" ${publication.theme?.typography === 'editorial-classic' ? 'selected' : ''}>Éditoriale classique</option><option value="institutional" ${publication.theme?.typography === 'institutional' ? 'selected' : ''}>Institutionnelle</option></select></label></div>
     <div class="field"><label>Fuseau horaire<select name="timeZone"><option value="America/Toronto" ${publication.timeZone !== 'America/Blanc-Sablon' ? 'selected' : ''}>Heure de l’Est — majorité du Québec</option><option value="America/Blanc-Sablon" ${publication.timeZone === 'America/Blanc-Sablon' ? 'selected' : ''}>Heure de l’Atlantique — Blanc-Sablon</option></select></label></div>
     <div class="field"><label>Couleur principale<input name="accent" type="color" value="${esc(publication.theme?.accent || '#6c2163')}"></label></div><div class="field"><label>Couleur sombre<input name="accentDark" type="color" value="${esc(publication.theme?.accentDark || '#cf7ec1')}"></label></div><div id="admin-contrast" class="notice full" role="status"></div>
-    <fieldset class="field full"><legend>Mât illustré</legend><label><input name="backgroundsEnabled" type="checkbox" ${masthead.backgrounds?.enabled !== false ? 'checked' : ''}> Afficher les images de fond</label><label>Ajouter mes propres images<input id="background-files" type="file" accept="image/jpeg,image/png,image/webp" multiple></label><p>${masthead.backgrounds?.images?.length || 0} image(s) enregistrée(s). Un nouvel envoi les ajoute à la rotation.</p><button type="button" data-action="clear-backgrounds">Retirer toutes les images</button></fieldset>
+    <fieldset class="field full"><legend>Mât illustré</legend><label><input name="backgroundsEnabled" type="checkbox" ${masthead.backgrounds?.enabled !== false ? 'checked' : ''}> Afficher les images de fond</label><label>Ajouter mes propres images<input id="background-files" type="file" accept="image/jpeg,image/png,image/webp" multiple></label><div class="actions"><button type="button" data-action="choose-masthead-media">Choisir dans la banque de démonstration</button><button type="button" data-action="clear-backgrounds">Retirer toutes les images</button></div><p>${masthead.backgrounds?.images?.length || 0} image(s) enregistrée(s). Un nouvel envoi les ajoute à la rotation.</p><label>Point focal X<input name="mastheadFocalX" type="range" min="0" max="100" value="${masthead.backgrounds?.images?.[0]?.focalPoint?.x ?? 50}"></label><label>Point focal Y<input name="mastheadFocalY" type="range" min="0" max="100" value="${masthead.backgrounds?.images?.[0]?.focalPoint?.y ?? 50}"></label><label>Force du voile<input name="overlayStrength" type="range" min="0" max="0.9" step="0.05" value="${masthead.overlayStrength ?? 0.55}"></label><label>Alignement du titre<select name="textAlignment"><option value="left">Gauche</option><option value="center" ${masthead.textAlignment === 'center' ? 'selected' : ''}>Centre</option><option value="right" ${masthead.textAlignment === 'right' ? 'selected' : ''}>Droite</option></select></label><div id="masthead-crop-preview">${cropFrames(masthead.backgrounds?.images?.[0], 'masthead')}</div></fieldset>
     <fieldset class="field"><legend>Météo</legend><label><input name="weatherEnabled" type="checkbox" ${masthead.weather?.enabled ? 'checked' : ''}> Afficher la météo</label><label>Localités, séparées par des virgules<input name="weatherLocalities" value="${esc((masthead.weather?.localities || []).join(', '))}" placeholder="Québec"></label><small>Maximum quatre.</small></fieldset>
     <fieldset class="field"><legend>Outils</legend><label><input name="pomodoro" type="checkbox" ${masthead.tools?.pomodoro !== false ? 'checked' : ''}> Pomodoro LE-RADAR.ca</label><label><input name="solitaire" type="checkbox" ${masthead.tools?.solitaire !== false ? 'checked' : ''}> Solitaire LE-RADAR.ca</label></fieldset>
     <div class="field"><label><input name="radioEnabled" type="checkbox" ${publication.radio?.enabled !== false ? 'checked' : ''}> Barre radio sombre LE-RADAR.ca</label></div><div class="field"><label>Station<input name="station" value="${esc(publication.radio?.station || '')}"></label></div>
@@ -227,7 +309,7 @@ function bindCommon() {
 }
 
 function render() {
-  main.innerHTML = ({ dashboard, articles, authors, taxonomies, settings, exports: exportsView }[view] || dashboard)();
+  main.innerHTML = ({ dashboard, articles, media: mediaLibrary, authors, taxonomies, settings, exports: exportsView }[view] || dashboard)();
   bindCommon();
   if (view === 'dashboard') {
     document.getElementById('demo-visible').onchange = async (event) => { await backend.setDemoVisibility(event.target.checked); await refresh(); notify('Affichage des exemples mis à jour.'); };
@@ -248,12 +330,30 @@ function render() {
     main.querySelectorAll('[data-edit-taxonomy]').forEach((button) => button.onclick = async () => { const [kind, id] = button.dataset.editTaxonomy.split(':'); const values = kind === 'section' ? bundle.taxonomies.sections : kind === 'category' ? bundle.taxonomies.categories : bundle.taxonomies.tags; const current = values.find((item) => item.id === id); const name = prompt('Nom', current.name); if (!name) return; await backend.save(kind, { ...current, name, slug: current.slug }); await refresh(); render(); });
     main.querySelectorAll('[data-delete-taxonomy]').forEach((button) => button.onclick = async () => { const [kind, id] = button.dataset.deleteTaxonomy.split(':'); if (!confirm('Supprimer cette entrée?')) return; await backend.remove(kind, id); await refresh(); render(); });
   }
+  if (view === 'media') bindMediaFilters(main);
   if (view === 'settings') {
     const form = document.getElementById('settings-form');
+    let selectedMasthead = structuredClone(bundle.publication.masthead?.backgrounds?.images?.[0] || null);
+    let clearMastheadImages = false;
+    const refreshMastheadCrop = () => {
+      const x = Number(form.elements.mastheadFocalX.value), y = Number(form.elements.mastheadFocalY.value);
+      form.querySelector('#masthead-crop-preview .crop-previews')?.style.setProperty('--crop-position', `${x}% ${y}%`);
+    };
+    form.elements.mastheadFocalX.addEventListener('input', refreshMastheadCrop);
+    form.elements.mastheadFocalY.addEventListener('input', refreshMastheadCrop);
+    main.querySelector('[data-action="choose-masthead-media"]').onclick = () => chooseSharedMedia((media) => {
+      selectedMasthead = media;
+      clearMastheadImages = false;
+      form.elements.mastheadFocalX.value = media.focalPoint?.x ?? 50;
+      form.elements.mastheadFocalY.value = media.focalPoint?.y ?? 50;
+      document.getElementById('masthead-crop-preview').innerHTML = cropFrames(media, 'masthead');
+      form.elements.backgroundsEnabled.checked = true;
+      notify('Photo de masthead sélectionnée.');
+    }, 'masthead');
     const updateContrast = () => { const ratio = contrastRatio(form.elements.accent.value); document.getElementById('admin-contrast').textContent = ratio >= 4.5 ? `Contraste AA avec du texte blanc : ${ratio.toFixed(2)}:1.` : `Avertissement : contraste de ${ratio.toFixed(2)}:1 avec du texte blanc. La sauvegarde reste permise.`; };
     form.elements.accent.addEventListener('input', updateContrast); updateContrast();
-    form.onsubmit = async (event) => { event.preventDefault(); const data = new FormData(form); const publication = structuredClone(bundle.publication); publication.name = data.get('name').trim(); publication.tagline = data.get('tagline').trim(); publication.institution = data.get('institution').trim(); publication.timeZone = data.get('timeZone'); publication.theme = { accent: data.get('accent'), accentDark: data.get('accentDark'), typography: data.get('typography') }; publication.radio = { ...publication.radio, enabled: data.has('radioEnabled'), station: data.get('station').trim(), theme: 'dark', position: 'top' }; const localities = data.get('weatherLocalities').split(',').map((value) => value.trim()).filter(Boolean).slice(0, 4); publication.masthead = { backgrounds: { enabled: data.has('backgroundsEnabled'), images: publication.masthead?.backgrounds?.images || [] }, weather: { enabled: data.has('weatherEnabled'), localities }, tools: { pomodoro: data.has('pomodoro'), solitaire: data.has('solitaire') } }; for (const file of document.getElementById('background-files').files) publication.masthead.backgrounds.images.push(await readArticleImage(file, { alt: `Arrière-plan du journal ${publication.name}` })); const logoFile = document.getElementById('logo-file').files[0]; if (logoFile) publication.logo = await readLogo(logoFile, data.get('logoAlt').trim()); else if (publication.logo) publication.logo.alt = data.get('logoAlt').trim() || publication.name; await backend.savePublication(publication); await refresh(); notify('Configuration enregistrée.'); render(); };
-    main.querySelector('[data-action="clear-backgrounds"]').onclick = () => { bundle.publication.masthead ||= {}; bundle.publication.masthead.backgrounds = { enabled: false, images: [] }; notify('Les images seront retirées à l’enregistrement.'); render(); };
+    form.onsubmit = async (event) => { event.preventDefault(); const data = new FormData(form); const publication = structuredClone(bundle.publication); publication.name = data.get('name').trim(); publication.tagline = data.get('tagline').trim(); publication.institution = data.get('institution').trim(); publication.timeZone = data.get('timeZone'); publication.theme = { accent: data.get('accent'), accentDark: data.get('accentDark'), typography: data.get('typography') }; publication.radio = { ...publication.radio, enabled: data.has('radioEnabled'), station: data.get('station').trim(), theme: 'dark', position: 'top' }; const localities = data.get('weatherLocalities').split(',').map((value) => value.trim()).filter(Boolean).slice(0, 4); const priorImages = clearMastheadImages ? [] : (publication.masthead?.backgrounds?.images || []); const selected = selectedMasthead ? { ...selectedMasthead, focalPoint: { x: Number(data.get('mastheadFocalX')), y: Number(data.get('mastheadFocalY')) } } : null; publication.masthead = { backgrounds: { enabled: data.has('backgroundsEnabled'), images: selected ? [selected, ...priorImages.filter((item) => item.id !== selected.id)] : priorImages }, weather: { enabled: data.has('weatherEnabled'), localities }, tools: { pomodoro: data.has('pomodoro'), solitaire: data.has('solitaire') }, overlayStrength: Math.min(0.9, Math.max(0, Number(data.get('overlayStrength')))), textAlignment: data.get('textAlignment') }; for (const file of document.getElementById('background-files').files) publication.masthead.backgrounds.images.push({ ...await readArticleImage(file, { alt: `Arrière-plan du journal ${publication.name}` }), focalPoint: { x: 50, y: 50 } }); const logoFile = document.getElementById('logo-file').files[0]; if (logoFile) publication.logo = await readLogo(logoFile, data.get('logoAlt').trim()); else if (publication.logo) publication.logo.alt = data.get('logoAlt').trim() || publication.name; await backend.savePublication(publication); await refresh(); notify('Configuration enregistrée.'); render(); };
+    main.querySelector('[data-action="clear-backgrounds"]').onclick = () => { selectedMasthead = null; clearMastheadImages = true; form.elements.backgroundsEnabled.checked = false; document.getElementById('masthead-crop-preview').innerHTML = cropFrames(null, 'masthead'); notify('Les images seront retirées à l’enregistrement.'); };
     main.querySelector('[data-action="recommended-theme"]').onclick = () => { form.elements.typography.value = 'modern-accessible'; form.elements.accent.value = '#6c2163'; form.elements.accentDark.value = '#cf7ec1'; };
   }
   if (view === 'exports') {

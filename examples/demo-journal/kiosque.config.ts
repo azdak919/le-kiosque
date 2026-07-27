@@ -17,6 +17,10 @@ const config: Partial<KiosqueConfig> = {
     },
   },
 
+  // Cette racine est la démonstration Le Quorum : sa banque photo et PGlite
+  // ne sont jamais copiés dans un déploiement `git-sveltia` standard.
+  editorial: { mode: 'demo-local' },
+
   deploy: {
     // Domaine dédié → laisser vide.
     // Fork servi par GitHub Pages sur <org>.github.io/<depot>/ → mettre '/<depot>'.

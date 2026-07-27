@@ -13,6 +13,7 @@ import { MarkdownSource } from '../packages/adapters/markdown/src/index.ts';
 import { createSourceContext } from '../packages/core/src/source.ts';
 import { build } from '../packages/pipeline/src/build.ts';
 import { normalizeBasePath, withBase } from '../packages/pipeline/src/config.ts';
+import { readSharedMediaManifest } from '../packages/pipeline/src/shared-media.ts';
 import { localAdminPage } from '../packages/theme-radar/src/local-admin.ts';
 
 const repoRoot = path.resolve(fileURLToPath(new URL('..', import.meta.url)));
@@ -34,11 +35,13 @@ async function readBundle() {
   await source.init({ root: journalRoot }, createSourceContext({ logger: log }));
   const articles = [];
   for await (const article of source.fetchArticles()) articles.push(article);
+  const mediaManifest = await readSharedMediaManifest(journalRoot);
   return {
     publication: await source.fetchPublication(),
     authors: await source.fetchAuthors(),
     taxonomies: await source.fetchTaxonomies(),
     articles,
+    media: mediaManifest?.media,
     syncedAt: new Date().toISOString(),
   };
 }

@@ -105,12 +105,47 @@ export interface MediaAsset {
   /** Page qui documente le crédit ou la provenance du fichier. */
   creditUrl?: string;
   license?: string;
+  /** Adresse de la licence, pour que le crédit reste vérifiable. */
+  licenseUrl?: string;
+  /** Page source du média, distincte du fichier binaire dérivé. */
+  sourceUrl?: string;
   width?: number;
   height?: number;
+  /** Point à préserver lors d'un recadrage `cover`, en pourcentage. */
+  focalPoint?: { x: number; y: number };
+  /** Métadonnées conservées quand une entrée de bibliothèque est copiée. */
+  institution?: string;
+  campus?: string;
+  keywords?: string[];
+  usages?: SharedMediaUsage[];
   mime?: string;
   /** sha256 du fichier — vérification d'intégrité de l'archive. */
   checksum?: string;
   source: SourceAttribution;
+}
+
+export type SharedMediaUsage = 'exterior' | 'interior' | 'sport' | 'masthead' | 'article';
+
+/**
+ * Entrée documentée d'une bibliothèque partagée.
+ *
+ * Plus stricte qu'un téléversement local : une photo préchargée doit pouvoir
+ * être attribuée, recadrée et auditée sans dépendre de l'interface qui l'affiche.
+ */
+export interface SharedMediaAsset extends MediaAsset {
+  remoteSrc: string;
+  credit: string;
+  creditUrl: string;
+  license: string;
+  licenseUrl: string;
+  sourceUrl: string;
+  width: number;
+  height: number;
+  focalPoint: { x: number; y: number };
+  institution: string;
+  campus: string;
+  keywords: string[];
+  usages: SharedMediaUsage[];
 }
 
 /**
@@ -228,6 +263,9 @@ export interface Publication {
       pomodoro?: boolean;
       solitaire?: boolean;
     };
+    /** Opacité du voile de lisibilité, bornée à 0–0,9 au rendu. */
+    overlayStrength?: number;
+    textAlignment?: 'left' | 'center' | 'right';
   };
   /** Barre d'écoute facultative de LE RADAR. */
   radio?: {
@@ -302,6 +340,8 @@ export interface ContentBundle {
   articles: Article[];
   authors: Author[];
   taxonomies: Taxonomies;
+  /** Bibliothèque facultative, émise uniquement par la démonstration locale. */
+  media?: SharedMediaAsset[];
   syncedAt: ISODate;
 }
 

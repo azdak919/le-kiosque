@@ -109,6 +109,12 @@ export class DemoBackendPGlite {
     await this.#migrate();
     const result = await this.db.query("SELECT value FROM kiosque_meta WHERE key = 'seeded'");
     if (!result.rows.length) await this.#seed(context.bootstrap);
+    else {
+      const mediaCount = await this.db.query('SELECT count(*)::int AS count FROM media');
+      if (!mediaCount.rows[0]?.count) {
+        for (const media of (await this.#loadSeed()).media || []) await this.save('media', media);
+      }
+    }
   }
 
   async #migrate() {
@@ -227,6 +233,14 @@ export class DemoBackendPGlite {
           articles.flatMap((entity) => [entity.id, entity.slug, entity.status, true, false, entity.updatedAt || now(), JSON.stringify(entity)]),
         );
       }
+      for (const media of seed.media || []) {
+        const entity = { ...media, id: entityId(media) };
+        await tx.query(
+          `INSERT INTO media(id, data) VALUES ($1, $2::jsonb)
+           ON CONFLICT(id) DO UPDATE SET data = excluded.data`,
+          [entity.id, JSON.stringify(entity)],
+        );
+      }
       await tx.query(
         `INSERT INTO kiosque_meta(key, value) VALUES ('demo-visible', $1::jsonb)
          ON CONFLICT(key) DO UPDATE SET value = excluded.value`,
@@ -246,10 +260,10 @@ export class DemoBackendPGlite {
   }
 
   async getSnapshot(options = { audience: 'editorial' }) {
-    const [publicationResult, demoResult, articles, authors, sections, categories, tags] = await Promise.all([
+    const [publicationResult, demoResult, articles, authors, sections, categories, tags, media] = await Promise.all([
       this.db.query('SELECT data FROM publication LIMIT 1'),
       this.db.query("SELECT value FROM kiosque_meta WHERE key = 'demo-visible'"),
-      this.#rows('articles'), this.#rows('authors'), this.#rows('sections'), this.#rows('categories'), this.#rows('tags'),
+      this.#rows('articles'), this.#rows('authors'), this.#rows('sections'), this.#rows('categories'), this.#rows('tags'), this.#rows('media'),
     ]);
     const demoVisible = demoResult.rows[0]?.value !== false;
     const includeDemo = options.includeDemo ?? demoVisible;
@@ -266,6 +280,7 @@ export class DemoBackendPGlite {
       articles: visibleArticles.sort((a, b) => String(b.publishedAt || b.updatedAt).localeCompare(String(a.publishedAt || a.updatedAt))),
       authors: visibleAuthors,
       taxonomies: { sections, categories, tags },
+      media,
       syncedAt: now(),
       demoVisible,
     };
@@ -404,6 +419,9 @@ export class DemoBackendPGlite {
       }
       for (const item of data.articles || []) {
         await tx.query('INSERT INTO articles(id,slug,status,is_demo,is_user_modified,updated_at,data) VALUES ($1,$2,$3,$4,$5,$6,$7::jsonb)', [item.id, item.slug, item.status, Boolean(item.isDemo), Boolean(item.isUserModified), item.updatedAt || now(), JSON.stringify(item)]);
+      }
+      for (const item of data.media || []) {
+        await tx.query('INSERT INTO media(id,data) VALUES ($1,$2::jsonb)', [item.id, JSON.stringify(item)]);
       }
     });
     this.#emit({ kind: 'backup-restored' });

@@ -29,7 +29,7 @@ export function localAdminPage(options: LocalAdminPageOptions): string {
 <header class="admin-header"><h1>Rédaction de <span id="publication-name">${esc(options.publicationName)}</span></h1><a href="${options.publicBasePath}/">Voir le journal</a></header>
 <div class="admin-shell">
   <nav class="admin-nav" aria-label="Administration">
-    <button data-view="dashboard" aria-current="page">Tableau de bord</button><button data-view="articles">Articles</button><button data-view="authors">Auteurs</button><button data-view="taxonomies">Sections et catégories</button><button data-view="settings">Configuration</button><button data-view="exports">Exporter et poursuivre</button>
+    <button data-view="dashboard" aria-current="page">Tableau de bord</button><button data-view="articles">Articles</button><button data-view="media">Médias de démonstration</button><button data-view="authors">Auteurs</button><button data-view="taxonomies">Sections et catégories</button><button data-view="settings">Configuration</button><button data-view="exports">Exporter et poursuivre</button>
   </nav>
   <main id="admin-main"><div class="loading"><h2>Ouverture du journal local…</h2><p>PGlite initialise PostgreSQL dans ce navigateur.</p></div></main>
 </div><div id="toast" role="status" aria-live="polite"></div>

@@ -21,6 +21,7 @@ import { sync, BackendUnavailableError } from './sync.ts';
 import { mirrorExists, verifyMediaIntegrity } from './mirror.ts';
 import { renderCmsConfig } from './cms-config.ts';
 import { normalizeBasePath, type KiosqueConfig } from './config.ts';
+import { readSharedMediaManifest } from './shared-media.ts';
 
 const log = createConsoleLogger('kiosque');
 
@@ -98,12 +99,14 @@ async function readBundleFromMirror(config: KiosqueConfig) {
 
   const articles = [];
   for await (const a of source.fetchArticles()) articles.push(a);
+  const mediaManifest = await readSharedMediaManifest(config.root);
 
   return {
     publication: await source.fetchPublication(),
     authors: await source.fetchAuthors(),
     taxonomies: await source.fetchTaxonomies(),
     articles,
+    media: mediaManifest?.media,
     syncedAt: new Date().toISOString(),
   };
 }

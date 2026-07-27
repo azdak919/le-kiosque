@@ -26,7 +26,7 @@ function mediaFigure(article, base) {
   if (!src) return '';
   const resolved = src.startsWith('/') ? link(base, src) : src;
   const credit = [article.lead.caption, article.lead.credit && `Photo : ${article.lead.credit}`].filter(Boolean).map(esc).join(' — ');
-  return `<div class="article-media"><img src="${esc(resolved)}" alt="${esc(article.lead.alt || '')}" loading="lazy"></div>${credit ? `<p class="article-media-credit">${credit}</p>` : ''}`;
+  return `<div class="article-media"><img src="${esc(resolved)}" alt="${esc(article.lead.alt || '')}" loading="lazy" style="object-position:${Number(article.lead.focalPoint?.x ?? 50)}% ${Number(article.lead.focalPoint?.y ?? 50)}%"></div>${credit ? `<p class="article-media-credit">${credit}</p>` : ''}`;
 }
 
 function articleCard(article, bundle, base, variant = 'tail') {
@@ -102,13 +102,16 @@ export function applyBranding(bundle, base) {
   const masthead = document.querySelector('.masthead');
   const backgrounds = publication.masthead?.backgrounds;
   const images = backgrounds?.enabled === false ? [] : (backgrounds?.images || []);
+  const overlay = Number(publication.masthead?.overlayStrength);
+  masthead?.style.setProperty('--masthead-overlay', String(Number.isFinite(overlay) ? Math.min(.9, Math.max(0, overlay)) : .55));
+  if (masthead) masthead.dataset.textAlignment = publication.masthead?.textAlignment || 'left';
   masthead?.classList.toggle('masthead--illustrated', Boolean(images.length));
   masthead?.querySelectorAll('[data-masthead-background], .masthead-background-shade, [data-masthead-credit], #masthead-backgrounds').forEach((node) => node.remove());
   if (masthead && images.length) {
-    const image = document.createElement('img'); image.className = 'masthead-background'; image.dataset.mastheadBackground = ''; image.alt = ''; image.src = safeMediaUrl(images[0].src.startsWith('/') ? link(base, images[0].src) : images[0].src);
+    const image = document.createElement('img'); image.className = 'masthead-background'; image.dataset.mastheadBackground = ''; image.alt = ''; image.src = safeMediaUrl(images[0].src.startsWith('/') ? link(base, images[0].src) : images[0].src); image.style.objectPosition = `${images[0].focalPoint?.x ?? 50}% ${images[0].focalPoint?.y ?? 50}%`;
     const shade = document.createElement('span'); shade.className = 'masthead-background-shade'; shade.setAttribute('aria-hidden', 'true');
-    const credit = document.createElement('span'); credit.className = 'masthead-photo-credit'; credit.dataset.mastheadCredit = ''; credit.textContent = images[0].credit ? `Photo : ${images[0].credit}` : '';
-    const manifest = document.createElement('script'); manifest.type = 'application/json'; manifest.id = 'masthead-backgrounds'; manifest.textContent = JSON.stringify(images.map((item) => ({ ...item, src: item.src.startsWith('/') ? link(base, item.src) : item.src })));
+    const credit = document.createElement('span'); credit.className = 'masthead-photo-credit'; credit.dataset.mastheadCredit = ''; if (images[0].credit) { const anchor = document.createElement('a'); anchor.href = images[0].creditUrl || images[0].sourceUrl || '#'; anchor.rel = 'noopener'; anchor.textContent = `Photo : ${images[0].credit}`; credit.append(anchor); }
+    const manifest = document.createElement('script'); manifest.type = 'application/json'; manifest.id = 'masthead-backgrounds'; manifest.textContent = JSON.stringify(images.map((item) => ({ ...item, src: item.src.startsWith('/') ? link(base, item.src) : item.src, backgroundPosition: `${item.focalPoint?.x ?? 50}% ${item.focalPoint?.y ?? 50}%` })));
     masthead.prepend(image, shade); masthead.append(credit, manifest);
   }
   const weather = publication.masthead?.weather;

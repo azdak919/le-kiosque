@@ -116,6 +116,10 @@ function list(v: unknown): string[] {
   return one ? [one] : [];
 }
 
+function finiteNumber(v: unknown): number | undefined {
+  return typeof v === 'number' && Number.isFinite(v) ? v : undefined;
+}
+
 /**
  * Les dates YAML sans fuseau (`2026-09-12 14:30:00`) sont interprétées comme
  * locales par `yaml`, ce qui décalerait la date de publication selon la machine
@@ -139,6 +143,7 @@ function mediaFrom(
   const src = str(raw.src);
   if (!src) return undefined;
   const kind = (str(raw.kind) as MediaAsset['kind']) ?? 'image';
+  const focal = (raw.focalPoint ?? {}) as Record<string, unknown>;
   return {
     id: str(raw.id) ?? derivedId('media', `${fallbackKey}:${src}`),
     kind,
@@ -149,8 +154,17 @@ function mediaFrom(
     credit: str(raw.credit),
     creditUrl: str(raw.creditUrl),
     license: str(raw.license),
-    width: typeof raw.width === 'number' ? raw.width : undefined,
-    height: typeof raw.height === 'number' ? raw.height : undefined,
+    licenseUrl: str(raw.licenseUrl),
+    sourceUrl: str(raw.sourceUrl),
+    width: finiteNumber(raw.width),
+    height: finiteNumber(raw.height),
+    focalPoint: finiteNumber(focal.x) !== undefined && finiteNumber(focal.y) !== undefined
+      ? { x: finiteNumber(focal.x)!, y: finiteNumber(focal.y)! }
+      : undefined,
+    institution: str(raw.institution),
+    campus: str(raw.campus),
+    keywords: list(raw.keywords),
+    usages: list(raw.usages) as NonNullable<MediaAsset['usages']>,
     mime: str(raw.mime),
     checksum: str(raw.checksum),
     source: attribution,
@@ -296,6 +310,11 @@ export class MarkdownSource implements ContentSource<MarkdownConfig> {
               pomodoro: tools.pomodoro === undefined ? true : Boolean(tools.pomodoro),
               solitaire: tools.solitaire === undefined ? true : Boolean(tools.solitaire),
             },
+            overlayStrength: finiteNumber(masthead.overlayStrength),
+            textAlignment: (() => {
+              const value = str(masthead.textAlignment);
+              return value === 'center' || value === 'right' ? value : 'left';
+            })(),
           }
         : undefined,
       radio: raw.radio

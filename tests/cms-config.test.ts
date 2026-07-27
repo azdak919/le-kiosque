@@ -153,6 +153,24 @@ test('le texte alternatif des images est obligatoire', async () => {
   );
 });
 
+test('les métadonnées de recadrage et de licence sont préservées par le CMS', async () => {
+  const articles = byName(await collections(), 'articles');
+  const lead = articles.fields.find((field) => field.name === 'lead');
+  const names = new Set(lead?.fields?.map((field) => field.name));
+  for (const name of ['licenseUrl', 'sourceUrl', 'focalPoint', 'institution', 'campus', 'keywords', 'usages', 'source']) {
+    assert.ok(names.has(name), `le champ média « ${name} » doit survivre à une sauvegarde CMS`);
+  }
+});
+
+test('les options visuelles du masthead sont déclarées dans le CMS', async () => {
+  const configuration = byName(await collections(), 'configuration');
+  const publication = (configuration as unknown as { files: Array<{ fields: Field[] }> }).files[0];
+  const masthead = publication.fields.find((field) => field.name === 'masthead');
+  const names = new Set(masthead?.fields?.map((field) => field.name));
+  assert.ok(names.has('overlayStrength'));
+  assert.ok(names.has('textAlignment'));
+});
+
 test('le champ body est en dernier — il représente tout ce qui suit le front-matter', async () => {
   for (const name of ['articles', 'auteurs']) {
     const collection = byName(await collections(), name);
