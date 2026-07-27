@@ -11,8 +11,9 @@
 | **DEMO ONLY** | Points focaux X/Y et cadres `object-fit: cover` dans l'administration locale. Ils simulent le recadrage sans produire de nouvelle image. |
 | **DONE** | Table `media` alimentée au seed et incluse dans les snapshots, sauvegardes, restaurations et réinitialisations. L'upload local existant reste disponible. |
 | **DONE** | Champs média et masthead déclarés dans la configuration CMS; tests anti-dérive, licences, dimensions, HTTPS, sommes et points focaux ajoutés. |
+| **DONE** | GitHub Page publique déployée et contrôlée sur Chromium : grille 1180 px, point focal, crédit, six médias PGlite, radio `ready` à 62 px avec `chyz` et aucun débordement horizontal. |
 | **NOT STARTED** | API distante, stockage distant, rôles d'autorisation, transformations d'images, DAM, installation automatisée et fédération LE‑RADAR. |
-| **BLOCKED** | Aucun blocage local. La vérification de la GitHub Page publique dépend du déploiement Actions après le push. |
+| **BLOCKED** | La fédération et l'installation automatisée restent bloquées tant que les API distantes, le stockage, l'authentification et leurs responsabilités d'exploitation ne sont pas définis. |
 
 ### Fichiers et composants de référence
 
