@@ -5,23 +5,74 @@ celle que la plupart des rédactions utiliseront.
 
 ---
 
-## A. Avec l'interface d'édition — **à venir (jalon 2)**
+## A. Avec l'interface d'édition
 
-```
-votrejournal.ca/admin
-  → « Se connecter avec GitHub »
-  → « Nouvel article »
-  → titre · texte · photo · auteur · section · catégories
-  → « Enregistrer le brouillon »
-  → « Soumettre en révision »   (la rédaction en chef reçoit une notification)
-  → « Publier »                  → le site est à jour en ~40 secondes
-```
+Rendez-vous sur **`votrejournal.ca/admin`** et connectez-vous avec GitHub.
 
 Aucun Git, aucun terminal, aucun fichier à éditer à la main.
 
-> **Statut actuel :** cette interface n'est pas encore livrée. Le format des
-> fichiers décrit ci-dessous est cependant **exactement** celui qu'elle
-> produira — quand elle arrivera, il n'y aura rien à migrer.
+### Rédiger
+
+**« Nouvel article »**, puis remplissez : titre, adresse, texte, photo,
+signature, section, catégories.
+
+Deux champs méritent une seconde d'attention :
+
+- **Adresse (slug)** — elle apparaît dans l'URL. Une fois l'article publié,
+  ne la changez plus : tous les liens partagés cesseraient de fonctionner.
+  (Si vous devez vraiment la changer, voir *Corriger un article publié*.)
+- **Description de l'image** — obligatoire. C'est ce que lisent les personnes
+  aveugles, et ce qui s'affiche quand l'image ne charge pas. Décrivez ce qu'on
+  voit : « Une assemblée étudiante dans un auditorium bondé », pas « photo ».
+
+Le statut par défaut est **Brouillon**. Enregistrez aussi souvent que vous
+voulez : un brouillon n'apparaît nulle part sur le site.
+
+### Soumettre en révision
+
+Passez le statut à **En révision**, puis enregistrez.
+
+L'article reste invisible du public. Il est simplement marqué comme prêt à être
+relu. Prévenez la rédaction en chef — le CMS n'envoie pas de notification.
+
+### Corriger
+
+La personne qui révise ouvre l'article, corrige, puis :
+
+- **remet en Brouillon** si le texte demande encore du travail ;
+- **passe à Publié** si tout est bon.
+
+### Publier
+
+Statut à **Publié**, enregistrer. Le site est à jour en une quarantaine de
+secondes.
+
+La publication est refusée tant qu'il manque : un titre, une adresse, **une
+signature**, **une section**, une **date de publication** ou du texte. Ce n'est
+pas de la rigidité administrative : un article de journal sans signature ni date
+n'est pas citable, et une archive qui en est pleine perd sa valeur.
+
+### Ce qui se passe derrière
+
+Chaque enregistrement crée un commit dans le dépôt Git — l'historique complet du
+journal, qui date, horodate et attribue chaque modification. Vous n'avez jamais
+à le voir ni à le comprendre. Il est là le jour où quelqu'un demande « qui a
+changé quoi, et quand », et le jour où il faut restaurer une version.
+
+### Les trois statuts, en résumé
+
+| Statut | Enregistré | Visible du public |
+|---|---|---|
+| **Brouillon** | oui | non |
+| **En révision** | oui | non |
+| **Publié** | oui | oui |
+
+> **Une limite à connaître :** ces statuts sont une convention d'équipe, pas une
+> barrière technique. Toute personne ayant accès en écriture au dépôt peut
+> publier directement. La révision par validation obligatoire n'existe pas encore
+> dans Sveltia CMS — voir [`docs/brancher-sveltia.md`](../docs/brancher-sveltia.md).
+
+Mise en service de l'interface : [`docs/brancher-sveltia.md`](../docs/brancher-sveltia.md).
 
 ---
 
@@ -71,10 +122,10 @@ git add -A && git commit -m "Article : le titre" && git push
 |---|---|---|
 | `title` | oui | |
 | `slug` | non | déduit du nom de fichier |
-| `status` | oui | `draft`, `in-review`, `published`, `archived` |
-| `publishedAt` | si publié | format `AAAA-MM-JJTHH:MM:SSZ`, en UTC |
-| `authors` | recommandé | doit correspondre à un fichier de `content/auteurs/` |
-| `section` | non | doit correspondre à un fichier de `content/sections/` |
+| `status` | oui | `draft`, `in-review`, `published` — `archived` en plus, pour retirer du fil sans casser les liens |
+| `publishedAt` | **si publié** | format `AAAA-MM-JJTHH:MM:SSZ`, en UTC |
+| `authors` | **si publié** | doit correspondre à un fichier de `content/auteurs/` |
+| `section` | **si publié** | doit correspondre à un fichier de `content/sections/` |
 | `excerpt` | non | déduit du premier paragraphe si absent |
 | `lead.alt` | **oui si image** | voir ci-dessous |
 | `lead.credit` | recommandé | le ou la photographe |
@@ -86,21 +137,32 @@ tout changement de CMS.
 
 ---
 
-## Deux règles qui bloquent la publication
+## Ce qui bloque la publication
 
-**1. Toute image doit avoir un `alt`.** Ce n'est pas une formalité : c'est ce
-que lisent les personnes aveugles, et ce qui s'affiche quand l'image ne charge
-pas. Décrivez ce qu'on voit, pas ce que ça signifie.
+Un **brouillon** peut être aussi incomplet que vous voulez — c'est le propre
+d'un brouillon. Ce sont les articles **publiés** qui doivent tenir debout :
 
+| Exigence | Pourquoi |
+|---|---|
+| `title` et `slug` | sans quoi il n'y a ni page ni adresse |
+| `authors` — au moins une | un article de journal non signé n'est pas citable |
+| `section` | sinon il n'apparaît dans aucune rubrique |
+| `publishedAt` | une archive sans dates est inexploitable |
+| un corps non vide | |
+| `alt` sur chaque image | c'est ce que lisent les personnes aveugles, et ce qui s'affiche quand l'image ne charge pas |
+
+Pour le texte alternatif :
 - ✅ `alt: "Une assemblée étudiante dans un auditorium bondé"`
 - ❌ `alt: "photo"` · ❌ `alt: "IMG_4837"`
 
-**2. Un article publié ne peut pas être vide** et doit porter une date.
+`sync` refuse d'écrire et vous dit exactement quoi corriger, avec le chemin du
+fichier fautif.
 
-`sync` refusera d'écrire et vous dira quoi corriger. Il émet aussi des
-avertissements non bloquants — article sans signature, photo sans crédit,
-catégorie non déclarée. Ils ne vous empêchent pas de publier, mais une archive
-sans crédits photo devient un problème juridique dans cinq ans.
+Il émet aussi des **avertissements non bloquants** : extrait absent, photo sans
+crédit, catégorie non déclarée, gouvernance incomplète. Ils ne vous empêchent
+pas de publier — mais une archive sans crédits photo devient un problème
+juridique dans cinq ans, et une gouvernance incomplète tue le journal à la
+prochaine graduation.
 
 ---
 

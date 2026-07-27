@@ -9,7 +9,10 @@
  * commandes distinctes précisément pour ça.
  */
 
+import path from 'node:path';
+
 import { createSourceContext, safeHealth, type ContentSource } from '../../core/src/source.ts';
+import { freezeId } from '../../adapters/markdown/src/frontmatter.ts';
 import { formatIssues, validateBundle } from '../../core/src/validate.ts';
 import type { Article, ContentBundle } from '../../core/src/model.ts';
 import { writeChecksums, writeIndex, writeMedia } from './mirror.ts';
@@ -29,6 +32,37 @@ export interface SyncResult {
   bundle: ContentBundle;
   mediaMirrored: number;
   warnings: number;
+  /** Nombre d'articles dont l'`id` vient d'être inscrit à demeure. */
+  idsFrozen: number;
+}
+
+/**
+ * Inscrit dans chaque fichier d'article l'`id` qui n'y figure pas encore.
+ *
+ * Ne concerne que les articles issus du miroir Markdown — pour un backend
+ * distant, l'`id` se fige au moment où `sync` écrit le fichier miroir.
+ * (Cette écriture-là reste à implémenter : elle arrivera avec le premier
+ * adaptateur distant, au jalon 5.)
+ */
+async function freezeArticleIds(
+  root: string,
+  articles: Article[],
+  log: { warn(m: string): void },
+): Promise<number> {
+  let frozen = 0;
+  for (const article of articles) {
+    if (article.source.backend !== 'markdown') continue;
+    const file = path.join(root, 'content', article.source.backendId);
+    try {
+      if (await freezeId(file, article.id)) frozen++;
+    } catch (err) {
+      // Un fichier en lecture seule ne doit pas faire échouer la
+      // synchronisation : l'identifiant dérivé reste valable tant que le
+      // fichier ne bouge pas.
+      log.warn(`identifiant non figé (${article.source.backendId}) : ${err instanceof Error ? err.message : err}`);
+    }
+  }
+  return frozen;
 }
 
 export class BackendUnavailableError extends Error {
@@ -91,8 +125,15 @@ export async function sync(options: SyncOptions): Promise<SyncResult> {
 
   if (options.dryRun) {
     log.info('essai à blanc — rien n’a été écrit');
-    return { bundle, mediaMirrored: 0, warnings: warnings.length };
+    return { bundle, mediaMirrored: 0, warnings: warnings.length, idsFrozen: 0 };
   }
+
+  // Geler les identifiants AVANT tout le reste : c'est ce qui rend l'identité
+  // d'un article indépendante de son chemin, et donc d'un déplacement de
+  // fichier ou d'un changement de CMS. Sveltia crée des fichiers sans `id` —
+  // sans ce passage, chaque renommage créerait un doublon.
+  const idsFrozen = await freezeArticleIds(config.root, bundle.articles, log);
+  if (idsFrozen) log.info(`${idsFrozen} identifiant(s) figé(s) dans le front-matter`);
 
   // Miroir des médias. Chaque fichier est enregistré avec son empreinte : c'est
   // ce qui permettra plus tard de détecter une archive silencieusement corrompue.
@@ -122,5 +163,5 @@ export async function sync(options: SyncOptions): Promise<SyncResult> {
   await writeIndex(config.root, bundle);
 
   log.info(`${articles.length} articles, ${authors.length} signatures, ${mediaMirrored} médias`);
-  return { bundle, mediaMirrored, warnings: warnings.length };
+  return { bundle, mediaMirrored, warnings: warnings.length, idsFrozen };
 }

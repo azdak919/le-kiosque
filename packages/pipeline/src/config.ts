@@ -25,9 +25,25 @@ export interface DeployConfig {
   cname?: string;
 }
 
+export interface CmsConfig {
+  /**
+   * URL du Worker d'authentification (`sveltia-cms-auth`).
+   *
+   * Sans elle, l'interface d'édition ne peut pas ouvrir de session GitHub.
+   * Le site publié, lui, ne dépend de rien de tout ça : si ce Worker tombe,
+   * seule l'écriture s'arrête. Voir docs/brancher-sveltia.md.
+   */
+  authBaseUrl?: string;
+  /** Branche sur laquelle le CMS écrit. Défaut : main. */
+  branch?: string;
+}
+
 export interface KiosqueConfig {
   /** Racine du dépôt. Résolue depuis l'emplacement du fichier de configuration. */
   root: string;
+
+  /** Interface de rédaction. Facultative : un journal peut n'écrire qu'en Markdown. */
+  cms?: CmsConfig;
 
   /** Quel backend éditorial alimente le miroir. */
   source: {

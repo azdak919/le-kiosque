@@ -19,6 +19,7 @@ import { loadAdapter, knownAdapters } from './adapters.ts';
 import { build, EmptyingError } from './build.ts';
 import { sync, BackendUnavailableError } from './sync.ts';
 import { mirrorExists, verifyMediaIntegrity } from './mirror.ts';
+import { renderCmsConfig } from './cms-config.ts';
 import { normalizeBasePath, type KiosqueConfig } from './config.ts';
 
 const log = createConsoleLogger('kiosque');
@@ -29,6 +30,7 @@ Le Kiosque — socle libre pour les journaux étudiants
   kiosque sync    [--since <date>] [--dry-run]   rapatrie le contenu du backend
   kiosque build   [--allow-deletions] [--out <dir>]  produit le site statique
   kiosque verify                                  vérifie l'intégrité du miroir
+  kiosque cms:config                              régénère admin/config.yml
 
 Options communes
   --root <dir>    racine du journal (défaut : dossier courant)
@@ -163,6 +165,24 @@ async function main(): Promise<number> {
         }
         throw err;
       }
+    }
+
+    case 'cms:config': {
+      if (!(await mirrorExists(config.root))) {
+        log.error(`aucun miroir dans ${config.root}/content`);
+        return 1;
+      }
+      const bundle = await readBundleFromMirror(config);
+      const yaml = renderCmsConfig({
+        config,
+        bundle,
+        authBaseUrl: config.cms?.authBaseUrl,
+        branch: config.cms?.branch,
+      });
+      // Sur la sortie standard : utile pour inspecter ou rediriger. `build`
+      // écrit la vraie copie dans dist/admin/.
+      process.stdout.write(yaml);
+      return 0;
     }
 
     case 'verify': {

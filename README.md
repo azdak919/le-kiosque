@@ -1,6 +1,16 @@
-# Le Kiosque
+# LE KIOSQUE
 
-> Socle libre pour les journaux étudiants. Conçu pour survivre à ses fondateurs.
+> *Kit d'Infrastructure Ouverte, Souveraine et de Qualité pour les Usages Éditoriaux.*
+>
+> **« Publier aujourd'hui. Transmettre demain. »**
+
+Socle libre pour les journaux étudiants, les médias de campus et les équipes
+éditoriales. Conçu pour survivre à ses fondateurs.
+
+**LE RADAR** est l'agrégateur et le réseau de découverte des médias étudiants.
+**LE KIOSQUE** est le kit qui permet d'en créer un. Deux projets distincts : un
+journal sous LE KIOSQUE reste propriétaire de son domaine, de son hébergement,
+de ses comptes et de ses contenus.
 
 Un journal étudiant ne meurt presque jamais par manque de talent. Il meurt parce
 que le domaine a expiré, que l'hébergement n'est plus payé, que le compte
@@ -10,8 +20,8 @@ sont partis avec.
 Le Kiosque est une réponse à ce problème-là — pas à celui de fabriquer un joli
 site, qui est le problème facile.
 
-**État : jalon 1.** Le socle et la chaîne complète fonctionnent. L'interface
-d'édition non technique arrive au jalon 2. Voir la [feuille de route](#feuille-de-route).
+**État : jalon 2.** Le socle, la chaîne complète et l'interface de rédaction
+fonctionnent. Voir la [feuille de route](#feuille-de-route).
 
 ---
 
@@ -74,6 +84,9 @@ deploy: { basePath: '/<depot>' }   // laisser vide avec un domaine dédié
 **Trois fichiers à lire :** [`AJOUTER-UN-ARTICLE.md`](template/AJOUTER-UN-ARTICLE.md) ·
 [`OWNERS.md`](template/OWNERS.md) · [`RESTAURATION.md`](template/RESTAURATION.md)
 
+**Pour que votre équipe écrive sans jamais voir Git :**
+[`docs/brancher-sveltia.md`](docs/brancher-sveltia.md)
+
 ---
 
 ## Mises à jour de la plateforme
@@ -102,7 +115,7 @@ packages/
   adapters/
     markdown/      adaptateur de référence
     wordpress/     squelette (jalon 4)
-  pipeline/        sync · build · verify
+  pipeline/        sync · build · verify · cms:config
   theme-radar/     identité éditoriale : jetons + gabarits
 template/          ce que vous éditez
 examples/          journal de démonstration
@@ -120,7 +133,7 @@ survie.
 | Jalon | Contenu | État |
 |---|---|---|
 | **1** | Noyau, adaptateur Markdown, thème, chaîne complète, test de continuité | **fait** |
-| 2 | Sveltia CMS — publier sans jamais voir Git | à venir |
+| **2** | Sveltia CMS, statut éditorial, identifiants permanents | **fait** |
 | 3 | Barre radio LE RADAR + API publique | à venir |
 | 4 | `doctor`, `adopt`, passation, `export` | à venir |
 | 5 | Adaptateur WordPress/Newspack | à venir |
@@ -157,10 +170,14 @@ les métadonnées nécessaires à l'agrégation.
 
 ## Licence
 
-**GNU GPL v2**, comme [LE RADAR](https://github.com/azdak919/le-radar), dont ce
-projet reprend l'identité visuelle (valeurs **copiées** dans
+**GNU GPL v2** ([`LICENSE`](LICENSE)), comme
+[LE RADAR](https://github.com/azdak919/le-radar), dont ce projet reprend
+l'identité visuelle (valeurs **copiées** dans
 `packages/theme-radar/assets/tokens.css`, pas liées — chaque projet garde sa
 liberté d'évoluer).
+
+Sveltia CMS est redistribué sous licence MIT
+(`packages/theme-radar/assets/admin/SVELTIA-LICENSE.txt`).
 
 Les contenus publiés par chaque journal appartiennent à leurs autrices et
 auteurs.

@@ -17,7 +17,10 @@ import { marked } from 'marked';
 
 import {
   byDateDesc,
-  isPublic,
+  isListed,
+  hasPublicPage,
+  LISTED_STATUSES,
+  type EditorialStatus,
   type Article,
   type Author,
   type ContentBundle,
@@ -33,6 +36,8 @@ import {
   esc,
   type RenderContext,
 } from '../../theme-radar/src/templates.ts';
+import { adminPage } from '../../theme-radar/src/admin.ts';
+import { renderCmsConfig } from './cms-config.ts';
 import { sanitizeHtml } from './sanitize.ts';
 import { normalizeBasePath, type KiosqueConfig } from './config.ts';
 import { readIndex } from './mirror.ts';
@@ -97,7 +102,10 @@ export async function guardAgainstEmptying(
 ): Promise<void> {
   if (allowDeletions) return;
   const index = await readIndex(root);
-  const previous = index?.articles?.filter((a) => a.status === 'published' || a.status === 'archived').length;
+  // Le filtre DOIT correspondre exactement à ce qu'on compte du côté du build,
+  // sinon le garde-fou se déclenche à tort — ou pire, ne se déclenche pas.
+  // Ici : les articles qui comptent dans les listes, donc `published` seul.
+  const previous = index?.articles?.filter((a) => LISTED_STATUSES.includes(a.status as EditorialStatus)).length;
   if (previous === undefined) return; // premier build : rien à comparer
   if (nextPublicCount < previous) throw new EmptyingError(previous, nextPublicCount);
 }
@@ -183,9 +191,14 @@ export async function build(options: BuildOptions): Promise<BuildResult> {
   const log = options.logger ?? { info: () => {}, warn: () => {} };
   const basePath = normalizeBasePath(config.deploy?.basePath);
 
-  const published = bundle.articles.filter(isPublic).sort(byDateDesc);
+  // Deux ensembles, deux usages — les confondre casse soit les liens
+  // partagés, soit la confidentialité des brouillons.
+  //   listed : ce qui apparaît dans les listes (published seul)
+  //   paged  : ce qui garde une page à son URL (published + archived)
+  const listed = bundle.articles.filter(isListed).sort(byDateDesc);
+  const paged = bundle.articles.filter(hasPublicPage).sort(byDateDesc);
 
-  await guardAgainstEmptying(config.root, published.length, options.allowDeletions ?? false);
+  await guardAgainstEmptying(config.root, listed.length, options.allowDeletions ?? false);
 
   await rm(outDir, { recursive: true, force: true });
   await mkdir(outDir, { recursive: true });
@@ -204,13 +217,13 @@ export async function build(options: BuildOptions): Promise<BuildResult> {
   let pages = 0;
 
   // Accueil
-  await emit(outDir, '/', homePage(published, ctx));
-  urls.push({ loc: `${base}/`, lastmod: published[0]?.updatedAt });
+  await emit(outDir, '/', homePage(listed, ctx));
+  urls.push({ loc: `${base}/`, lastmod: listed[0]?.updatedAt });
   pages++;
 
   // Articles
   let redirects = 0;
-  for (const article of published) {
+  for (const article of paged) {
     const withHtml: Article = { ...article, body: { ...article.body, html: renderBody(article) } };
     await emit(outDir, `/articles/${article.slug}/`, articlePage(withHtml, ctx));
     urls.push({ loc: article.canonicalUrl, lastmod: article.updatedAt });
@@ -231,7 +244,7 @@ export async function build(options: BuildOptions): Promise<BuildResult> {
 
   // Sections
   for (const section of bundle.taxonomies.sections) {
-    const inSection = published.filter((a) => a.section === section.slug);
+    const inSection = listed.filter((a) => a.section === section.slug);
     await emit(outDir, `/sections/${section.slug}/`, sectionPage(section, inSection, ctx));
     urls.push({ loc: `${base}/sections/${section.slug}/` });
     pages++;
@@ -239,7 +252,7 @@ export async function build(options: BuildOptions): Promise<BuildResult> {
 
   // Auteur·rices
   const counts = new Map<string, number>();
-  for (const a of published) for (const s of a.authors) counts.set(s, (counts.get(s) ?? 0) + 1);
+  for (const a of listed) for (const s of a.authors) counts.set(s, (counts.get(s) ?? 0) + 1);
 
   const orderedAuthors = [...bundle.authors].sort((a, b) => a.name.localeCompare(b.name, 'fr'));
   await emit(outDir, '/auteurs/', authorsIndexPage(orderedAuthors, counts, ctx));
@@ -247,7 +260,7 @@ export async function build(options: BuildOptions): Promise<BuildResult> {
   pages++;
 
   for (const author of bundle.authors) {
-    const signed = published.filter((a) => a.authors.includes(author.slug));
+    const signed = listed.filter((a) => a.authors.includes(author.slug));
     await emit(outDir, `/auteurs/${author.slug}/`, authorPage(author, signed, ctx));
     urls.push({ loc: `${base}/auteurs/${author.slug}/` });
     pages++;
@@ -261,9 +274,9 @@ export async function build(options: BuildOptions): Promise<BuildResult> {
     page(
       `<div class="wrap wire">
       <div class="wire-head"><h1 class="wire-title">Plan du site</h1></div>
-      <p class="section-intro">${published.length} article${published.length > 1 ? 's' : ''} publié${published.length > 1 ? 's' : ''}, ${bundle.taxonomies.sections.length} sections, ${bundle.authors.length} signatures.</p>
+      <p class="section-intro">${listed.length} article${listed.length > 1 ? 's' : ''} publié${listed.length > 1 ? 's' : ''}, ${bundle.taxonomies.sections.length} sections, ${bundle.authors.length} signatures.</p>
       <ul>
-        ${published.map((a) => `<li><a href="${basePath}/articles/${esc(a.slug)}/">${esc(a.title)}</a></li>`).join('\n        ')}
+        ${listed.map((a) => `<li><a href="${basePath}/articles/${esc(a.slug)}/">${esc(a.title)}</a></li>`).join('\n        ')}
       </ul>
     </div>`,
       { title: `Plan du site — ${bundle.publication.name}`, canonical: `${base}/plan-du-site/` },
@@ -273,7 +286,7 @@ export async function build(options: BuildOptions): Promise<BuildResult> {
   pages++;
 
   // Flux, plan XML, robots
-  await writeFile(path.join(outDir, 'feed.xml'), atomFeed(bundle, published, config.feedLimit ?? 30), 'utf8');
+  await writeFile(path.join(outDir, 'feed.xml'), atomFeed(bundle, listed, config.feedLimit ?? 30), 'utf8');
   await writeFile(path.join(outDir, 'sitemap.xml'), sitemap(bundle, urls), 'utf8');
   await writeFile(
     path.join(outDir, 'robots.txt'),
@@ -284,7 +297,7 @@ export async function build(options: BuildOptions): Promise<BuildResult> {
   // Redirections déclaratives, pour les hébergeurs qui savent les lire.
   // GitHub Pages les ignore — d'où les pages HTML émises plus haut. Les deux
   // coexistent : le site doit fonctionner partout, pas seulement chez un.
-  const redirectRules = published
+  const redirectRules = paged
     .flatMap((a) =>
       (a.previousUrls ?? [])
         .filter((u) => u.startsWith(base))
@@ -295,7 +308,7 @@ export async function build(options: BuildOptions): Promise<BuildResult> {
     await writeFile(path.join(outDir, '_redirects'), `${redirectRules}\n`, 'utf8');
     await writeFile(
       path.join(outDir, '.htaccess'),
-      `RewriteEngine On\n${published
+      `RewriteEngine On\n${paged
         .flatMap((a) =>
           (a.previousUrls ?? [])
             .filter((u) => u.startsWith(base))
@@ -314,8 +327,41 @@ export async function build(options: BuildOptions): Promise<BuildResult> {
     await writeFile(path.join(outDir, 'CNAME'), `${config.deploy.cname}\n`, 'utf8');
   }
 
-  // Fichiers statiques du thème et médias du miroir
-  await cp(THEME_ASSETS, path.join(outDir, 'assets'), { recursive: true });
+  // ── Interface de rédaction ────────────────────────────────────────────
+  // La configuration est DÉRIVÉE du contenu : ajouter une section la fait
+  // apparaître dans le CMS sans que personne n'y pense, et le CMS ne peut pas
+  // diverger du format que `sync` sait relire.
+  await mkdir(path.join(outDir, 'admin'), { recursive: true });
+  await writeFile(
+    path.join(outDir, 'admin', 'index.html'),
+    adminPage({
+      publicationName: bundle.publication.name,
+      lang: bundle.publication.lang,
+      basePath,
+      accent: bundle.publication.theme.accent,
+    }),
+    'utf8',
+  );
+  await writeFile(
+    path.join(outDir, 'admin', 'config.yml'),
+    renderCmsConfig({ config, bundle, authBaseUrl: config.cms?.authBaseUrl, branch: config.cms?.branch }),
+    'utf8',
+  );
+  // Le script du CMS est vendu dans le dépôt (voir tools/vendor-cms.mjs).
+  await cp(path.join(THEME_ASSETS, 'admin'), path.join(outDir, 'admin'), {
+    recursive: true,
+    force: true,
+  }).catch(() => {
+    log.warn('Sveltia CMS absent — lancer « node tools/vendor-cms.mjs ». Le site publié n’est pas affecté.');
+  });
+  pages++;
+
+  // Fichiers statiques du thème et médias du miroir. `admin/` est exclu : il a
+  // déjà été copié ci-dessus, à sa place.
+  await cp(THEME_ASSETS, path.join(outDir, 'assets'), {
+    recursive: true,
+    filter: (src) => path.basename(src) !== 'admin',
+  });
   await cp(path.join(config.root, 'media'), path.join(outDir, 'media'), {
     recursive: true,
     force: true,
@@ -332,6 +378,6 @@ export async function build(options: BuildOptions): Promise<BuildResult> {
     .then((css) => writeFile(path.join(outDir, 'assets', 'tokens.css'), css, 'utf8'))
     .catch(() => {});
 
-  log.info(`${pages} pages, ${published.length} articles publiés, ${redirects} redirections`);
-  return { pages, articles: published.length, redirects, outDir };
+  log.info(`${pages} pages, ${listed.length} articles publiés, ${redirects} redirections`);
+  return { pages, articles: listed.length, redirects, outDir };
 }

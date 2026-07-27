@@ -37,8 +37,35 @@ export const EDITORIAL_STATUSES: readonly EditorialStatus[] = [
   'retracted',
 ];
 
-/** Seuls ces statuts produisent une page publique. */
-export const PUBLIC_STATUSES: readonly EditorialStatus[] = ['published', 'archived'];
+/**
+ * Les trois statuts proposés dans le CMS. Les autres sont des états avancés,
+ * posés à la main ou par outillage — on ne les met pas dans un menu déroulant
+ * destiné à une personne qui écrit un article.
+ */
+export const CMS_STATUSES: readonly EditorialStatus[] = ['draft', 'in-review', 'published'];
+
+/**
+ * Statuts qui font apparaître un article dans une LISTE : fil d'accueil,
+ * page de section, page d'auteur·rice, flux Atom, plan du site.
+ *
+ * `published` et lui seul. Un brouillon ou un article en révision ne doit
+ * exister nulle part publiquement.
+ */
+export const LISTED_STATUSES: readonly EditorialStatus[] = ['published'];
+
+/**
+ * Statuts qui conservent une PAGE à leur URL.
+ *
+ * `archived` en fait partie, et c'est délibéré : un article archivé quitte le
+ * fil et le flux, mais son adresse continue de répondre. Le retirer ferait 404
+ * chaque lien partagé vers lui — exactement ce que `previousUrls` et toute
+ * l'architecture cherchent à empêcher. « Archivé » veut dire « sorti de
+ * l'actualité », pas « effacé de l'histoire ».
+ *
+ * `retracted` est le seul cas où une page disparaît : un retrait pour raison
+ * légale ou déontologique, décidé par la rédaction.
+ */
+export const PAGED_STATUSES: readonly EditorialStatus[] = ['published', 'archived'];
 
 export type MediaKind = 'image' | 'audio' | 'video' | 'document';
 
@@ -84,12 +111,21 @@ export interface MediaAsset {
   source: SourceAttribution;
 }
 
+/**
+ * Rôle éditorial. Déclaré pour la suite — aucune permission n'en découle
+ * aujourd'hui, l'autorisation réelle vient des droits GitHub sur le dépôt.
+ * Ne pas s'en servir comme d'un contrôle d'accès : ce n'en est pas un.
+ */
+export type EditorialRole = 'auteur' | 'reviseur' | 'editeur';
+
 export interface Author {
   id: ID;
   slug: Slug;
   name: string;
-  /** 'journaliste', 'rédaction en chef', 'photographe'… */
+  /** Libellé affiché : « journaliste », « rédaction en chef », « photographe »… */
   role?: string;
+  /** Rôle éditorial structuré. Voir `EditorialRole` : informatif seulement. */
+  editorialRole?: EditorialRole;
   bio?: string;
   avatar?: MediaAsset;
   email?: string;
@@ -205,6 +241,19 @@ export interface Article {
   status: EditorialStatus;
   publishedAt?: ISODate;
   updatedAt: ISODate;
+
+  // ── Traçabilité de la révision ──────────────────────────────────────────
+  // Renseignés dès aujourd'hui quand l'information existe, mais AUCUNE
+  // mécanique ne s'appuie encore dessus. Ils sont là pour que le jour où
+  // Sveltia livrera la révision par pull request — ou qu'on ajoutera des
+  // demandes de modification — rien n'ait à être migré.
+  /** Passage à `in-review`. */
+  submittedAt?: ISODate;
+  /** Dernière décision d'un·e réviseur·euse. */
+  reviewedAt?: ISODate;
+  /** Slug de la personne qui a révisé. */
+  reviewedBy?: Slug;
+
   /** Absolue et permanente. */
   canonicalUrl: string;
   /** Anciennes URL → alimente les redirections lors des migrations. */
@@ -225,8 +274,23 @@ export interface ContentBundle {
 // Aides sans effet de bord, partagées par les adaptateurs et le pipeline.
 // ---------------------------------------------------------------------------
 
-export function isPublic(article: Article): boolean {
-  return PUBLIC_STATUSES.includes(article.status);
+/**
+ * L'article apparaît-il dans les listes publiques (fil, section, auteur·rice,
+ * flux Atom, plan du site) ?
+ */
+export function isListed(article: Article): boolean {
+  return LISTED_STATUSES.includes(article.status);
+}
+
+/**
+ * L'article a-t-il une page à son URL ?
+ *
+ * Distinct de `isListed` : un article archivé garde son adresse mais quitte
+ * les listes. Confondre les deux notions casse soit les liens partagés, soit
+ * la confidentialité des brouillons — c'est pourquoi il y a deux fonctions.
+ */
+export function hasPublicPage(article: Article): boolean {
+  return PAGED_STATUSES.includes(article.status);
 }
 
 /**

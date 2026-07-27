@@ -99,8 +99,15 @@ export function validateArticle(article: Article, path = 'article'): Issue[] {
   if (!article.title?.trim()) err(issues, `${path}.title`, 'titre requis');
   if (!article.publication) err(issues, `${path}.publication`, 'publication requise');
 
+  // Enum strict, jamais du texte libre : un statut mal orthographié
+  // (« publie », « Published ») ne doit pas silencieusement rendre un article
+  // invisible, ni pire, en publier un qui ne devait pas l'être.
   if (!EDITORIAL_STATUSES.includes(article.status)) {
-    err(issues, `${path}.status`, `statut inconnu : « ${article.status} »`);
+    err(
+      issues,
+      `${path}.status`,
+      `statut inconnu : « ${article.status} ». Valeurs acceptées : ${EDITORIAL_STATUSES.join(', ')}`,
+    );
   }
 
   if (!article.body || typeof article.body.raw !== 'string') {
@@ -109,14 +116,23 @@ export function validateArticle(article: Article, path = 'article'): Issue[] {
     err(issues, `${path}.body.raw`, 'un article publié ne peut pas être vide');
   }
 
+  // Exigences de publication.
+  //
+  // On n'entrave jamais l'ÉCRITURE : un brouillon peut être aussi incomplet
+  // qu'on veut, c'est le propre d'un brouillon. On entrave la PUBLICATION —
+  // le moment où le texte devient public et citable. Ces manquements-là sont
+  // bloquants, pas des avertissements qu'on finit par ne plus lire.
   if (article.status === 'published' || article.status === 'archived') {
     if (!article.publishedAt) {
-      err(issues, `${path}.publishedAt`, 'date de publication requise pour un article publié');
+      err(issues, `${path}.publishedAt`, 'date de publication requise pour publier');
     } else if (!ISO_RE.test(article.publishedAt)) {
       err(issues, `${path}.publishedAt`, 'publishedAt doit être une date RFC 3339');
     }
     if (!article.authors?.length) {
-      warn(issues, `${path}.authors`, 'article publié sans signature');
+      err(issues, `${path}.authors`, 'un article publié doit être signé — ajouter au moins un auteur ou une autrice');
+    }
+    if (!article.section) {
+      err(issues, `${path}.section`, 'un article publié doit appartenir à une section');
     }
     if (!article.excerpt?.trim()) {
       warn(issues, `${path}.excerpt`, 'extrait absent — le fil et le flux RSS seront pauvres');
