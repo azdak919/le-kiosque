@@ -18,14 +18,14 @@ tags:
   - soccer
 lang: fr-CA
 lead:
-  src: /media/demo-library/articles/campus-vie.jpg
-  alt: "Étudiantes et étudiants sur un campus au printemps"
-  credit: "Tulane Public Relations"
-  license: CC BY 2.0
-  licenseUrl: https://creativecommons.org/licenses/by/2.0/
-  sourceUrl: https://commons.wikimedia.org/wiki/File:Students_enjoy_springtime_weather._(5554288570).jpg
-  width: 1920
-  height: 1286
+  src: /media/demo-library/articles/participatory.jpg
+  alt: "Assemblée en amphithéâtre"
+  credit: "Kannan5645"
+  license: CC BY-SA 3.0
+  licenseUrl: https://creativecommons.org/licenses/by-sa/3.0
+  sourceUrl: https://commons.wikimedia.org/wiki/File:Lecture_hall.jpg
+  width: 1600
+  height: 1200
   focalPoint: { x: 50, y: 48 }
 ---
 

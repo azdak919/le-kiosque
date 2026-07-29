@@ -18,14 +18,14 @@ categories:
 tags: []
 lang: fr-CA
 lead:
-  src: /media/demo-library/articles/calme.jpg
-  alt: "Zone d’étude calme sur un campus"
-  credit: "SJISE"
-  license: CC BY-SA 4.0
-  licenseUrl: https://creativecommons.org/licenses/by-sa/4.0/
-  sourceUrl: https://commons.wikimedia.org/wiki/File:Study_space.jpg
+  src: /media/demo-library/articles/chess.jpg
+  alt: "Pièces d’échecs sur un échiquier"
+  credit: "Wilfredor"
+  license: CC0
+  licenseUrl: https://creativecommons.org/publicdomain/zero/1.0/deed.en
+  sourceUrl: https://commons.wikimedia.org/wiki/File:Chess_game_Staunton_No._6_perfil_view_8.jpg
   width: 1920
-  height: 1280
+  height: 1260
   focalPoint: { x: 50, y: 48 }
 ---
 

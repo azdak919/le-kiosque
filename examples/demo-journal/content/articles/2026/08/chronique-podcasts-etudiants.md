@@ -16,14 +16,14 @@ categories:
 tags: []
 lang: fr-CA
 lead:
-  src: /media/demo-library/articles/velo.jpg
-  alt: "Station de réparation de vélos"
-  credit: "Briana18091440"
-  license: CC BY-SA 4.0
-  licenseUrl: https://creativecommons.org/licenses/by-sa/4.0/
-  sourceUrl: https://commons.wikimedia.org/wiki/File:Bicycle_parking.jpg
+  src: /media/demo-library/articles/radio.jpg
+  alt: "Studio de radio avec microphones"
+  credit: "Ethan Long"
+  license: CC BY-SA 2.0
+  licenseUrl: https://creativecommons.org/licenses/by-sa/2.0/
+  sourceUrl: https://commons.wikimedia.org/wiki/File:Broadcast_Studio_(53998133689).jpg
   width: 1920
-  height: 2560
+  height: 2880
   focalPoint: { x: 50, y: 48 }
 ---
 

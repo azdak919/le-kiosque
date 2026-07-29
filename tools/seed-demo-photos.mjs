@@ -153,6 +153,106 @@ const ARTICLE_THEMES = {
     license: 'voir source',
     licenseUrl: 'https://commons.wikimedia.org/wiki/File:Bicycle_parking.jpg',
   },
+  // ── Extension banque (titres Commons vérifiés via API search) ──
+  hockey: {
+    file: 'Shot on goal during youth hockey tournament at West Edmonton Mall Ice Palace.jpg',
+    alt: 'Match de hockey sur glace en aréna',
+    credit: 'Wikimedia Commons',
+    license: 'voir source',
+    licenseUrl: 'https://commons.wikimedia.org/wiki/File:Shot_on_goal_during_youth_hockey_tournament_at_West_Edmonton_Mall_Ice_Palace.jpg',
+  },
+  volleyball: {
+    file: 'Volleyball match - shakehands before the match.jpg',
+    alt: 'Match de volleyball en gymnase',
+    credit: 'Wikimedia Commons',
+    license: 'voir source',
+    licenseUrl: 'https://commons.wikimedia.org/wiki/File:Volleyball_match_-_shakehands_before_the_match.jpg',
+  },
+  chess: {
+    file: 'Chess game Staunton No. 6 perfil view 8.jpg',
+    alt: 'Pièces d’échecs sur un échiquier',
+    credit: 'Wikimedia Commons',
+    license: 'voir source',
+    licenseUrl: 'https://commons.wikimedia.org/wiki/File:Chess_game_Staunton_No._6_perfil_view_8.jpg',
+  },
+  blood: {
+    file: 'Blood Donation Camp on Navy Day 2015 (01).jpg',
+    alt: 'Collecte de sang — donneur et personnel soignant',
+    credit: 'Wikimedia Commons',
+    license: 'voir source',
+    licenseUrl: 'https://commons.wikimedia.org/wiki/File:Blood_Donation_Camp_on_Navy_Day_2015_(01).jpg',
+  },
+  mural: {
+    file: 'Montreal Street Art Graffiti (29241125286).jpg',
+    alt: 'Street art et murale à Montréal',
+    credit: 'Wikimedia Commons',
+    license: 'voir source',
+    licenseUrl: 'https://commons.wikimedia.org/wiki/File:Montreal_Street_Art_Graffiti_(29241125286).jpg',
+  },
+  tutoring: {
+    file: 'Students in a group for studies.jpg',
+    alt: 'Groupe d’étude et tutorat entre pairs',
+    credit: 'Wikimedia Commons',
+    license: 'voir source',
+    licenseUrl: 'https://commons.wikimedia.org/wiki/File:Students_in_a_group_for_studies.jpg',
+  },
+  resume: {
+    file: 'What to Expect at a Job Interview at a Teaching School.jpg',
+    alt: 'Entretien d’embauche ou atelier candidature',
+    credit: 'Wikimedia Commons',
+    license: 'voir source',
+    licenseUrl: 'https://commons.wikimedia.org/wiki/File:What_to_Expect_at_a_Job_Interview_at_a_Teaching_School.jpg',
+  },
+  nursing: {
+    file: 'Checking blood pressure.jpg',
+    alt: 'Prise de tension artérielle en clinique-école',
+    credit: 'Wikimedia Commons',
+    license: 'voir source',
+    licenseUrl: 'https://commons.wikimedia.org/wiki/File:Checking_blood_pressure.jpg',
+  },
+  career: {
+    file: 'Exhibitors at the Career Fair (30983205220).jpg',
+    alt: 'Salon de l’emploi ou forum d’orientation',
+    credit: 'Wikimedia Commons',
+    license: 'voir source',
+    licenseUrl: 'https://commons.wikimedia.org/wiki/File:Exhibitors_at_the_Career_Fair_(30983205220).jpg',
+  },
+  stage: {
+    file: 'Open mic The Local 824 Hinton Avenue in Belmont Charlottesville VA April 2023 1.jpg',
+    alt: 'Scène ouverte avec micro pour spectacle étudiant',
+    credit: 'Wikimedia Commons',
+    license: 'voir source',
+    licenseUrl: 'https://commons.wikimedia.org/wiki/File:Open_mic_The_Local_824_Hinton_Avenue_in_Belmont_Charlottesville_VA_April_2023_1.jpg',
+  },
+  trail: {
+    file: 'Forest path through a deciduous forest in spring, Finland.jpg',
+    alt: 'Sentier forestier pour course d’orientation',
+    credit: 'Wikimedia Commons',
+    license: 'voir source',
+    licenseUrl: 'https://commons.wikimedia.org/wiki/File:Forest_path_through_a_deciduous_forest_in_spring,_Finland.jpg',
+  },
+  graduation: {
+    file: 'AnnapolisGraduation.jpg',
+    alt: 'Cérémonie de diplomation',
+    credit: 'Wikimedia Commons',
+    license: 'voir source',
+    licenseUrl: 'https://commons.wikimedia.org/wiki/File:AnnapolisGraduation.jpg',
+  },
+  participatory: {
+    file: 'Lecture hall.jpg',
+    alt: 'Assemblée en amphithéâtre',
+    credit: 'Wikimedia Commons',
+    license: 'voir source',
+    licenseUrl: 'https://commons.wikimedia.org/wiki/File:Amphi.jpg',
+    // Repli : même image que amphi si Amphi.jpg absent — remplacé au seed si besoin
+  },
+  'photo-club': {
+    file: 'Welsh Schools art exhibition at Bangor (1569389).jpg',
+    alt: 'Exposition photographique et artistique en galerie',
+    credit: 'Wikimedia Commons',
+    license: 'voir source',
+    licenseUrl: 'https://commons.wikimedia.org/wiki/File:Welsh_Schools_art_exhibition_at_Bangor_(1569389).jpg',
+  },
 };
 
 /** Slug article → thème */
@@ -177,6 +277,27 @@ const ARTICLE_MAP = {
   'exposition-finissants-arts': 'arts',
   'transport-collectif-editorial': 'bus',
   'debat-frais-stationnement': 'parking',
+  // Nouveaux / auparavant sans photo dédiée
+  'entrainement-hockey-interieur': 'hockey',
+  'match-intercegep-volley': 'volleyball',
+  'tournoi-echecs-campus': 'chess',
+  'collecte-sang-campus': 'blood',
+  'projet-murales-corridor': 'mural',
+  'aide-devoirs-pair': 'tutoring',
+  'atelier-cv-emploi': 'resume',
+  'clinic-soins-infirmiers': 'nursing',
+  'forum-orientation-programmes': 'career',
+  'scene-libre-vendredi': 'stage',
+  'course-orientation-bois': 'trail',
+  'rencontre-alumni-redaction': 'graduation',
+  'budget-participatif-agee': 'participatory',
+  'club-photo-exposition': 'photo-club',
+  'cine-club-classiques': 'cinema',
+  'chronique-podcasts-etudiants': 'radio',
+  'editorial-bibliotheque-silence': 'calme',
+  'journee-portes-ouvertes-labos': 'labo',
+  'lettre-ouverte-transport': 'bus',
+  'opinion-frais-associatifs': 'participatory',
 };
 
 /** Masthead : photos campus QC (banque LE-RADAR + cégeps déjà en place). */
@@ -382,6 +503,62 @@ const MASTHEAD = [
     keywords: ['campus', 'architecture'],
     focalPoint: { x: 50, y: 48 },
   },
+  {
+    id: 'mast-uqtr',
+    local: 'uqtr-boucher.jpg',
+    file: 'Pavillon Pierre-Boucher UQTR.jpg',
+    alt: 'Pavillon Pierre-Boucher de l’UQTR',
+    caption: 'UQTR (Trois-Rivières) — illustration de démonstration uniquement.',
+    credit: 'Jeangagnon',
+    license: 'CC BY-SA 3.0',
+    licenseUrl: 'https://creativecommons.org/licenses/by-sa/3.0/',
+    institution: 'UQTR',
+    campus: 'Trois-Rivières',
+    keywords: ['campus', 'architecture', 'Trois-Rivières'],
+    focalPoint: { x: 50, y: 45 },
+  },
+  {
+    id: 'mast-vieux-montreal',
+    local: 'cegep-vieux-montreal.jpg',
+    file: 'Cégep du Vieux Montréal01.JPG',
+    alt: 'Cégep du Vieux Montréal',
+    caption: 'Cégep du Vieux Montréal — illustration de démonstration uniquement.',
+    credit: 'Khayman',
+    license: 'CC BY-SA 3.0',
+    licenseUrl: 'https://creativecommons.org/licenses/by-sa/3.0/',
+    institution: 'Cégep du Vieux Montréal',
+    campus: 'Montréal',
+    keywords: ['campus', 'cégep', 'Montréal'],
+    focalPoint: { x: 50, y: 48 },
+  },
+  {
+    id: 'mast-mcgill-arts',
+    local: 'mcgill-arts.jpg',
+    file: 'Arts Building, McGill University.jpg',
+    alt: 'Pavillon des arts de l’Université McGill',
+    caption: 'McGill Arts Building — illustration de démonstration uniquement.',
+    credit: 'Gene.arboit',
+    license: 'CC BY-SA 3.0',
+    licenseUrl: 'https://creativecommons.org/licenses/by-sa/3.0/',
+    institution: 'Université McGill',
+    campus: 'Montréal',
+    keywords: ['campus', 'architecture', 'Montréal', 'arts'],
+    focalPoint: { x: 50, y: 42 },
+  },
+  {
+    id: 'mast-bishops-mcgreer',
+    local: 'bishops-mcgreer.jpg',
+    file: "Bishop's University McGreer Hall.jpg",
+    alt: 'McGreer Hall, Bishop’s University',
+    caption: 'Bishop’s University — illustration de démonstration uniquement.',
+    credit: 'Balcer',
+    license: 'CC BY 3.0',
+    licenseUrl: 'https://creativecommons.org/licenses/by/3.0/',
+    institution: "Bishop's University",
+    campus: 'Sherbrooke',
+    keywords: ['campus', 'architecture'],
+    focalPoint: { x: 50, y: 45 },
+  },
 ];
 
 function sleep(ms) {
@@ -485,9 +662,47 @@ function uuidFrom(src) {
   return `${h.slice(0, 8)}-${h.slice(8, 12)}-5${h.slice(13, 16)}-a${h.slice(17, 20)}-${h.slice(20, 32)}`;
 }
 
+const KNOWN_LICENSES = new Set([
+  'CC0', 'CC0 1.0', 'Public domain', 'Public Domain',
+  'CC BY 2.0', 'CC BY 2.0 Canada', 'CC BY 2.0 ca', 'CC BY 3.0', 'CC BY 4.0',
+  'CC BY-SA 2.0', 'CC BY-SA 2.5', 'CC BY-SA 3.0', 'CC BY-SA 4.0',
+  'GFDL', 'GFDL 1.2',
+]);
+
+function asHttps(url = '') {
+  const u = String(url || '').trim();
+  if (!u) return '';
+  if (u.startsWith('https://')) return u;
+  if (u.startsWith('http://')) return `https://${u.slice(7)}`;
+  return '';
+}
+
+function normalizeLicenseLabel(raw = '', fallback = 'CC BY-SA 4.0') {
+  const s = String(raw || '').replace(/\s+/g, ' ').trim();
+  if (KNOWN_LICENSES.has(s)) return s;
+  if (/^cc0|public domain|pdm/i.test(s)) return 'CC0';
+  if (/by-sa\s*4/i.test(s)) return 'CC BY-SA 4.0';
+  if (/by-sa\s*3/i.test(s)) return 'CC BY-SA 3.0';
+  if (/by-sa\s*2/i.test(s)) return 'CC BY-SA 2.0';
+  if (/^cc\s*by\s*4/i.test(s)) return 'CC BY 4.0';
+  if (/^cc\s*by\s*3/i.test(s)) return 'CC BY 3.0';
+  if (/^cc\s*by\s*2/i.test(s)) return 'CC BY 2.0';
+  if (/gfdl/i.test(s)) return 'GFDL 1.2';
+  // Licences nationales (GODL-India, etc.) : retomber sur le libellé seed.
+  if (fallback && KNOWN_LICENSES.has(fallback)) return fallback;
+  return 'CC BY-SA 4.0';
+}
+
 async function enrichLicenseFromCommons(fileName, meta) {
   // Best-effort: leave as-is; credits already set. Optional MediaWiki API later.
-  if (meta.credit !== 'Wikimedia Commons') return meta;
+  if (meta.credit !== 'Wikimedia Commons') {
+    return {
+      ...meta,
+      license: normalizeLicenseLabel(meta.license, meta.license),
+      licenseUrl: asHttps(meta.licenseUrl) || sourcePage(fileName),
+      creditUrl: asHttps(meta.creditUrl) || sourcePage(fileName),
+    };
+  }
   try {
     const api = `https://commons.wikimedia.org/w/api.php?action=query&prop=imageinfo&iiprop=extmetadata|size|url&titles=File:${encodeURIComponent(fileName)}&format=json`;
     const res = await fetch(api, { headers: { 'User-Agent': UA } });
@@ -498,18 +713,25 @@ async function enrichLicenseFromCommons(fileName, meta) {
     if (!ii) return meta;
     const em = ii.extmetadata || {};
     const artist = (em.Artist?.value || '').replace(/<[^>]+>/g, '').trim();
-    const license = (em.LicenseShortName?.value || meta.license || '').trim();
-    const licenseUrl = em.LicenseUrl?.value || meta.licenseUrl;
+    const licenseRaw = (em.LicenseShortName?.value || meta.license || '').trim();
+    const license = normalizeLicenseLabel(licenseRaw, meta.license || 'CC BY-SA 4.0');
+    const licenseUrl = asHttps(em.LicenseUrl?.value) || asHttps(meta.licenseUrl) || sourcePage(fileName);
     return {
       ...meta,
       credit: artist || meta.credit,
-      license: license || meta.license,
-      licenseUrl: licenseUrl || meta.licenseUrl,
+      creditUrl: asHttps(meta.creditUrl) || sourcePage(fileName),
+      license,
+      licenseUrl,
       width: ii.width,
       height: ii.height,
     };
   } catch {
-    return meta;
+    return {
+      ...meta,
+      license: normalizeLicenseLabel(meta.license, 'CC BY-SA 4.0'),
+      licenseUrl: asHttps(meta.licenseUrl) || sourcePage(fileName),
+      creditUrl: asHttps(meta.creditUrl) || sourcePage(fileName),
+    };
   }
 }
 
@@ -536,15 +758,17 @@ async function main() {
         alt: meta.alt,
         caption: meta.alt,
         credit: meta.credit,
+        creditUrl: meta.creditUrl || sourcePage(meta0.file),
         license: meta.license,
-        licenseUrl: meta.licenseUrl,
+        licenseUrl: meta.licenseUrl || sourcePage(meta0.file),
         width: size.width || meta.width || WIDTH,
         height: size.height || meta.height || Math.round(WIDTH * 0.66),
         mime: 'image/jpeg',
         checksum,
         focalPoint: { x: 50, y: 48 },
-        keywords: [theme],
+        keywords: [theme, ...(meta.alt || '').toLowerCase().split(/\s+/).filter((w) => w.length > 3).slice(0, 8)],
         usages: ['article'],
+        // Scènes thématiques : pas d’établissement (avertissement OK dans validate).
         source: {
           backend: 'wikimedia-commons',
           backendId: `File:${meta0.file}`,
@@ -581,9 +805,9 @@ async function main() {
         alt: m.alt,
         caption: m.caption,
         credit: m.credit,
-        creditUrl: m.creditUrl,
-        license: m.license,
-        licenseUrl: m.licenseUrl,
+        creditUrl: asHttps(m.creditUrl) || sourcePage(m.file),
+        license: normalizeLicenseLabel(m.license, m.license),
+        licenseUrl: asHttps(m.licenseUrl) || sourcePage(m.file),
         width: size.width || WIDTH,
         height: size.height || Math.round(WIDTH * 0.66),
         mime: 'image/jpeg',

@@ -17,14 +17,14 @@ categories:
 tags: []
 lang: fr-CA
 lead:
-  src: /media/demo-library/articles/course.jpg
-  alt: "Course à pied en nature"
-  credit: "Isaacvp"
+  src: /media/demo-library/articles/nursing.jpg
+  alt: "Prise de tension artérielle en clinique-école"
+  credit: "Pambelle12"
   license: CC BY-SA 4.0
-  licenseUrl: https://creativecommons.org/licenses/by-sa/4.0/
-  sourceUrl: https://commons.wikimedia.org/wiki/File:Running.jpg
+  licenseUrl: https://creativecommons.org/licenses/by-sa/4.0
+  sourceUrl: https://commons.wikimedia.org/wiki/File:Checking_blood_pressure.jpg
   width: 1920
-  height: 1280
+  height: 1440
   focalPoint: { x: 50, y: 48 }
 ---
 

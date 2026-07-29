@@ -14,14 +14,14 @@ const DEMO = path.resolve(fileURLToPath(new URL('../examples/demo-journal', impo
 test('la banque photo de démonstration est locale, attribuée et recadrable', async () => {
   const manifest = await readSharedMediaManifest(DEMO);
   assert.ok(manifest);
-  assert.ok(manifest.media.length >= 12, `attendu ≥12 médias, reçu ${manifest.media.length}`);
+  assert.ok(manifest.media.length >= 40, `attendu ≥40 médias, reçu ${manifest.media.length}`);
   assert.match(manifest.notice, /campus réels|scènes réels/i);
   assert.match(manifest.notice, /ne représentent pas/i);
 
   const masthead = manifest.media.filter((media) => media.usages?.includes('masthead'));
   const articles = manifest.media.filter((media) => media.src.includes('/articles/'));
-  assert.ok(masthead.length >= 8, 'le mât doit avoir plusieurs fonds HD');
-  assert.ok(articles.length >= 10, 'les articles doivent avoir des photos thématiques locales');
+  assert.ok(masthead.length >= 14, 'le mât doit avoir plusieurs fonds HD');
+  assert.ok(articles.length >= 28, 'les articles doivent avoir des photos thématiques locales');
 
   for (const [index, media] of manifest.media.entries()) {
     assert.deepEqual(validateSharedMedia(media, `media[${index}]`).filter((issue) => issue.level === 'error'), []);

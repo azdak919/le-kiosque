@@ -137,9 +137,9 @@
   "brigade-compost-campus": {
     "src": "/media/demo-library/articles/compost.jpg",
     "alt": "Bac de compost et matières organiques",
-    "credit": "fir0002 flagstaffotos [at] gmail.com Canon 20D + Tamron 28-75mm f/2.8",
-    "license": "CC BY-SA 3.0",
-    "licenseUrl": "https://commons.wikimedia.org/wiki/File:Compost_bin.jpg",
+    "credit": "fir0002  flagstaffotos [at] gmail.com\n\t\tCanon 20D + Tamron 28-75mm f/2.8",
+    "license": "GFDL 1.2",
+    "licenseUrl": "https://www.gnu.org/licenses/old-licenses/fdl-1.2.html",
     "sourceUrl": "https://commons.wikimedia.org/wiki/File:Compost_bin.jpg",
     "width": 1600,
     "height": 1135,
@@ -154,7 +154,7 @@
     "alt": "Ordinateurs en bibliothèque",
     "credit": "Mshuang2",
     "license": "CC0",
-    "licenseUrl": "https://commons.wikimedia.org/wiki/File:Library_computers.jpg",
+    "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/deed.en",
     "sourceUrl": "https://commons.wikimedia.org/wiki/File:Library_computers.jpg",
     "width": 1920,
     "height": 1440,
@@ -199,7 +199,7 @@
     "alt": "Cafétéria ou salle à manger collective",
     "credit": "Tanvir Hussain",
     "license": "CC BY-SA 3.0",
-    "licenseUrl": "https://commons.wikimedia.org/wiki/File:Cafeteria.jpg",
+    "licenseUrl": "https://creativecommons.org/licenses/by-sa/3.0/",
     "sourceUrl": "https://commons.wikimedia.org/wiki/File:Cafeteria.jpg",
     "width": 1920,
     "height": 1440,
@@ -298,5 +298,305 @@
       "y": 48
     },
     "theme": "parking"
+  },
+  "entrainement-hockey-interieur": {
+    "src": "/media/demo-library/articles/hockey.jpg",
+    "alt": "Match de hockey sur glace en aréna",
+    "credit": "Daniel Case",
+    "license": "CC BY-SA 3.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by-sa/3.0",
+    "sourceUrl": "https://commons.wikimedia.org/wiki/File:Shot_on_goal_during_youth_hockey_tournament_at_West_Edmonton_Mall_Ice_Palace.jpg",
+    "width": 1920,
+    "height": 1360,
+    "focalPoint": {
+      "x": 50,
+      "y": 48
+    },
+    "theme": "hockey"
+  },
+  "match-intercegep-volley": {
+    "src": "/media/demo-library/articles/volleyball.jpg",
+    "alt": "Match de volleyball en gymnase",
+    "credit": "Zorro2212",
+    "license": "CC BY-SA 3.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by-sa/3.0",
+    "sourceUrl": "https://commons.wikimedia.org/wiki/File:Volleyball_match_-_shakehands_before_the_match.jpg",
+    "width": 1920,
+    "height": 1285,
+    "focalPoint": {
+      "x": 50,
+      "y": 48
+    },
+    "theme": "volleyball"
+  },
+  "tournoi-echecs-campus": {
+    "src": "/media/demo-library/articles/chess.jpg",
+    "alt": "Pièces d’échecs sur un échiquier",
+    "credit": "Wilfredor",
+    "license": "CC0",
+    "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/deed.en",
+    "sourceUrl": "https://commons.wikimedia.org/wiki/File:Chess_game_Staunton_No._6_perfil_view_8.jpg",
+    "width": 1920,
+    "height": 1260,
+    "focalPoint": {
+      "x": 50,
+      "y": 48
+    },
+    "theme": "chess"
+  },
+  "collecte-sang-campus": {
+    "src": "/media/demo-library/articles/blood.jpg",
+    "alt": "Collecte de sang — donneur et personnel soignant",
+    "credit": "Indian Navy",
+    "license": "CC BY-SA 4.0",
+    "licenseUrl": "https://data.gov.in/sites/default/files/Gazette_Notification_OGDL.pdf",
+    "sourceUrl": "https://commons.wikimedia.org/wiki/File:Blood_Donation_Camp_on_Navy_Day_2015_(01).jpg",
+    "width": 1000,
+    "height": 665,
+    "focalPoint": {
+      "x": 50,
+      "y": 48
+    },
+    "theme": "blood"
+  },
+  "projet-murales-corridor": {
+    "src": "/media/demo-library/articles/mural.jpg",
+    "alt": "Street art et murale à Montréal",
+    "credit": "Coastal Elite from Halifax, Canada",
+    "license": "CC BY-SA 2.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by-sa/2.0",
+    "sourceUrl": "https://commons.wikimedia.org/wiki/File:Montreal_Street_Art_Graffiti_(29241125286).jpg",
+    "width": 1920,
+    "height": 1209,
+    "focalPoint": {
+      "x": 50,
+      "y": 48
+    },
+    "theme": "mural"
+  },
+  "aide-devoirs-pair": {
+    "src": "/media/demo-library/articles/tutoring.jpg",
+    "alt": "Groupe d’étude et tutorat entre pairs",
+    "credit": "Knowledge and philosophy",
+    "license": "CC BY-SA 4.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
+    "sourceUrl": "https://commons.wikimedia.org/wiki/File:Students_in_a_group_for_studies.jpg",
+    "width": 1920,
+    "height": 2560,
+    "focalPoint": {
+      "x": 50,
+      "y": 48
+    },
+    "theme": "tutoring"
+  },
+  "atelier-cv-emploi": {
+    "src": "/media/demo-library/articles/resume.jpg",
+    "alt": "Entretien d’embauche ou atelier candidature",
+    "credit": "HeatherKatz001",
+    "license": "CC BY-SA 4.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
+    "sourceUrl": "https://commons.wikimedia.org/wiki/File:What_to_Expect_at_a_Job_Interview_at_a_Teaching_School.jpg",
+    "width": 1920,
+    "height": 1484,
+    "focalPoint": {
+      "x": 50,
+      "y": 48
+    },
+    "theme": "resume"
+  },
+  "clinic-soins-infirmiers": {
+    "src": "/media/demo-library/articles/nursing.jpg",
+    "alt": "Prise de tension artérielle en clinique-école",
+    "credit": "Pambelle12",
+    "license": "CC BY-SA 4.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
+    "sourceUrl": "https://commons.wikimedia.org/wiki/File:Checking_blood_pressure.jpg",
+    "width": 1920,
+    "height": 1440,
+    "focalPoint": {
+      "x": 50,
+      "y": 48
+    },
+    "theme": "nursing"
+  },
+  "forum-orientation-programmes": {
+    "src": "/media/demo-library/articles/career.jpg",
+    "alt": "Salon de l’emploi ou forum d’orientation",
+    "credit": "German Embassy London",
+    "license": "CC BY 2.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by/2.0",
+    "sourceUrl": "https://commons.wikimedia.org/wiki/File:Exhibitors_at_the_Career_Fair_(30983205220).jpg",
+    "width": 1920,
+    "height": 1280,
+    "focalPoint": {
+      "x": 50,
+      "y": 48
+    },
+    "theme": "career"
+  },
+  "scene-libre-vendredi": {
+    "src": "/media/demo-library/articles/stage.jpg",
+    "alt": "Scène ouverte avec micro pour spectacle étudiant",
+    "credit": "Artaxerxes",
+    "license": "CC BY-SA 4.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
+    "sourceUrl": "https://commons.wikimedia.org/wiki/File:Open_mic_The_Local_824_Hinton_Avenue_in_Belmont_Charlottesville_VA_April_2023_1.jpg",
+    "width": 1920,
+    "height": 2560,
+    "focalPoint": {
+      "x": 50,
+      "y": 48
+    },
+    "theme": "stage"
+  },
+  "course-orientation-bois": {
+    "src": "/media/demo-library/articles/trail.jpg",
+    "alt": "Sentier forestier pour course d’orientation",
+    "credit": "Sanzzu",
+    "license": "CC BY-SA 4.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
+    "sourceUrl": "https://commons.wikimedia.org/wiki/File:Forest_path_through_a_deciduous_forest_in_spring%2C_Finland.jpg",
+    "width": 1920,
+    "height": 1280,
+    "focalPoint": {
+      "x": 50,
+      "y": 48
+    },
+    "theme": "trail"
+  },
+  "rencontre-alumni-redaction": {
+    "src": "/media/demo-library/articles/graduation.jpg",
+    "alt": "Cérémonie de diplomation",
+    "credit": "U.S. Navy Photographer's Mate 2nd Class Daniel J. McLain",
+    "license": "Public domain",
+    "licenseUrl": "https://commons.wikimedia.org/wiki/File:AnnapolisGraduation.jpg",
+    "sourceUrl": "https://commons.wikimedia.org/wiki/File:AnnapolisGraduation.jpg",
+    "width": 1920,
+    "height": 1277,
+    "focalPoint": {
+      "x": 50,
+      "y": 48
+    },
+    "theme": "graduation"
+  },
+  "budget-participatif-agee": {
+    "src": "/media/demo-library/articles/participatory.jpg",
+    "alt": "Assemblée en amphithéâtre",
+    "credit": "Kannan5645",
+    "license": "CC BY-SA 3.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by-sa/3.0",
+    "sourceUrl": "https://commons.wikimedia.org/wiki/File:Lecture_hall.jpg",
+    "width": 1600,
+    "height": 1200,
+    "focalPoint": {
+      "x": 50,
+      "y": 48
+    },
+    "theme": "participatory"
+  },
+  "club-photo-exposition": {
+    "src": "/media/demo-library/articles/photo-club.jpg",
+    "alt": "Exposition photographique et artistique en galerie",
+    "credit": "Geoff Charles",
+    "license": "CC BY-SA 4.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
+    "sourceUrl": "https://commons.wikimedia.org/wiki/File:Welsh_Schools_art_exhibition_at_Bangor_(1569389).jpg",
+    "width": 1200,
+    "height": 1822,
+    "focalPoint": {
+      "x": 50,
+      "y": 48
+    },
+    "theme": "photo-club"
+  },
+  "cine-club-classiques": {
+    "src": "/media/demo-library/articles/cinema.jpg",
+    "alt": "Salle de cinéma vue depuis les sièges",
+    "credit": "Fernandaodapassos",
+    "license": "CC BY-SA 4.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
+    "sourceUrl": "https://commons.wikimedia.org/wiki/File:Movie_theater.jpg",
+    "width": 1920,
+    "height": 1440,
+    "focalPoint": {
+      "x": 50,
+      "y": 48
+    },
+    "theme": "cinema"
+  },
+  "chronique-podcasts-etudiants": {
+    "src": "/media/demo-library/articles/radio.jpg",
+    "alt": "Studio de radio avec microphones",
+    "credit": "Ethan Long",
+    "license": "CC BY-SA 2.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by-sa/2.0/",
+    "sourceUrl": "https://commons.wikimedia.org/wiki/File:Broadcast_Studio_(53998133689).jpg",
+    "width": 1920,
+    "height": 2880,
+    "focalPoint": {
+      "x": 50,
+      "y": 48
+    },
+    "theme": "radio"
+  },
+  "editorial-bibliotheque-silence": {
+    "src": "/media/demo-library/articles/calme.jpg",
+    "alt": "Étudiantes et étudiants en zone d’étude calme",
+    "credit": "SJISE",
+    "license": "CC BY-SA 4.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
+    "sourceUrl": "https://commons.wikimedia.org/wiki/File:Students_studying.jpg",
+    "width": 1920,
+    "height": 1280,
+    "focalPoint": {
+      "x": 50,
+      "y": 48
+    },
+    "theme": "calme"
+  },
+  "journee-portes-ouvertes-labos": {
+    "src": "/media/demo-library/articles/labo.jpg",
+    "alt": "Laboratoire de chimie moderne",
+    "credit": "Horia Varlan",
+    "license": "CC BY 2.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by/2.0/",
+    "sourceUrl": "https://commons.wikimedia.org/wiki/File:Chemistry_laboratory.jpg",
+    "width": 1920,
+    "height": 1325,
+    "focalPoint": {
+      "x": 50,
+      "y": 48
+    },
+    "theme": "labo"
+  },
+  "lettre-ouverte-transport": {
+    "src": "/media/demo-library/articles/bus.jpg",
+    "alt": "Autobus de transport collectif",
+    "credit": "Ici2015",
+    "license": "CC BY-SA 3.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by-sa/3.0",
+    "sourceUrl": "https://commons.wikimedia.org/wiki/File:Bus.jpg",
+    "width": 1600,
+    "height": 1200,
+    "focalPoint": {
+      "x": 50,
+      "y": 48
+    },
+    "theme": "bus"
+  },
+  "opinion-frais-associatifs": {
+    "src": "/media/demo-library/articles/participatory.jpg",
+    "alt": "Assemblée en amphithéâtre",
+    "credit": "Kannan5645",
+    "license": "CC BY-SA 3.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by-sa/3.0",
+    "sourceUrl": "https://commons.wikimedia.org/wiki/File:Lecture_hall.jpg",
+    "width": 1600,
+    "height": 1200,
+    "focalPoint": {
+      "x": 50,
+      "y": 48
+    },
+    "theme": "participatory"
   }
 }

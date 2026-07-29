@@ -11,6 +11,16 @@ authors:
   - camille-dufour
 section: culture
 lang: fr-CA
+lead:
+  src: /media/demo-library/campus-sainte-foy.jpg
+  alt: "Vue extérieure du campus du Cégep de Sainte-Foy à Québec"
+  credit: "Khayman"
+  license: CC BY-SA 3.0
+  licenseUrl: https://creativecommons.org/licenses/by-sa/3.0/
+  sourceUrl: https://commons.wikimedia.org/wiki/File:Campus_du_C%C3%A9gep_de_Sainte-Foy01.JPG
+  width: 1920
+  height: 1285
+  focalPoint: { x: 52, y: 48 }
 ---
 
 Texte en révision. Confirmer la programmation avant publication. Cet

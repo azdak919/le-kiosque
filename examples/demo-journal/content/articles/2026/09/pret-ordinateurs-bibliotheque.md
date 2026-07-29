@@ -20,7 +20,7 @@ lead:
   alt: "Ordinateurs en bibliothèque"
   credit: "Mshuang2"
   license: CC0
-  licenseUrl: https://commons.wikimedia.org/wiki/File:Library_computers.jpg
+  licenseUrl: https://creativecommons.org/publicdomain/zero/1.0/deed.en
   sourceUrl: https://commons.wikimedia.org/wiki/File:Library_computers.jpg
   width: 1920
   height: 1440

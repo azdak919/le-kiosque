@@ -17,14 +17,14 @@ categories:
 tags: []
 lang: fr-CA
 lead:
-  src: /media/demo-library/articles/caf.jpg
-  alt: "Cafétéria ou salle à manger collective"
-  credit: "Tanvir Hussain"
-  license: CC BY-SA 4.0
-  licenseUrl: https://creativecommons.org/licenses/by-sa/4.0/
-  sourceUrl: https://commons.wikimedia.org/wiki/File:Cafeteria.jpg
-  width: 1920
-  height: 1440
+  src: /media/demo-library/articles/participatory.jpg
+  alt: "Assemblée en amphithéâtre"
+  credit: "Kannan5645"
+  license: CC BY-SA 3.0
+  licenseUrl: https://creativecommons.org/licenses/by-sa/3.0
+  sourceUrl: https://commons.wikimedia.org/wiki/File:Lecture_hall.jpg
+  width: 1600
+  height: 1200
   focalPoint: { x: 50, y: 48 }
 ---
 

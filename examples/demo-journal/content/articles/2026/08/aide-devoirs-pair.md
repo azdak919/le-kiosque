@@ -20,14 +20,14 @@ tags:
   - vie-etudiante
 lang: fr-CA
 lead:
-  src: /media/demo-library/articles/bus.jpg
-  alt: "Autobus de transport collectif"
-  credit: "Ici2015"
+  src: /media/demo-library/articles/tutoring.jpg
+  alt: "Groupe d’étude et tutorat entre pairs"
+  credit: "Knowledge and philosophy"
   license: CC BY-SA 4.0
-  licenseUrl: https://creativecommons.org/licenses/by-sa/4.0/
-  sourceUrl: https://commons.wikimedia.org/wiki/File:Bus.jpg
-  width: 1600
-  height: 1200
+  licenseUrl: https://creativecommons.org/licenses/by-sa/4.0
+  sourceUrl: https://commons.wikimedia.org/wiki/File:Students_in_a_group_for_studies.jpg
+  width: 1920
+  height: 2560
   focalPoint: { x: 50, y: 48 }
 ---
 

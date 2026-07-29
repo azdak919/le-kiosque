@@ -17,14 +17,14 @@ categories:
 tags: []
 lang: fr-CA
 lead:
-  src: /media/demo-library/articles/serre.jpg
-  alt: "Serre pédagogique avec des plants"
-  credit: "Rodrigo.Argenton"
+  src: /media/demo-library/articles/cinema.jpg
+  alt: "Salle de cinéma vue depuis les sièges"
+  credit: "Fernandaodapassos"
   license: CC BY-SA 4.0
-  licenseUrl: https://creativecommons.org/licenses/by-sa/4.0/
-  sourceUrl: https://commons.wikimedia.org/wiki/File:Greenhouse.jpg
+  licenseUrl: https://creativecommons.org/licenses/by-sa/4.0
+  sourceUrl: https://commons.wikimedia.org/wiki/File:Movie_theater.jpg
   width: 1920
-  height: 1317
+  height: 1440
   focalPoint: { x: 50, y: 48 }
 ---
 

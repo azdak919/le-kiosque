@@ -18,14 +18,14 @@ categories:
 tags: []
 lang: fr-CA
 lead:
-  src: /media/demo-library/articles/compost.jpg
-  alt: "Bac de compost et matières organiques"
-  credit: "fir0002"
-  license: CC BY-NC 3.0
-  licenseUrl: https://creativecommons.org/licenses/by-nc/3.0/
-  sourceUrl: https://commons.wikimedia.org/wiki/File:Compost.jpg
-  width: 1600
-  height: 1200
+  src: /media/demo-library/articles/stage.jpg
+  alt: "Scène ouverte avec micro pour spectacle étudiant"
+  credit: "Artaxerxes"
+  license: CC BY-SA 4.0
+  licenseUrl: https://creativecommons.org/licenses/by-sa/4.0
+  sourceUrl: https://commons.wikimedia.org/wiki/File:Open_mic_The_Local_824_Hinton_Avenue_in_Belmont_Charlottesville_VA_April_2023_1.jpg
+  width: 1920
+  height: 2560
   focalPoint: { x: 50, y: 48 }
 ---
 

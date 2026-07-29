@@ -19,14 +19,14 @@ categories:
 tags: []
 lang: fr-CA
 lead:
-  src: /media/demo-library/articles/basketball.jpg
-  alt: "Match de basketball en gymnase"
-  credit: "Bama in ATL"
-  license: CC BY 2.0
-  licenseUrl: https://creativecommons.org/licenses/by/2.0/
-  sourceUrl: https://commons.wikimedia.org/wiki/File:Basketball.jpg
+  src: /media/demo-library/articles/mural.jpg
+  alt: "Street art et murale à Montréal"
+  credit: "Coastal Elite from Halifax, Canada"
+  license: CC BY-SA 2.0
+  licenseUrl: https://creativecommons.org/licenses/by-sa/2.0
+  sourceUrl: https://commons.wikimedia.org/wiki/File:Montreal_Street_Art_Graffiti_(29241125286).jpg
   width: 1920
-  height: 1280
+  height: 1209
   focalPoint: { x: 50, y: 48 }
 ---
 

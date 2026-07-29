@@ -18,14 +18,14 @@ tags:
   - archives
 lang: fr-CA
 lead:
-  src: /media/demo-library/articles/parking.jpg
-  alt: "Stationnement pour vélos sur un campus"
-  credit: "David Shay"
-  license: CC BY-SA 2.5
-  licenseUrl: https://creativecommons.org/licenses/by-sa/2.5/
-  sourceUrl: https://commons.wikimedia.org/wiki/File:Bicycle_parking.jpg
-  width: 1120
-  height: 840
+  src: /media/demo-library/articles/trail.jpg
+  alt: "Sentier forestier pour course d’orientation"
+  credit: "Sanzzu"
+  license: CC BY-SA 4.0
+  licenseUrl: https://creativecommons.org/licenses/by-sa/4.0
+  sourceUrl: https://commons.wikimedia.org/wiki/File:Forest_path_through_a_deciduous_forest_in_spring%2C_Finland.jpg
+  width: 1920
+  height: 1280
   focalPoint: { x: 50, y: 48 }
 ---
 

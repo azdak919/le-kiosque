@@ -16,14 +16,14 @@ categories:
 tags: []
 lang: fr-CA
 lead:
-  src: /media/demo-library/articles/soccer.jpg
-  alt: "Ballon de soccer sur un terrain en herbe"
-  credit: "Peter Glaser baraida"
-  license: CC0
-  licenseUrl: https://creativecommons.org/publicdomain/mark/1.0/
-  sourceUrl: https://commons.wikimedia.org/wiki/File:Adidas_soccer_ball_on_a_grass_pitch_(Unsplash).jpg
-  width: 1920
-  height: 1280
+  src: /media/demo-library/articles/blood.jpg
+  alt: "Collecte de sang — donneur et personnel soignant"
+  credit: "Indian Navy"
+  license: CC BY-SA 4.0
+  licenseUrl: https://data.gov.in/sites/default/files/Gazette_Notification_OGDL.pdf
+  sourceUrl: https://commons.wikimedia.org/wiki/File:Blood_Donation_Camp_on_Navy_Day_2015_(01).jpg
+  width: 1000
+  height: 665
   focalPoint: { x: 50, y: 48 }
 ---
 

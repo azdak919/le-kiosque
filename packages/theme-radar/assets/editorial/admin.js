@@ -2,6 +2,7 @@ import { marked } from './marked.esm.js';
 import { markdownFiles, zipStore } from './export.js';
 import { download, getBackend, slugify } from './runtime.js';
 import { esc } from './render.js';
+import { rankLocalMedia } from './stock-photo-match.js';
 
 const config = window.KIOSQUE_EDITORIAL;
 const main = document.getElementById('admin-main');
@@ -128,20 +129,82 @@ function mediaLibrary() {
   return `<section class="panel"><div class="toolbar"><div><h2>Photos</h2><p>Photos libres utilisées pour illustrer les articles et le mât. Les campus réels ne représentent pas l’établissement fictif du journal.</p></div></div>${mediaFilters()}<div class="media-grid">${mediaCards()}</div></section>`;
 }
 
-function chooseSharedMedia(onSelect, usage = '') {
+function chooseSharedMedia(onSelect, usage = '', suggestContext = null) {
   const dialog = document.createElement('dialog');
   dialog.className = 'media-picker';
-  dialog.innerHTML = `<div class="toolbar"><h2>Choisir une photo</h2><button type="button" data-close-media aria-label="Fermer">×</button></div><p>La sélection copie une référence locale ; aucun téléversement distant n’est lancé.</p>${mediaFilters()}<div class="media-grid">${mediaCards(true)}</div>`;
+  const suggestBar = suggestContext
+    ? `<div class="media-suggest" data-media-suggest>
+        <button type="button" class="primary" data-suggest-media>Suggérer selon le contenu (algo LE-RADAR)</button>
+        <p class="media-suggest-status" data-suggest-status hidden></p>
+      </div>`
+    : '';
+  dialog.innerHTML = `<div class="toolbar"><h2>Choisir une photo</h2><button type="button" data-close-media aria-label="Fermer">×</button></div><p>La sélection copie une référence locale ; aucun téléversement distant n’est lancé.</p>${suggestBar}${mediaFilters()}<div class="media-grid">${mediaCards(true)}</div>`;
   document.body.appendChild(dialog);
   if (usage) dialog.querySelector('[data-media-usage]').value = usage;
   bindMediaFilters(dialog);
   dialog.querySelector('[data-media-usage]').dispatchEvent(new Event('change'));
   dialog.querySelector('[data-close-media]').onclick = () => dialog.close();
-  dialog.querySelectorAll('[data-select-media]').forEach((button) => button.onclick = () => {
-    const media = bundle.media.find((item) => item.id === button.dataset.selectMedia);
-    if (media) onSelect(structuredClone(media));
-    dialog.close();
-  });
+  const grid = dialog.querySelector('.media-grid');
+  const paintCards = (idsInOrder = null) => {
+    const cards = [...dialog.querySelectorAll('[data-media-card]')];
+    if (idsInOrder) {
+      const byId = new Map(cards.map((c) => [c.querySelector('[data-select-media]')?.dataset.selectMedia, c]));
+      grid.innerHTML = '';
+      for (const id of idsInOrder) {
+        const card = byId.get(id);
+        if (card) {
+          card.hidden = false;
+          grid.appendChild(card);
+        }
+      }
+      // Reste de la banque en bas, masqué par défaut si suggestion.
+      for (const [id, card] of byId) {
+        if (!idsInOrder.includes(id)) {
+          card.hidden = true;
+          grid.appendChild(card);
+        }
+      }
+    }
+    dialog.querySelectorAll('[data-select-media]').forEach((button) => {
+      button.onclick = () => {
+        const media = bundle.media.find((item) => item.id === button.dataset.selectMedia);
+        if (media) onSelect(structuredClone(media));
+        dialog.close();
+      };
+    });
+  };
+  paintCards();
+  const suggestBtn = dialog.querySelector('[data-suggest-media]');
+  if (suggestBtn && suggestContext) {
+    suggestBtn.onclick = () => {
+      const ranked = rankLocalMedia(suggestContext(), bundle.media || [], { usage: usage || 'article', minScore: 40, limit: 8 });
+      const status = dialog.querySelector('[data-suggest-status]');
+      if (!ranked.length) {
+        status.hidden = false;
+        status.textContent = 'Aucune photo de la banque ne colle assez au contenu. Élargissez le titre ou parcourez la liste.';
+        return;
+      }
+      status.hidden = false;
+      status.textContent = `${ranked.length} suggestion${ranked.length > 1 ? 's' : ''} (meilleure : score ${Math.round(ranked[0].score)}). Cliquez pour choisir.`;
+      // Badge score sur les cartes suggérées
+      for (const hit of ranked) {
+        const btn = dialog.querySelector(`[data-select-media="${hit.id}"]`);
+        const card = btn?.closest('[data-media-card]');
+        if (!card) continue;
+        let badge = card.querySelector('[data-score-badge]');
+        if (!badge) {
+          badge = document.createElement('p');
+          badge.dataset.scoreBadge = '1';
+          badge.className = 'media-tags';
+          card.querySelector('.media-card-body')?.prepend(badge);
+        }
+        badge.textContent = `Correspondance ${Math.round(hit.score)}`;
+      }
+      paintCards(ranked.map((r) => r.id));
+      dialog.querySelector('[data-media-search]').value = '';
+      dialog.querySelector('[data-media-usage]').value = usage || '';
+    };
+  }
   dialog.addEventListener('close', () => dialog.remove());
   dialog.showModal();
 }
@@ -170,7 +233,7 @@ function articleEditor(article) {
     <fieldset class="field"><legend>Auteurs</legend>${bundle.authors.map((author) => `<label><input type="checkbox" name="authors" value="${esc(author.slug)}" ${current.authors.includes(author.slug) ? 'checked' : ''}> ${esc(author.name)}</label>`).join('')}</fieldset>
     <fieldset class="field"><legend>Catégories</legend>${bundle.taxonomies.categories.map((item) => `<label><input type="checkbox" name="categories" value="${esc(item.slug)}" ${current.categories.includes(item.slug) ? 'checked' : ''}> ${esc(item.name)}</label>`).join('')}</fieldset>
     <fieldset class="field full"><legend>Mots-clés</legend>${bundle.taxonomies.tags.map((item) => `<label><input type="checkbox" name="tags" value="${esc(item.slug)}" ${current.tags.includes(item.slug) ? 'checked' : ''}> ${esc(item.name)}</label>`).join('')}</fieldset>
-    <fieldset class="field full media-editor"><legend>Photo principale</legend><label>Photo JPEG, PNG ou WebP<input id="article-lead-file" type="file" accept="image/jpeg,image/png,image/webp"></label><button type="button" data-action="choose-lead-media">Choisir une photo</button><label>Description accessible<input name="leadAlt" value="${esc(current.lead?.alt || '')}"></label><label>Crédit<input name="leadCredit" value="${esc(current.lead?.credit || '')}"></label><label>Légende<input name="leadCaption" value="${esc(current.lead?.caption || '')}"></label><label>Licence<input name="leadLicense" value="${esc(current.lead?.license || '')}"></label><label>Point focal X<input name="leadFocalX" type="range" min="0" max="100" value="${current.lead?.focalPoint?.x ?? 50}"></label><label>Point focal Y<input name="leadFocalY" type="range" min="0" max="100" value="${current.lead?.focalPoint?.y ?? 50}"></label><div id="article-lead-preview" class="full">${cropFrames(current.lead, 'article')}</div>${current.lead ? `<p class="media-quality">Photo actuelle : ${current.lead.width || '?'} × ${current.lead.height || '?'} px${current.lead.width && (current.lead.width < 720 || current.lead.height < 405) ? ' — résolution faible pour la vedette' : ''}.</p>` : ''}</fieldset>
+    <fieldset class="field full media-editor"><legend>Photo principale</legend><label>Photo JPEG, PNG ou WebP<input id="article-lead-file" type="file" accept="image/jpeg,image/png,image/webp"></label><button type="button" data-action="choose-lead-media">Choisir une photo</button><button type="button" data-action="suggest-lead-media">Suggérer (contenu → banque libre)</button><label>Description accessible<input name="leadAlt" value="${esc(current.lead?.alt || '')}"></label><label>Crédit<input name="leadCredit" value="${esc(current.lead?.credit || '')}"></label><label>Légende<input name="leadCaption" value="${esc(current.lead?.caption || '')}"></label><label>Licence<input name="leadLicense" value="${esc(current.lead?.license || '')}"></label><label>Point focal X<input name="leadFocalX" type="range" min="0" max="100" value="${current.lead?.focalPoint?.x ?? 50}"></label><label>Point focal Y<input name="leadFocalY" type="range" min="0" max="100" value="${current.lead?.focalPoint?.y ?? 50}"></label><div id="article-lead-preview" class="full">${cropFrames(current.lead, 'article')}</div>${current.lead ? `<p class="media-quality">Photo actuelle : ${current.lead.width || '?'} × ${current.lead.height || '?'} px${current.lead.width && (current.lead.width < 720 || current.lead.height < 405) ? ' — résolution faible pour la vedette' : ''}.</p>` : ''}</fieldset>
     <div class="field full"><label for="article-format">Format du texte</label><select id="article-format" name="bodyFormat"><option value="markdown" ${current.body?.format !== 'html' ? 'selected' : ''}>Markdown</option><option value="html" ${current.body?.format === 'html' ? 'selected' : ''}>HTML assaini</option></select></div>
     <div class="field full editor-shell"><div class="editor-toolbar"><button type="button" data-editor-mode="visual">Visuel</button><button type="button" data-editor-mode="source">Source</button><span data-html-tools><button type="button" data-command="bold"><strong>G</strong></button><button type="button" data-command="italic"><em>I</em></button><button type="button" data-command="formatBlock" data-value="h2">Titre</button><button type="button" data-command="createLink">Lien</button></span><label class="button">Ajouter une photo<input id="article-inline-file" type="file" accept="image/jpeg,image/png,image/webp" hidden></label></div><label for="article-body" class="sr-only">Texte de l’article</label><textarea class="body" id="article-body" name="body">${esc(current.body?.raw || '')}</textarea><div id="article-visual" class="visual-editor" contenteditable="true"></div><p class="media-quality">Les photos téléversées restent dans ce navigateur et seront incluses dans les exports. Recommandation : 720 × 405 px pour une vedette.</p></div>
     <div class="actions full"><button class="primary" type="submit">Enregistrer</button><button type="button" data-action="preview">Prévisualiser sans publier</button></div></form><div id="article-preview"></div></section>`;
@@ -188,14 +251,32 @@ function articleEditor(article) {
   };
   articleForm.elements.leadFocalX.addEventListener('input', refreshLeadCrop);
   articleForm.elements.leadFocalY.addEventListener('input', refreshLeadCrop);
-  main.querySelector('[data-action="choose-lead-media"]').onclick = () => chooseSharedMedia((media) => {
+  const applyLeadMedia = (media, msg = 'Photo sélectionnée.') => {
     current.lead = media;
     for (const [name, value] of [['leadAlt', media.alt], ['leadCredit', media.credit], ['leadCaption', media.caption], ['leadLicense', media.license]]) articleForm.elements[name].value = value || '';
     articleForm.elements.leadFocalX.value = media.focalPoint?.x ?? 50;
     articleForm.elements.leadFocalY.value = media.focalPoint?.y ?? 50;
     document.getElementById('article-lead-preview').innerHTML = cropFrames(media, 'article');
-    notify('Photo sélectionnée.');
-  }, 'article');
+    notify(msg);
+  };
+  const suggestContext = () => {
+    const bodyEl = document.getElementById('article-body');
+    return {
+      title: articleForm.elements.title?.value || '',
+      excerpt: articleForm.elements.excerpt?.value || '',
+      body: bodyEl?.value || '',
+    };
+  };
+  main.querySelector('[data-action="choose-lead-media"]').onclick = () => chooseSharedMedia(applyLeadMedia, 'article', suggestContext);
+  main.querySelector('[data-action="suggest-lead-media"]').onclick = () => {
+    const ranked = rankLocalMedia(suggestContext(), bundle.media || [], { usage: 'article', minScore: 40, limit: 1 });
+    if (!ranked.length) {
+      chooseSharedMedia(applyLeadMedia, 'article', suggestContext);
+      notify('Aucune suggestion nette — parcourez la banque ou affinez le titre.');
+      return;
+    }
+    applyLeadMedia(structuredClone(ranked[0]), `Suggestion appliquée (score ${Math.round(ranked[0].score)}).`);
+  };
   let editorMode = current.body?.format === 'html' ? 'visual' : 'source';
   visual.innerHTML = current.body?.format === 'html' ? sanitizePreview(current.body.raw || '') : sanitizePreview(marked.parse(current.body?.raw || '', { async: false }));
   const syncEditor = (next = editorMode) => {

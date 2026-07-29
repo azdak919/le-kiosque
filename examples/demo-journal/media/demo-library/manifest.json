@@ -4,7 +4,7 @@
   "notice": "Ces campus et scènes réels illustrent uniquement la démonstration. Ils ne représentent pas le Cégep de démonstration fictif ni le journal fictif Le Quorum.",
   "media": [
     {
-      "id": "eab20483-88e4-5c60-ab7c-67b0658e6031",
+      "id": "9056f6bf-a1c6-5eab-a67f-de197c69ad23",
       "kind": "image",
       "src": "/media/demo-library/campus-sainte-foy.jpg",
       "remoteSrc": "https://commons.wikimedia.org/wiki/Special:FilePath/Campus_du_C%C3%A9gep_de_Sainte-Foy01.JPG?width=1920",
@@ -40,14 +40,14 @@
         "backend": "wikimedia-commons",
         "backendId": "File:Campus du Cégep de Sainte-Foy01.JPG",
         "backendUrl": "https://commons.wikimedia.org/wiki/File:Campus_du_C%C3%A9gep_de_Sainte-Foy01.JPG",
-        "fetchedAt": "2026-07-29T12:45:24.550Z",
+        "fetchedAt": "2026-07-29T15:32:14.369Z",
         "revision": "1920px",
         "license": "CC BY-SA 3.0",
         "originalPublisher": "Wikimedia Commons"
       }
     },
     {
-      "id": "4cbba8aa-5c17-5cd3-964d-8ea9f152656e",
+      "id": "3562fa4a-e536-5be8-a594-9427fa319e6a",
       "kind": "image",
       "src": "/media/demo-library/interieur-sainte-foy.jpg",
       "remoteSrc": "https://commons.wikimedia.org/wiki/Special:FilePath/C%C3%A9gep_de_Sainte-Foy_(int%C3%A9rieur).JPG?width=1920",
@@ -83,14 +83,14 @@
         "backend": "wikimedia-commons",
         "backendId": "File:Cégep de Sainte-Foy (intérieur).JPG",
         "backendUrl": "https://commons.wikimedia.org/wiki/File:C%C3%A9gep_de_Sainte-Foy_(int%C3%A9rieur).JPG",
-        "fetchedAt": "2026-07-29T12:45:27.020Z",
+        "fetchedAt": "2026-07-29T15:32:14.373Z",
         "revision": "1920px",
         "license": "CC BY-SA 3.0",
         "originalPublisher": "Wikimedia Commons"
       }
     },
     {
-      "id": "abb5f292-a46a-5b09-8fbd-fb13640cd680",
+      "id": "9cdaed82-7e4c-59ec-a54b-b4025769c4a6",
       "kind": "image",
       "src": "/media/demo-library/batiment-jonquiere.jpg",
       "remoteSrc": "https://commons.wikimedia.org/wiki/Special:FilePath/B%C3%A2timent_du_C%C3%A9gep_de_Jonqui%C3%A8re.JPG?width=1920",
@@ -126,14 +126,14 @@
         "backend": "wikimedia-commons",
         "backendId": "File:Bâtiment du Cégep de Jonquière.JPG",
         "backendUrl": "https://commons.wikimedia.org/wiki/File:B%C3%A2timent_du_C%C3%A9gep_de_Jonqui%C3%A8re.JPG",
-        "fetchedAt": "2026-07-29T12:45:29.259Z",
+        "fetchedAt": "2026-07-29T15:32:14.376Z",
         "revision": "1920px",
         "license": "CC BY-SA 3.0",
         "originalPublisher": "Wikimedia Commons"
       }
     },
     {
-      "id": "cdc7eef8-7ed3-5d74-a095-6b3c917586e3",
+      "id": "09b590b4-62c5-5da4-ab61-36087073a079",
       "kind": "image",
       "src": "/media/demo-library/football-jonquiere.jpg",
       "remoteSrc": "https://commons.wikimedia.org/wiki/Special:FilePath/Terrain_de_football_du_C%C3%A9gep_de_Jonqui%C3%A8re.JPG?width=1920",
@@ -168,14 +168,55 @@
         "backend": "wikimedia-commons",
         "backendId": "File:Terrain de football du Cégep de Jonquière.JPG",
         "backendUrl": "https://commons.wikimedia.org/wiki/File:Terrain_de_football_du_C%C3%A9gep_de_Jonqui%C3%A8re.JPG",
-        "fetchedAt": "2026-07-29T12:45:31.413Z",
+        "fetchedAt": "2026-07-29T15:32:14.378Z",
         "revision": "1920px",
         "license": "CC BY-SA 3.0",
         "originalPublisher": "Wikimedia Commons"
       }
     },
     {
-      "id": "1c05402e-3d91-54df-8638-1105d7dbcdd8",
+      "id": "9e5d9269-543b-5d36-a95c-21a531bdb872",
+      "kind": "image",
+      "src": "/media/demo-library/campus-limoilou.jpg",
+      "remoteSrc": "https://commons.wikimedia.org/wiki/Special:FilePath/Campus_de_Qu%C3%A9bec.jpg?width=1920",
+      "sourceUrl": "https://commons.wikimedia.org/wiki/File:Campus_de_Qu%C3%A9bec.jpg",
+      "alt": "Campus collégial à Québec",
+      "caption": "Campus collégial à Québec — illustration de démonstration uniquement.",
+      "credit": "Pierre-Paul Beaumont",
+      "creditUrl": "https://commons.wikimedia.org/wiki/File:Campus_de_Qu%C3%A9bec.jpg",
+      "license": "CC BY 2.0 ca",
+      "licenseUrl": "https://creativecommons.org/licenses/by/2.0/ca/",
+      "width": 1920,
+      "height": 1297,
+      "mime": "image/jpeg",
+      "checksum": "fd90e7208edb822783783878953b81c35692dd1201d40800fc6c063ef49bbb59",
+      "focalPoint": {
+        "x": 50,
+        "y": 48
+      },
+      "institution": "Cégep Limoilou",
+      "campus": "Québec",
+      "keywords": [
+        "campus",
+        "extérieur"
+      ],
+      "usages": [
+        "exterior",
+        "masthead",
+        "article"
+      ],
+      "source": {
+        "backend": "wikimedia-commons",
+        "backendId": "File:Campus de Québec.jpg",
+        "backendUrl": "https://commons.wikimedia.org/wiki/File:Campus_de_Qu%C3%A9bec.jpg",
+        "fetchedAt": "2026-07-29T15:32:14.381Z",
+        "revision": "1920px",
+        "license": "CC BY 2.0 ca",
+        "originalPublisher": "Wikimedia Commons"
+      }
+    },
+    {
+      "id": "62c5954f-5b6e-58ba-a896-309eba40f10c",
       "kind": "image",
       "src": "/media/demo-library/mcgill-roddick.jpg",
       "remoteSrc": "https://commons.wikimedia.org/wiki/Special:FilePath/Roddick_Gates_(McGill_University)_2005-09-02.jpg?width=1920",
@@ -210,14 +251,14 @@
         "backend": "wikimedia-commons",
         "backendId": "File:Roddick Gates (McGill University) 2005-09-02.jpg",
         "backendUrl": "https://commons.wikimedia.org/wiki/File:Roddick_Gates_(McGill_University)_2005-09-02.jpg",
-        "fetchedAt": "2026-07-29T12:46:07.149Z",
+        "fetchedAt": "2026-07-29T15:32:14.384Z",
         "revision": "1920px",
         "license": "CC BY-SA 3.0",
         "originalPublisher": "Wikimedia Commons"
       }
     },
     {
-      "id": "f45f6860-ba3f-536d-9db0-12ddbf5bc5db",
+      "id": "8dbdc406-0a9d-5e78-a247-9dbb4c9021be",
       "kind": "image",
       "src": "/media/demo-library/uqam-jasmin.jpg",
       "remoteSrc": "https://commons.wikimedia.org/wiki/Special:FilePath/Pavillon_Judith-Jasmin_UQAM_1.jpg?width=1920",
@@ -225,6 +266,7 @@
       "alt": "Pavillon Judith-Jasmin de l’UQAM à Montréal",
       "caption": "UQAM (Montréal) — illustration de démonstration uniquement.",
       "credit": "Great11",
+      "creditUrl": "https://commons.wikimedia.org/wiki/File:Pavillon_Judith-Jasmin_UQAM_1.jpg",
       "license": "CC BY-SA 4.0",
       "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0/",
       "width": 1920,
@@ -251,15 +293,14 @@
         "backend": "wikimedia-commons",
         "backendId": "File:Pavillon Judith-Jasmin UQAM 1.jpg",
         "backendUrl": "https://commons.wikimedia.org/wiki/File:Pavillon_Judith-Jasmin_UQAM_1.jpg",
-        "fetchedAt": "2026-07-29T12:46:09.476Z",
+        "fetchedAt": "2026-07-29T15:32:14.386Z",
         "revision": "1920px",
         "license": "CC BY-SA 4.0",
         "originalPublisher": "Wikimedia Commons"
-      },
-      "creditUrl": "https://commons.wikimedia.org/wiki/File:Pavillon_Judith-Jasmin_UQAM_1.jpg"
+      }
     },
     {
-      "id": "d46be5d9-6524-5846-8576-68d9680fd191",
+      "id": "fe784523-991a-53ae-a69e-ab27dcaba8b3",
       "kind": "image",
       "src": "/media/demo-library/ulaval-campus.jpg",
       "remoteSrc": "https://commons.wikimedia.org/wiki/Special:FilePath/Universit%C3%A9_Laval%2C_Quebec%2C_Canada_02.jpg?width=1920",
@@ -267,6 +308,7 @@
       "alt": "Campus de l’Université Laval à Québec",
       "caption": "Université Laval (Québec) — illustration de démonstration uniquement.",
       "credit": "Wilfredor",
+      "creditUrl": "https://commons.wikimedia.org/wiki/File:Universit%C3%A9_Laval%2C_Quebec%2C_Canada_02.jpg",
       "license": "CC0",
       "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/",
       "width": 1920,
@@ -293,15 +335,14 @@
         "backend": "wikimedia-commons",
         "backendId": "File:Université Laval, Quebec, Canada 02.jpg",
         "backendUrl": "https://commons.wikimedia.org/wiki/File:Universit%C3%A9_Laval%2C_Quebec%2C_Canada_02.jpg",
-        "fetchedAt": "2026-07-29T12:46:12.463Z",
+        "fetchedAt": "2026-07-29T15:32:14.388Z",
         "revision": "1920px",
         "license": "CC0",
         "originalPublisher": "Wikimedia Commons"
-      },
-      "creditUrl": "https://commons.wikimedia.org/wiki/File:Universit%C3%A9_Laval%2C_Quebec%2C_Canada_02.jpg"
+      }
     },
     {
-      "id": "90e7c65a-3dc6-5b98-8694-19c7a320701c",
+      "id": "9454f239-2ef5-5058-a3e9-987c6dfb7174",
       "kind": "image",
       "src": "/media/demo-library/ulaval-parc.jpg",
       "remoteSrc": "https://commons.wikimedia.org/wiki/Special:FilePath/Park_in_Universit%C3%A9_Laval.jpg?width=1920",
@@ -309,6 +350,7 @@
       "alt": "Parc sur le campus de l’Université Laval",
       "caption": "Université Laval (Québec) — illustration de démonstration uniquement.",
       "credit": "Wilfredor",
+      "creditUrl": "https://commons.wikimedia.org/wiki/File:Park_in_Universit%C3%A9_Laval.jpg",
       "license": "CC BY-SA 4.0",
       "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0/",
       "width": 1920,
@@ -335,15 +377,14 @@
         "backend": "wikimedia-commons",
         "backendId": "File:Park in Université Laval.jpg",
         "backendUrl": "https://commons.wikimedia.org/wiki/File:Park_in_Universit%C3%A9_Laval.jpg",
-        "fetchedAt": "2026-07-29T12:46:14.920Z",
+        "fetchedAt": "2026-07-29T15:32:14.392Z",
         "revision": "1920px",
         "license": "CC BY-SA 4.0",
         "originalPublisher": "Wikimedia Commons"
-      },
-      "creditUrl": "https://commons.wikimedia.org/wiki/File:Park_in_Universit%C3%A9_Laval.jpg"
+      }
     },
     {
-      "id": "e1345729-c51f-585e-9c97-105d82bcccff",
+      "id": "cf279a85-5d97-5663-a5c7-c0e34ad3ae7b",
       "kind": "image",
       "src": "/media/demo-library/concordia-hall.jpg",
       "remoteSrc": "https://commons.wikimedia.org/wiki/Special:FilePath/Henry_F._Hall_Building_07.JPG?width=1920",
@@ -351,6 +392,7 @@
       "alt": "Édifice Henry F. Hall de l’Université Concordia",
       "caption": "Concordia (Montréal) — illustration de démonstration uniquement.",
       "credit": "Jeangagnon",
+      "creditUrl": "https://commons.wikimedia.org/wiki/File:Henry_F._Hall_Building_07.JPG",
       "license": "CC BY-SA 3.0",
       "licenseUrl": "https://creativecommons.org/licenses/by-sa/3.0/",
       "width": 1920,
@@ -377,15 +419,14 @@
         "backend": "wikimedia-commons",
         "backendId": "File:Henry F. Hall Building 07.JPG",
         "backendUrl": "https://commons.wikimedia.org/wiki/File:Henry_F._Hall_Building_07.JPG",
-        "fetchedAt": "2026-07-29T12:46:17.312Z",
+        "fetchedAt": "2026-07-29T15:32:14.394Z",
         "revision": "1920px",
         "license": "CC BY-SA 3.0",
         "originalPublisher": "Wikimedia Commons"
-      },
-      "creditUrl": "https://commons.wikimedia.org/wiki/File:Henry_F._Hall_Building_07.JPG"
+      }
     },
     {
-      "id": "77b1f574-1be1-57af-8413-ca80b7f3bccc",
+      "id": "16262366-3c90-5a89-a26f-76302817013d",
       "kind": "image",
       "src": "/media/demo-library/udem-gaudry.jpg",
       "remoteSrc": "https://commons.wikimedia.org/wiki/Special:FilePath/Pavillon_Roger-Gaudry_II.jpg?width=1920",
@@ -393,6 +434,7 @@
       "alt": "Pavillon Roger-Gaudry de l’Université de Montréal",
       "caption": "Université de Montréal — illustration de démonstration uniquement.",
       "credit": "Funke",
+      "creditUrl": "https://commons.wikimedia.org/wiki/File:Pavillon_Roger-Gaudry_II.jpg",
       "license": "CC BY-SA 4.0",
       "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0/",
       "width": 1920,
@@ -419,15 +461,14 @@
         "backend": "wikimedia-commons",
         "backendId": "File:Pavillon Roger-Gaudry II.jpg",
         "backendUrl": "https://commons.wikimedia.org/wiki/File:Pavillon_Roger-Gaudry_II.jpg",
-        "fetchedAt": "2026-07-29T12:46:19.572Z",
+        "fetchedAt": "2026-07-29T15:32:14.396Z",
         "revision": "1920px",
         "license": "CC BY-SA 4.0",
         "originalPublisher": "Wikimedia Commons"
-      },
-      "creditUrl": "https://commons.wikimedia.org/wiki/File:Pavillon_Roger-Gaudry_II.jpg"
+      }
     },
     {
-      "id": "00117e7b-3263-55db-99dd-b89436785bb5",
+      "id": "3c77ac00-f28a-5b93-a5ea-661f899e38d8",
       "kind": "image",
       "src": "/media/demo-library/bishops-campus.jpg",
       "remoteSrc": "https://commons.wikimedia.org/wiki/Special:FilePath/Bishop's_University_campus_2011.jpg?width=1920",
@@ -435,6 +476,7 @@
       "alt": "Campus de Bishop’s University",
       "caption": "Bishop’s University — illustration de démonstration uniquement.",
       "credit": "Balcer",
+      "creditUrl": "https://commons.wikimedia.org/wiki/File:Bishop's_University_campus_2011.jpg",
       "license": "CC BY 3.0",
       "licenseUrl": "https://creativecommons.org/licenses/by/3.0/",
       "width": 1920,
@@ -460,15 +502,14 @@
         "backend": "wikimedia-commons",
         "backendId": "File:Bishop's University campus 2011.jpg",
         "backendUrl": "https://commons.wikimedia.org/wiki/File:Bishop's_University_campus_2011.jpg",
-        "fetchedAt": "2026-07-29T12:46:21.777Z",
+        "fetchedAt": "2026-07-29T15:32:14.399Z",
         "revision": "1920px",
         "license": "CC BY 3.0",
         "originalPublisher": "Wikimedia Commons"
-      },
-      "creditUrl": "https://commons.wikimedia.org/wiki/File:Bishop's_University_campus_2011.jpg"
+      }
     },
     {
-      "id": "556552aa-0082-5038-a067-57c87da0996c",
+      "id": "db26f68d-3db2-548e-a515-834ce62a7786",
       "kind": "image",
       "src": "/media/demo-library/mcgill-campus.jpg",
       "remoteSrc": "https://commons.wikimedia.org/wiki/Special:FilePath/McGill_University_downtown_campus_31.JPG?width=1920",
@@ -476,6 +517,7 @@
       "alt": "Campus centre-ville de l’Université McGill",
       "caption": "McGill (Montréal) — illustration de démonstration uniquement.",
       "credit": "Jeangagnon",
+      "creditUrl": "https://commons.wikimedia.org/wiki/File:McGill_University_downtown_campus_31.JPG",
       "license": "CC BY-SA 3.0",
       "licenseUrl": "https://creativecommons.org/licenses/by-sa/3.0/",
       "width": 1920,
@@ -502,15 +544,14 @@
         "backend": "wikimedia-commons",
         "backendId": "File:McGill University downtown campus 31.JPG",
         "backendUrl": "https://commons.wikimedia.org/wiki/File:McGill_University_downtown_campus_31.JPG",
-        "fetchedAt": "2026-07-29T12:46:24.018Z",
+        "fetchedAt": "2026-07-29T15:32:14.402Z",
         "revision": "1920px",
         "license": "CC BY-SA 3.0",
         "originalPublisher": "Wikimedia Commons"
-      },
-      "creditUrl": "https://commons.wikimedia.org/wiki/File:McGill_University_downtown_campus_31.JPG"
+      }
     },
     {
-      "id": "4ad82ff9-79a6-5a8f-9c40-3e2073a54b9b",
+      "id": "9cd8dc93-0ee9-5115-a6d5-ccfa12e639b8",
       "kind": "image",
       "src": "/media/demo-library/sherbrooke-longueuil.jpg",
       "remoteSrc": "https://commons.wikimedia.org/wiki/Special:FilePath/Campus_de_Longueuil_-_Universite_de_Sherbrooke_09.jpg?width=1920",
@@ -518,6 +559,7 @@
       "alt": "Campus de Longueuil de l’Université de Sherbrooke",
       "caption": "Université de Sherbrooke (Longueuil) — illustration de démonstration uniquement.",
       "credit": "Jeangagnon",
+      "creditUrl": "https://commons.wikimedia.org/wiki/File:Campus_de_Longueuil_-_Universite_de_Sherbrooke_09.jpg",
       "license": "CC BY-SA 3.0",
       "licenseUrl": "https://creativecommons.org/licenses/by-sa/3.0/",
       "width": 1920,
@@ -543,15 +585,182 @@
         "backend": "wikimedia-commons",
         "backendId": "File:Campus de Longueuil - Universite de Sherbrooke 09.jpg",
         "backendUrl": "https://commons.wikimedia.org/wiki/File:Campus_de_Longueuil_-_Universite_de_Sherbrooke_09.jpg",
-        "fetchedAt": "2026-07-29T12:46:26.363Z",
+        "fetchedAt": "2026-07-29T15:32:14.405Z",
         "revision": "1920px",
         "license": "CC BY-SA 3.0",
         "originalPublisher": "Wikimedia Commons"
-      },
-      "creditUrl": "https://commons.wikimedia.org/wiki/File:Campus_de_Longueuil_-_Universite_de_Sherbrooke_09.jpg"
+      }
     },
     {
-      "id": "bbe8c575-498c-59a1-8bae-3f9c820b05ad",
+      "id": "eb7b80df-0286-53d3-aef2-e093264f9b37",
+      "kind": "image",
+      "src": "/media/demo-library/uqtr-boucher.jpg",
+      "remoteSrc": "https://commons.wikimedia.org/wiki/Special:FilePath/Pavillon_Pierre-Boucher_UQTR.jpg?width=1920",
+      "sourceUrl": "https://commons.wikimedia.org/wiki/File:Pavillon_Pierre-Boucher_UQTR.jpg",
+      "alt": "Pavillon Pierre-Boucher de l’UQTR",
+      "caption": "UQTR (Trois-Rivières) — illustration de démonstration uniquement.",
+      "credit": "Jeangagnon",
+      "creditUrl": "https://commons.wikimedia.org/wiki/File:Pavillon_Pierre-Boucher_UQTR.jpg",
+      "license": "CC BY-SA 3.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by-sa/3.0/",
+      "width": 1920,
+      "height": 2350,
+      "mime": "image/jpeg",
+      "checksum": "356d1def8402d05886db1046c79612512ac12105c76611bf7733193c01c14824",
+      "focalPoint": {
+        "x": 50,
+        "y": 45
+      },
+      "institution": "UQTR",
+      "campus": "Trois-Rivières",
+      "keywords": [
+        "campus",
+        "architecture",
+        "Trois-Rivières"
+      ],
+      "usages": [
+        "exterior",
+        "masthead",
+        "article"
+      ],
+      "source": {
+        "backend": "wikimedia-commons",
+        "backendId": "File:Pavillon Pierre-Boucher UQTR.jpg",
+        "backendUrl": "https://commons.wikimedia.org/wiki/File:Pavillon_Pierre-Boucher_UQTR.jpg",
+        "fetchedAt": "2026-07-29T15:32:14.407Z",
+        "revision": "1920px",
+        "license": "CC BY-SA 3.0",
+        "originalPublisher": "Wikimedia Commons"
+      }
+    },
+    {
+      "id": "4c04b2b3-319d-5e40-a278-51247a1c658d",
+      "kind": "image",
+      "src": "/media/demo-library/cegep-vieux-montreal.jpg",
+      "remoteSrc": "https://commons.wikimedia.org/wiki/Special:FilePath/C%C3%A9gep_du_Vieux_Montr%C3%A9al01.JPG?width=1920",
+      "sourceUrl": "https://commons.wikimedia.org/wiki/File:C%C3%A9gep_du_Vieux_Montr%C3%A9al01.JPG",
+      "alt": "Cégep du Vieux Montréal",
+      "caption": "Cégep du Vieux Montréal — illustration de démonstration uniquement.",
+      "credit": "Khayman",
+      "creditUrl": "https://commons.wikimedia.org/wiki/File:C%C3%A9gep_du_Vieux_Montr%C3%A9al01.JPG",
+      "license": "CC BY-SA 3.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by-sa/3.0/",
+      "width": 1920,
+      "height": 1440,
+      "mime": "image/jpeg",
+      "checksum": "d7e023bfd565a6547d52c8910f750fbce482b2812aa51bd6424f47e3a618a315",
+      "focalPoint": {
+        "x": 50,
+        "y": 48
+      },
+      "institution": "Cégep du Vieux Montréal",
+      "campus": "Montréal",
+      "keywords": [
+        "campus",
+        "cégep",
+        "Montréal"
+      ],
+      "usages": [
+        "exterior",
+        "masthead",
+        "article"
+      ],
+      "source": {
+        "backend": "wikimedia-commons",
+        "backendId": "File:Cégep du Vieux Montréal01.JPG",
+        "backendUrl": "https://commons.wikimedia.org/wiki/File:C%C3%A9gep_du_Vieux_Montr%C3%A9al01.JPG",
+        "fetchedAt": "2026-07-29T15:32:14.409Z",
+        "revision": "1920px",
+        "license": "CC BY-SA 3.0",
+        "originalPublisher": "Wikimedia Commons"
+      }
+    },
+    {
+      "id": "f6303779-a67b-5619-ae03-e81d6277cdd1",
+      "kind": "image",
+      "src": "/media/demo-library/mcgill-arts.jpg",
+      "remoteSrc": "https://commons.wikimedia.org/wiki/Special:FilePath/Arts_Building%2C_McGill_University.jpg?width=1920",
+      "sourceUrl": "https://commons.wikimedia.org/wiki/File:Arts_Building%2C_McGill_University.jpg",
+      "alt": "Pavillon des arts de l’Université McGill",
+      "caption": "McGill Arts Building — illustration de démonstration uniquement.",
+      "credit": "Gene.arboit",
+      "creditUrl": "https://commons.wikimedia.org/wiki/File:Arts_Building%2C_McGill_University.jpg",
+      "license": "CC BY-SA 3.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by-sa/3.0/",
+      "width": 1302,
+      "height": 1960,
+      "mime": "image/jpeg",
+      "checksum": "0562a51ee09d474b3ad3ec881ec88087f92c491e70f6b95b28b2c30ffba8c372",
+      "focalPoint": {
+        "x": 50,
+        "y": 42
+      },
+      "institution": "Université McGill",
+      "campus": "Montréal",
+      "keywords": [
+        "campus",
+        "architecture",
+        "Montréal",
+        "arts"
+      ],
+      "usages": [
+        "exterior",
+        "masthead",
+        "article"
+      ],
+      "source": {
+        "backend": "wikimedia-commons",
+        "backendId": "File:Arts Building, McGill University.jpg",
+        "backendUrl": "https://commons.wikimedia.org/wiki/File:Arts_Building%2C_McGill_University.jpg",
+        "fetchedAt": "2026-07-29T15:32:17.030Z",
+        "revision": "1920px",
+        "license": "CC BY-SA 3.0",
+        "originalPublisher": "Wikimedia Commons"
+      }
+    },
+    {
+      "id": "a99587dd-0873-5341-a6c5-d5792bd4bf2f",
+      "kind": "image",
+      "src": "/media/demo-library/bishops-mcgreer.jpg",
+      "remoteSrc": "https://commons.wikimedia.org/wiki/Special:FilePath/Bishop's_University_McGreer_Hall.jpg?width=1920",
+      "sourceUrl": "https://commons.wikimedia.org/wiki/File:Bishop's_University_McGreer_Hall.jpg",
+      "alt": "McGreer Hall, Bishop’s University",
+      "caption": "Bishop’s University — illustration de démonstration uniquement.",
+      "credit": "Balcer",
+      "creditUrl": "https://commons.wikimedia.org/wiki/File:Bishop's_University_McGreer_Hall.jpg",
+      "license": "CC BY 3.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by/3.0/",
+      "width": 1920,
+      "height": 1440,
+      "mime": "image/jpeg",
+      "checksum": "be5e1e693f2bd7ceb2c5460c9c6f8213339f7b6db7114b7851764d9cc4631daa",
+      "focalPoint": {
+        "x": 50,
+        "y": 45
+      },
+      "institution": "Bishop's University",
+      "campus": "Sherbrooke",
+      "keywords": [
+        "campus",
+        "architecture"
+      ],
+      "usages": [
+        "exterior",
+        "masthead",
+        "article"
+      ],
+      "source": {
+        "backend": "wikimedia-commons",
+        "backendId": "File:Bishop's University McGreer Hall.jpg",
+        "backendUrl": "https://commons.wikimedia.org/wiki/File:Bishop's_University_McGreer_Hall.jpg",
+        "fetchedAt": "2026-07-29T15:32:17.034Z",
+        "revision": "1920px",
+        "license": "CC BY 3.0",
+        "originalPublisher": "Wikimedia Commons"
+      }
+    },
+    {
+      "id": "e4aafb6b-6d9a-59d9-a1d4-9e3a1e2d2b7e",
       "kind": "image",
       "src": "/media/demo-library/articles/soccer.jpg",
       "remoteSrc": "https://commons.wikimedia.org/wiki/Special:FilePath/Adidas_soccer_ball_on_a_grass_pitch_(Unsplash).jpg?width=1920",
@@ -559,6 +768,7 @@
       "alt": "Ballon de soccer sur un terrain en herbe",
       "caption": "Ballon de soccer sur un terrain en herbe",
       "credit": "Peter Glaser baraida",
+      "creditUrl": "https://commons.wikimedia.org/wiki/File:Adidas_soccer_ball_on_a_grass_pitch_(Unsplash).jpg",
       "license": "CC0",
       "licenseUrl": "https://creativecommons.org/publicdomain/mark/1.0/",
       "width": 1920,
@@ -570,7 +780,11 @@
         "y": 48
       },
       "keywords": [
-        "soccer"
+        "soccer",
+        "ballon",
+        "soccer",
+        "terrain",
+        "herbe"
       ],
       "usages": [
         "article"
@@ -579,17 +793,14 @@
         "backend": "wikimedia-commons",
         "backendId": "File:Adidas soccer ball on a grass pitch (Unsplash).jpg",
         "backendUrl": "https://commons.wikimedia.org/wiki/File:Adidas_soccer_ball_on_a_grass_pitch_(Unsplash).jpg",
-        "fetchedAt": "2026-07-29T12:44:45.909Z",
+        "fetchedAt": "2026-07-29T15:31:48.320Z",
         "revision": "1920px",
         "license": "CC0",
         "originalPublisher": "Wikimedia Commons"
-      },
-      "creditUrl": "https://commons.wikimedia.org/wiki/File:Adidas_soccer_ball_on_a_grass_pitch_(Unsplash).jpg",
-      "institution": "Scène libre (Wikimedia Commons)",
-      "campus": "Démonstration"
+      }
     },
     {
-      "id": "1b2ce57a-71b0-5f5d-8cc1-3fff0440cc5e",
+      "id": "d62223b2-dc03-5679-a993-ae39d66cf46b",
       "kind": "image",
       "src": "/media/demo-library/articles/basketball.jpg",
       "remoteSrc": "https://commons.wikimedia.org/wiki/Special:FilePath/2016_Auburn_at_Alabama_NCAAM_Basketball_Game.jpg?width=1920",
@@ -597,6 +808,7 @@
       "alt": "Match de basketball en gymnase",
       "caption": "Match de basketball en gymnase",
       "credit": "Bama in ATL",
+      "creditUrl": "https://commons.wikimedia.org/wiki/File:2016_Auburn_at_Alabama_NCAAM_Basketball_Game.jpg",
       "license": "CC BY-SA 4.0",
       "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0/",
       "width": 1920,
@@ -608,7 +820,10 @@
         "y": 48
       },
       "keywords": [
-        "basketball"
+        "basketball",
+        "match",
+        "basketball",
+        "gymnase"
       ],
       "usages": [
         "article"
@@ -617,17 +832,14 @@
         "backend": "wikimedia-commons",
         "backendId": "File:2016 Auburn at Alabama NCAAM Basketball Game.jpg",
         "backendUrl": "https://commons.wikimedia.org/wiki/File:2016_Auburn_at_Alabama_NCAAM_Basketball_Game.jpg",
-        "fetchedAt": "2026-07-29T12:44:46.315Z",
+        "fetchedAt": "2026-07-29T15:31:48.726Z",
         "revision": "1920px",
         "license": "CC BY-SA 4.0",
         "originalPublisher": "Wikimedia Commons"
-      },
-      "creditUrl": "https://commons.wikimedia.org/wiki/File:2016_Auburn_at_Alabama_NCAAM_Basketball_Game.jpg",
-      "institution": "Scène libre (Wikimedia Commons)",
-      "campus": "Démonstration"
+      }
     },
     {
-      "id": "5f553ab3-ab1b-5d33-a542-3f99947c04b1",
+      "id": "2c49897b-be9a-56eb-a101-c914ccb38a36",
       "kind": "image",
       "src": "/media/demo-library/articles/course.jpg",
       "remoteSrc": "https://commons.wikimedia.org/wiki/Special:FilePath/2018_Orizaba_Running_race_01.jpg?width=1920",
@@ -635,6 +847,7 @@
       "alt": "Course à pied en nature",
       "caption": "Course à pied en nature",
       "credit": "Isaacvp",
+      "creditUrl": "https://commons.wikimedia.org/wiki/File:2018_Orizaba_Running_race_01.jpg",
       "license": "CC BY-SA 4.0",
       "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0/",
       "width": 1920,
@@ -646,7 +859,10 @@
         "y": 48
       },
       "keywords": [
-        "course"
+        "course",
+        "course",
+        "pied",
+        "nature"
       ],
       "usages": [
         "article"
@@ -655,17 +871,14 @@
         "backend": "wikimedia-commons",
         "backendId": "File:2018 Orizaba Running race 01.jpg",
         "backendUrl": "https://commons.wikimedia.org/wiki/File:2018_Orizaba_Running_race_01.jpg",
-        "fetchedAt": "2026-07-29T12:44:46.721Z",
+        "fetchedAt": "2026-07-29T15:31:49.130Z",
         "revision": "1920px",
         "license": "CC BY-SA 4.0",
         "originalPublisher": "Wikimedia Commons"
-      },
-      "creditUrl": "https://commons.wikimedia.org/wiki/File:2018_Orizaba_Running_race_01.jpg",
-      "institution": "Scène libre (Wikimedia Commons)",
-      "campus": "Démonstration"
+      }
     },
     {
-      "id": "5506809b-6215-5d8d-b5fd-00bc76a5c394",
+      "id": "ebf1ee73-5db9-54de-ac0a-9e4cfecb2269",
       "kind": "image",
       "src": "/media/demo-library/articles/serre.jpg",
       "remoteSrc": "https://commons.wikimedia.org/wiki/Special:FilePath/Estufa_principal_do_Jardim_Bot%C3%A2nico_de_Curitiba_02.jpg?width=1920",
@@ -673,6 +886,7 @@
       "alt": "Serre pédagogique avec des plants",
       "caption": "Serre pédagogique avec des plants",
       "credit": "Rodrigo.Argenton",
+      "creditUrl": "https://commons.wikimedia.org/wiki/File:Estufa_principal_do_Jardim_Bot%C3%A2nico_de_Curitiba_02.jpg",
       "license": "CC BY-SA 4.0",
       "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0/",
       "width": 1920,
@@ -684,7 +898,11 @@
         "y": 48
       },
       "keywords": [
-        "serre"
+        "serre",
+        "serre",
+        "pédagogique",
+        "avec",
+        "plants"
       ],
       "usages": [
         "article"
@@ -693,17 +911,14 @@
         "backend": "wikimedia-commons",
         "backendId": "File:Estufa principal do Jardim Botânico de Curitiba 02.jpg",
         "backendUrl": "https://commons.wikimedia.org/wiki/File:Estufa_principal_do_Jardim_Bot%C3%A2nico_de_Curitiba_02.jpg",
-        "fetchedAt": "2026-07-29T12:44:47.127Z",
+        "fetchedAt": "2026-07-29T15:31:49.536Z",
         "revision": "1920px",
         "license": "CC BY-SA 4.0",
         "originalPublisher": "Wikimedia Commons"
-      },
-      "creditUrl": "https://commons.wikimedia.org/wiki/File:Estufa_principal_do_Jardim_Bot%C3%A2nico_de_Curitiba_02.jpg",
-      "institution": "Scène libre (Wikimedia Commons)",
-      "campus": "Démonstration"
+      }
     },
     {
-      "id": "95cafc03-4a8d-5fce-8b45-040d766f2962",
+      "id": "c01889d7-9d70-5d6f-adeb-9baed7b08853",
       "kind": "image",
       "src": "/media/demo-library/articles/labo.jpg",
       "remoteSrc": "https://commons.wikimedia.org/wiki/Special:FilePath/Chemistry_laboratory.jpg?width=1920",
@@ -711,6 +926,7 @@
       "alt": "Laboratoire de chimie moderne",
       "caption": "Laboratoire de chimie moderne",
       "credit": "Horia Varlan",
+      "creditUrl": "https://commons.wikimedia.org/wiki/File:Chemistry_laboratory.jpg",
       "license": "CC BY 2.0",
       "licenseUrl": "https://creativecommons.org/licenses/by/2.0/",
       "width": 1920,
@@ -722,7 +938,10 @@
         "y": 48
       },
       "keywords": [
-        "labo"
+        "labo",
+        "laboratoire",
+        "chimie",
+        "moderne"
       ],
       "usages": [
         "article"
@@ -731,17 +950,14 @@
         "backend": "wikimedia-commons",
         "backendId": "File:Chemistry laboratory.jpg",
         "backendUrl": "https://commons.wikimedia.org/wiki/File:Chemistry_laboratory.jpg",
-        "fetchedAt": "2026-07-29T12:44:50.652Z",
+        "fetchedAt": "2026-07-29T15:31:49.941Z",
         "revision": "1920px",
         "license": "CC BY 2.0",
         "originalPublisher": "Wikimedia Commons"
-      },
-      "creditUrl": "https://commons.wikimedia.org/wiki/File:Chemistry_laboratory.jpg",
-      "institution": "Scène libre (Wikimedia Commons)",
-      "campus": "Démonstration"
+      }
     },
     {
-      "id": "63cd3b61-c6db-5ec8-8e94-a9b8c3fb0f75",
+      "id": "8cc065eb-dee0-5f3c-aa03-61e6b52712e6",
       "kind": "image",
       "src": "/media/demo-library/articles/radio.jpg",
       "remoteSrc": "https://commons.wikimedia.org/wiki/Special:FilePath/Broadcast_Studio_(53998133689).jpg?width=1920",
@@ -749,6 +965,7 @@
       "alt": "Studio de radio avec microphones",
       "caption": "Studio de radio avec microphones",
       "credit": "Ethan Long",
+      "creditUrl": "https://commons.wikimedia.org/wiki/File:Broadcast_Studio_(53998133689).jpg",
       "license": "CC BY-SA 2.0",
       "licenseUrl": "https://creativecommons.org/licenses/by-sa/2.0/",
       "width": 1920,
@@ -760,7 +977,11 @@
         "y": 48
       },
       "keywords": [
-        "radio"
+        "radio",
+        "studio",
+        "radio",
+        "avec",
+        "microphones"
       ],
       "usages": [
         "article"
@@ -769,17 +990,14 @@
         "backend": "wikimedia-commons",
         "backendId": "File:Broadcast Studio (53998133689).jpg",
         "backendUrl": "https://commons.wikimedia.org/wiki/File:Broadcast_Studio_(53998133689).jpg",
-        "fetchedAt": "2026-07-29T12:44:51.059Z",
+        "fetchedAt": "2026-07-29T15:31:50.347Z",
         "revision": "1920px",
         "license": "CC BY-SA 2.0",
         "originalPublisher": "Wikimedia Commons"
-      },
-      "creditUrl": "https://commons.wikimedia.org/wiki/File:Broadcast_Studio_(53998133689).jpg",
-      "institution": "Scène libre (Wikimedia Commons)",
-      "campus": "Démonstration"
+      }
     },
     {
-      "id": "2eab1c38-8f8d-58cf-bc2d-56698c806956",
+      "id": "ff8d06ed-fa55-5e02-a1e2-7eab3e272076",
       "kind": "image",
       "src": "/media/demo-library/articles/campus-vie.jpg",
       "remoteSrc": "https://commons.wikimedia.org/wiki/Special:FilePath/Students_enjoy_springtime_weather._(5554288570).jpg?width=1920",
@@ -787,6 +1005,7 @@
       "alt": "Étudiantes et étudiants sur un campus au printemps",
       "caption": "Étudiantes et étudiants sur un campus au printemps",
       "credit": "Tulane Public Relations",
+      "creditUrl": "https://commons.wikimedia.org/wiki/File:Students_enjoy_springtime_weather._(5554288570).jpg",
       "license": "CC BY 2.0",
       "licenseUrl": "https://creativecommons.org/licenses/by/2.0/",
       "width": 1920,
@@ -798,7 +1017,11 @@
         "y": 48
       },
       "keywords": [
-        "campus-vie"
+        "campus-vie",
+        "étudiantes",
+        "étudiants",
+        "campus",
+        "printemps"
       ],
       "usages": [
         "article"
@@ -807,17 +1030,14 @@
         "backend": "wikimedia-commons",
         "backendId": "File:Students enjoy springtime weather. (5554288570).jpg",
         "backendUrl": "https://commons.wikimedia.org/wiki/File:Students_enjoy_springtime_weather._(5554288570).jpg",
-        "fetchedAt": "2026-07-29T12:44:51.467Z",
+        "fetchedAt": "2026-07-29T15:31:50.753Z",
         "revision": "1920px",
         "license": "CC BY 2.0",
         "originalPublisher": "Wikimedia Commons"
-      },
-      "creditUrl": "https://commons.wikimedia.org/wiki/File:Students_enjoy_springtime_weather._(5554288570).jpg",
-      "institution": "Scène libre (Wikimedia Commons)",
-      "campus": "Démonstration"
+      }
     },
     {
-      "id": "a3c6fdd5-8535-5d10-97b3-f9ad9ea1ee41",
+      "id": "6d9439ad-8dcc-5699-acdf-9c315c3baf43",
       "kind": "image",
       "src": "/media/demo-library/articles/velo.jpg",
       "remoteSrc": "https://commons.wikimedia.org/wiki/Special:FilePath/Bike_repair_station.jpg?width=1920",
@@ -825,6 +1045,7 @@
       "alt": "Station de réparation de vélos",
       "caption": "Station de réparation de vélos",
       "credit": "Briana18091440",
+      "creditUrl": "https://commons.wikimedia.org/wiki/File:Bike_repair_station.jpg",
       "license": "CC BY-SA 4.0",
       "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
       "width": 1920,
@@ -836,7 +1057,10 @@
         "y": 48
       },
       "keywords": [
-        "velo"
+        "velo",
+        "station",
+        "réparation",
+        "vélos"
       ],
       "usages": [
         "article"
@@ -845,17 +1069,53 @@
         "backend": "wikimedia-commons",
         "backendId": "File:Bike repair station.jpg",
         "backendUrl": "https://commons.wikimedia.org/wiki/File:Bike_repair_station.jpg",
-        "fetchedAt": "2026-07-29T12:44:54.418Z",
+        "fetchedAt": "2026-07-29T15:31:51.574Z",
         "revision": "1920px",
         "license": "CC BY-SA 4.0",
         "originalPublisher": "Wikimedia Commons"
-      },
-      "creditUrl": "https://commons.wikimedia.org/wiki/File:Bike_repair_station.jpg",
-      "institution": "Scène libre (Wikimedia Commons)",
-      "campus": "Démonstration"
+      }
     },
     {
-      "id": "6dd2d1b3-4bbc-5960-8aeb-bdf4d66d7c14",
+      "id": "64895711-44fa-5f31-a612-7fa8db9a8f51",
+      "kind": "image",
+      "src": "/media/demo-library/articles/compost.jpg",
+      "remoteSrc": "https://commons.wikimedia.org/wiki/Special:FilePath/Compost_bin.jpg?width=1920",
+      "sourceUrl": "https://commons.wikimedia.org/wiki/File:Compost_bin.jpg",
+      "alt": "Bac de compost et matières organiques",
+      "caption": "Bac de compost et matières organiques",
+      "credit": "fir0002  flagstaffotos [at] gmail.com\n\t\tCanon 20D + Tamron 28-75mm f/2.8",
+      "creditUrl": "https://commons.wikimedia.org/wiki/File:Compost_bin.jpg",
+      "license": "GFDL 1.2",
+      "licenseUrl": "https://www.gnu.org/licenses/old-licenses/fdl-1.2.html",
+      "width": 1600,
+      "height": 1135,
+      "mime": "image/jpeg",
+      "checksum": "b116a0075fe9e1bf7a1e549fd39ae859c667ea18b74a4f7dcce75035e32ecdd8",
+      "focalPoint": {
+        "x": 50,
+        "y": 48
+      },
+      "keywords": [
+        "compost",
+        "compost",
+        "matières",
+        "organiques"
+      ],
+      "usages": [
+        "article"
+      ],
+      "source": {
+        "backend": "wikimedia-commons",
+        "backendId": "File:Compost_bin.jpg",
+        "backendUrl": "https://commons.wikimedia.org/wiki/File:Compost_bin.jpg",
+        "fetchedAt": "2026-07-29T15:31:52.186Z",
+        "revision": "1920px",
+        "license": "GFDL 1.2",
+        "originalPublisher": "Wikimedia Commons"
+      }
+    },
+    {
+      "id": "ff8e023a-dd08-5cf9-a698-40335e35c5cd",
       "kind": "image",
       "src": "/media/demo-library/articles/biblio-pc.jpg",
       "remoteSrc": "https://commons.wikimedia.org/wiki/Special:FilePath/Library_computers.jpg?width=1920",
@@ -863,8 +1123,9 @@
       "alt": "Ordinateurs en bibliothèque",
       "caption": "Ordinateurs en bibliothèque",
       "credit": "Mshuang2",
+      "creditUrl": "https://commons.wikimedia.org/wiki/File:Library_computers.jpg",
       "license": "CC0",
-      "licenseUrl": "https://commons.wikimedia.org/wiki/File:Library_computers.jpg",
+      "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/deed.en",
       "width": 1920,
       "height": 1440,
       "mime": "image/jpeg",
@@ -874,7 +1135,9 @@
         "y": 48
       },
       "keywords": [
-        "biblio-pc"
+        "biblio-pc",
+        "ordinateurs",
+        "bibliothèque"
       ],
       "usages": [
         "article"
@@ -883,17 +1146,14 @@
         "backend": "wikimedia-commons",
         "backendId": "File:Library computers.jpg",
         "backendUrl": "https://commons.wikimedia.org/wiki/File:Library_computers.jpg",
-        "fetchedAt": "2026-07-29T12:44:59.878Z",
+        "fetchedAt": "2026-07-29T15:31:52.798Z",
         "revision": "1920px",
         "license": "CC0",
         "originalPublisher": "Wikimedia Commons"
-      },
-      "creditUrl": "https://commons.wikimedia.org/wiki/File:Library_computers.jpg",
-      "institution": "Scène libre (Wikimedia Commons)",
-      "campus": "Démonstration"
+      }
     },
     {
-      "id": "010b7ded-addd-57b6-b8f3-1f5f719872da",
+      "id": "d0f5c2d3-0661-5f16-a553-be71bd18a5a9",
       "kind": "image",
       "src": "/media/demo-library/articles/amphi.jpg",
       "remoteSrc": "https://commons.wikimedia.org/wiki/Special:FilePath/Lecture_hall.jpg?width=1920",
@@ -901,6 +1161,7 @@
       "alt": "Amphithéâtre universitaire rempli",
       "caption": "Amphithéâtre universitaire rempli",
       "credit": "Kannan5645",
+      "creditUrl": "https://commons.wikimedia.org/wiki/File:Lecture_hall.jpg",
       "license": "CC BY-SA 3.0",
       "licenseUrl": "https://creativecommons.org/licenses/by-sa/3.0",
       "width": 1600,
@@ -912,7 +1173,10 @@
         "y": 48
       },
       "keywords": [
-        "amphi"
+        "amphi",
+        "amphithéâtre",
+        "universitaire",
+        "rempli"
       ],
       "usages": [
         "article"
@@ -921,17 +1185,14 @@
         "backend": "wikimedia-commons",
         "backendId": "File:Lecture hall.jpg",
         "backendUrl": "https://commons.wikimedia.org/wiki/File:Lecture_hall.jpg",
-        "fetchedAt": "2026-07-29T12:45:02.840Z",
+        "fetchedAt": "2026-07-29T15:31:53.410Z",
         "revision": "1920px",
         "license": "CC BY-SA 3.0",
         "originalPublisher": "Wikimedia Commons"
-      },
-      "creditUrl": "https://commons.wikimedia.org/wiki/File:Lecture_hall.jpg",
-      "institution": "Scène libre (Wikimedia Commons)",
-      "campus": "Démonstration"
+      }
     },
     {
-      "id": "4bf672cb-b4b0-5aee-bdf3-a813d6a7ef70",
+      "id": "0cbe4833-2a73-589b-a7c7-fffa289c37ff",
       "kind": "image",
       "src": "/media/demo-library/articles/caf.jpg",
       "remoteSrc": "https://commons.wikimedia.org/wiki/Special:FilePath/Cafeteria.jpg?width=1920",
@@ -939,8 +1200,9 @@
       "alt": "Cafétéria ou salle à manger collective",
       "caption": "Cafétéria ou salle à manger collective",
       "credit": "Tanvir Hussain",
+      "creditUrl": "https://commons.wikimedia.org/wiki/File:Cafeteria.jpg",
       "license": "CC BY-SA 3.0",
-      "licenseUrl": "https://commons.wikimedia.org/wiki/File:Cafeteria.jpg",
+      "licenseUrl": "https://creativecommons.org/licenses/by-sa/3.0/",
       "width": 1920,
       "height": 1440,
       "mime": "image/jpeg",
@@ -950,7 +1212,11 @@
         "y": 48
       },
       "keywords": [
-        "caf"
+        "caf",
+        "cafétéria",
+        "salle",
+        "manger",
+        "collective"
       ],
       "usages": [
         "article"
@@ -959,17 +1225,14 @@
         "backend": "wikimedia-commons",
         "backendId": "File:Cafeteria.jpg",
         "backendUrl": "https://commons.wikimedia.org/wiki/File:Cafeteria.jpg",
-        "fetchedAt": "2026-07-29T12:45:05.813Z",
+        "fetchedAt": "2026-07-29T15:31:54.025Z",
         "revision": "1920px",
         "license": "CC BY-SA 3.0",
         "originalPublisher": "Wikimedia Commons"
-      },
-      "creditUrl": "https://commons.wikimedia.org/wiki/File:Cafeteria.jpg",
-      "institution": "Scène libre (Wikimedia Commons)",
-      "campus": "Démonstration"
+      }
     },
     {
-      "id": "5e468e7c-fe13-57bc-81fa-08db4feaf72c",
+      "id": "56b8923f-cbfd-5320-a1b7-b45ed1b09246",
       "kind": "image",
       "src": "/media/demo-library/articles/cinema.jpg",
       "remoteSrc": "https://commons.wikimedia.org/wiki/Special:FilePath/Movie_theater.jpg?width=1920",
@@ -977,6 +1240,7 @@
       "alt": "Salle de cinéma vue depuis les sièges",
       "caption": "Salle de cinéma vue depuis les sièges",
       "credit": "Fernandaodapassos",
+      "creditUrl": "https://commons.wikimedia.org/wiki/File:Movie_theater.jpg",
       "license": "CC BY-SA 4.0",
       "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
       "width": 1920,
@@ -988,7 +1252,11 @@
         "y": 48
       },
       "keywords": [
-        "cinema"
+        "cinema",
+        "salle",
+        "cinéma",
+        "depuis",
+        "sièges"
       ],
       "usages": [
         "article"
@@ -997,17 +1265,14 @@
         "backend": "wikimedia-commons",
         "backendId": "File:Movie theater.jpg",
         "backendUrl": "https://commons.wikimedia.org/wiki/File:Movie_theater.jpg",
-        "fetchedAt": "2026-07-29T12:45:08.584Z",
+        "fetchedAt": "2026-07-29T15:31:54.634Z",
         "revision": "1920px",
         "license": "CC BY-SA 4.0",
         "originalPublisher": "Wikimedia Commons"
-      },
-      "creditUrl": "https://commons.wikimedia.org/wiki/File:Movie_theater.jpg",
-      "institution": "Scène libre (Wikimedia Commons)",
-      "campus": "Démonstration"
+      }
     },
     {
-      "id": "cb84ba4b-21d3-5347-ba4d-83a5e4ac89ba",
+      "id": "d2835b5b-4ab2-508c-af1b-1e397a67c16e",
       "kind": "image",
       "src": "/media/demo-library/articles/livres.jpg",
       "remoteSrc": "https://commons.wikimedia.org/wiki/Special:FilePath/Bookshelves.jpg?width=1920",
@@ -1015,6 +1280,7 @@
       "alt": "Rayons de livres en bibliothèque",
       "caption": "Rayons de livres en bibliothèque",
       "credit": "w:it:Utente:OrbiliusMagister",
+      "creditUrl": "https://commons.wikimedia.org/wiki/File:Bookshelves.jpg",
       "license": "Public domain",
       "licenseUrl": "https://commons.wikimedia.org/wiki/File:Bookshelves.jpg",
       "width": 1920,
@@ -1026,7 +1292,10 @@
         "y": 48
       },
       "keywords": [
-        "livres"
+        "livres",
+        "rayons",
+        "livres",
+        "bibliothèque"
       ],
       "usages": [
         "article"
@@ -1035,17 +1304,14 @@
         "backend": "wikimedia-commons",
         "backendId": "File:Bookshelves.jpg",
         "backendUrl": "https://commons.wikimedia.org/wiki/File:Bookshelves.jpg",
-        "fetchedAt": "2026-07-29T12:45:11.235Z",
+        "fetchedAt": "2026-07-29T15:31:55.150Z",
         "revision": "1920px",
         "license": "Public domain",
         "originalPublisher": "Wikimedia Commons"
-      },
-      "creditUrl": "https://commons.wikimedia.org/wiki/File:Bookshelves.jpg",
-      "institution": "Scène libre (Wikimedia Commons)",
-      "campus": "Démonstration"
+      }
     },
     {
-      "id": "f350547f-375f-5132-b708-c9fa6a40a0b8",
+      "id": "5c736411-b5c8-5cca-a6ab-824ba6221559",
       "kind": "image",
       "src": "/media/demo-library/articles/bus.jpg",
       "remoteSrc": "https://commons.wikimedia.org/wiki/Special:FilePath/Bus.jpg?width=1920",
@@ -1053,6 +1319,7 @@
       "alt": "Autobus de transport collectif",
       "caption": "Autobus de transport collectif",
       "credit": "Ici2015",
+      "creditUrl": "https://commons.wikimedia.org/wiki/File:Bus.jpg",
       "license": "CC BY-SA 3.0",
       "licenseUrl": "https://creativecommons.org/licenses/by-sa/3.0",
       "width": 1600,
@@ -1064,7 +1331,10 @@
         "y": 48
       },
       "keywords": [
-        "bus"
+        "bus",
+        "autobus",
+        "transport",
+        "collectif"
       ],
       "usages": [
         "article"
@@ -1073,55 +1343,14 @@
         "backend": "wikimedia-commons",
         "backendId": "File:Bus.jpg",
         "backendUrl": "https://commons.wikimedia.org/wiki/File:Bus.jpg",
-        "fetchedAt": "2026-07-29T12:45:13.885Z",
+        "fetchedAt": "2026-07-29T15:31:55.760Z",
         "revision": "1920px",
         "license": "CC BY-SA 3.0",
         "originalPublisher": "Wikimedia Commons"
-      },
-      "creditUrl": "https://commons.wikimedia.org/wiki/File:Bus.jpg",
-      "institution": "Scène libre (Wikimedia Commons)",
-      "campus": "Démonstration"
+      }
     },
     {
-      "id": "5c729685-c232-5c0f-bd3a-c0d1663a8fbb",
-      "kind": "image",
-      "src": "/media/demo-library/articles/compost.jpg",
-      "remoteSrc": "https://commons.wikimedia.org/wiki/Special:FilePath/Compost_bin.jpg?width=1920",
-      "sourceUrl": "https://commons.wikimedia.org/wiki/File:Compost_bin.jpg",
-      "alt": "Bac de compost et matières organiques",
-      "caption": "Bac de compost et matières organiques",
-      "credit": "fir0002 flagstaffotos [at] gmail.com Canon 20D + Tamron 28-75mm f/2.8",
-      "license": "CC BY-SA 3.0",
-      "licenseUrl": "https://commons.wikimedia.org/wiki/File:Compost_bin.jpg",
-      "width": 1600,
-      "height": 1135,
-      "mime": "image/jpeg",
-      "checksum": "b116a0075fe9e1bf7a1e549fd39ae859c667ea18b74a4f7dcce75035e32ecdd8",
-      "focalPoint": {
-        "x": 50,
-        "y": 48
-      },
-      "keywords": [
-        "compost"
-      ],
-      "usages": [
-        "article"
-      ],
-      "source": {
-        "backend": "wikimedia-commons",
-        "backendId": "File:Compost_bin.jpg",
-        "backendUrl": "https://commons.wikimedia.org/wiki/File:Compost_bin.jpg",
-        "fetchedAt": "2026-07-29T12:48:13.589999+00:00",
-        "revision": "1920px",
-        "license": "GFDL 1.2",
-        "originalPublisher": "Wikimedia Commons"
-      },
-      "creditUrl": "https://commons.wikimedia.org/wiki/File:Compost_bin.jpg",
-      "institution": "Scène libre (Wikimedia Commons)",
-      "campus": "Démonstration"
-    },
-    {
-      "id": "fd43dc6c-f789-5d2a-b4ce-922b5cfe59c0",
+      "id": "2e8128f2-6b0d-5a9e-a18b-5ffaa7d24890",
       "kind": "image",
       "src": "/media/demo-library/articles/calme.jpg",
       "remoteSrc": "https://commons.wikimedia.org/wiki/Special:FilePath/Students_studying.jpg?width=1920",
@@ -1129,6 +1358,7 @@
       "alt": "Étudiantes et étudiants en zone d’étude calme",
       "caption": "Étudiantes et étudiants en zone d’étude calme",
       "credit": "SJISE",
+      "creditUrl": "https://commons.wikimedia.org/wiki/File:Students_studying.jpg",
       "license": "CC BY-SA 4.0",
       "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
       "width": 1920,
@@ -1140,6 +1370,11 @@
         "y": 48
       },
       "keywords": [
+        "calme",
+        "étudiantes",
+        "étudiants",
+        "zone",
+        "d’étude",
         "calme"
       ],
       "usages": [
@@ -1149,55 +1384,14 @@
         "backend": "wikimedia-commons",
         "backendId": "File:Students_studying.jpg",
         "backendUrl": "https://commons.wikimedia.org/wiki/File:Students_studying.jpg",
-        "fetchedAt": "2026-07-29T12:48:19.528709+00:00",
+        "fetchedAt": "2026-07-29T15:31:56.294Z",
         "revision": "1920px",
         "license": "CC BY-SA 4.0",
         "originalPublisher": "Wikimedia Commons"
-      },
-      "creditUrl": "https://commons.wikimedia.org/wiki/File:Students_studying.jpg",
-      "institution": "Scène libre (Wikimedia Commons)",
-      "campus": "Démonstration"
+      }
     },
     {
-      "id": "da5fd6d1-aef8-575b-ba87-d0b5bb4aa378",
-      "kind": "image",
-      "src": "/media/demo-library/articles/parking.jpg",
-      "remoteSrc": "https://commons.wikimedia.org/wiki/Special:FilePath/Bicycle_parking.jpg?width=1920",
-      "sourceUrl": "https://commons.wikimedia.org/wiki/File:Bicycle_parking.jpg",
-      "alt": "Stationnement pour vélos sur un campus",
-      "caption": "Stationnement pour vélos sur un campus",
-      "credit": "David Shay",
-      "license": "CC BY-SA 2.5",
-      "licenseUrl": "https://creativecommons.org/licenses/by-sa/2.5",
-      "width": 1120,
-      "height": 845,
-      "mime": "image/jpeg",
-      "checksum": "b5d3c54bcd896cc465fa60d1b5be272c0e16410746e796ad82bcf4330d66365b",
-      "focalPoint": {
-        "x": 50,
-        "y": 48
-      },
-      "keywords": [
-        "parking"
-      ],
-      "usages": [
-        "article"
-      ],
-      "source": {
-        "backend": "wikimedia-commons",
-        "backendId": "File:Bicycle_parking.jpg",
-        "backendUrl": "https://commons.wikimedia.org/wiki/File:Bicycle_parking.jpg",
-        "fetchedAt": "2026-07-29T12:48:24.851768+00:00",
-        "revision": "1920px",
-        "license": "CC BY-SA 2.5",
-        "originalPublisher": "Wikimedia Commons"
-      },
-      "creditUrl": "https://commons.wikimedia.org/wiki/File:Bicycle_parking.jpg",
-      "institution": "Scène libre (Wikimedia Commons)",
-      "campus": "Démonstration"
-    },
-    {
-      "id": "ac760aa8-8289-5b13-b403-e0e9198ff2fa",
+      "id": "52d38ac6-f8a5-5c30-a2be-7db6c4f11e68",
       "kind": "image",
       "src": "/media/demo-library/articles/arts.jpg",
       "remoteSrc": "https://commons.wikimedia.org/wiki/Special:FilePath/Art_exhibition.jpg?width=1920",
@@ -1205,6 +1399,7 @@
       "alt": "Exposition d’art dans une galerie",
       "caption": "Exposition d’art dans une galerie",
       "credit": "YessMendez",
+      "creditUrl": "https://commons.wikimedia.org/wiki/File:Art_exhibition.jpg",
       "license": "CC BY-SA 4.0",
       "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
       "width": 1920,
@@ -1216,7 +1411,11 @@
         "y": 48
       },
       "keywords": [
-        "arts"
+        "arts",
+        "exposition",
+        "d’art",
+        "dans",
+        "galerie"
       ],
       "usages": [
         "article"
@@ -1225,55 +1424,610 @@
         "backend": "wikimedia-commons",
         "backendId": "File:Art_exhibition.jpg",
         "backendUrl": "https://commons.wikimedia.org/wiki/File:Art_exhibition.jpg",
-        "fetchedAt": "2026-07-29T12:48:30.486056+00:00",
+        "fetchedAt": "2026-07-29T15:31:56.890Z",
         "revision": "1920px",
         "license": "CC BY-SA 4.0",
         "originalPublisher": "Wikimedia Commons"
-      },
-      "creditUrl": "https://commons.wikimedia.org/wiki/File:Art_exhibition.jpg",
-      "institution": "Scène libre (Wikimedia Commons)",
-      "campus": "Démonstration"
+      }
     },
     {
-      "id": "df262e0b-372a-5a5f-a6ee-b535eaaf4ecd",
+      "id": "f81df426-d506-5afb-abab-6bc330cc9246",
       "kind": "image",
-      "src": "/media/demo-library/campus-limoilou.jpg",
-      "remoteSrc": "https://commons.wikimedia.org/wiki/Special:FilePath/Campus_de_Qu%C3%A9bec.jpg?width=1920",
-      "sourceUrl": "https://commons.wikimedia.org/wiki/File:Campus_de_Qu%C3%A9bec.jpg",
-      "alt": "Campus collégial à Québec",
-      "caption": "Campus collégial à Québec — illustration de démonstration uniquement.",
-      "credit": "Pierre-Paul Beaumont",
-      "license": "CC BY 2.0 ca",
-      "licenseUrl": "https://creativecommons.org/licenses/by/2.0/ca/deed.en",
-      "width": 1920,
-      "height": 1297,
+      "src": "/media/demo-library/articles/parking.jpg",
+      "remoteSrc": "https://commons.wikimedia.org/wiki/Special:FilePath/Bicycle_parking.jpg?width=1920",
+      "sourceUrl": "https://commons.wikimedia.org/wiki/File:Bicycle_parking.jpg",
+      "alt": "Stationnement pour vélos sur un campus",
+      "caption": "Stationnement pour vélos sur un campus",
+      "credit": "David Shay",
+      "creditUrl": "https://commons.wikimedia.org/wiki/File:Bicycle_parking.jpg",
+      "license": "CC BY-SA 2.5",
+      "licenseUrl": "https://creativecommons.org/licenses/by-sa/2.5",
+      "width": 1120,
+      "height": 845,
       "mime": "image/jpeg",
-      "checksum": "fd90e7208edb822783783878953b81c35692dd1201d40800fc6c063ef49bbb59",
+      "checksum": "b5d3c54bcd896cc465fa60d1b5be272c0e16410746e796ad82bcf4330d66365b",
       "focalPoint": {
         "x": 50,
         "y": 48
       },
-      "institution": "Cégep Limoilou",
-      "campus": "Québec",
       "keywords": [
-        "campus",
-        "extérieur"
+        "parking",
+        "stationnement",
+        "pour",
+        "vélos",
+        "campus"
       ],
       "usages": [
-        "exterior",
-        "masthead",
         "article"
       ],
       "source": {
         "backend": "wikimedia-commons",
-        "backendId": "File:Campus de Québec.jpg",
-        "backendUrl": "https://commons.wikimedia.org/wiki/File:Campus_de_Québec.jpg",
-        "fetchedAt": "2026-07-29T12:48:36.120098+00:00",
+        "backendId": "File:Bicycle_parking.jpg",
+        "backendUrl": "https://commons.wikimedia.org/wiki/File:Bicycle_parking.jpg",
+        "fetchedAt": "2026-07-29T15:32:00.442Z",
         "revision": "1920px",
-        "license": "CC BY 2.0 ca",
+        "license": "CC BY-SA 2.5",
         "originalPublisher": "Wikimedia Commons"
+      }
+    },
+    {
+      "id": "0dc02b53-b773-5110-a672-31979159522c",
+      "kind": "image",
+      "src": "/media/demo-library/articles/hockey.jpg",
+      "remoteSrc": "https://commons.wikimedia.org/wiki/Special:FilePath/Shot_on_goal_during_youth_hockey_tournament_at_West_Edmonton_Mall_Ice_Palace.jpg?width=1920",
+      "sourceUrl": "https://commons.wikimedia.org/wiki/File:Shot_on_goal_during_youth_hockey_tournament_at_West_Edmonton_Mall_Ice_Palace.jpg",
+      "alt": "Match de hockey sur glace en aréna",
+      "caption": "Match de hockey sur glace en aréna",
+      "credit": "Daniel Case",
+      "creditUrl": "https://commons.wikimedia.org/wiki/File:Shot_on_goal_during_youth_hockey_tournament_at_West_Edmonton_Mall_Ice_Palace.jpg",
+      "license": "CC BY-SA 3.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by-sa/3.0",
+      "width": 1920,
+      "height": 1360,
+      "mime": "image/jpeg",
+      "checksum": "d7d5eec4a723ff2e0df2a15eb4540a6e35c18d1659d6c27bb256ee626f0d13d3",
+      "focalPoint": {
+        "x": 50,
+        "y": 48
       },
-      "creditUrl": "https://commons.wikimedia.org/wiki/File:Campus_de_Qu%C3%A9bec.jpg"
+      "keywords": [
+        "hockey",
+        "match",
+        "hockey",
+        "glace",
+        "aréna"
+      ],
+      "usages": [
+        "article"
+      ],
+      "source": {
+        "backend": "wikimedia-commons",
+        "backendId": "File:Shot on goal during youth hockey tournament at West Edmonton Mall Ice Palace.jpg",
+        "backendUrl": "https://commons.wikimedia.org/wiki/File:Shot_on_goal_during_youth_hockey_tournament_at_West_Edmonton_Mall_Ice_Palace.jpg",
+        "fetchedAt": "2026-07-29T15:32:00.977Z",
+        "revision": "1920px",
+        "license": "CC BY-SA 3.0",
+        "originalPublisher": "Wikimedia Commons"
+      }
+    },
+    {
+      "id": "c92a73fd-2642-580c-a51e-5b1e3f7ebddf",
+      "kind": "image",
+      "src": "/media/demo-library/articles/volleyball.jpg",
+      "remoteSrc": "https://commons.wikimedia.org/wiki/Special:FilePath/Volleyball_match_-_shakehands_before_the_match.jpg?width=1920",
+      "sourceUrl": "https://commons.wikimedia.org/wiki/File:Volleyball_match_-_shakehands_before_the_match.jpg",
+      "alt": "Match de volleyball en gymnase",
+      "caption": "Match de volleyball en gymnase",
+      "credit": "Zorro2212",
+      "creditUrl": "https://commons.wikimedia.org/wiki/File:Volleyball_match_-_shakehands_before_the_match.jpg",
+      "license": "CC BY-SA 3.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by-sa/3.0",
+      "width": 1920,
+      "height": 1285,
+      "mime": "image/jpeg",
+      "checksum": "83bdc78565d7e3c4f3c4886e614a1ec3c8baa110e64a404694871190fc8718ad",
+      "focalPoint": {
+        "x": 50,
+        "y": 48
+      },
+      "keywords": [
+        "volleyball",
+        "match",
+        "volleyball",
+        "gymnase"
+      ],
+      "usages": [
+        "article"
+      ],
+      "source": {
+        "backend": "wikimedia-commons",
+        "backendId": "File:Volleyball match - shakehands before the match.jpg",
+        "backendUrl": "https://commons.wikimedia.org/wiki/File:Volleyball_match_-_shakehands_before_the_match.jpg",
+        "fetchedAt": "2026-07-29T15:32:01.507Z",
+        "revision": "1920px",
+        "license": "CC BY-SA 3.0",
+        "originalPublisher": "Wikimedia Commons"
+      }
+    },
+    {
+      "id": "3abe8aa6-99c8-523e-a084-2bd569c5ae05",
+      "kind": "image",
+      "src": "/media/demo-library/articles/chess.jpg",
+      "remoteSrc": "https://commons.wikimedia.org/wiki/Special:FilePath/Chess_game_Staunton_No._6_perfil_view_8.jpg?width=1920",
+      "sourceUrl": "https://commons.wikimedia.org/wiki/File:Chess_game_Staunton_No._6_perfil_view_8.jpg",
+      "alt": "Pièces d’échecs sur un échiquier",
+      "caption": "Pièces d’échecs sur un échiquier",
+      "credit": "Wilfredor",
+      "creditUrl": "https://commons.wikimedia.org/wiki/File:Chess_game_Staunton_No._6_perfil_view_8.jpg",
+      "license": "CC0",
+      "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/deed.en",
+      "width": 1920,
+      "height": 1260,
+      "mime": "image/jpeg",
+      "checksum": "9a644174f475121aacf0ca11591757e1b54ec4d9bfdf98611b19d8cfcbbd4545",
+      "focalPoint": {
+        "x": 50,
+        "y": 48
+      },
+      "keywords": [
+        "chess",
+        "pièces",
+        "d’échecs",
+        "échiquier"
+      ],
+      "usages": [
+        "article"
+      ],
+      "source": {
+        "backend": "wikimedia-commons",
+        "backendId": "File:Chess game Staunton No. 6 perfil view 8.jpg",
+        "backendUrl": "https://commons.wikimedia.org/wiki/File:Chess_game_Staunton_No._6_perfil_view_8.jpg",
+        "fetchedAt": "2026-07-29T15:32:02.108Z",
+        "revision": "1920px",
+        "license": "CC0",
+        "originalPublisher": "Wikimedia Commons"
+      }
+    },
+    {
+      "id": "1cf54f79-9e62-5c6d-a62d-9c7e1f8189e9",
+      "kind": "image",
+      "src": "/media/demo-library/articles/blood.jpg",
+      "remoteSrc": "https://commons.wikimedia.org/wiki/Special:FilePath/Blood_Donation_Camp_on_Navy_Day_2015_(01).jpg?width=1920",
+      "sourceUrl": "https://commons.wikimedia.org/wiki/File:Blood_Donation_Camp_on_Navy_Day_2015_(01).jpg",
+      "alt": "Collecte de sang — donneur et personnel soignant",
+      "caption": "Collecte de sang — donneur et personnel soignant",
+      "credit": "Indian Navy",
+      "creditUrl": "https://commons.wikimedia.org/wiki/File:Blood_Donation_Camp_on_Navy_Day_2015_(01).jpg",
+      "license": "CC BY-SA 4.0",
+      "licenseUrl": "https://data.gov.in/sites/default/files/Gazette_Notification_OGDL.pdf",
+      "width": 1000,
+      "height": 665,
+      "mime": "image/jpeg",
+      "checksum": "846bdf60c1d32d689f85247650d56b72eaf2ca0c4716b3be1477822a169664ad",
+      "focalPoint": {
+        "x": 50,
+        "y": 48
+      },
+      "keywords": [
+        "blood",
+        "collecte",
+        "sang",
+        "donneur",
+        "personnel",
+        "soignant"
+      ],
+      "usages": [
+        "article"
+      ],
+      "source": {
+        "backend": "wikimedia-commons",
+        "backendId": "File:Blood Donation Camp on Navy Day 2015 (01).jpg",
+        "backendUrl": "https://commons.wikimedia.org/wiki/File:Blood_Donation_Camp_on_Navy_Day_2015_(01).jpg",
+        "fetchedAt": "2026-07-29T15:32:05.355Z",
+        "revision": "1920px",
+        "license": "CC BY-SA 4.0",
+        "originalPublisher": "Wikimedia Commons"
+      }
+    },
+    {
+      "id": "04d5450e-79cb-5347-a953-954592360c72",
+      "kind": "image",
+      "src": "/media/demo-library/articles/mural.jpg",
+      "remoteSrc": "https://commons.wikimedia.org/wiki/Special:FilePath/Montreal_Street_Art_Graffiti_(29241125286).jpg?width=1920",
+      "sourceUrl": "https://commons.wikimedia.org/wiki/File:Montreal_Street_Art_Graffiti_(29241125286).jpg",
+      "alt": "Street art et murale à Montréal",
+      "caption": "Street art et murale à Montréal",
+      "credit": "Coastal Elite from Halifax, Canada",
+      "creditUrl": "https://commons.wikimedia.org/wiki/File:Montreal_Street_Art_Graffiti_(29241125286).jpg",
+      "license": "CC BY-SA 2.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by-sa/2.0",
+      "width": 1920,
+      "height": 1209,
+      "mime": "image/jpeg",
+      "checksum": "94a45e083d31c71ebe69556b99466337825e9ad8afa8a9f0c47e502fff21078a",
+      "focalPoint": {
+        "x": 50,
+        "y": 48
+      },
+      "keywords": [
+        "mural",
+        "street",
+        "murale",
+        "montréal"
+      ],
+      "usages": [
+        "article"
+      ],
+      "source": {
+        "backend": "wikimedia-commons",
+        "backendId": "File:Montreal Street Art Graffiti (29241125286).jpg",
+        "backendUrl": "https://commons.wikimedia.org/wiki/File:Montreal_Street_Art_Graffiti_(29241125286).jpg",
+        "fetchedAt": "2026-07-29T15:32:06.003Z",
+        "revision": "1920px",
+        "license": "CC BY-SA 2.0",
+        "originalPublisher": "Wikimedia Commons"
+      }
+    },
+    {
+      "id": "60d46c24-1c7b-5314-ada1-76c86814194e",
+      "kind": "image",
+      "src": "/media/demo-library/articles/tutoring.jpg",
+      "remoteSrc": "https://commons.wikimedia.org/wiki/Special:FilePath/Students_in_a_group_for_studies.jpg?width=1920",
+      "sourceUrl": "https://commons.wikimedia.org/wiki/File:Students_in_a_group_for_studies.jpg",
+      "alt": "Groupe d’étude et tutorat entre pairs",
+      "caption": "Groupe d’étude et tutorat entre pairs",
+      "credit": "Knowledge and philosophy",
+      "creditUrl": "https://commons.wikimedia.org/wiki/File:Students_in_a_group_for_studies.jpg",
+      "license": "CC BY-SA 4.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
+      "width": 1920,
+      "height": 2560,
+      "mime": "image/jpeg",
+      "checksum": "9c872637912bf46503b3364bae29953a0977cb2afce0701b263cefcd0638dd91",
+      "focalPoint": {
+        "x": 50,
+        "y": 48
+      },
+      "keywords": [
+        "tutoring",
+        "groupe",
+        "d’étude",
+        "tutorat",
+        "entre",
+        "pairs"
+      ],
+      "usages": [
+        "article"
+      ],
+      "source": {
+        "backend": "wikimedia-commons",
+        "backendId": "File:Students in a group for studies.jpg",
+        "backendUrl": "https://commons.wikimedia.org/wiki/File:Students_in_a_group_for_studies.jpg",
+        "fetchedAt": "2026-07-29T15:32:06.618Z",
+        "revision": "1920px",
+        "license": "CC BY-SA 4.0",
+        "originalPublisher": "Wikimedia Commons"
+      }
+    },
+    {
+      "id": "5a3ce162-9347-5966-a8f5-fc3ed31ab16e",
+      "kind": "image",
+      "src": "/media/demo-library/articles/resume.jpg",
+      "remoteSrc": "https://commons.wikimedia.org/wiki/Special:FilePath/What_to_Expect_at_a_Job_Interview_at_a_Teaching_School.jpg?width=1920",
+      "sourceUrl": "https://commons.wikimedia.org/wiki/File:What_to_Expect_at_a_Job_Interview_at_a_Teaching_School.jpg",
+      "alt": "Entretien d’embauche ou atelier candidature",
+      "caption": "Entretien d’embauche ou atelier candidature",
+      "credit": "HeatherKatz001",
+      "creditUrl": "https://commons.wikimedia.org/wiki/File:What_to_Expect_at_a_Job_Interview_at_a_Teaching_School.jpg",
+      "license": "CC BY-SA 4.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
+      "width": 1920,
+      "height": 1484,
+      "mime": "image/jpeg",
+      "checksum": "ed2af62533830c67a5d0292f5545ca3a047ff1a8d2ef82653c8ec5dd24e97cd9",
+      "focalPoint": {
+        "x": 50,
+        "y": 48
+      },
+      "keywords": [
+        "resume",
+        "entretien",
+        "d’embauche",
+        "atelier",
+        "candidature"
+      ],
+      "usages": [
+        "article"
+      ],
+      "source": {
+        "backend": "wikimedia-commons",
+        "backendId": "File:What to Expect at a Job Interview at a Teaching School.jpg",
+        "backendUrl": "https://commons.wikimedia.org/wiki/File:What_to_Expect_at_a_Job_Interview_at_a_Teaching_School.jpg",
+        "fetchedAt": "2026-07-29T15:32:07.232Z",
+        "revision": "1920px",
+        "license": "CC BY-SA 4.0",
+        "originalPublisher": "Wikimedia Commons"
+      }
+    },
+    {
+      "id": "725d585c-1127-56e8-a684-062502cbddce",
+      "kind": "image",
+      "src": "/media/demo-library/articles/nursing.jpg",
+      "remoteSrc": "https://commons.wikimedia.org/wiki/Special:FilePath/Checking_blood_pressure.jpg?width=1920",
+      "sourceUrl": "https://commons.wikimedia.org/wiki/File:Checking_blood_pressure.jpg",
+      "alt": "Prise de tension artérielle en clinique-école",
+      "caption": "Prise de tension artérielle en clinique-école",
+      "credit": "Pambelle12",
+      "creditUrl": "https://commons.wikimedia.org/wiki/File:Checking_blood_pressure.jpg",
+      "license": "CC BY-SA 4.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
+      "width": 1920,
+      "height": 1440,
+      "mime": "image/jpeg",
+      "checksum": "3ec43a634ce237db0f7bb3613ae6939e0d844d38c93d0065712102b2b6c57451",
+      "focalPoint": {
+        "x": 50,
+        "y": 48
+      },
+      "keywords": [
+        "nursing",
+        "prise",
+        "tension",
+        "artérielle",
+        "clinique-école"
+      ],
+      "usages": [
+        "article"
+      ],
+      "source": {
+        "backend": "wikimedia-commons",
+        "backendId": "File:Checking blood pressure.jpg",
+        "backendUrl": "https://commons.wikimedia.org/wiki/File:Checking_blood_pressure.jpg",
+        "fetchedAt": "2026-07-29T15:32:07.846Z",
+        "revision": "1920px",
+        "license": "CC BY-SA 4.0",
+        "originalPublisher": "Wikimedia Commons"
+      }
+    },
+    {
+      "id": "bb1266ed-7307-5c3a-a81f-a95fae24b4a6",
+      "kind": "image",
+      "src": "/media/demo-library/articles/career.jpg",
+      "remoteSrc": "https://commons.wikimedia.org/wiki/Special:FilePath/Exhibitors_at_the_Career_Fair_(30983205220).jpg?width=1920",
+      "sourceUrl": "https://commons.wikimedia.org/wiki/File:Exhibitors_at_the_Career_Fair_(30983205220).jpg",
+      "alt": "Salon de l’emploi ou forum d’orientation",
+      "caption": "Salon de l’emploi ou forum d’orientation",
+      "credit": "German Embassy London",
+      "creditUrl": "https://commons.wikimedia.org/wiki/File:Exhibitors_at_the_Career_Fair_(30983205220).jpg",
+      "license": "CC BY 2.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by/2.0",
+      "width": 1920,
+      "height": 1280,
+      "mime": "image/jpeg",
+      "checksum": "1e1c47f7aae0474e91af1e302042c7f97a153c37bc254f8bab7c7a614d1ab878",
+      "focalPoint": {
+        "x": 50,
+        "y": 48
+      },
+      "keywords": [
+        "career",
+        "salon",
+        "l’emploi",
+        "forum",
+        "d’orientation"
+      ],
+      "usages": [
+        "article"
+      ],
+      "source": {
+        "backend": "wikimedia-commons",
+        "backendId": "File:Exhibitors at the Career Fair (30983205220).jpg",
+        "backendUrl": "https://commons.wikimedia.org/wiki/File:Exhibitors_at_the_Career_Fair_(30983205220).jpg",
+        "fetchedAt": "2026-07-29T15:32:08.461Z",
+        "revision": "1920px",
+        "license": "CC BY 2.0",
+        "originalPublisher": "Wikimedia Commons"
+      }
+    },
+    {
+      "id": "162a0611-53dc-57ae-a8ef-61370de57165",
+      "kind": "image",
+      "src": "/media/demo-library/articles/stage.jpg",
+      "remoteSrc": "https://commons.wikimedia.org/wiki/Special:FilePath/Open_mic_The_Local_824_Hinton_Avenue_in_Belmont_Charlottesville_VA_April_2023_1.jpg?width=1920",
+      "sourceUrl": "https://commons.wikimedia.org/wiki/File:Open_mic_The_Local_824_Hinton_Avenue_in_Belmont_Charlottesville_VA_April_2023_1.jpg",
+      "alt": "Scène ouverte avec micro pour spectacle étudiant",
+      "caption": "Scène ouverte avec micro pour spectacle étudiant",
+      "credit": "Artaxerxes",
+      "creditUrl": "https://commons.wikimedia.org/wiki/File:Open_mic_The_Local_824_Hinton_Avenue_in_Belmont_Charlottesville_VA_April_2023_1.jpg",
+      "license": "CC BY-SA 4.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
+      "width": 1920,
+      "height": 2560,
+      "mime": "image/jpeg",
+      "checksum": "9269933e96e4cc0c56da873367027104bff0d52b2ac99890bc5502cdd0c3c825",
+      "focalPoint": {
+        "x": 50,
+        "y": 48
+      },
+      "keywords": [
+        "stage",
+        "scène",
+        "ouverte",
+        "avec",
+        "micro",
+        "pour",
+        "spectacle",
+        "étudiant"
+      ],
+      "usages": [
+        "article"
+      ],
+      "source": {
+        "backend": "wikimedia-commons",
+        "backendId": "File:Open mic The Local 824 Hinton Avenue in Belmont Charlottesville VA April 2023 1.jpg",
+        "backendUrl": "https://commons.wikimedia.org/wiki/File:Open_mic_The_Local_824_Hinton_Avenue_in_Belmont_Charlottesville_VA_April_2023_1.jpg",
+        "fetchedAt": "2026-07-29T15:32:09.074Z",
+        "revision": "1920px",
+        "license": "CC BY-SA 4.0",
+        "originalPublisher": "Wikimedia Commons"
+      }
+    },
+    {
+      "id": "b9195976-da5c-5e9e-a348-6622d3aece4c",
+      "kind": "image",
+      "src": "/media/demo-library/articles/trail.jpg",
+      "remoteSrc": "https://commons.wikimedia.org/wiki/Special:FilePath/Forest_path_through_a_deciduous_forest_in_spring%2C_Finland.jpg?width=1920",
+      "sourceUrl": "https://commons.wikimedia.org/wiki/File:Forest_path_through_a_deciduous_forest_in_spring%2C_Finland.jpg",
+      "alt": "Sentier forestier pour course d’orientation",
+      "caption": "Sentier forestier pour course d’orientation",
+      "credit": "Sanzzu",
+      "creditUrl": "https://commons.wikimedia.org/wiki/File:Forest_path_through_a_deciduous_forest_in_spring%2C_Finland.jpg",
+      "license": "CC BY-SA 4.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
+      "width": 1920,
+      "height": 1280,
+      "mime": "image/jpeg",
+      "checksum": "3df51019cdd054605a27fbb46b69b3b29c8b383d4ad0f8c7b1df9d472e4dfc8e",
+      "focalPoint": {
+        "x": 50,
+        "y": 48
+      },
+      "keywords": [
+        "trail",
+        "sentier",
+        "forestier",
+        "pour",
+        "course",
+        "d’orientation"
+      ],
+      "usages": [
+        "article"
+      ],
+      "source": {
+        "backend": "wikimedia-commons",
+        "backendId": "File:Forest path through a deciduous forest in spring, Finland.jpg",
+        "backendUrl": "https://commons.wikimedia.org/wiki/File:Forest_path_through_a_deciduous_forest_in_spring%2C_Finland.jpg",
+        "fetchedAt": "2026-07-29T15:32:09.690Z",
+        "revision": "1920px",
+        "license": "CC BY-SA 4.0",
+        "originalPublisher": "Wikimedia Commons"
+      }
+    },
+    {
+      "id": "692bf1e2-bfd8-5833-a560-d228a908c5a5",
+      "kind": "image",
+      "src": "/media/demo-library/articles/graduation.jpg",
+      "remoteSrc": "https://commons.wikimedia.org/wiki/Special:FilePath/AnnapolisGraduation.jpg?width=1920",
+      "sourceUrl": "https://commons.wikimedia.org/wiki/File:AnnapolisGraduation.jpg",
+      "alt": "Cérémonie de diplomation",
+      "caption": "Cérémonie de diplomation",
+      "credit": "U.S. Navy Photographer's Mate 2nd Class Daniel J. McLain",
+      "creditUrl": "https://commons.wikimedia.org/wiki/File:AnnapolisGraduation.jpg",
+      "license": "Public domain",
+      "licenseUrl": "https://commons.wikimedia.org/wiki/File:AnnapolisGraduation.jpg",
+      "width": 1920,
+      "height": 1277,
+      "mime": "image/jpeg",
+      "checksum": "8db6169dc87d145c41eb7c3b8e6216e3175288fc98d5e60a1e95aef7c58f7552",
+      "focalPoint": {
+        "x": 50,
+        "y": 48
+      },
+      "keywords": [
+        "graduation",
+        "cérémonie",
+        "diplomation"
+      ],
+      "usages": [
+        "article"
+      ],
+      "source": {
+        "backend": "wikimedia-commons",
+        "backendId": "File:AnnapolisGraduation.jpg",
+        "backendUrl": "https://commons.wikimedia.org/wiki/File:AnnapolisGraduation.jpg",
+        "fetchedAt": "2026-07-29T15:32:10.302Z",
+        "revision": "1920px",
+        "license": "Public domain",
+        "originalPublisher": "Wikimedia Commons"
+      }
+    },
+    {
+      "id": "db174720-d3f6-57d2-abda-35b898f108ce",
+      "kind": "image",
+      "src": "/media/demo-library/articles/participatory.jpg",
+      "remoteSrc": "https://commons.wikimedia.org/wiki/Special:FilePath/Lecture_hall.jpg?width=1920",
+      "sourceUrl": "https://commons.wikimedia.org/wiki/File:Lecture_hall.jpg",
+      "alt": "Assemblée en amphithéâtre",
+      "caption": "Assemblée en amphithéâtre",
+      "credit": "Kannan5645",
+      "creditUrl": "https://commons.wikimedia.org/wiki/File:Lecture_hall.jpg",
+      "license": "CC BY-SA 3.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by-sa/3.0",
+      "width": 1600,
+      "height": 1200,
+      "mime": "image/jpeg",
+      "checksum": "4a54051f3b40caaa16137e3892ccbb19190696572941cb319737e3ec25c1faae",
+      "focalPoint": {
+        "x": 50,
+        "y": 48
+      },
+      "keywords": [
+        "participatory",
+        "assemblée",
+        "amphithéâtre"
+      ],
+      "usages": [
+        "article"
+      ],
+      "source": {
+        "backend": "wikimedia-commons",
+        "backendId": "File:Lecture hall.jpg",
+        "backendUrl": "https://commons.wikimedia.org/wiki/File:Lecture_hall.jpg",
+        "fetchedAt": "2026-07-29T15:32:10.812Z",
+        "revision": "1920px",
+        "license": "CC BY-SA 3.0",
+        "originalPublisher": "Wikimedia Commons"
+      }
+    },
+    {
+      "id": "e76525c1-0d39-5a36-a5b2-981372d41334",
+      "kind": "image",
+      "src": "/media/demo-library/articles/photo-club.jpg",
+      "remoteSrc": "https://commons.wikimedia.org/wiki/Special:FilePath/Welsh_Schools_art_exhibition_at_Bangor_(1569389).jpg?width=1920",
+      "sourceUrl": "https://commons.wikimedia.org/wiki/File:Welsh_Schools_art_exhibition_at_Bangor_(1569389).jpg",
+      "alt": "Exposition photographique et artistique en galerie",
+      "caption": "Exposition photographique et artistique en galerie",
+      "credit": "Geoff Charles",
+      "creditUrl": "https://commons.wikimedia.org/wiki/File:Welsh_Schools_art_exhibition_at_Bangor_(1569389).jpg",
+      "license": "CC BY-SA 4.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
+      "width": 1200,
+      "height": 1822,
+      "mime": "image/jpeg",
+      "checksum": "5a020cd952cdba8e5ce961c7888db868ddf0c0c8b1ba101ed18cbc41020432f4",
+      "focalPoint": {
+        "x": 50,
+        "y": 48
+      },
+      "keywords": [
+        "photo-club",
+        "exposition",
+        "photographique",
+        "artistique",
+        "galerie"
+      ],
+      "usages": [
+        "article"
+      ],
+      "source": {
+        "backend": "wikimedia-commons",
+        "backendId": "File:Welsh Schools art exhibition at Bangor (1569389).jpg",
+        "backendUrl": "https://commons.wikimedia.org/wiki/File:Welsh_Schools_art_exhibition_at_Bangor_(1569389).jpg",
+        "fetchedAt": "2026-07-29T15:32:14.366Z",
+        "revision": "1920px",
+        "license": "CC BY-SA 4.0",
+        "originalPublisher": "Wikimedia Commons"
+      }
     }
   ]
 }

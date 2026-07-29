@@ -17,12 +17,12 @@ tags:
   - financement
 lang: fr-CA
 lead:
-  src: /media/demo-library/articles/livres.jpg
-  alt: "Rayons de livres en bibliothèque"
-  credit: "OrbiliusMagister"
-  license: CC BY-SA 3.0
-  licenseUrl: https://creativecommons.org/licenses/by-sa/3.0/
-  sourceUrl: https://commons.wikimedia.org/wiki/File:Library_books.jpg
+  src: /media/demo-library/articles/calme.jpg
+  alt: "Étudiantes et étudiants en zone d’étude calme"
+  credit: "SJISE"
+  license: CC BY-SA 4.0
+  licenseUrl: https://creativecommons.org/licenses/by-sa/4.0
+  sourceUrl: https://commons.wikimedia.org/wiki/File:Students_studying.jpg
   width: 1920
   height: 1280
   focalPoint: { x: 50, y: 48 }

@@ -18,14 +18,14 @@ tags:
   - financement
 lang: fr-CA
 lead:
-  src: /media/demo-library/articles/soccer.jpg
-  alt: "Ballon de soccer sur un terrain en herbe"
-  credit: "Peter Glaser baraida"
-  license: CC0
-  licenseUrl: https://creativecommons.org/publicdomain/mark/1.0/
-  sourceUrl: https://commons.wikimedia.org/wiki/File:Adidas_soccer_ball_on_a_grass_pitch_(Unsplash).jpg
+  src: /media/demo-library/articles/graduation.jpg
+  alt: "Cérémonie de diplomation"
+  credit: "U.S. Navy Photographer's Mate 2nd Class Daniel J. McLain"
+  license: Public domain
+  licenseUrl: https://commons.wikimedia.org/wiki/File:AnnapolisGraduation.jpg
+  sourceUrl: https://commons.wikimedia.org/wiki/File:AnnapolisGraduation.jpg
   width: 1920
-  height: 1280
+  height: 1277
   focalPoint: { x: 50, y: 48 }
 ---
 

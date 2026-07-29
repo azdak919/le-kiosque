@@ -18,12 +18,12 @@ categories:
 tags: []
 lang: fr-CA
 lead:
-  src: /media/demo-library/articles/amphi.jpg
-  alt: "Amphithéâtre universitaire rempli"
-  credit: "Kannan5645"
-  license: CC BY-SA 4.0
-  licenseUrl: https://creativecommons.org/licenses/by-sa/4.0/
-  sourceUrl: https://commons.wikimedia.org/wiki/File:Lecture_hall.jpg
+  src: /media/demo-library/articles/bus.jpg
+  alt: "Autobus de transport collectif"
+  credit: "Ici2015"
+  license: CC BY-SA 3.0
+  licenseUrl: https://creativecommons.org/licenses/by-sa/3.0
+  sourceUrl: https://commons.wikimedia.org/wiki/File:Bus.jpg
   width: 1600
   height: 1200
   focalPoint: { x: 50, y: 48 }

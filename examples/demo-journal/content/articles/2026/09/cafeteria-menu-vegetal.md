@@ -20,7 +20,7 @@ lead:
   alt: "Cafétéria ou salle à manger collective"
   credit: "Tanvir Hussain"
   license: CC BY-SA 3.0
-  licenseUrl: https://commons.wikimedia.org/wiki/File:Cafeteria.jpg
+  licenseUrl: https://creativecommons.org/licenses/by-sa/3.0/
   sourceUrl: https://commons.wikimedia.org/wiki/File:Cafeteria.jpg
   width: 1920
   height: 1440
