@@ -489,13 +489,17 @@
   -webkit-tap-highlight-color: transparent;
 }
 .news-tail.has-overflow .news-tail-toggle { display: inline-flex; }
-.news-tail-toggle:hover {
-  border-color: var(--accent);
-  color: var(--accent);
-  background: color-mix(in srgb, var(--accent) 6%, var(--bg));
+@media (hover: hover) and (pointer: fine) {
+  .news-tail-toggle:hover {
+    border-color: var(--accent);
+    color: var(--accent);
+    background: color-mix(in srgb, var(--accent) 6%, var(--bg));
+  }
 }
 .news-tail-toggle:focus { outline: none; }
-.news-tail-toggle:focus:not(:focus-visible) {
+/* Tap tactile : ne pas rester « engagé » mauve après le clic. */
+.news-tail-toggle:focus:not(:focus-visible),
+.news-tail-toggle:active {
   border-color: var(--rule);
   color: var(--ink-soft);
   background: var(--bg-soft);
@@ -611,8 +615,8 @@
   .article-time { justify-self: start; text-align: left; }
 
   /*
-   * Vedettes (feature) : image flottante à gauche, le texte (extrait)
-   * continue dans l’espace sous l’image — s’adapte à chaque article.
+   * Vedettes (feature) : image flottante à gauche, l’extrait enroule
+   * sous la photo (plusieurs lignes, pas une orpheline).
    */
   .news-hero .article--feature.article--thumb.has-image {
     display: block;
@@ -621,10 +625,19 @@
     display: block;
     margin-bottom: 6px;
   }
+  .news-hero .article--feature.article--thumb.has-image > .article-title {
+    display: block;
+    margin-bottom: 6px;
+  }
+  .news-hero .article--feature.article--thumb.has-image > .article-byline {
+    display: block;
+    margin-bottom: 8px;
+  }
   .news-hero .article--feature.article--thumb.has-image > .article-media {
     float: left;
-    width: clamp(96px, 30vw, 128px);
-    margin: 2px 12px 8px 0;
+    width: clamp(92px, 28vw, 118px);
+    margin: 2px 14px 4px 0;
+    shape-outside: margin-box;
     grid-column: auto;
     grid-row: auto;
   }
@@ -632,6 +645,12 @@
   .news-hero .article--feature.article--thumb.has-image > .article-byline,
   .news-hero .article--feature.article--thumb.has-image > .article-brief {
     grid-column: auto;
+  }
+  .news-hero .article--feature.article--thumb.has-image > .article-brief {
+    display: block;
+    overflow: visible;
+    /* L’extrait remplit l’espace à droite puis sous la photo. */
+    margin-top: 0;
   }
   .news-hero .article--feature.article--thumb.has-image::after {
     content: "";
@@ -642,9 +661,36 @@
     aspect-ratio: 1 / 1;
   }
 
+  /* À la une mobile : photo flottante + extrait long qui enroule dessous. */
+  .news-hero .article--lead.has-image {
+    display: block;
+  }
+  .news-hero .article--lead.has-image > .article-media {
+    float: left;
+    width: clamp(118px, 36vw, 156px);
+    margin: 4px 14px 6px 0;
+    shape-outside: margin-box;
+  }
+  .news-hero .article--lead.has-image > .article-brief {
+    display: block;
+    overflow: visible;
+  }
+  .news-hero .article--lead.has-image::after {
+    content: "";
+    display: table;
+    clear: both;
+  }
+  .news-hero .article--lead.has-image .article-media img {
+    width: 100%;
+    height: auto;
+    aspect-ratio: 4 / 3;
+    object-fit: cover;
+    border-radius: 8px;
+  }
+
   /* Moins d’air sous le bouton « Plus d’articles » avant le footer. */
   .news-tail-toggle {
-    margin: 8px 0 0;
+    margin: 6px 0 0;
   }
   .news-tail {
     padding-bottom: 0;

@@ -14,7 +14,9 @@ const ESCAPES = { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&
 
 export const escapeSourceViewHtml = (value) => String(value ?? '').replace(/[&<>"']/g, (character) => ESCAPES[character]);
 
-const EXCERPT_LIMITS = Object.freeze({ lead: 720, feature: 520, brief: 360, tail: 280 });
+/* Extraits assez longs pour qu’en float mobile le texte remplisse
+ * l’espace sous la vignette (pas une seule ligne orpheline). */
+const EXCERPT_LIMITS = Object.freeze({ lead: 960, feature: 780, brief: 360, tail: 280 });
 
 function normalizeRole(value) {
   return ['lead', 'feature', 'brief', 'tail'].includes(value) ? value : 'tail';

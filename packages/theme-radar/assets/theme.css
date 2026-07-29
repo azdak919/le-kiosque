@@ -148,7 +148,7 @@ a { color: inherit; }
   }
 }
 
-/* Mobile : 1 rangée visible + peek flouté de la 2ᵉ + bouton d’expansion. */
+/* Mobile : 1 rangée visible + peek de la 2ᵉ + bouton d’expansion. */
 .nav-toggle {
   display: none;
   font-family: var(--sans);
@@ -168,57 +168,72 @@ a { color: inherit; }
   appearance: none;
   -webkit-tap-highlight-color: transparent;
   transition: border-color 140ms ease, color 140ms ease, background 140ms ease;
+  position: relative;
+  z-index: 3; /* au-dessus du dégradé de peek */
 }
-.nav-toggle:hover {
-  border-color: var(--accent);
-  color: var(--accent);
-  background: color-mix(in srgb, var(--accent) 6%, var(--bg));
+@media (hover: hover) and (pointer: fine) {
+  .nav-toggle:hover {
+    border-color: var(--accent);
+    color: var(--accent);
+    background: color-mix(in srgb, var(--accent) 6%, var(--bg));
+  }
 }
+/* iOS/Android : le :hover « collé » après un tap restait mauve. */
 .nav-toggle:focus { outline: none; }
+.nav-toggle:focus:not(:focus-visible) {
+  border-color: var(--rule);
+  color: var(--ink-soft);
+  background: var(--bg-soft);
+}
 .nav-toggle:focus-visible {
   outline: 2px solid var(--accent);
   outline-offset: 2px;
+}
+.nav-toggle:active {
+  border-color: var(--rule);
+  color: var(--ink-soft);
+  background: var(--bg-soft);
 }
 @media (max-width: 720px) {
   .nav-shell {
     position: relative;
   }
   .nav-shell.has-overflow:not(.is-expanded) .nav {
+    position: relative;
     max-height: 2.65rem; /* ~1 rangée + léger peek */
     overflow: hidden;
     padding-bottom: 4px;
     border-bottom: 0;
   }
-  .nav-shell.has-overflow:not(.is-expanded)::after {
+  /* Dégradé sur le *nav* seulement — pas sur le bouton (évitait le flou bas). */
+  .nav-shell.has-overflow:not(.is-expanded) .nav::after {
     content: "";
     position: absolute;
     left: 0;
     right: 0;
     bottom: 0;
-    height: 1.35rem;
+    height: 1.1rem;
     z-index: 2;
     pointer-events: none;
     background: linear-gradient(
       to bottom,
       color-mix(in srgb, var(--bg) 0%, transparent) 0%,
-      color-mix(in srgb, var(--bg) 55%, transparent) 45%,
+      color-mix(in srgb, var(--bg) 70%, transparent) 55%,
       var(--bg) 100%
     );
-    -webkit-backdrop-filter: blur(1px);
-    backdrop-filter: blur(1px);
-    -webkit-mask-image: linear-gradient(to bottom, transparent 0%, #000 55%, #000 100%);
-    mask-image: linear-gradient(to bottom, transparent 0%, #000 55%, #000 100%);
+    /* Pas de backdrop-filter : flou collait au bouton en dessous. */
   }
   .nav-shell.has-overflow .nav-toggle {
     display: inline-flex;
-    margin-top: 4px;
+    margin-top: 6px;
+    margin-bottom: 4px;
   }
   .nav-shell.is-expanded .nav {
     max-height: none;
     overflow: visible;
     padding-bottom: 8px;
   }
-  .nav-shell.is-expanded::after {
+  .nav-shell.is-expanded .nav::after {
     display: none;
   }
   .nav-shell.has-overflow .nav {
@@ -292,14 +307,23 @@ body.with-radio .nav {
   position: relative;
   z-index: 1;
 }
-/* Volume popover mobile : l’iframe grandit pour peindre la bulle, mais un
-   margin-bottom négatif annule la poussée du layout (overlay sur le contenu). */
+/*
+ * Volume popover mobile : l’iframe grandit pour peindre la bulle ;
+ * l’hôte reste à la hauteur de la barre (JS) pour ne pas peindre un
+ * bandeau sombre sous le popover. Fond hôte transparent hors barre.
+ */
 .radar-tuner:has(iframe.is-vol-overlay) {
   overflow: visible;
   z-index: 60;
+  /* Hauteur fixée en JS (= baseH) ; fond transparent → page visible sous la bulle. */
+  background: transparent;
+  box-shadow: none;
 }
 .radar-tuner iframe.is-vol-overlay {
   z-index: 50;
+  /* La barre sombre est peinte *dans* l’iframe (chrome embed) ; le surplus
+     sous le popover reste transparent (html/body embed). */
+  background: transparent;
 }
 
 /* Dock météo sous le tuner (mobile) — LE-RADAR masthead-weather-dock. */
@@ -378,9 +402,9 @@ body.with-radio .nav {
 
 /* ─────────────── FIL D'ARTICLES ─────────────── */
 
-.wire { padding-bottom: 80px; }
+.wire { padding-bottom: 48px; }
 @media (max-width: 720px) {
-  .wire { padding-bottom: 40px; }
+  .wire { padding-bottom: 16px; }
 }
 
 .wire-head {
@@ -680,6 +704,19 @@ body.with-radio .nav {
   padding-bottom: 18px;
   border-bottom: 1px solid var(--rule);
 }
+.author-page-head > .author-avatar,
+.author-page-head > .author-avatar-link {
+  flex: 0 0 auto;
+  align-self: flex-start;
+}
+.author-page-head .author-avatar {
+  /* Évite le flash d’initiales / reflow quand la photo charge. */
+  background: var(--bg-soft, #eceae6);
+}
+.author-page-head .author-avatar__img {
+  /* Chargement : fond opaque, pas de mélange avec les initiales. */
+  background: var(--bg-soft, #eceae6);
+}
 .author-page-head__text { min-width: 0; flex: 1 1 auto; }
 .author-page-head .author-bio { margin-top: 8px; max-width: 42rem; }
 
@@ -749,12 +786,19 @@ body.with-radio .nav {
 
 .site-foot,
 .footer {
-  margin-top: 44px;
-  padding: 28px 0 48px;
+  margin-top: 20px;
+  padding: 22px 0 40px;
   border-top: 1px solid var(--rule);
   font-size: 0.84rem;
   color: var(--muted);
   line-height: 1.55;
+}
+@media (max-width: 720px) {
+  .site-foot,
+  .footer {
+    margin-top: 12px;
+    padding: 18px 0 32px;
+  }
 }
 .site-foot a,
 .footer a {

@@ -150,7 +150,9 @@ export function renderRoute(bundle, base, pathname, renderBody) {
         const raw = safeMediaUrl(av.src) || av.src;
         const src = raw.startsWith('/') ? link(base, raw) : raw;
         const pos = av.focalPoint ? `object-position:${av.focalPoint.x}% ${av.focalPoint.y}%` : 'object-position:50% 35%';
-        return `<span class="author-avatar" style="--author-avatar-size:${size}px">${fallback}<img class="author-avatar__img" src="${esc(src)}" alt="${esc(av.alt || `Portrait de ${author.name}`)}" width="${size}" height="${size}" loading="lazy" decoding="async" style="${pos}" onerror="this.remove()"></span>`;
+        const loading = size >= 100 ? 'eager' : 'lazy';
+        const prio = size >= 100 ? ' fetchpriority="high"' : '';
+        return `<span class="author-avatar" style="--author-avatar-size:${size}px">${fallback}<img class="author-avatar__img" src="${esc(src)}" alt="${esc(av.alt || `Portrait de ${author.name}`)}" width="${size}" height="${size}" loading="${loading}" decoding="async"${prio} style="${pos}" onerror="this.remove()"></span>`;
       }
       return `<span class="author-avatar" style="--author-avatar-size:${size}px">${fallback}</span>`;
     };

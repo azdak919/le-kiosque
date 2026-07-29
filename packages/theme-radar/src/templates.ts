@@ -697,8 +697,11 @@ function authorAvatarHtml(author: Author, ctx: RenderContext, opts: { size?: num
     const pos = av.focalPoint
       ? `object-position:${esc(String(av.focalPoint.x))}% ${esc(String(av.focalPoint.y))}%`
       : 'object-position:50% 35%';
-    /* Initiales derrière la photo : si le fichier 404 (cache IDB / chemin), le cercle reste lisible. */
-    media = `${fallback}<img class="author-avatar__img" src="${safeUrl(asset(av.src, ctx))}" alt="${esc(av.alt || `Portrait de ${author.name}`)}" width="${size}" height="${size}" loading="lazy" decoding="async" style="${pos}" onerror="this.remove()">`;
+    /* Fiche auteur : eager (évite flash initiales → photo). Liste : lazy. */
+    const loading = opts.link === false ? 'eager' : 'lazy';
+    const prio = opts.link === false ? ' fetchpriority="high"' : '';
+    /* Initiales derrière la photo : si 404, le cercle reste lisible. */
+    media = `${fallback}<img class="author-avatar__img" src="${safeUrl(asset(av.src, ctx))}" alt="${esc(av.alt || `Portrait de ${author.name}`)}" width="${size}" height="${size}" loading="${loading}" decoding="async"${prio} style="${pos}" onerror="this.remove()">`;
   } else {
     media = fallback;
   }

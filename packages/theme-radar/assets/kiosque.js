@@ -779,7 +779,12 @@
       shell.classList.toggle('is-expanded', expanded);
       btn.setAttribute('aria-expanded', expanded ? 'true' : 'false');
       btn.textContent = expanded ? 'Réduire le menu' : 'Toutes les rubriques';
+      releaseToolButton(btn);
     });
+    btn.addEventListener('pointerup', function () { releaseToolButton(btn); });
+    btn.addEventListener('touchend', function () {
+      window.setTimeout(function () { releaseToolButton(btn); }, 50);
+    }, { passive: true });
 
     sync();
     var pending;
@@ -1145,13 +1150,20 @@
             if (h > baseH + 4) {
               frame.classList.add('is-vol-overlay');
               frame.style.marginBottom = (baseH - h) + 'px';
+              /* Hôte = hauteur barre seulement : pas de bandeau sombre sous la bulle. */
+              host.style.height = baseH + 'px';
               host.style.zIndex = '60';
               host.style.overflow = 'visible';
+              host.style.background = 'transparent';
+              host.style.boxShadow = 'none';
             } else {
               frame.classList.remove('is-vol-overlay');
               frame.style.marginBottom = '';
+              host.style.height = '';
               host.style.zIndex = '';
               host.style.overflow = '';
+              host.style.background = '';
+              host.style.boxShadow = '';
             }
           }
           if (message.ready && message.available === true) {
