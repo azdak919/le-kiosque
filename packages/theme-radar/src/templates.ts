@@ -185,9 +185,11 @@ function icon(label: 'home' | 'rss' | 'shuffle' | 'sun' | 'moon', _assetsBase?: 
     return `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m16 3 4 4-4 4"/><path d="M20 7H9a5 5 0 0 0-5 5v1"/><path d="m8 21-4-4 4-4"/><path d="M4 17h11a5 5 0 0 0 5-5v-1"/></svg>`;
   }
   if (label === 'sun') {
+    // Icône = action future (comme LE-RADAR) : soleil = passer en clair.
     return `<svg class="ico-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41"/></svg>`;
   }
-  return `<svg class="ico-moon" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true" hidden><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>`;
+  // Lune masquée par défaut (thème clair initial) — classe .hidden comme LE-RADAR.
+  return `<svg class="ico-moon hidden" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>`;
 }
 
 function emojiIcon(assetsBase: string, file: 'tomato.png' | 'playing-cards.png'): string {
@@ -231,7 +233,7 @@ function mastheadTools(ctx: RenderContext, current?: string): string {
       ${button(asset('/feed.xml', ctx), 'Flux RSS', icon('rss', assetsBase), 'masthead-rss')}
       ${tools?.pomodoro !== false ? button('https://le-radar.ca/pomo/', 'Pomodoro', emojiIcon(assetsBase, 'tomato.png'), 'masthead-pomo') : ''}
       ${tools?.solitaire !== false ? button('https://le-radar.ca/solitaire/', 'Solitaire', emojiIcon(assetsBase, 'playing-cards.png'), 'masthead-solitaire') : ''}
-      <button type="button" id="theme-toggle" class="masthead-tool theme-toggle" aria-label="Changer de thème" title="Mode clair / sombre" aria-pressed="false">${icon('sun', assetsBase)}${icon('moon', assetsBase)}</button>
+      <button type="button" id="theme-toggle" class="masthead-tool theme-toggle" aria-label="Passer en mode sombre" title="Passer en mode sombre">${icon('sun', assetsBase)}${icon('moon', assetsBase)}</button>
       ${backgrounds?.enabled !== false && (backgrounds?.images?.length ?? 0) > 1 ? `<button type="button" id="masthead-shuffle" class="masthead-tool masthead-shuffle" aria-label="Changer la photo du mât" title="Changer la photo du mât">${icon('shuffle', assetsBase)}</button>` : ''}
     </div>
   </div>`;

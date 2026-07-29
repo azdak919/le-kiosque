@@ -23,19 +23,49 @@
       ? 'dark' : 'light';
   }
 
-  function applyTheme(theme) {
-    root.dataset.theme = theme;
-    try { localStorage.setItem(STORAGE_KEY, theme); } catch (_) {}
+  function applyTheme(theme, persist) {
+    var isDark = theme === 'dark';
+    // Attribut explicite (comme LE-RADAR) pour que le CSS dark/light soit déterministe.
+    root.setAttribute('data-theme', theme);
+    if (persist !== false) {
+      try { localStorage.setItem(STORAGE_KEY, theme); } catch (_) {}
+    }
     var btn = document.getElementById('theme-toggle');
     if (btn) {
-      btn.setAttribute('aria-pressed', theme === 'dark' ? 'true' : 'false');
-      btn.setAttribute('aria-label', theme === 'dark' ? 'Passer au thème clair' : 'Passer au thème sombre');
-      btn.title = btn.getAttribute('aria-label');
+      // Icône = action au clic, pas l’état courant (LE-RADAR app.js applyTheme) :
+      // mode sombre → soleil (passer en clair) ; mode clair → lune (passer en sombre).
       var sun = btn.querySelector('.ico-sun');
       var moon = btn.querySelector('.ico-moon');
-      if (sun) sun.hidden = theme === 'dark';
-      if (moon) moon.hidden = theme !== 'dark';
+      if (sun) sun.classList.toggle('hidden', !isDark);
+      if (moon) moon.classList.toggle('hidden', isDark);
+      var label = isDark ? 'Passer en mode clair' : 'Passer en mode sombre';
+      btn.setAttribute('aria-label', label);
+      btn.setAttribute('title', label);
+      btn.removeAttribute('aria-pressed');
     }
+    var meta = document.querySelector('meta[name="theme-color"]');
+    if (meta) meta.setAttribute('content', isDark ? '#0e0f12' : '#ffffff');
+  }
+
+  function releaseToolButton(btn) {
+    // Évite l’état « engagé » (focus clavier / :active sticky sur mobile).
+    if (!btn) return;
+    try {
+      requestAnimationFrame(function () {
+        if (document.activeElement === btn) btn.blur();
+      });
+    } catch (_) {
+      try { btn.blur(); } catch (__) {}
+    }
+  }
+
+  /** Comme LE-RADAR initMastheadActions : blur après tap/clic sur les outils du mât. */
+  function initMastheadToolRelease() {
+    document.querySelectorAll('.masthead-tools .masthead-tool').forEach(function (el) {
+      var release = function () { releaseToolButton(el); };
+      el.addEventListener('pointerup', release);
+      el.addEventListener('click', release);
+    });
   }
 
   // ── Mât : heure, photos locales et météo facultative ───────────────────
@@ -179,62 +209,190 @@
     var credit = document.querySelector('[data-masthead-credit]');
     var masthead = image.closest('.masthead');
     var index = Math.floor(Math.random() * images.length);
+    /** Transition active (LE-RADAR _activePhotoTransition) — annule un shuffle rapide. */
+    var activeTransition = null;
+    var hasShown = false;
+
+    function computeObjectPosition(item, imgEl) {
+      var authored = parseAuthoredFocalY(item.backgroundPosition);
+      var ar = mastheadAspectRatio(masthead);
+      var focalY = 0.5;
+      try {
+        // Les points YAML ~50 % sont des défauts génériques : on affine.
+        // Un focal explicite hors [0.42, 0.58] est respecté (choix éditorial).
+        if (authored != null && (authored < 0.42 || authored > 0.58)) {
+          focalY = authored;
+        } else if (imgEl && imgEl.naturalWidth > 32) {
+          focalY = computeMastheadFocalY(imgEl, ar);
+          if (authored != null) focalY = authored * 0.25 + focalY * 0.75;
+        } else if (authored != null) {
+          focalY = authored;
+        }
+      } catch (_) {
+        focalY = authored != null ? authored : 0.5;
+      }
+      var pct = Math.round(focalY * 1000) / 10;
+      return '50% ' + pct + '%';
+    }
 
     function applyPosition(item) {
-      // Auto-cadrage selon le ratio réel du bandeau (LE-RADAR).
-      var authored = parseAuthoredFocalY(item.backgroundPosition);
       function place() {
         masthead?.classList.remove('masthead--image-error');
-        var ar = mastheadAspectRatio(masthead);
-        var focalY = 0.5;
-        try {
-          // Les points YAML ~50 % sont des défauts génériques : on affine.
-          // Un focal explicite hors [0.42, 0.58] est respecté (choix éditorial).
-          if (authored != null && (authored < 0.42 || authored > 0.58)) {
-            focalY = authored;
-          } else if (image.naturalWidth > 32) {
-            focalY = computeMastheadFocalY(image, ar);
-            if (authored != null) focalY = authored * 0.25 + focalY * 0.75;
-          } else if (authored != null) {
-            focalY = authored;
-          }
-        } catch (_) {
-          focalY = authored != null ? authored : 0.5;
-        }
-        var pct = Math.round(focalY * 1000) / 10;
-        image.style.objectPosition = '50% ' + pct + '%';
+        image.style.objectPosition = computeObjectPosition(item, image);
       }
       if (image.complete && image.naturalWidth > 0) place();
       else image.addEventListener('load', place, { once: true });
     }
 
-    image.addEventListener('error', function () { masthead?.classList.add('masthead--image-error'); });
-
-    function show(next) {
-      index = (next + images.length) % images.length;
-      var item = images[index];
-      // Toujours repartir du manifeste (src absolue sous basePath).
-      if (image.getAttribute('src') !== item.src) image.src = item.src;
-      applyPosition(item);
-      if (credit) {
-        credit.replaceChildren();
-        if (item.credit) {
-          var label = 'Photo : ' + item.credit;
-          if (item.creditUrl && /^https:\/\//i.test(item.creditUrl)) {
-            var link = document.createElement('a');
-            link.href = item.creditUrl;
-            link.rel = 'noopener';
-            link.textContent = label;
-            credit.appendChild(link);
-          } else credit.textContent = label;
-        }
+    function updateCredit(item) {
+      if (!credit) return;
+      credit.replaceChildren();
+      if (!item.credit) return;
+      var label = 'Photo : ' + item.credit;
+      if (item.creditUrl && /^https:\/\//i.test(item.creditUrl)) {
+        var link = document.createElement('a');
+        link.href = item.creditUrl;
+        link.rel = 'noopener';
+        link.textContent = label;
+        credit.appendChild(link);
+      } else {
+        credit.textContent = label;
       }
     }
 
-    show(index);
-    document.getElementById('masthead-shuffle')?.addEventListener('click', function () {
-      show(images.length > 1 ? index + 1 + Math.floor(Math.random() * (images.length - 1)) : 0);
-    });
+    image.addEventListener('error', function () { masthead?.classList.add('masthead--image-error'); });
+
+    function commit(item) {
+      masthead?.classList.remove('masthead--image-error');
+      if (image.getAttribute('src') !== item.src) image.src = item.src;
+      applyPosition(item);
+      updateCredit(item);
+      hasShown = true;
+    }
+
+    function cancelActiveTransition() {
+      if (activeTransition && typeof activeTransition.cancel === 'function') {
+        activeTransition.cancel();
+      }
+      activeTransition = null;
+      masthead?.querySelectorAll('.masthead-background-transition').forEach(function (node) {
+        node.remove();
+      });
+    }
+
+    /**
+     * Affiche l’image d’index `next`. Au premier affichage : pose directe.
+     * Ensuite : crossfade façon LE-RADAR (calque temporaire sous le voile).
+     */
+    function show(next, options) {
+      options = options || {};
+      index = (next + images.length) % images.length;
+      var item = images[index];
+      var reduceMotion = false;
+      try {
+        reduceMotion = !!window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+      } catch (_) {}
+
+      var shouldCrossfade =
+        options.animate !== false &&
+        hasShown &&
+        image.getAttribute('src') &&
+        image.getAttribute('src') !== item.src &&
+        !reduceMotion;
+
+      if (!shouldCrossfade) {
+        cancelActiveTransition();
+        commit(item);
+        return;
+      }
+
+      cancelActiveTransition();
+
+      var incoming = document.createElement('img');
+      incoming.className = 'masthead-background masthead-background-transition';
+      incoming.alt = '';
+      incoming.setAttribute('aria-hidden', 'true');
+      incoming.decoding = 'async';
+      // Insérer juste après la photo de base, avant le voile (z-order correct).
+      if (image.nextSibling) image.parentNode.insertBefore(incoming, image.nextSibling);
+      else image.parentNode.appendChild(incoming);
+
+      var settled = false;
+      var timer = 0;
+
+      function settle() {
+        if (settled) return;
+        settled = true;
+        window.clearTimeout(timer);
+        commit(item);
+        incoming.remove();
+        if (activeTransition && activeTransition.incoming === incoming) {
+          activeTransition = null;
+        }
+      }
+
+      activeTransition = {
+        incoming: incoming,
+        cancel: function () {
+          if (settled) return;
+          settled = true;
+          window.clearTimeout(timer);
+          incoming.remove();
+          if (activeTransition && activeTransition.incoming === incoming) {
+            activeTransition = null;
+          }
+        },
+      };
+
+      function startFade() {
+        if (settled) return;
+        masthead?.classList.remove('masthead--image-error');
+        try {
+          incoming.style.objectPosition = computeObjectPosition(item, incoming);
+        } catch (_) {
+          incoming.style.objectPosition = item.backgroundPosition || '50% 50%';
+        }
+        incoming.addEventListener('transitionend', function (event) {
+          if (event.propertyName === 'opacity') settle();
+        }, { once: true });
+        requestAnimationFrame(function () {
+          incoming.classList.add('is-visible');
+        });
+        timer = window.setTimeout(settle, 560);
+      }
+
+      incoming.addEventListener('error', function () {
+        // Échec du preload : bascule sans fondu.
+        if (settled) return;
+        settled = true;
+        window.clearTimeout(timer);
+        incoming.remove();
+        activeTransition = null;
+        commit(item);
+      }, { once: true });
+
+      if (incoming.complete && incoming.naturalWidth > 0) {
+        // Cache hit — src déjà en mémoire (rare si src pas encore posé).
+        startFade();
+      } else {
+        incoming.addEventListener('load', startFade, { once: true });
+      }
+      incoming.src = item.src;
+    }
+
+    show(index, { animate: false });
+
+    var shuffleBtn = document.getElementById('masthead-shuffle');
+    if (shuffleBtn) {
+      shuffleBtn.addEventListener('click', function () {
+        var nextIndex = images.length > 1
+          ? index + 1 + Math.floor(Math.random() * (images.length - 1))
+          : 0;
+        show(nextIndex, { animate: true });
+        releaseToolButton(shuffleBtn);
+      });
+    }
+
     // Recadrer si le bandeau change de taille (rotation, redimensionnement).
     var resizeTimer;
     window.addEventListener('resize', function () {
@@ -324,22 +482,31 @@
   }
 
   function initTheme() {
-    applyTheme(currentTheme());
+    var initial = currentTheme();
+    // Si un choix est stocké, on le persiste ; sinon on applique le système sans
+    // écrire localStorage (pour continuer à suivre prefers-color-scheme).
+    var hasStored = false;
+    try { hasStored = !!localStorage.getItem(STORAGE_KEY); } catch (_) {}
+    applyTheme(initial, hasStored);
+
     var btn = document.getElementById('theme-toggle');
     if (btn) {
       btn.hidden = false;
       btn.addEventListener('click', function () {
-        applyTheme(root.dataset.theme === 'dark' ? 'light' : 'dark');
+        var next = root.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
+        applyTheme(next, true);
+        releaseToolButton(btn);
       });
     }
-    // Suivre le système si aucun choix explicite n'est stocké.
+    // Suivre le système tant qu'aucun choix explicite n'est stocké (LE-RADAR).
     if (window.matchMedia) {
       try {
-        if (!localStorage.getItem(STORAGE_KEY)) {
-          window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', function () {
-            if (!localStorage.getItem(STORAGE_KEY)) applyTheme(currentTheme());
-          });
-        }
+        window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', function () {
+          try {
+            if (localStorage.getItem(STORAGE_KEY)) return;
+          } catch (_) { return; }
+          applyTheme(currentTheme(), false);
+        });
       } catch (_) {}
     }
   }
@@ -455,6 +622,7 @@
     initMastheadClock();
     initMastheadBackgrounds();
     initMastheadWeather();
+    initMastheadToolRelease();
     initMarquees();
     initRadarTuner();
   }

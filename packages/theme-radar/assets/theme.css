@@ -456,9 +456,20 @@ a { color: inherit; }
   height: 100%;
 }
 .masthead-background { object-fit: cover; z-index: -3; }
+/* Fondu shuffle (LE-RADAR bg-photo-transition) — entre base (-3) et voile (-1). */
+.masthead-background-transition {
+  z-index: -2;
+  opacity: 0;
+  transition: opacity 480ms ease;
+  pointer-events: none;
+}
+.masthead-background-transition.is-visible { opacity: 1; }
+@media (prefers-reduced-motion: reduce) {
+  .masthead-background-transition { transition: none; }
+}
 /* Voile léger façon LE-RADAR : lisibilité par ombre de texte, pas un film noir. */
 .masthead-background-shade {
-  z-index: -2;
+  z-index: -1;
   background:
     linear-gradient(180deg, rgba(10, 12, 16, 0.28) 0%, transparent 34%, transparent 68%, rgba(10, 12, 16, 0.22) 100%),
     rgba(5, 8, 11, calc(var(--masthead-overlay, .55) * 0.35));
@@ -614,11 +625,29 @@ body.with-radio .masthead--illustrated {
   cursor: pointer;
   text-decoration: none;
   line-height: 0;
+  -webkit-tap-highlight-color: transparent;
+  appearance: none;
   transition:
     border-color 200ms ease,
     background 200ms ease,
     color 200ms ease,
-    box-shadow 200ms ease;
+    box-shadow 200ms ease,
+    transform 140ms ease;
+}
+/* Pas d’état « engagé » après clic (focus souris / sticky :active). */
+.masthead-tool:focus { outline: none; }
+.masthead-tool:focus:not(:focus-visible) {
+  border-color: var(--rule);
+  color: var(--ink);
+  background: color-mix(in srgb, var(--bg) 82%, transparent);
+  box-shadow: none;
+}
+.masthead-tool:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+.masthead-tool:active {
+  transform: scale(0.9);
 }
 /*
  * Sur photo : pastilles ardoise stables (LE-RADAR). Ne pas suivre le thème clair
@@ -642,13 +671,36 @@ body.with-radio .masthead--illustrated {
 .masthead--illustrated .masthead-rss { color: #ffad70; }
 .masthead--illustrated .masthead-pomo { border-color: rgba(255, 106, 106, 0.68); }
 .masthead--illustrated .masthead-solitaire { border-color: rgba(255, 154, 154, 0.56); }
+/* Icônes thème — même sémantique LE-RADAR (action, pas état). */
 .theme-toggle .ico-sun { color: #f7c948; }
 .theme-toggle .ico-moon { color: #9bd7ff; }
-.masthead--illustrated .theme-toggle:has(.ico-sun:not([hidden])) {
+.theme-toggle .ico-sun.hidden,
+.theme-toggle .ico-moon.hidden,
+.masthead-tool .hidden { display: none !important; }
+/* Pastille colorée selon l’icône visible (= mode courant inverse). */
+.masthead--illustrated .theme-toggle:has(.ico-sun:not(.hidden)) {
   border-color: rgba(247, 201, 72, 0.74);
   background: rgba(89, 61, 7, 0.52);
 }
-.masthead--illustrated .theme-toggle:has(.ico-moon:not([hidden])) {
+.masthead--illustrated .theme-toggle:has(.ico-moon:not(.hidden)) {
+  border-color: rgba(155, 215, 255, 0.72);
+  background: rgba(15, 61, 92, 0.54);
+}
+/* Sur photo : le focus souris ne doit pas figer le look « hover engagé ». */
+.masthead--illustrated .masthead-tool:focus:not(:focus-visible) {
+  color: #f7fbff;
+  border-color: rgba(255, 255, 255, 0.46);
+  background: rgba(9, 14, 21, 0.62);
+  box-shadow:
+    0 2px 5px rgba(0, 0, 0, 0.3),
+    0 5px 14px rgba(0, 0, 0, 0.22),
+    inset 0 1px 0 rgba(255, 255, 255, 0.2);
+}
+.masthead--illustrated .theme-toggle:has(.ico-sun:not(.hidden)):focus:not(:focus-visible) {
+  border-color: rgba(247, 201, 72, 0.74);
+  background: rgba(89, 61, 7, 0.52);
+}
+.masthead--illustrated .theme-toggle:has(.ico-moon:not(.hidden)):focus:not(:focus-visible) {
   border-color: rgba(155, 215, 255, 0.72);
   background: rgba(15, 61, 92, 0.54);
 }
