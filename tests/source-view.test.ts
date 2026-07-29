@@ -35,7 +35,7 @@ test('le noyau de carte conserve les règles image, métadonnées et absence d�
   assert.match(brief, /<figure class="article-media">/);
   assert.match(brief, /loading="lazy"/);
   assert.match(brief, /width="1200" height="800"/);
-  assert.match(brief, /Par <a class="article-author"/);
+  assert.match(brief, /article-byline__label">Par<\/span>\s*<a class="article-author"/);
   assert.match(brief, /Lire la suite/);
   assert.doesNotMatch(tail, /<figure class="article-media">/);
   assert.match(tail, /article--tail/);
