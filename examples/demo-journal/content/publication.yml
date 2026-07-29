@@ -159,9 +159,9 @@ masthead:
         latitude: 46.8139
         longitude: -71.2080
         meteomediaSlug: quebec
-  # Scoreboard mât — multi-sports, équipes et adversaires 100 % fictifs.
+  # Scoreboard mât — formations maison fictives ; adversaires = vrais clubs RSEQ collégial.
+  # Scores et calendrier restent de démonstration (pas un fil s1.rseq.ca).
   # Rotation type gare LE-RADAR (deck brassé, ~5,2 s, animation is-arriving).
-  # Hors RSEQ : un bot réel brancherait s1.rseq.ca ; ici tout est embarqué.
   sports:
     enabled: true
     href: /sections/sports/
@@ -177,31 +177,33 @@ masthead:
         colors: { primary: '#6c2163', secondary: '#f4e8f2' }
         results:
           - date: '2026-09-18'
-            opponent: Les Motions
-            opponentCode: MOT
-            opponentInstitution: Cégep de la Plénière
+            opponent: Boomerang
+            opponentCode: BOO
+            opponentInstitution: Cégep François-Xavier-Garneau
             home: true
             scoreFor: 3
             scoreAgainst: 1
             result: W
             sport: volleyball
-            competition: Préparatoire intercégeps
+            competition: RSEQ collégial (démo)
           - date: '2026-09-11'
-            opponent: Les Scrutins
-            opponentCode: SCR
-            opponentInstitution: Collège du Bulletin
+            opponent: Titans
+            opponentCode: TIT
+            opponentInstitution: Cégep Limoilou
             home: false
             scoreFor: 1
             scoreAgainst: 3
             result: L
             sport: volleyball
+            competition: RSEQ collégial (démo)
         nextGame:
           date: '2026-10-02'
           time: '19:00'
-          opponent: Les Majoritaires
-          opponentCode: MAJ
+          opponent: Géants
+          opponentCode: GEA
+          opponentInstitution: Cégep de Sainte-Foy
           home: true
-          competition: Ouverture de saison
+          competition: RSEQ collégial (démo)
       - id: demo-quorums-basket
         name: Les Bulletins
         code: BUL
@@ -213,30 +215,33 @@ masthead:
         colors: { primary: '#003da5', secondary: '#e8f0ff' }
         results:
           - date: '2026-09-20'
-            opponent: Les Urnes
-            opponentCode: URN
-            opponentInstitution: Cégep de l’Assemblée
+            opponent: Cheetahs
+            opponentCode: CHE
+            opponentInstitution: Cégep André-Laurendeau
             home: true
             scoreFor: 72
             scoreAgainst: 68
             result: W
             sport: basketball
-            competition: Tournoi du corridor B
+            competition: RSEQ collégial (démo)
           - date: '2026-09-13'
-            opponent: Les Plénières
-            opponentCode: PLE
-            opponentInstitution: Collège de la Motion
+            opponent: Cavaliers
+            opponentCode: CAV
+            opponentInstitution: Cégep de Saint-Laurent
             home: false
             scoreFor: 61
             scoreAgainst: 74
             result: L
             sport: basketball
+            competition: RSEQ collégial (démo)
         nextGame:
           date: '2026-10-05'
           time: '18:30'
-          opponent: Les Scrutins
-          opponentCode: SCR
+          opponent: Gaulois
+          opponentCode: GAU
+          opponentInstitution: Cégep de Valleyfield
           home: true
+          competition: RSEQ collégial (démo)
       - id: demo-quorums-soccer
         name: Les Motions
         code: MOT
@@ -248,28 +253,33 @@ masthead:
         colors: { primary: '#1a7a4c', secondary: '#e6f5ed' }
         results:
           - date: '2026-09-17'
-            opponent: Les Majoritaires
-            opponentCode: MAJ
+            opponent: Cougars
+            opponentCode: COU
+            opponentInstitution: Cégep Édouard-Montpetit
             home: true
             scoreFor: 2
             scoreAgainst: 2
             result: D
             sport: soccer
-            competition: Amical interprogramme
+            competition: RSEQ collégial (démo)
           - date: '2026-09-10'
-            opponent: Les Quorums
-            opponentCode: QUO
+            opponent: Dragons
+            opponentCode: DRA
+            opponentInstitution: Cégep Saint-Jean-sur-Richelieu
             home: false
             scoreFor: 0
             scoreAgainst: 1
             result: L
             sport: soccer
+            competition: RSEQ collégial (démo)
         nextGame:
           date: '2026-10-03'
           time: '16:00'
-          opponent: Les Urnes
-          opponentCode: URN
+          opponent: Barons
+          opponentCode: BAR
+          opponentInstitution: Champlain College Saint-Lambert
           home: false
+          competition: RSEQ collégial (démo)
       - id: demo-quorums-hockey
         name: Les Urnes
         code: URN
@@ -281,28 +291,33 @@ masthead:
         colors: { primary: '#0b3d91', secondary: '#dfe9f8' }
         results:
           - date: '2026-09-19'
-            opponent: Les Bulletins
-            opponentCode: BUL
+            opponent: Titans
+            opponentCode: TIT
+            opponentInstitution: Cégep Limoilou
             home: true
             scoreFor: 4
             scoreAgainst: 3
             result: W
             sport: hockey
-            competition: Série blanche fictive
+            competition: RSEQ collégial (démo)
           - date: '2026-09-12'
-            opponent: Les Motions
-            opponentCode: MOT
+            opponent: Boomerang
+            opponentCode: BOO
+            opponentInstitution: Cégep François-Xavier-Garneau
             home: false
             scoreFor: 1
             scoreAgainst: 5
             result: L
             sport: hockey
+            competition: RSEQ collégial (démo)
         nextGame:
           date: '2026-10-04'
           time: '20:00'
-          opponent: Les Scrutins
-          opponentCode: SCR
+          opponent: Géants
+          opponentCode: GEA
+          opponentInstitution: Cégep de Sainte-Foy
           home: true
+          competition: RSEQ collégial (démo)
   tools:
     pomodoro: true
     solitaire: true

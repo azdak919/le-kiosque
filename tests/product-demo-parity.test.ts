@@ -122,9 +122,10 @@ test('demo et template reçoivent le même theme.css / kiosque.js (packages/them
     'intro équipe reformulée',
   );
   const seed = await readFile(path.join(demo.out, 'assets/editorial/seed.json'), 'utf8');
-  assert.match(seed, /"version":\s*7/, 'seed démo v7 (multi-sports + rotation)');
-  assert.match(seed, /Les Quorums/, 'seed embarque l’équipe sports');
-  assert.match(seed, /Les Bulletins|Les Motions|Les Urnes/, 'plusieurs formations fictives');
+  assert.match(seed, /"version":\s*8/, 'seed démo v8 (adversaires RSEQ collégial)');
+  assert.match(seed, /Les Quorums/, 'seed embarque l’équipe sports maison');
+  assert.match(seed, /Les Bulletins|Les Motions|Les Urnes/, 'plusieurs formations fictives maison');
+  assert.match(seed, /Titans|Boomerang|Géants|Cheetahs/, 'adversaires = clubs RSEQ collégial réels');
   const demoBackend = await readFile(path.join(demo.out, 'assets/editorial/demo-backend.js'), 'utf8');
   assert.match(demoBackend, /#refreshUnmodifiedDemo|refreshUnmodifiedDemo/, 'upgrade seed local sans perdre les éditions');
   assert.match(demoBackend, /seed\.publication/, 'refresh seed met à jour publication (sports mât)');
