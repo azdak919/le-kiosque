@@ -210,18 +210,6 @@
     var images = [];
     try { images = JSON.parse(data.textContent || '[]'); } catch (_) {}
     if (!Array.isArray(images) || !images.length) return;
-    // Normaliser les src (basePath, /./, query) pour comparer et charger sans 404.
-    images = images.filter(function (item) { return item && item.src; }).map(function (item) {
-      return Object.assign({}, item, { src: resolveAssetUrl(item.src) });
-    });
-    if (!images.length) return;
-    var credit = document.querySelector('[data-masthead-credit]');
-    var masthead = image.closest('.masthead');
-    var index = Math.floor(Math.random() * images.length);
-    /** Transition active (LE-RADAR _activePhotoTransition) — annule un shuffle rapide. */
-    var activeTransition = null;
-    var hasShown = false;
-    var shuffleBusy = false;
 
     function resolveAssetUrl(src) {
       if (!src) return '';
@@ -239,6 +227,33 @@
         return String(a) === String(b);
       }
     }
+
+    // Normaliser les src (basePath, /./, query) pour comparer et charger sans 404.
+    images = images.filter(function (item) { return item && item.src; }).map(function (item) {
+      return Object.assign({}, item, { src: resolveAssetUrl(item.src) });
+    });
+    if (!images.length) return;
+    var credit = document.querySelector('[data-masthead-credit]');
+    var masthead = image.closest('.masthead');
+    /**
+     * Index = photo déjà peinte par le HTML (images[0] côté SSR).
+     * Un Math.random() ici provoquait un flash : image A charge, puis B
+     * (souvent en cache) remplace soudain — bug signalé sur la démo.
+     * La variété reste au bouton shuffle (et éventuellement une autre
+     * page/visite si l’éditeur change l’ordre du manifeste).
+     */
+    var paintedSrc = image.getAttribute('src') || image.currentSrc || '';
+    var index = 0;
+    for (var i = 0; i < images.length; i++) {
+      if (sameSrc(images[i].src, paintedSrc)) {
+        index = i;
+        break;
+      }
+    }
+    /** Transition active (LE-RADAR _activePhotoTransition) — annule un shuffle rapide. */
+    var activeTransition = null;
+    var hasShown = false;
+    var shuffleBusy = false;
 
     function computeObjectPosition(item, imgEl) {
       var authored = parseAuthoredFocalY(item.backgroundPosition);
@@ -289,13 +304,24 @@
 
     image.addEventListener('error', function () { masthead?.classList.add('masthead--image-error'); });
 
-    function commit(item) {
+    function commit(item, options) {
+      options = options || {};
       masthead?.classList.remove('masthead--image-error');
       var nextSrc = resolveAssetUrl(item.src);
-      if (!sameSrc(image.currentSrc || image.getAttribute('src') || '', nextSrc)) {
+      var current = image.currentSrc || image.getAttribute('src') || '';
+      // Ne jamais réassigner le même fichier (évite un rechargement cache inutile).
+      if (!sameSrc(current, nextSrc)) {
         image.src = nextSrc;
       }
-      applyPosition(item);
+      // Premier paint SSR : garder object-position inline tant qu’on n’a pas
+      // besoin de recalculer (shuffle / resize) — le auto-focal au load
+      // faisait « sauter » le cadrage comme un second chargement.
+      if (options.preservePosition) {
+        var existing = (image.style && image.style.objectPosition) || '';
+        if (!existing) applyPosition(item);
+      } else {
+        applyPosition(item);
+      }
       updateCredit(item);
       hasShown = true;
     }
@@ -334,7 +360,7 @@
 
       if (!shouldCrossfade) {
         cancelActiveTransition();
-        commit(item);
+        commit(item, { preservePosition: options.preservePosition === true });
         shuffleBusy = false;
         return;
       }
@@ -433,7 +459,8 @@
       if (incoming.complete && incoming.naturalWidth > 0) startFade();
     }
 
-    show(index, { animate: false });
+    // Sync index/crédit avec la photo déjà visible — sans recharger ni recadrer.
+    show(index, { animate: false, preservePosition: true });
 
     function pickNextIndex() {
       if (images.length < 2) return 0;
