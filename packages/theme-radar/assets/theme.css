@@ -70,6 +70,7 @@ a { color: inherit; }
   padding: 26px 0 14px;
   margin-bottom: 0;
 }
+/* Sans radio : filet de séparation normal. Avec radio + photo : voir body.with-radio. */
 .masthead-top {
   display: flex;
   align-items: baseline;
@@ -104,19 +105,7 @@ a { color: inherit; }
   flex-shrink: 0;
 }
 
-.theme-toggle {
-  border: 1px solid var(--rule);
-  background: var(--bg-soft);
-  color: var(--ink-soft);
-  border-radius: 999px;
-  padding: 6px 12px;
-  font: inherit;
-  font-size: 12px;
-  font-weight: 600;
-  cursor: pointer;
-  transition: border-color 140ms ease, color 140ms ease;
-}
-.theme-toggle:hover { border-color: var(--accent); color: var(--accent); }
+/* Le basculeur de thème est un .masthead-tool (pastille ronde) — styles plus bas. */
 
 /* ─────────────── NAVIGATION ─────────────── */
 
@@ -125,6 +114,7 @@ a { color: inherit; }
   gap: 18px;
   flex-wrap: wrap;
   padding: 10px 0 12px;
+  border-top: 1px solid var(--rule);
   border-bottom: 1px solid var(--rule);
   font-size: 0.86rem;
 }
@@ -139,6 +129,24 @@ a { color: inherit; }
 }
 .nav a:hover { color: var(--accent); border-bottom-color: var(--accent); }
 .nav a[aria-current="page"] { color: var(--accent); border-bottom-color: var(--accent); }
+/* Couleurs de rubrique (section.color) — Accueil / Équipe restent sur --accent. */
+.nav a.nav-section:hover,
+.nav a.nav-section[aria-current="page"] {
+  color: var(--nav-c, var(--accent));
+  border-bottom-color: var(--nav-c, var(--accent));
+}
+:root[data-theme="dark"] .nav a.nav-section:hover,
+:root[data-theme="dark"] .nav a.nav-section[aria-current="page"] {
+  color: color-mix(in srgb, var(--nav-c, var(--accent)) 72%, #fff);
+  border-bottom-color: color-mix(in srgb, var(--nav-c, var(--accent)) 72%, #fff);
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) .nav a.nav-section:hover,
+  :root:not([data-theme="light"]) .nav a.nav-section[aria-current="page"] {
+    color: color-mix(in srgb, var(--nav-c, var(--accent)) 72%, #fff);
+    border-bottom-color: color-mix(in srgb, var(--nav-c, var(--accent)) 72%, #fff);
+  }
+}
 
 /* ─────────────── BANDEAU DE DÉMONSTRATION ─────────────── */
 
@@ -159,9 +167,10 @@ a { color: inherit; }
 .radar-tuner {
   display: block;
   width: 100%;
+  margin: 0;
   /* Pas de min-height : tant que la barre est masquée, zéro espace réservé
      (évite la « bande blanche/vide » sous le mât). */
-  background: #111317;
+  background: var(--tuner-bg, #111317);
   border-bottom: 1px solid var(--rule);
   overflow: hidden;
 }
@@ -424,6 +433,8 @@ a { color: inherit; }
 
 /* ─────────────── MÂT ÉDITORIAL ─────────────── */
 
+:root { --tuner-bg: #111317; }
+
 .masthead {
   position: relative;
   isolation: isolate;
@@ -452,6 +463,10 @@ a { color: inherit; }
   border-bottom: 1px solid rgba(0, 0, 0, 0.18);
   min-height: clamp(168px, 22vw, 220px);
 }
+/* Jointure mât → radio : pas de filet clair (LE-RADAR). Classe posée au build. */
+body.with-radio .masthead--illustrated {
+  border-bottom-color: var(--tuner-bg);
+}
 .masthead--illustrated .wordmark,
 .masthead--illustrated .masthead-tagline,
 .masthead--illustrated .masthead-meta {
@@ -477,31 +492,76 @@ a { color: inherit; }
 .masthead-clock span,
 .masthead-clock time { display: block; }
 .masthead-weather { display: flex; gap: 6px; min-width: 0; overflow-x: auto; scrollbar-width: none; }
-.weather-chip {
+
+/*
+ * Puces météo — style « villes secondaires » LE-RADAR (ardoise, pas panneau pâle).
+ * Sur photo comme hors photo : verre sombre stable pour contraster avec les
+ * icônes meteocons, indépendamment du thème page clair.
+ */
+.weather-chip,
+.masthead-weather__city {
   display: inline-flex;
   align-items: center;
   gap: 6px;
   min-height: 30px;
   padding: 3px 10px 3px 6px;
-  border: 1px solid color-mix(in srgb, var(--weather-tone, #fff) 35%, rgba(255, 255, 255, 0.18));
+  border: 1px solid rgba(255, 255, 255, 0.24);
   border-radius: 6px;
   background:
-    linear-gradient(90deg, color-mix(in srgb, var(--weather-tone, #c8102e) 22%, transparent) 0%, transparent 55%),
-    rgba(12, 14, 18, 0.48);
-  color: #fff;
+    linear-gradient(90deg, color-mix(in srgb, var(--weather-tone, #c8102e) 16%, transparent) 0%, transparent 55%),
+    rgba(54, 59, 68, 0.68);
+  color: rgba(245, 246, 248, 0.96);
   font-size: 11px;
   font-weight: 700;
   white-space: nowrap;
-  backdrop-filter: blur(6px);
+  box-shadow:
+    0 1px 2px rgba(0, 0, 0, 0.24),
+    0 3px 10px rgba(0, 0, 0, 0.18),
+    inset 0 1px 0 rgba(255, 255, 255, 0.14);
+  backdrop-filter: blur(10px) saturate(1.06);
+  -webkit-backdrop-filter: blur(10px) saturate(1.06);
+  text-decoration: none;
+}
+.masthead--illustrated .weather-chip,
+.masthead--illustrated .masthead-weather__city {
+  border-color: rgba(255, 255, 255, 0.14);
+  background:
+    linear-gradient(90deg, color-mix(in srgb, var(--weather-tone, #c8102e) 22%, transparent) 0%, transparent 55%),
+    rgba(22, 24, 30, 0.82);
+  box-shadow:
+    0 1px 2px rgba(0, 0, 0, 0.35),
+    0 3px 12px rgba(0, 0, 0, 0.28),
+    inset 0 1px 0 rgba(255, 255, 255, 0.06);
+  backdrop-filter: blur(10px) saturate(1.1);
+  -webkit-backdrop-filter: blur(10px) saturate(1.1);
+}
+:root[data-theme="dark"] .weather-chip,
+:root[data-theme="dark"] .masthead-weather__city {
+  background:
+    linear-gradient(90deg, color-mix(in srgb, var(--weather-tone, #c8102e) 22%, transparent) 0%, transparent 55%),
+    rgba(22, 24, 30, 0.88);
+  border-color: rgba(255, 255, 255, 0.14);
+}
+@media (hover: hover) and (pointer: fine) {
+  .weather-chip:hover,
+  .masthead-weather__city:hover {
+    border-color: color-mix(in srgb, var(--weather-tone, #c8102e) 55%, rgba(255, 255, 255, 0.22));
+    background:
+      linear-gradient(90deg, color-mix(in srgb, var(--weather-tone, #c8102e) 28%, transparent) 0%, transparent 55%),
+      rgba(32, 35, 44, 0.9);
+  }
 }
 .weather-icon-meteocon {
   display: block;
   width: 22px;
   height: 22px;
   flex: 0 0 auto;
+  filter: brightness(1.12) saturate(1.05);
 }
-.weather-chip__name { font-weight: 700; letter-spacing: 0.02em; }
-.weather-chip__temp { font-variant-numeric: tabular-nums; opacity: 0.95; }
+.weather-chip__name,
+.masthead-weather__name { font-weight: 700; letter-spacing: 0.02em; color: rgba(245, 246, 248, 0.96); }
+.weather-chip__temp,
+.masthead-weather__temp { font-variant-numeric: tabular-nums; color: #fff; opacity: 0.98; }
 .masthead-tools { display: flex; gap: 7px; align-items: center; }
 .masthead-tool {
   width: 32px;
@@ -516,15 +576,76 @@ a { color: inherit; }
   cursor: pointer;
   text-decoration: none;
   line-height: 0;
+  transition:
+    border-color 200ms ease,
+    background 200ms ease,
+    color 200ms ease,
+    box-shadow 200ms ease;
 }
+/*
+ * Sur photo : pastilles ardoise stables (LE-RADAR). Ne pas suivre le thème clair
+ * pour éviter que les pictogrammes disparaissent dans un ciel blanc.
+ */
 .masthead--illustrated .masthead-tool {
-  border-color: rgba(255, 255, 255, 0.28);
-  background: rgba(8, 10, 13, 0.5);
+  color: #f7fbff;
+  border-color: rgba(255, 255, 255, 0.46);
+  background: rgba(9, 14, 21, 0.62);
+  backdrop-filter: blur(14px) saturate(1.2);
+  -webkit-backdrop-filter: blur(14px) saturate(1.2);
+  box-shadow:
+    0 2px 5px rgba(0, 0, 0, 0.3),
+    0 5px 14px rgba(0, 0, 0, 0.22),
+    inset 0 1px 0 rgba(255, 255, 255, 0.2);
+}
+.masthead--illustrated .masthead-tool svg {
+  stroke-width: 2.15;
+  filter: drop-shadow(0 1px 1px rgba(0, 0, 0, 0.52));
+}
+.masthead--illustrated .masthead-rss { color: #ffad70; }
+.masthead--illustrated .masthead-pomo { border-color: rgba(255, 106, 106, 0.68); }
+.masthead--illustrated .masthead-solitaire { border-color: rgba(255, 154, 154, 0.56); }
+.theme-toggle .ico-sun { color: #f7c948; }
+.theme-toggle .ico-moon { color: #9bd7ff; }
+.masthead--illustrated .theme-toggle:has(.ico-sun:not([hidden])) {
+  border-color: rgba(247, 201, 72, 0.74);
+  background: rgba(89, 61, 7, 0.52);
+}
+.masthead--illustrated .theme-toggle:has(.ico-moon:not([hidden])) {
+  border-color: rgba(155, 215, 255, 0.72);
+  background: rgba(15, 61, 92, 0.54);
+}
+.masthead--illustrated .masthead-home[aria-current="page"] {
   color: #fff;
-  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+  background: color-mix(in srgb, var(--accent) 38%, rgba(0, 0, 0, 0.2));
+  border-color: color-mix(in srgb, var(--accent) 45%, rgba(255, 255, 255, 0.25));
+  box-shadow:
+    0 1px 2px rgba(0, 0, 0, 0.2),
+    0 0 0 1px color-mix(in srgb, var(--accent) 25%, transparent),
+    inset 0 1px 0 rgba(255, 255, 255, 0.16);
 }
 .masthead-tool:hover { border-color: var(--accent); color: var(--accent); }
-.masthead--illustrated .masthead-tool:hover { color: #fff; border-color: rgba(255, 255, 255, 0.55); }
+@media (hover: hover) and (pointer: fine) {
+  .masthead--illustrated .theme-toggle:hover,
+  .masthead--illustrated .masthead-home:hover,
+  .masthead--illustrated .masthead-rss:hover,
+  .masthead--illustrated .masthead-solitaire:hover,
+  .masthead--illustrated .masthead-shuffle:hover {
+    color: #fff;
+    border-color: rgba(255, 255, 255, 0.38);
+    background: rgba(255, 255, 255, 0.18);
+    box-shadow:
+      0 2px 10px rgba(0, 0, 0, 0.2),
+      inset 0 1px 0 rgba(255, 255, 255, 0.22);
+  }
+  .masthead--illustrated .masthead-pomo:hover {
+    color: #fff;
+    border-color: rgba(255, 140, 130, 0.5);
+    background: rgba(200, 16, 46, 0.28);
+    box-shadow:
+      0 2px 10px rgba(200, 16, 46, 0.22),
+      inset 0 1px 0 rgba(255, 255, 255, 0.18);
+  }
+}
 .masthead-tool svg { width: 15px; height: 15px; }
 .masthead-tool svg[fill="currentColor"] { fill: currentColor; }
 .masthead-tool svg[fill="none"] { fill: none; stroke: currentColor; }

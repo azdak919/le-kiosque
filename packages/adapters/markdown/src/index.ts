@@ -331,6 +331,18 @@ export class MarkdownSource implements ContentSource<MarkdownConfig> {
             } as NonNullable<Publication['radio']>;
           })()
         : undefined,
+      labels: raw.labels
+        ? (() => {
+            const labels = raw.labels as Record<string, unknown>;
+            const wireTitle = str(labels.wireTitle);
+            const leadEyebrow = str(labels.leadEyebrow);
+            if (!wireTitle && !leadEyebrow) return undefined;
+            return {
+              wireTitle,
+              leadEyebrow: leadEyebrow ?? wireTitle,
+            };
+          })()
+        : undefined,
       founded: str(raw.founded),
       governance: {
         owner: str(governance.owner) ?? '',

@@ -83,7 +83,7 @@ export function renderSourceArticle(view, requestedRole = 'tail') {
   const colorStyle = color ? ` style="--c:${escapeSourceViewHtml(color)}"` : '';
 
   return `<article class="${roleClasses}"${colorStyle}>
-  ${role === 'lead' ? '<span class="article-eyebrow">À la une</span>' : ''}
+  ${role === 'lead' ? `<span class="article-eyebrow">${escapeSourceViewHtml(view?.leadEyebrow || 'À la une')}</span>` : ''}
   <div class="article-meta">
     ${section ? `<span class="article-section">${escapeSourceViewHtml(section)}</span>` : '<span class="article-section article-section--empty" aria-hidden="true"></span>'}
     ${dateLabel ? `<time class="article-time" datetime="${escapeSourceViewHtml(date)}">${dateLabel}</time>` : ''}

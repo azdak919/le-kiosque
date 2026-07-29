@@ -282,6 +282,16 @@ export interface Publication {
     theme?: 'auto' | 'light' | 'dark';
     position?: 'top' | 'bottom';
   };
+  /**
+   * Libellés d’interface paramétrables (focus group / rédaction).
+   * Fallbacks thème : « À la une ».
+   */
+  labels?: {
+    /** Titre du fil d’accueil (h1). */
+    wireTitle?: string;
+    /** Eyebrow de la carte manchette ; défaut = wireTitle. */
+    leadEyebrow?: string;
+  };
   founded?: string;
   governance: Governance;
   license?: string;

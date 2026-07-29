@@ -143,8 +143,9 @@
       return value;
     })).then(function (values) {
       values.forEach(function (value) {
+        // Même vocabulaire de classes que LE-RADAR (villes secondaires / ardoise).
         var chip = document.createElement('span');
-        chip.className = 'weather-chip';
+        chip.className = 'weather-chip masthead-weather__city';
         chip.style.setProperty('--weather-tone', weatherTone(value.code));
         var img = document.createElement('img');
         img.className = 'weather-icon-meteocon';
@@ -154,10 +155,10 @@
         img.width = 22;
         img.height = 22;
         var nameEl = document.createElement('span');
-        nameEl.className = 'weather-chip__name';
+        nameEl.className = 'weather-chip__name masthead-weather__name';
         nameEl.textContent = value.name;
         var temp = document.createElement('span');
-        temp.className = 'weather-chip__temp';
+        temp.className = 'weather-chip__temp masthead-weather__temp';
         temp.textContent = value.temperature + '°';
         chip.appendChild(img);
         chip.appendChild(nameEl);
@@ -175,6 +176,16 @@
       btn.addEventListener('click', function () {
         applyTheme(root.dataset.theme === 'dark' ? 'light' : 'dark');
       });
+    }
+    // Suivre le système si aucun choix explicite n'est stocké.
+    if (window.matchMedia) {
+      try {
+        if (!localStorage.getItem(STORAGE_KEY)) {
+          window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', function () {
+            if (!localStorage.getItem(STORAGE_KEY)) applyTheme(currentTheme());
+          });
+        }
+      } catch (_) {}
     }
   }
 

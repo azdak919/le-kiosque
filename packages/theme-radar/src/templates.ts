@@ -213,25 +213,26 @@ function mastheadBackground(ctx: RenderContext, options: MastheadOptions): strin
   <script type="application/json" id="masthead-backgrounds">${JSON.stringify(manifest).replace(/</g, '\\u003c')}</script>`;
 }
 
-function mastheadTools(ctx: RenderContext): string {
+function mastheadTools(ctx: RenderContext, current?: string): string {
   const masthead = ctx.publication.masthead;
   const weather = masthead?.weather;
   const backgrounds = masthead?.backgrounds;
   const tools = masthead?.tools;
   const localities = weather?.enabled === false ? [] : (weather?.localities ?? []);
   const assetsBase = asset('/assets/', ctx);
-  const button = (href: string, label: string, glyph: string) =>
-    `<a class="masthead-tool" href="${safeUrl(href)}" aria-label="${esc(label)}" title="${esc(label)}">${glyph}</a>`;
+  const homeHref = asset('/', ctx);
+  const button = (href: string, label: string, glyph: string, extraClass = '', currentPage = false) =>
+    `<a class="masthead-tool${extraClass ? ` ${extraClass}` : ''}" href="${safeUrl(href)}" aria-label="${esc(label)}" title="${esc(label)}"${currentPage ? ' aria-current="page"' : ''}>${glyph}</a>`;
   return `<div class="masthead-utility">
     <p class="masthead-clock"><span data-masthead-date></span><time data-masthead-time></time></p>
     ${localities.length ? `<div class="masthead-weather" data-weather-localities="${esc(JSON.stringify(localities))}" data-meteocons-base="${esc(asset('/assets/meteocons/animated/', ctx))}" aria-label="Météo"></div>` : ''}
     <div class="masthead-tools">
-      ${button(asset('/', ctx), 'Accueil', icon('home', assetsBase))}
-      ${button(asset('/feed.xml', ctx), 'Flux RSS', icon('rss', assetsBase))}
-      ${tools?.pomodoro !== false ? button('https://le-radar.ca/pomo/', 'Pomodoro', emojiIcon(assetsBase, 'tomato.png')) : ''}
-      ${tools?.solitaire !== false ? button('https://le-radar.ca/solitaire/', 'Solitaire', emojiIcon(assetsBase, 'playing-cards.png')) : ''}
-      <button type="button" id="theme-toggle" class="masthead-tool" aria-label="Changer de thème" title="Mode clair / sombre" aria-pressed="false" hidden>${icon('sun', assetsBase)}${icon('moon', assetsBase)}</button>
-      ${backgrounds?.enabled !== false && (backgrounds?.images?.length ?? 0) > 1 ? `<button type="button" id="masthead-shuffle" class="masthead-tool" aria-label="Changer la photo du mât" title="Changer la photo du mât">${icon('shuffle', assetsBase)}</button>` : ''}
+      ${button(homeHref, 'Accueil', icon('home', assetsBase), 'masthead-home', current === homeHref)}
+      ${button(asset('/feed.xml', ctx), 'Flux RSS', icon('rss', assetsBase), 'masthead-rss')}
+      ${tools?.pomodoro !== false ? button('https://le-radar.ca/pomo/', 'Pomodoro', emojiIcon(assetsBase, 'tomato.png'), 'masthead-pomo') : ''}
+      ${tools?.solitaire !== false ? button('https://le-radar.ca/solitaire/', 'Solitaire', emojiIcon(assetsBase, 'playing-cards.png'), 'masthead-solitaire') : ''}
+      <button type="button" id="theme-toggle" class="masthead-tool theme-toggle" aria-label="Changer de thème" title="Mode clair / sombre" aria-pressed="false">${icon('sun', assetsBase)}${icon('moon', assetsBase)}</button>
+      ${backgrounds?.enabled !== false && (backgrounds?.images?.length ?? 0) > 1 ? `<button type="button" id="masthead-shuffle" class="masthead-tool masthead-shuffle" aria-label="Changer la photo du mât" title="Changer la photo du mât">${icon('shuffle', assetsBase)}</button>` : ''}
     </div>
   </div>`;
 }
@@ -249,6 +250,7 @@ export function articleCard(article: Article, ctx: RenderContext, variant: boole
     .find((c) => c && /^#/.test(c));
   const href = relative(articleUrl(ctx.publication, article), ctx);
   const date = article.publishedAt ?? article.updatedAt;
+  const labels = ctx.publication.labels;
   return renderSourceArticle({
     section: section?.name,
     color: section?.color || categoryColor,
@@ -256,6 +258,7 @@ export function articleCard(article: Article, ctx: RenderContext, variant: boole
     title: article.title,
     excerpt: article.excerpt,
     readMore: true,
+    leadEyebrow: labels?.leadEyebrow || labels?.wireTitle || 'À la une',
     date: { iso: date, label: formatDateTime(date, ctx.publication.timeZone) },
     authors: article.authors.map((slug) => ({
       name: ctx.authorsBySlug.get(slug)?.name ?? slug,
@@ -295,16 +298,19 @@ export function page(content: string, options: PageOptions, ctx: RenderContext):
   const pub = ctx.publication;
   const masthead = mastheadOptions(pub);
   const nav = [
-    { href: asset('/', ctx), label: 'Accueil' },
+    { href: asset('/', ctx), label: 'Accueil', color: undefined as string | undefined },
     ...ctx.taxonomies.sections.map((s) => ({
       href: relative(sectionUrl(pub, s.slug), ctx),
       label: s.name,
+      color: s.color,
     })),
-    { href: asset('/auteurs/', ctx), label: 'Équipe' },
+    { href: asset('/auteurs/', ctx), label: 'Équipe', color: undefined as string | undefined },
   ];
 
   const description = options.description ?? pub.tagline ?? pub.name;
   const radio = radioTuner(ctx);
+  const withRadio = Boolean(radio);
+  const bodyClasses = [options.bodyClass, withRadio ? 'with-radio' : ''].filter(Boolean).join(' ');
 
   return `<!doctype html>
 <html lang="${esc(pub.lang)}">
@@ -334,13 +340,13 @@ export function page(content: string, options: PageOptions, ctx: RenderContext):
     pub.theme.accentDark ? `:root[data-theme="dark"]{--accent:${esc(pub.theme.accentDark)}}` : ''
   }</style>
 ${options.jsonLd ? `<script type="application/ld+json">${options.jsonLd}</script>\n` : ''}</head>
-<body${options.bodyClass ? ` class="${esc(options.bodyClass)}"` : ''}>
+<body${bodyClasses ? ` class="${esc(bodyClasses)}"` : ''}>
 <a class="skip-link" href="#contenu">Aller au contenu</a>
 ${ctx.demoNotice ? `<div class="demo-banner">${esc(ctx.demoNotice)}</div>` : ''}
 <header class="masthead${masthead.image ? ' masthead--illustrated' : ''}" data-text-alignment="${masthead.textAlignment}" style="--masthead-overlay:${masthead.overlayStrength}">
   ${mastheadBackground(ctx, masthead)}
   <div class="wrap">
-    ${mastheadTools(ctx)}
+    ${mastheadTools(ctx, options.current)}
     <div class="masthead-top">
       <div>
         <p class="wordmark"><a href="${asset('/', ctx)}">${masthead.logo ? `<img class="publication-logo" src="${safeUrl(asset(masthead.logo.src, ctx))}" alt="${esc(masthead.logo.alt || masthead.name)}">` : esc(masthead.name)}</a></p>
@@ -357,10 +363,13 @@ ${radio}
   <div class="wrap">
     <div class="nav">
       ${nav
-        .map(
-          (n) =>
-            `<a href="${safeUrl(n.href)}"${options.current === n.href ? ' aria-current="page"' : ''}>${esc(n.label)}</a>`,
-        )
+        .map((n) => {
+          const current = options.current === n.href ? ' aria-current="page"' : '';
+          const color = n.color && /^#[0-9a-fA-F]{3,8}$/.test(n.color)
+            ? ` class="nav-section" style="--nav-c:${esc(n.color)}"`
+            : '';
+          return `<a href="${safeUrl(n.href)}"${current}${color}>${esc(n.label)}</a>`;
+        })
         .join('\n      ')}
     </div>
   </div>
@@ -399,10 +408,11 @@ export function homePage(articles: Article[], ctx: RenderContext): string {
   const features = rest.slice(0, 3);
   const briefs = rest.slice(3, 10);
   const tail = rest.slice(10);
+  const wireTitle = ctx.publication.labels?.wireTitle || 'À la une';
   const body = !articles.length
     ? '<p class="empty">Aucun article publié pour le moment.</p>'
     : `<div class="magazine-layout">
-      <section class="news-hero" aria-label="À la une">
+      <section class="news-hero" aria-label="${esc(wireTitle)}">
         ${articleCard(first, ctx, 'lead')}
         <div class="news-features">${features.map((a) => articleCard(a, ctx, 'feature')).join('\n')}</div>
       </section>
@@ -413,7 +423,7 @@ export function homePage(articles: Article[], ctx: RenderContext): string {
   return page(
     `<div class="wrap wire">
       <div class="wire-head">
-        <h1 class="wire-title">À la une</h1>
+        <h1 class="wire-title">${esc(wireTitle)}</h1>
         <span class="wire-status">${articles.length} article${articles.length > 1 ? 's' : ''}</span>
       </div>
       ${body}

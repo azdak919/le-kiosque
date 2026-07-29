@@ -39,6 +39,7 @@ function articleCard(article, bundle, base, variant = 'tail') {
     .find((value) => value && /^#/.test(value));
   const lead = article.lead;
   const src = safeMediaUrl(lead?.src);
+  const labels = bundle.publication.labels || {};
   return renderSourceArticle({
     section: section?.name,
     color: section?.color || categoryColor,
@@ -47,6 +48,7 @@ function articleCard(article, bundle, base, variant = 'tail') {
     title: article.title,
     excerpt: article.excerpt,
     readMore: true,
+    leadEyebrow: labels.leadEyebrow || labels.wireTitle || 'À la une',
     date: {
       iso: article.publishedAt || article.updatedAt,
       label: formatDateTime(article.publishedAt || article.updatedAt, bundle.publication.timeZone),
@@ -75,7 +77,10 @@ export function renderRoute(bundle, base, pathname, renderBody) {
     const tail = rest.slice(10);
     return {
       title: `${bundle.publication.name} — ${bundle.publication.tagline || bundle.publication.institution}`,
-      html: `<div class="wrap wire"><div class="wire-head"><h1 class="wire-title">À la une</h1><span class="wire-status">${published.length} article${published.length > 1 ? 's' : ''}</span></div>${first ? `<div class="magazine-layout"><section class="news-hero" aria-label="À la une">${articleCard(first, bundle, base, 'lead')}<div class="news-features">${features.map((item) => articleCard(item, bundle, base, 'feature')).join('')}</div></section>${briefs.length ? `<aside class="brief-rail"><h2>En bref</h2>${briefs.map((item) => articleCard(item, bundle, base, 'brief')).join('')}</aside>` : ''}${tail.length ? `<section class="news-tail"><h2>Suite du fil</h2><div class="news-tail-grid">${tail.map((item) => articleCard(item, bundle, base, 'tail')).join('')}</div></section>` : ''}</div>` : '<p class="empty">Aucun article publié pour le moment.</p>'}</div>`,
+      html: (() => {
+        const wireTitle = bundle.publication.labels?.wireTitle || 'À la une';
+        return `<div class="wrap wire"><div class="wire-head"><h1 class="wire-title">${esc(wireTitle)}</h1><span class="wire-status">${published.length} article${published.length > 1 ? 's' : ''}</span></div>${first ? `<div class="magazine-layout"><section class="news-hero" aria-label="${esc(wireTitle)}">${articleCard(first, bundle, base, 'lead')}<div class="news-features">${features.map((item) => articleCard(item, bundle, base, 'feature')).join('')}</div></section>${briefs.length ? `<aside class="brief-rail"><h2>En bref</h2>${briefs.map((item) => articleCard(item, bundle, base, 'brief')).join('')}</aside>` : ''}${tail.length ? `<section class="news-tail"><h2>Suite du fil</h2><div class="news-tail-grid">${tail.map((item) => articleCard(item, bundle, base, 'tail')).join('')}</div></section>` : ''}</div>` : '<p class="empty">Aucun article publié pour le moment.</p>'}</div>`;
+      })(),
     };
   }
   if (parts[0] === 'articles' && parts[1]) {
@@ -147,7 +152,19 @@ export function applyBranding(bundle, base) {
   document.querySelector('a[href="https://le-radar.ca/pomo/"]')?.toggleAttribute('hidden', publication.masthead?.tools?.pomodoro === false);
   document.querySelector('a[href="https://le-radar.ca/solitaire/"]')?.toggleAttribute('hidden', publication.masthead?.tools?.solitaire === false);
   const nav = document.querySelector('.nav');
-  if (nav) nav.innerHTML = [`<a data-editorial-link href="${base}/">Accueil</a>`, ...bundle.taxonomies.sections.map((section) => `<a data-editorial-link href="${link(base, `/sections/${encodeURIComponent(section.slug)}/`)}">${esc(section.name)}</a>`), `<a data-editorial-link href="${link(base, '/auteurs/')}">Équipe</a>`].join('');
+  if (nav) {
+    nav.innerHTML = [
+      `<a data-editorial-link href="${base}/">Accueil</a>`,
+      ...bundle.taxonomies.sections.map((section) => {
+        const color = section.color && /^#[0-9a-fA-F]{3,8}$/.test(section.color)
+          ? ` class="nav-section" style="--nav-c:${esc(section.color)}"`
+          : '';
+        return `<a data-editorial-link href="${link(base, `/sections/${encodeURIComponent(section.slug)}/`)}"${color}>${esc(section.name)}</a>`;
+      }),
+      `<a data-editorial-link href="${link(base, '/auteurs/')}">Équipe</a>`,
+    ].join('');
+  }
+  document.body.classList.toggle('with-radio', Boolean(publication.radio && publication.radio.enabled !== false));
   let currentRadio = document.querySelector('radar-tuner');
   if (publication.radio?.enabled === false) currentRadio?.remove();
   else if (publication.radio) {

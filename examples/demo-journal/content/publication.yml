@@ -18,6 +18,11 @@ theme:
   accentDark: '#cf7ec1'
   typography: modern-accessible
 
+# Libellés d’interface — verdict focus-group/decisions/le-kiosque-wire-title.json
+labels:
+  wireTitle: Le fil
+  leadEyebrow: Le fil
+
 masthead:
   backgrounds:
     enabled: true
