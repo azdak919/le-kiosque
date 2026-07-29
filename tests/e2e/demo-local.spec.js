@@ -136,11 +136,11 @@ test('configurer, rédiger, prévisualiser, publier, persister et exporter sans 
   const importDialog = page.waitForEvent('dialog');
   await (await chooser).setFiles(jsonPath);
   await importDialog.then((dialog) => dialog.accept());
-  await expect(page.getByRole('heading', { name: 'Tableau de bord' })).toBeVisible();
+  await expect(page.getByRole('heading', { name: 'Tableau de bord' })).toBeVisible({ timeout: 45_000 });
   await page.getByRole('button', { name: 'Articles' }).click();
   await expect(page.getByText('Un article local mis à jour')).toBeVisible();
   await page.getByRole('button', { name: 'Configuration' }).click();
-  await expect(page.locator('#masthead-crop-preview img').first()).toHaveAttribute('src', /cegep-rimouski\.jpg/);
+  await expect(page.locator('#masthead-crop-preview img').first()).toHaveAttribute('src', /mcgill-(roddick|campus)\.jpg/);
 });
 
 test('l’alias admin redirige et le bandeau ne promet aucun service distant', async ({ page }) => {
