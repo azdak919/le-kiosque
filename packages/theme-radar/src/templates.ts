@@ -391,13 +391,7 @@ ${content}
       <span class="site-foot__sep" aria-hidden="true">·</span>
       <a href="${asset('/plan-du-site/', ctx)}">Plan du site</a>
       <span class="site-foot__sep" aria-hidden="true">·</span>
-      <a href="${asset('/auteurs/', ctx)}">L’équipe</a>${
-        pub.governance.repo
-          ? `
-      <span class="site-foot__sep" aria-hidden="true">·</span>
-      <a href="${safeUrl(pub.governance.repo)}" rel="noopener">Code source</a>`
-          : ''
-      }
+      <a href="${asset('/auteurs/', ctx)}">L’équipe</a>
     </nav>
     <div class="site-foot__credit">
       ${
