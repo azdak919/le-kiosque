@@ -8,6 +8,7 @@ submittedAt: 2026-10-06T09:00:00Z
 updatedAt: 2026-10-06T09:00:00Z
 authors:
   - samuel-okonkwo
+  - camille-dufour
 section: culture
 lang: fr-CA
 ---

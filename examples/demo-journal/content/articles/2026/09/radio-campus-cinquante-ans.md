@@ -6,8 +6,7 @@ status: published
 demo: true
 publishedAt: 2026-09-28T11:00:00Z
 updatedAt: 2026-09-28T11:00:00Z
-authors:
-  - samuel-okonkwo
+authors: [samuel-okonkwo]
 section: culture
 categories:
   - culture

@@ -6,8 +6,7 @@ status: published
 demo: true
 publishedAt: 2026-10-03T12:00:00Z
 updatedAt: 2026-10-03T12:00:00Z
-authors:
-  - leonie-gagnon
+authors: [olivier-roy]
 section: opinion
 categories:
   - opinion

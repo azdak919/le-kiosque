@@ -6,7 +6,9 @@ status: published
 demo: true
 publishedAt: 2026-09-22T14:30:00Z
 updatedAt: 2026-09-22T14:30:00Z
-authors: [samuel-okonkwo]
+authors:
+  - thomas-chen
+  - philippe-lavoie
 section: sports
 categories: [sports]
 tags: []

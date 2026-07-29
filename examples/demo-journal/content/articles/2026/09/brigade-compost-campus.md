@@ -6,7 +6,9 @@ status: published
 demo: true
 publishedAt: 2026-09-28T09:00:00Z
 updatedAt: 2026-09-28T09:00:00Z
-authors: [marie-tremblay, samuel-okonkwo]
+authors:
+  - jade-morin
+  - amira-benali
 section: actualites
 categories: [actualite-locale]
 tags: [transition-ecologique]

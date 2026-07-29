@@ -6,7 +6,9 @@ status: published
 demo: true
 publishedAt: 2026-09-23T17:00:00Z
 updatedAt: 2026-09-23T17:00:00Z
-authors: [marie-tremblay]
+authors:
+  - marie-tremblay
+  - amira-benali
 section: actualites
 categories: [actualite-locale]
 tags: []

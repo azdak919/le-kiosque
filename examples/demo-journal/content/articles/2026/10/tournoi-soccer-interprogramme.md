@@ -7,7 +7,8 @@ demo: true
 publishedAt: 2026-10-04T15:30:00Z
 updatedAt: 2026-10-04T15:30:00Z
 authors:
-  - samuel-okonkwo
+  - thomas-chen
+  - philippe-lavoie
 section: sports
 categories:
   - sports

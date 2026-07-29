@@ -6,7 +6,7 @@ status: published
 demo: true
 publishedAt: 2026-09-30T11:30:00Z
 updatedAt: 2026-09-30T11:30:00Z
-authors: [samuel-okonkwo]
+authors: [jade-morin]
 section: campus
 categories: [vie-etudiante]
 tags: [transition-ecologique]

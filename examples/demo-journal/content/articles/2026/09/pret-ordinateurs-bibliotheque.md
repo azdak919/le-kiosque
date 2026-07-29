@@ -6,7 +6,7 @@ status: published
 demo: true
 publishedAt: 2026-09-26T12:00:00Z
 updatedAt: 2026-09-26T12:00:00Z
-authors: [leonie-gagnon]
+authors: [jade-morin]
 section: campus
 categories: [vie-etudiante]
 tags: []

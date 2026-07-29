@@ -10,8 +10,7 @@ status: published
 demo: true
 publishedAt: 2026-09-12T14:30:00Z
 updatedAt: 2026-09-13T09:05:00Z
-authors:
-  - marie-tremblay
+authors: [marie-tremblay]
 section: actualites
 categories:
   - vie-etudiante

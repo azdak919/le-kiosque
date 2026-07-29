@@ -6,7 +6,7 @@ status: published
 demo: true
 publishedAt: 2026-09-27T18:00:00Z
 updatedAt: 2026-09-27T18:00:00Z
-authors: [samuel-okonkwo]
+authors: [thomas-chen]
 section: sports
 categories: [sports]
 tags: []

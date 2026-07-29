@@ -131,12 +131,22 @@ export function renderRoute(bundle, base, pathname, renderBody) {
   }
   if (parts[0] === 'auteurs') {
     if (!parts[1]) {
-      return { title: `L’équipe — ${bundle.publication.name}`, html: `<div class="wrap wire"><div class="wire-head"><h1 class="wire-title">L’équipe</h1></div>${bundle.authors.map((author) => `<article class="author-card"><h2><a data-editorial-link href="${link(base, `/auteurs/${encodeURIComponent(author.slug)}/`)}">${esc(author.name)}</a></h2><p>${esc(author.role || '')}</p></article>`).join('')}</div>` };
+      const active = bundle.authors.filter((a) => a.active !== false);
+      const past = bundle.authors.filter((a) => a.active === false);
+      const card = (author, alumni = false) => {
+        const n = published.filter((article) => article.authors.includes(author.slug)).length;
+        return `<div class="author-card${alumni ? ' author-card--alumni' : ''}"><div><h2 class="author-name"><a data-editorial-link href="${link(base, `/auteurs/${encodeURIComponent(author.slug)}/`)}">${esc(author.name)}</a>${alumni ? ' <span class="author-badge">Alumni</span>' : ''}</h2>${author.role ? `<p class="author-role">${esc(author.role)}</p>` : ''}${author.cohort ? `<p class="author-cohort">Cohorte ${esc(author.cohort)}</p>` : ''}${author.bio ? `<p class="author-bio">${esc(author.bio)}</p>` : ''}<p class="author-role">${n} article${n > 1 ? 's' : ''}</p></div></div>`;
+      };
+      return {
+        title: `L’équipe — ${bundle.publication.name}`,
+        html: `<div class="wrap wire"><div class="wire-head"><h1 class="wire-title">L’équipe</h1><span class="wire-status">${active.length} membre${active.length > 1 ? 's' : ''} · ${past.length} alumni</span></div><p class="section-intro">Rédaction en poste cette année — rôles et cohortes affichés pour chaque signature.</p>${active.map((a) => card(a, false)).join('')}${past.length ? `<div class="wire-head" style="margin-top:34px"><h2 class="wire-title">Alumni</h2></div><p class="section-intro">Membres ayant gradué ou quitté la rédaction. Leurs signatures restent : une archive ne se réécrit pas quand quelqu’un part.</p>${past.map((a) => card(a, true)).join('')}` : ''}</div>`,
+      };
     }
     const author = bundle.authors.find((item) => item.slug === decodeURIComponent(parts[1]));
     if (!author) return null;
     const articles = published.filter((article) => article.authors.includes(author.slug));
-    return { title: `${author.name} — ${bundle.publication.name}`, html: `<div class="wrap wire"><div class="wire-head"><h1 class="wire-title">${esc(author.name)}</h1></div><p class="author-role">${esc(author.role || '')}</p><p class="author-bio">${esc(author.bio || '')}</p>${articles.map((item) => articleCard(item, bundle, base)).join('')}</div>` };
+    const statusNote = author.active === false ? ' · a quitté la rédaction' : '';
+    return { title: `${author.name} — ${bundle.publication.name}`, html: `<div class="wrap wire"><div class="wire-head"><h1 class="wire-title">${esc(author.name)}</h1>${author.active === false ? '<span class="author-badge">Alumni</span>' : ''}</div><p class="author-role">${esc(author.role || '')}${author.cohort ? ` · cohorte ${esc(author.cohort)}` : ''}${statusNote}</p><p class="author-bio">${esc(author.bio || '')}</p>${articles.map((item) => articleCard(item, bundle, base)).join('')}</div>` };
   }
   return null;
 }

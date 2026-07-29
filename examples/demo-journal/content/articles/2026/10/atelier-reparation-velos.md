@@ -6,7 +6,7 @@ status: published
 demo: true
 publishedAt: 2026-10-02T13:00:00Z
 updatedAt: 2026-10-02T13:00:00Z
-authors: [leonie-gagnon]
+authors: [amira-benali]
 section: campus
 categories: [vie-etudiante]
 tags: [transition-ecologique]

@@ -6,7 +6,7 @@ status: published
 demo: true
 publishedAt: 2026-09-21T16:30:00Z
 updatedAt: 2026-09-21T16:30:00Z
-authors: [leonie-gagnon]
+authors: [camille-dufour]
 section: culture
 categories: [culture]
 tags: []

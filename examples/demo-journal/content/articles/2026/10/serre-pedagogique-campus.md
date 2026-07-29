@@ -8,6 +8,7 @@ demo: true
 publishedAt: 2026-10-01T13:15:00Z
 updatedAt: 2026-10-01T13:15:00Z
 authors:
+  - jade-morin
   - marie-tremblay
 section: campus
 categories:

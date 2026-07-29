@@ -6,7 +6,9 @@ status: published
 demo: true
 publishedAt: 2026-09-20T09:30:00Z
 updatedAt: 2026-09-20T09:30:00Z
-authors: [marie-tremblay, leonie-gagnon]
+authors:
+  - marie-tremblay
+  - nicolas-petit
 section: campus
 categories: [vie-etudiante]
 tags: []

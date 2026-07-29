@@ -8,8 +8,7 @@ slug: brouillon-budget
 status: draft
 demo: true
 updatedAt: 2026-10-02T16:20:00Z
-authors:
-  - marie-tremblay
+authors: [marie-tremblay]
 section: actualites
 lang: fr-CA
 ---

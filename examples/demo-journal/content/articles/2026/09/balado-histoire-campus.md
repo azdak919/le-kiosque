@@ -6,7 +6,9 @@ status: published
 demo: true
 publishedAt: 2026-09-25T15:00:00Z
 updatedAt: 2026-09-25T15:00:00Z
-authors: [marie-tremblay]
+authors:
+  - camille-dufour
+  - samuel-okonkwo
 section: culture
 categories: [culture]
 tags: [archives, radio-etudiante]

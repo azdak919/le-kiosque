@@ -637,13 +637,13 @@ export function authorPage(author: Author, articles: Article[], ctx: RenderConte
 }
 
 export function authorsIndexPage(authors: Author[], counts: Map<string, number>, ctx: RenderContext): string {
-  const render = (list: Author[]) =>
+  const render = (list: Author[], alumni = false) =>
     list
       .map(
         (a) => `
-      <div class="author-card">
+      <div class="author-card${alumni ? ' author-card--alumni' : ''}">
         <div>
-          <h2 class="author-name"><a href="${safeUrl(relative(authorUrl(ctx.publication, a.slug), ctx))}" style="text-decoration:none;color:inherit">${esc(a.name)}</a></h2>
+          <h2 class="author-name"><a href="${safeUrl(relative(authorUrl(ctx.publication, a.slug), ctx))}" style="text-decoration:none;color:inherit">${esc(a.name)}</a>${alumni ? ' <span class="author-badge">Alumni</span>' : ''}</h2>
           ${a.role ? `<p class="author-role">${esc(a.role)}</p>` : ''}
           ${a.cohort ? `<p class="author-cohort">Cohorte ${esc(a.cohort)}</p>` : ''}
           ${a.bio ? `<p class="author-bio">${esc(a.bio)}</p>` : ''}
@@ -660,13 +660,15 @@ export function authorsIndexPage(authors: Author[], counts: Map<string, number>,
     `<div class="wrap wire">
       <div class="wire-head">
         <h1 class="wire-title">L’équipe</h1>
+        <span class="wire-status">${active.length} membre${active.length > 1 ? 's' : ''} · ${past.length} alumni</span>
       </div>
-      ${render(active)}
+      <p class="section-intro">Rédaction en poste cette année — rôles et cohortes affichés pour chaque signature.</p>
+      ${render(active, false)}
       ${
         past.length
-          ? `<div class="wire-head" style="margin-top:34px"><h2 class="wire-title">Anciennes et anciens</h2></div>
-      <p class="section-intro">Leurs signatures restent : une archive ne se réécrit pas quand quelqu’un gradue.</p>
-      ${render(past)}`
+          ? `<div class="wire-head" style="margin-top:34px"><h2 class="wire-title">Alumni</h2></div>
+      <p class="section-intro">Membres ayant gradué ou quitté la rédaction. Leurs signatures restent : une archive ne se réécrit pas quand quelqu’un part.</p>
+      ${render(past, true)}`
           : ''
       }
     </div>`,

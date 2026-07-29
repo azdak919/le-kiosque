@@ -6,7 +6,9 @@ status: published
 demo: true
 publishedAt: 2026-09-24T10:00:00Z
 updatedAt: 2026-09-24T10:00:00Z
-authors: [samuel-okonkwo, leonie-gagnon]
+authors:
+  - olivier-roy
+  - leonie-gagnon
 section: opinion
 categories: [opinion]
 tags: [transition-ecologique]
