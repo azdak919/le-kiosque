@@ -27,9 +27,12 @@ import {
 } from '../../core/src/model.ts';
 import {
   articlePage,
+  archivesPage,
+  archivesYearPage,
   categoryPage,
   authorPage,
   authorsIndexPage,
+  groupArticlesByYear,
   homePage,
   page,
   redirectPage,
@@ -363,6 +366,23 @@ export async function build(options: BuildOptions): Promise<BuildResult> {
     pages++;
   }
 
+  // Archives chronologiques (published + archived) — registre SEO lisible sans JS.
+  // Le fil d’accueil reste le « fil vivant » ; /archives/ est le catalogue durable.
+  await emit(outDir, '/archives/', archivesPage(paged, ctx));
+  urls.push({
+    loc: `${base}/archives/`,
+    lastmod: paged[0]?.updatedAt ?? paged[0]?.publishedAt,
+  });
+  pages++;
+  for (const group of groupArticlesByYear(paged, bundle.publication.timeZone)) {
+    await emit(outDir, `/archives/${group.year}/`, archivesYearPage(group.year, group.articles, ctx));
+    urls.push({
+      loc: `${base}/archives/${group.year}/`,
+      lastmod: group.articles[0]?.updatedAt ?? group.articles[0]?.publishedAt,
+    });
+    pages++;
+  }
+
   // Plan du site lisible par un humain — c'est aussi la porte d'entrée d'une
   // reprise : on y voit tout ce que le journal contient.
   await emit(
@@ -371,8 +391,9 @@ export async function build(options: BuildOptions): Promise<BuildResult> {
     page(
       `<div class="wrap wire">
       <div class="wire-head"><h1 class="wire-title">Plan du site</h1></div>
-      <p class="section-intro">${listed.length} article${listed.length > 1 ? 's' : ''} publié${listed.length > 1 ? 's' : ''}, ${bundle.taxonomies.sections.length} sections, ${bundle.authors.length} signatures.</p>
+      <p class="section-intro">${listed.length} article${listed.length > 1 ? 's' : ''} sur le fil, ${paged.length} dans les <a href="${basePath}/archives/">archives</a>, ${bundle.taxonomies.sections.length} sections, ${bundle.authors.length} signatures.</p>
       <ul>
+        <li><a href="${basePath}/archives/">Archives</a> — registre chronologique complet</li>
         ${listed.map((a) => `<li><a href="${basePath}/articles/${esc(a.slug)}/">${esc(a.title)}</a></li>`).join('\n        ')}
       </ul>
     </div>`,
@@ -380,6 +401,7 @@ export async function build(options: BuildOptions): Promise<BuildResult> {
       ctx,
     ),
   );
+  urls.push({ loc: `${base}/plan-du-site/` });
   pages++;
 
   // Flux, plan XML, robots

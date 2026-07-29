@@ -223,7 +223,13 @@ test('6. les brouillons ne fuitent jamais vers le site publié', async (t) => {
   const out = path.join(root, 'dist');
   await build({ config: configFor(root), bundle, outDir: out, logger: silent });
 
-  for (const file of ['index.html', 'feed.xml', 'sitemap.xml', 'plan-du-site/index.html']) {
+  for (const file of [
+    'index.html',
+    'feed.xml',
+    'sitemap.xml',
+    'plan-du-site/index.html',
+    'archives/index.html',
+  ]) {
     const content = await readFile(path.join(out, file), 'utf8');
     assert.ok(!content.includes('brouillon-budget'), `le brouillon fuit dans ${file}`);
     assert.ok(!content.includes('peigne fin'), `le titre du brouillon fuit dans ${file}`);

@@ -389,6 +389,8 @@ ${content}
     <nav class="site-foot__links" aria-label="Liens de pied de page">
       <a href="${asset('/feed.xml', ctx)}">Flux RSS</a>
       <span class="site-foot__sep" aria-hidden="true">·</span>
+      <a href="${asset('/archives/', ctx)}">Archives</a>
+      <span class="site-foot__sep" aria-hidden="true">·</span>
       <a href="${asset('/plan-du-site/', ctx)}">Plan du site</a>
       <span class="site-foot__sep" aria-hidden="true">·</span>
       <a href="${asset('/auteurs/', ctx)}">L’équipe</a>
@@ -701,6 +703,222 @@ export function authorsIndexPage(authors: Author[], counts: Map<string, number>,
       title: `L’équipe — ${ctx.publication.name}`,
       canonical: `${ctx.publication.siteUrl}/auteurs/`,
       current: asset('/auteurs/', ctx),
+    },
+    ctx,
+  );
+}
+
+// ---------------------------------------------------------------------------
+// Archives (SEO / catalogue chronologique — une seule source, ce journal)
+// ---------------------------------------------------------------------------
+//
+// Sur LE-RADAR, les archives regroupent plusieurs médias avec lien d’origine.
+// Ici le journal *est* la source : chaque fiche renvoie vers /articles/<slug>/,
+// le fil d’accueil reste le « fil vivant », l’archive est le registre durable
+// (published + archived, jamais les brouillons). Lisible sans JavaScript.
+
+function archiveYearOf(article: Article, timeZone: string): number {
+  const iso = article.publishedAt ?? article.updatedAt;
+  const parts = dateParts(iso, timeZone);
+  if (parts?.year) return Number(parts.year);
+  const d = iso ? new Date(iso) : new Date();
+  return Number.isNaN(d.getTime()) ? new Date().getUTCFullYear() : d.getUTCFullYear();
+}
+
+/** Groupement année → articles (années desc., articles déjà triés). */
+export function groupArticlesByYear(articles: Article[], timeZone: string): Array<{ year: number; articles: Article[] }> {
+  const buckets = new Map<number, Article[]>();
+  for (const article of articles) {
+    const year = archiveYearOf(article, timeZone);
+    const list = buckets.get(year);
+    if (list) list.push(article);
+    else buckets.set(year, [article]);
+  }
+  return [...buckets.entries()]
+    .sort((a, b) => b[0] - a[0])
+    .map(([year, list]) => ({ year, articles: list }));
+}
+
+function truncateArchiveExcerpt(text: string | undefined, max = 220): string {
+  const raw = String(text ?? '').replace(/\s+/g, ' ').trim();
+  if (!raw) return '';
+  if (raw.length <= max) return raw;
+  const cut = raw.slice(0, max - 1);
+  const at = cut.lastIndexOf(' ');
+  return `${(at > 80 ? cut.slice(0, at) : cut).trim()}…`;
+}
+
+function archiveRecordHtml(article: Article, ctx: RenderContext): string {
+  const pub = ctx.publication;
+  const href = safeUrl(relative(articleUrl(pub, article), ctx));
+  const dateIso = article.publishedAt ?? article.updatedAt;
+  const dateLabel = formatDate(dateIso, pub.timeZone);
+  const authors = article.authors
+    .map((slug) => ctx.authorsBySlug.get(slug)?.name ?? slug)
+    .filter(Boolean);
+  const section = sectionName(article.section, ctx);
+  const excerpt = truncateArchiveExcerpt(article.excerpt || article.dek);
+  const offWire = article.status === 'archived';
+  const metaBits = [
+    authors.length ? `Par ${authors.map(esc).join(' et ')}` : '',
+    dateLabel ? esc(dateLabel) : '',
+    section ? esc(section.name) : '',
+  ].filter(Boolean);
+  return `<article class="archive-record${offWire ? ' archive-record--off-wire' : ''}">
+  ${section ? `<p class="archive-record__section">${esc(section.name)}</p>` : ''}
+  <h3 class="archive-record__title"><a href="${href}">${esc(article.title)}</a></h3>
+  <p class="archive-record__meta">${metaBits.join(' · ')}${offWire ? ' · <span class="archive-record__badge">Hors fil</span>' : ''}</p>
+  ${excerpt ? `<p class="archive-record__excerpt">${esc(excerpt)}</p>` : ''}
+  <p class="archive-record__origin"><a href="${href}">Lire l’article <span aria-hidden="true">→</span></a></p>
+</article>`;
+}
+
+function archivesJsonLd(
+  ctx: RenderContext,
+  options: { name: string; url: string; description: string; articles: Article[] },
+): string {
+  const pub = ctx.publication;
+  const base = pub.siteUrl.replace(/\/+$/, '');
+  const items = options.articles.slice(0, 100).map((article, i) => {
+    const url = articleUrl(pub, article);
+    const authors = article.authors
+      .map((slug) => ctx.authorsBySlug.get(slug)?.name ?? slug)
+      .filter(Boolean);
+    return {
+      '@type': 'ListItem',
+      position: i + 1,
+      url,
+      item: {
+        '@type': 'NewsArticle',
+        headline: article.title,
+        url,
+        datePublished: article.publishedAt ?? article.updatedAt,
+        dateModified: article.updatedAt,
+        inLanguage: pub.lang || 'fr',
+        ...(authors.length
+          ? { author: authors.map((name) => ({ '@type': 'Person', name })) }
+          : {}),
+        publisher: {
+          '@type': 'NewsMediaOrganization',
+          name: pub.name,
+          url: `${base}/`,
+        },
+      },
+    };
+  });
+  return JSON.stringify({
+    '@context': 'https://schema.org',
+    '@type': 'CollectionPage',
+    name: options.name,
+    url: options.url,
+    description: options.description,
+    isPartOf: { '@type': 'WebSite', name: pub.name, url: `${base}/` },
+    publisher: { '@type': 'NewsMediaOrganization', name: pub.name, url: `${base}/` },
+    mainEntity: {
+      '@type': 'ItemList',
+      numberOfItems: options.articles.length,
+      itemListElement: items,
+    },
+  }).replace(/</g, '\\u003c');
+}
+
+/**
+ * Catalogue chronologique du journal — tous les articles qui ont une page
+ * publique (published + archived), regroupés par année de publication.
+ */
+export function archivesPage(articles: Article[], ctx: RenderContext): string {
+  const pub = ctx.publication;
+  const base = pub.siteUrl.replace(/\/+$/, '');
+  const canonical = `${base}/archives/`;
+  const groups = groupArticlesByYear(articles, pub.timeZone);
+  const title = `Archives — ${pub.name}`;
+  const description =
+    `Archives de ${pub.name}` +
+    (pub.institution ? `, journal étudiant de ${pub.institution}` : '') +
+    `. ${articles.length} article${articles.length > 1 ? 's' : ''} classé${articles.length > 1 ? 's' : ''} par année, avec date, signature et lien vers chaque page.`;
+
+  const yearNav = groups.length
+    ? `<nav class="archive-year-nav" aria-label="Années d’archives">
+      ${groups
+        .map(
+          (g) =>
+            `<a href="${asset(`/archives/${g.year}/`, ctx)}">${g.year}<span class="archive-year-nav__count">${g.articles.length}</span></a>`,
+        )
+        .join('\n      ')}
+    </nav>`
+    : '';
+
+  const body = groups.length
+    ? groups
+        .map(
+          (g) => `<section class="archive-year" id="annee-${g.year}" aria-labelledby="archive-y-${g.year}">
+  <div class="archive-year__head">
+    <h2 class="archive-year__title" id="archive-y-${g.year}"><a href="${asset(`/archives/${g.year}/`, ctx)}">${g.year}</a></h2>
+    <span class="archive-year__count">${g.articles.length} article${g.articles.length > 1 ? 's' : ''}</span>
+  </div>
+  ${g.articles.map((a) => archiveRecordHtml(a, ctx)).join('\n  ')}
+</section>`,
+        )
+        .join('\n')
+    : '<p class="empty">Aucun article dans les archives pour le moment.</p>';
+
+  return page(
+    `<div class="wrap wire wire--archives">
+  <nav class="archive-crumbs" aria-label="Fil d’Ariane"><a href="${asset('/', ctx)}">Accueil</a><span class="archive-crumbs__sep" aria-hidden="true">›</span><span aria-current="page">Archives</span></nav>
+  <div class="wire-head">
+    <h1 class="wire-title">Archives</h1>
+    <span class="wire-status">${articles.length} article${articles.length > 1 ? 's' : ''}</span>
+  </div>
+  <p class="section-intro">${esc(description)}</p>
+  <p class="archive-lead">Le fil d’accueil met en avant l’actualité récente. Cette page est le registre complet du journal : chaque article conserve son adresse permanente, y compris ceux retirés du fil (« hors fil »).</p>
+  ${yearNav}
+  ${body}
+</div>`,
+    {
+      title,
+      description,
+      canonical,
+      current: asset('/archives/', ctx),
+      jsonLd: archivesJsonLd(ctx, { name: title, url: canonical, description, articles }),
+    },
+    ctx,
+  );
+}
+
+/** Une année d’archives — page ciblée pour le référencement et la navigation. */
+export function archivesYearPage(year: number, articles: Article[], ctx: RenderContext): string {
+  const pub = ctx.publication;
+  const base = pub.siteUrl.replace(/\/+$/, '');
+  const canonical = `${base}/archives/${year}/`;
+  const title = `Archives ${year} — ${pub.name}`;
+  const description =
+    `Articles de ${pub.name} publiés en ${year}` +
+    (pub.institution ? ` (${pub.institution})` : '') +
+    `. ${articles.length} article${articles.length > 1 ? 's' : ''}.`;
+
+  const body = articles.length
+    ? articles.map((a) => archiveRecordHtml(a, ctx)).join('\n  ')
+    : '<p class="empty">Aucun article pour cette année.</p>';
+
+  return page(
+    `<div class="wrap wire wire--archives">
+  <nav class="archive-crumbs" aria-label="Fil d’Ariane"><a href="${asset('/', ctx)}">Accueil</a><span class="archive-crumbs__sep" aria-hidden="true">›</span><a href="${asset('/archives/', ctx)}">Archives</a><span class="archive-crumbs__sep" aria-hidden="true">›</span><span aria-current="page">${year}</span></nav>
+  <div class="wire-head">
+    <h1 class="wire-title">Archives ${year}</h1>
+    <span class="wire-status">${articles.length} article${articles.length > 1 ? 's' : ''}</span>
+  </div>
+  <p class="section-intro">${esc(description)}</p>
+  <p class="archive-back"><a href="${asset('/archives/', ctx)}">← Toutes les années</a></p>
+  <section class="archive-year" aria-label="Articles de ${year}">
+  ${body}
+  </section>
+</div>`,
+    {
+      title,
+      description,
+      canonical,
+      current: asset('/archives/', ctx),
+      jsonLd: archivesJsonLd(ctx, { name: title, url: canonical, description, articles }),
     },
     ctx,
   );
