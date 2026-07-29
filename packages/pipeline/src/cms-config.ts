@@ -139,7 +139,21 @@ export function buildCmsConfig(options: CmsConfigOptions): Record<string, unknow
               ] },
               { name: 'weather', label: 'Météo', widget: 'object', fields: [
                 { name: 'enabled', label: 'Afficher la météo', widget: 'boolean', default: false },
-                { name: 'localities', label: 'Localités (maximum quatre)', widget: 'list', required: false },
+                {
+                  name: 'localities',
+                  label: 'Localités (maximum quatre)',
+                  widget: 'list',
+                  required: false,
+                  summary: '{{fields.name}}',
+                  fields: [
+                    { name: 'name', label: 'Nom affiché', widget: 'string', required: true },
+                    { name: 'latitude', label: 'Latitude (OSM / WGS84)', widget: 'number', required: false, value_type: 'float' },
+                    { name: 'longitude', label: 'Longitude (OSM / WGS84)', widget: 'number', required: false, value_type: 'float' },
+                    { name: 'meteomediaSlug', label: 'Slug MétéoMédia (ex. quebec)', widget: 'string', required: false },
+                    { name: 'envcanUrl', label: 'URL Environnement Canada (optionnel)', widget: 'string', required: false },
+                    { name: 'osmId', label: 'Identifiant OpenStreetMap (optionnel)', widget: 'string', required: false },
+                  ],
+                },
               ] },
               { name: 'tools', label: 'Outils LE-RADAR.ca', widget: 'object', fields: [
                 { name: 'pomodoro', label: 'Pomodoro', widget: 'boolean', default: true },

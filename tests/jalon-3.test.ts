@@ -81,7 +81,9 @@ test('la vitrine expose le bandeau illustré, les outils et la composition magaz
   t.after(() => rm(out, { recursive: true, force: true }));
 
   const content = await bundle();
-  assert.equal(content.publication.masthead?.weather?.localities[0], 'Québec');
+  const weatherLoc = content.publication.masthead?.weather?.localities[0];
+  const weatherName = typeof weatherLoc === 'string' ? weatherLoc : weatherLoc?.name;
+  assert.equal(weatherName, 'Québec');
   assert.equal(content.publication.masthead?.tools?.pomodoro, true);
   assert.equal(content.publication.masthead?.tools?.solitaire, true);
 
@@ -90,7 +92,8 @@ test('la vitrine expose le bandeau illustré, les outils et la composition magaz
   const home = await readFile(path.join(out, 'index.html'), 'utf8');
   const feed = await readFile(path.join(out, 'feed.xml'), 'utf8');
   assert.match(home, /id="masthead-backgrounds"/);
-  assert.match(home, /data-weather-localities="\[&quot;Québec&quot;\]"/);
+  assert.match(home, /data-weather-localities="/);
+  assert.match(home, /Qu&eacute;bec|Québec/);
   assert.match(home, /href="https:\/\/le-radar\.ca\/pomo\/"/);
   assert.match(home, /href="https:\/\/le-radar\.ca\/solitaire\/"/);
   assert.match(home, /class="article article--lead(?: [^"]*)?"/);

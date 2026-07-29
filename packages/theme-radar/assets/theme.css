@@ -691,6 +691,13 @@ body.with-radio .masthead--illustrated {
   -webkit-backdrop-filter: blur(10px) saturate(1.06);
   text-decoration: none;
   box-sizing: border-box;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+}
+a.weather-chip:focus-visible,
+a.masthead-weather__city:focus-visible {
+  outline: 2px solid color-mix(in srgb, var(--weather-tone, #c8102e) 70%, #fff);
+  outline-offset: 2px;
 }
 .masthead--illustrated .weather-chip,
 .masthead--illustrated .masthead-weather__city {

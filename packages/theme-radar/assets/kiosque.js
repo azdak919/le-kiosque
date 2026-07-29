@@ -498,41 +498,138 @@
     return '#8fa3b0';
   }
 
+  /**
+   * Normalise une localité YAML (string ou objet CMS).
+   * Coords optionnelles = OpenStreetMap / Open-Meteo ; slugs optionnels = liens officiels.
+   */
+  function normalizeWeatherLocality(raw) {
+    if (typeof raw === 'string') return { name: raw.trim() };
+    if (!raw || typeof raw !== 'object') return null;
+    var name = String(raw.name || '').trim();
+    if (!name) return null;
+    var lat = Number(raw.latitude);
+    var lon = Number(raw.longitude);
+    return {
+      name: name,
+      latitude: Number.isFinite(lat) ? lat : undefined,
+      longitude: Number.isFinite(lon) ? lon : undefined,
+      meteomediaSlug: raw.meteomediaSlug ? String(raw.meteomediaSlug).trim() : '',
+      envcanUrl: raw.envcanUrl ? String(raw.envcanUrl).trim() : '',
+      osmId: raw.osmId != null && raw.osmId !== '' ? String(raw.osmId) : '',
+    };
+  }
+
+  /** Slug MétéoMédia (même algorithme que LE-RADAR weatherLocationSlug). */
+  function weatherLocationSlug(name, override) {
+    if (override) return String(override).replace(/^\/+|\/+$/g, '');
+    return String(name || '')
+      .normalize('NFD')
+      .replace(/[\u0300-\u036f]/g, '')
+      .replace(/[\u2019\u0027`]/g, '')
+      .replace(/[–—]/g, '-')
+      .toLowerCase()
+      .replace(/[^a-z0-9]+/g, '-')
+      .split('-')
+      .filter(Boolean)
+      .join('-');
+  }
+
+  function meteomediaUrl(name, slugOverride) {
+    var slug = weatherLocationSlug(name, slugOverride);
+    if (!slug) return '';
+    return 'https://www.meteomedia.com/fr/ville/ca/quebec/' + slug + '/actuelle';
+  }
+
+  /** Page ville Environnement Canada (coords WGS84 — API location). */
+  function envcanUrl(lat, lon, override) {
+    if (override && /^https:\/\//i.test(override)) return override;
+    if (!Number.isFinite(lat) || !Number.isFinite(lon)) return '';
+    return 'https://weather.gc.ca/fr/location/index.html?coords='
+      + encodeURIComponent(Number(lat).toFixed(4) + ',' + Number(lon).toFixed(4));
+  }
+
   function initMastheadWeather() {
     var host = document.querySelector('[data-weather-localities]');
     if (!host || typeof fetch !== 'function') return;
     var localities = [];
-    try { localities = JSON.parse(host.dataset.weatherLocalities || '[]').slice(0, 4); } catch (_) {}
+    try {
+      localities = JSON.parse(host.dataset.weatherLocalities || '[]')
+        .map(normalizeWeatherLocality)
+        .filter(Boolean)
+        .slice(0, 4);
+    } catch (_) {}
+    if (!localities.length) return;
     var meteoBase = host.dataset.meteoconsBase || '';
     if (!meteoBase) {
       var tokens = document.querySelector('link[href*="tokens.css"]');
       if (tokens) meteoBase = tokens.href.replace(/tokens\.css.*$/, 'meteocons/animated/');
       else meteoBase = 'assets/meteocons/animated/';
     }
-    Promise.all(localities.map(async function (name) {
-      var cacheKey = 'kiosque-weather:' + name.toLowerCase();
+
+    Promise.all(localities.map(async function (loc) {
+      var cacheKey = 'kiosque-weather:v2:' + loc.name.toLowerCase();
       try {
         var cached = JSON.parse(localStorage.getItem(cacheKey) || 'null');
         if (cached && Date.now() - cached.savedAt < 30 * 60 * 1000) return cached.value;
       } catch (_) {}
-      var geocode = await fetch('https://geocoding-api.open-meteo.com/v1/search?count=1&language=fr&countryCode=CA&name=' + encodeURIComponent(name)).then(function (r) { if (!r.ok) throw new Error('geocoding'); return r.json(); });
-      var place = geocode.results && geocode.results[0];
-      if (!place) throw new Error('locality');
-      var forecast = await fetch('https://api.open-meteo.com/v1/forecast?current=temperature_2m,weather_code,is_day&timezone=auto&latitude=' + encodeURIComponent(place.latitude) + '&longitude=' + encodeURIComponent(place.longitude)).then(function (r) { if (!r.ok) throw new Error('forecast'); return r.json(); });
+
+      var lat = loc.latitude;
+      var lon = loc.longitude;
+      var displayName = loc.name;
+      // Géocodage Open-Meteo (données OpenStreetMap) si le CMS n’a pas posé de coords.
+      if (!Number.isFinite(lat) || !Number.isFinite(lon)) {
+        var geocode = await fetch(
+          'https://geocoding-api.open-meteo.com/v1/search?count=1&language=fr&countryCode=CA&name='
+            + encodeURIComponent(loc.name),
+        ).then(function (r) { if (!r.ok) throw new Error('geocoding'); return r.json(); });
+        var place = geocode.results && geocode.results[0];
+        if (!place) throw new Error('locality');
+        lat = place.latitude;
+        lon = place.longitude;
+        displayName = place.name || loc.name;
+      }
+
+      var forecast = await fetch(
+        'https://api.open-meteo.com/v1/forecast?current=temperature_2m,weather_code,is_day&timezone=auto&latitude='
+          + encodeURIComponent(lat) + '&longitude=' + encodeURIComponent(lon),
+      ).then(function (r) { if (!r.ok) throw new Error('forecast'); return r.json(); });
+
       var value = {
-        name: place.name || name,
+        name: displayName,
         temperature: Math.round(forecast.current.temperature_2m),
         code: Number(forecast.current.weather_code),
         isDay: Number(forecast.current.is_day),
+        latitude: lat,
+        longitude: lon,
+        envcan: envcanUrl(lat, lon, loc.envcanUrl),
+        meteomedia: meteomediaUrl(displayName, loc.meteomediaSlug),
+        osmId: loc.osmId || '',
       };
       try { localStorage.setItem(cacheKey, JSON.stringify({ savedAt: Date.now(), value: value })); } catch (_) {}
       return value;
     })).then(function (values) {
       values.forEach(function (value) {
-        // Même vocabulaire de classes que LE-RADAR (villes secondaires / ardoise).
-        var chip = document.createElement('span');
+        // Lien principal = Environnement Canada ; MétéoMédia associé (title + data-).
+        var href = value.envcan || value.meteomedia || '#';
+        var chip = document.createElement(href !== '#' ? 'a' : 'span');
         chip.className = 'weather-chip masthead-weather__city';
         chip.style.setProperty('--weather-tone', weatherTone(value.code));
+        if (chip.tagName === 'A') {
+          chip.href = href;
+          chip.target = '_blank';
+          chip.rel = 'noopener noreferrer';
+          var titleParts = ['Prévisions Environnement Canada — ' + value.name];
+          if (value.meteomedia) titleParts.push('MétéoMédia : ' + value.meteomedia);
+          chip.title = titleParts.join(' · ');
+          chip.setAttribute('aria-label', 'Météo à ' + value.name + ' — ouvrir Environnement Canada');
+          if (value.meteomedia) chip.dataset.meteomedia = value.meteomedia;
+          if (value.envcan) chip.dataset.envcan = value.envcan;
+          if (Number.isFinite(value.latitude) && Number.isFinite(value.longitude)) {
+            chip.dataset.lat = String(value.latitude);
+            chip.dataset.lon = String(value.longitude);
+          }
+          if (value.osmId) chip.dataset.osmId = value.osmId;
+        }
         var img = document.createElement('img');
         img.className = 'weather-icon-meteocon';
         img.src = meteoBase + weatherIconName(value.code, value.isDay) + '.svg';

@@ -267,7 +267,20 @@ export function validatePublication(pub: Publication, path = 'publication'): Iss
   const localities = pub.masthead?.weather?.localities ?? [];
   if (localities.length > 4) err(issues, `${path}.masthead.weather.localities`, 'quatre localités maximum');
   for (const [i, locality] of localities.entries()) {
-    if (!locality.trim()) err(issues, `${path}.masthead.weather.localities[${i}]`, 'localité vide');
+    const name = typeof locality === 'string' ? locality : locality?.name;
+    if (!String(name ?? '').trim()) {
+      err(issues, `${path}.masthead.weather.localities[${i}]`, 'localité vide');
+      continue;
+    }
+    if (locality && typeof locality === 'object') {
+      const { latitude: lat, longitude: lon } = locality;
+      if (lat !== undefined && (!Number.isFinite(lat) || lat < -90 || lat > 90)) {
+        err(issues, `${path}.masthead.weather.localities[${i}].latitude`, 'latitude invalide');
+      }
+      if (lon !== undefined && (!Number.isFinite(lon) || lon < -180 || lon > 180)) {
+        err(issues, `${path}.masthead.weather.localities[${i}].longitude`, 'longitude invalide');
+      }
+    }
   }
   for (const [i, image] of (pub.masthead?.backgrounds?.images ?? []).entries()) {
     issues.push(...validateMedia(image, `${path}.masthead.backgrounds.images[${i}]`));

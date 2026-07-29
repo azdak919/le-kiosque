@@ -234,6 +234,25 @@ export interface Governance {
   recoveryContacts?: string[];
 }
 
+/**
+ * Localité météo du mât.
+ * - string : nom seul (géocodage Open-Meteo / OSM au navigateur)
+ * - objet  : coords et slugs optionnels (édition CMS / OpenStreetMap)
+ */
+export type WeatherLocality = string | {
+  name: string;
+  /** Latitude WGS84 (OSM / Open-Meteo). */
+  latitude?: number;
+  /** Longitude WGS84. */
+  longitude?: number;
+  /** Slug MétéoMédia (ex. « quebec », « vaudreuil-dorion »). */
+  meteomediaSlug?: string;
+  /** URL Environnement Canada si connue (sinon dérivée des coords). */
+  envcanUrl?: string;
+  /** Identifiant OSM optionnel (audit / admin carte). */
+  osmId?: string | number;
+};
+
 /** Le journal lui-même. */
 export interface Publication {
   id: ID;
@@ -264,8 +283,12 @@ export interface Publication {
     };
     weather?: {
       enabled?: boolean;
-      /** Noms saisis par la rédaction; le navigateur fait le géocodage. */
-      localities: string[];
+      /**
+       * Localités météo (max. 4). Chaîne simple ou objet enrichi :
+       * coords OSM, slug MétéoMédia, URL Environnement Canada.
+       * Sans coords, le navigateur géocode via Open-Meteo (données OSM).
+       */
+      localities: WeatherLocality[];
     };
     tools?: {
       pomodoro?: boolean;

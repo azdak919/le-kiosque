@@ -35,6 +35,7 @@ import {
   type SourceAttribution,
   type Tag,
   type Taxonomies,
+  type WeatherLocality,
 } from '../../../core/src/model.ts';
 import type {
   ContentSource,
@@ -114,6 +115,50 @@ function list(v: unknown): string[] {
   if (Array.isArray(v)) return v.map(str).filter((x): x is string => Boolean(x));
   const one = str(v);
   return one ? [one] : [];
+}
+
+/** Localités météo : string ou objet { name, latitude, longitude, … }. */
+function weatherLocalities(v: unknown): WeatherLocality[] {
+  if (!Array.isArray(v)) {
+    const one = str(v);
+    return one ? [one] : [];
+  }
+  const out: WeatherLocality[] = [];
+  for (const item of v) {
+    if (typeof item === 'string') {
+      const name = item.trim();
+      if (name) out.push(name);
+      continue;
+    }
+    if (!item || typeof item !== 'object') continue;
+    const rec = item as Record<string, unknown>;
+    const name = str(rec.name);
+    if (!name) continue;
+    const latitude = finiteNumber(rec.latitude);
+    const longitude = finiteNumber(rec.longitude);
+    const meteomediaSlug = str(rec.meteomediaSlug);
+    const envcanUrl = str(rec.envcanUrl);
+    const osmId = rec.osmId !== undefined && rec.osmId !== null ? (str(rec.osmId) ?? rec.osmId as string | number) : undefined;
+    if (
+      latitude === undefined
+      && longitude === undefined
+      && !meteomediaSlug
+      && !envcanUrl
+      && osmId === undefined
+    ) {
+      out.push(name);
+      continue;
+    }
+    out.push({
+      name,
+      ...(latitude !== undefined ? { latitude } : {}),
+      ...(longitude !== undefined ? { longitude } : {}),
+      ...(meteomediaSlug ? { meteomediaSlug } : {}),
+      ...(envcanUrl ? { envcanUrl } : {}),
+      ...(osmId !== undefined ? { osmId } : {}),
+    });
+  }
+  return out.slice(0, 4);
 }
 
 function finiteNumber(v: unknown): number | undefined {
@@ -304,7 +349,7 @@ export class MarkdownSource implements ContentSource<MarkdownConfig> {
             },
             weather: {
               enabled: weather.enabled === undefined ? false : Boolean(weather.enabled),
-              localities: list(weather.localities).slice(0, 4),
+              localities: weatherLocalities(weather.localities),
             },
             tools: {
               pomodoro: tools.pomodoro === undefined ? true : Boolean(tools.pomodoro),
