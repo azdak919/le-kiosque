@@ -466,7 +466,28 @@ a { color: inherit; }
 .masthead--illustrated {
   color: #fff;
   border-bottom: 1px solid rgba(0, 0, 0, 0.18);
-  min-height: clamp(168px, 22vw, 220px);
+  /*
+   * Hauteur de bandeau contrôlée — même ordre de grandeur que LE-RADAR
+   * (MASTHEAD_AR ≈ 3,5–3,8). Sans max-height, le wordmark + utilitaires
+   * étiraient la photo et montraient trop de ciel / parking.
+   */
+  --masthead-ar: 3.55;
+  height: clamp(156px, calc(100vw / var(--masthead-ar)), 214px);
+  min-height: 156px;
+  max-height: 214px;
+  padding: 10px 0 12px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  box-sizing: border-box;
+}
+.masthead--illustrated > .wrap {
+  flex: 1 1 auto;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  min-height: 0;
+  width: 100%;
 }
 /* Jointure mât → radio : pas de filet clair (LE-RADAR). Classe posée au build. */
 body.with-radio .masthead--illustrated {
@@ -477,6 +498,18 @@ body.with-radio .masthead--illustrated {
 .masthead--illustrated .masthead-meta {
   color: #fff;
   text-shadow: 0 1px 2px rgba(0, 0, 0, 0.55), 0 0 18px rgba(0, 0, 0, 0.25);
+}
+/* Wordmark un cran plus compact pour tenir dans le bandeau fixe. */
+.masthead--illustrated .wordmark {
+  font-size: clamp(1.85rem, 5.4vw + 0.2rem, 3.35rem);
+}
+.masthead--illustrated .masthead-tagline {
+  margin-top: 4px;
+  font-size: 0.78rem;
+}
+.masthead--illustrated .masthead-utility {
+  padding-bottom: 6px;
+  min-height: 0;
 }
 .masthead-utility {
   min-height: 42px;
@@ -683,7 +716,14 @@ body.with-radio .masthead--illustrated {
 
 @media (max-width: 720px) {
   .masthead { min-height: 0; padding: 10px 0 12px; }
-  .masthead-utility { grid-template-columns: 1fr auto; padding-bottom: 18px; }
+  .masthead--illustrated {
+    --masthead-ar: 2.85;
+    height: clamp(148px, calc(100vw / var(--masthead-ar)), 196px);
+    max-height: 196px;
+    padding: 8px 0 10px;
+  }
+  .masthead-utility { grid-template-columns: 1fr auto; padding-bottom: 8px; }
+  .masthead--illustrated .masthead-utility { padding-bottom: 4px; }
   .masthead-weather { grid-column: 1 / -1; grid-row: 2; order: 3; }
   .masthead-tools { grid-column: 2; grid-row: 1; gap: 4px; }
   .masthead-tool { width: 28px; height: 28px; }

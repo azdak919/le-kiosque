@@ -53,6 +53,122 @@
     setInterval(refresh, 30000);
   }
 
+  /**
+   * Cadrage vertical auto pour object-fit:cover — port simplifié de
+   * LE-RADAR (quebec-backgrounds.js#computeBestFocalY, mode campus).
+   * Retourne focalY ∈ [0,1] (0 = haut de l’image, 1 = bas) pour
+   * object-position: 50% {focalY*100}%.
+   */
+  function computeMastheadFocalY(img, mastheadAr) {
+    var w = img.naturalWidth || 0;
+    var h = img.naturalHeight || 0;
+    if (w < 32 || h < 32) return 0.5;
+    var ar = w / h;
+    var visibleFrac = ar / Math.max(mastheadAr || 3.55, 1.5);
+    if (visibleFrac >= 0.98) return 0.5;
+    visibleFrac = Math.min(0.95, Math.max(0.12, visibleFrac));
+
+    var sampleW = 160;
+    var sampleH = Math.max(48, Math.round(sampleW / ar));
+    var canvas = document.createElement('canvas');
+    canvas.width = sampleW;
+    canvas.height = sampleH;
+    var ctx = canvas.getContext('2d', { willReadFrequently: true });
+    if (!ctx) return 0.5;
+    try { ctx.drawImage(img, 0, 0, sampleW, sampleH); }
+    catch (_) { return 0.5; }
+    var data;
+    try { data = ctx.getImageData(0, 0, sampleW, sampleH).data; }
+    catch (_) { return 0.5; }
+
+    var rowEdge = new Float32Array(sampleH);
+    var rowMean = new Float32Array(sampleH);
+    var rowSky = new Float32Array(sampleH);
+    var rowBuild = new Float32Array(sampleH);
+    for (var y = 0; y < sampleH; y++) {
+      var edge = 0, mean = 0, sky = 0, build = 0;
+      for (var x = 0; x < sampleW; x++) {
+        var i = (y * sampleW + x) * 4;
+        var r = data[i], g = data[i + 1], b = data[i + 2];
+        var L = (0.2126 * r + 0.7152 * g + 0.0722 * b) / 255;
+        mean += L;
+        // Ciel approximatif : bleu-gris clair, saturation faible.
+        if (L > 0.55 && b >= g * 0.9 && b >= r * 0.95) sky += 1;
+        // Masse bâtie : brique/béton/vitrage (pas trop saturé, bords).
+        if (L > 0.18 && L < 0.72) {
+          var mx = Math.max(r, g, b) / 255;
+          var mn = Math.min(r, g, b) / 255;
+          var sat = (mx - mn) / (mx + 1e-6);
+          if (sat < 0.35) build += 1;
+        }
+        if (x > 0) {
+          var j = (y * sampleW + x - 1) * 4;
+          var L0 = (0.2126 * data[j] + 0.7152 * data[j + 1] + 0.0722 * data[j + 2]) / 255;
+          edge += Math.abs(L - L0);
+        }
+        if (y > 0) {
+          var k = ((y - 1) * sampleW + x) * 4;
+          var L1 = (0.2126 * data[k] + 0.7152 * data[k + 1] + 0.0722 * data[k + 2]) / 255;
+          edge += Math.abs(L - L1);
+        }
+      }
+      rowEdge[y] = edge / sampleW;
+      rowMean[y] = mean / sampleW;
+      rowSky[y] = sky / sampleW;
+      rowBuild[y] = build / sampleW;
+    }
+
+    var win = Math.max(4, Math.round(sampleH * visibleFrac));
+    var bestY0 = 0;
+    var bestScore = -1e9;
+    var maxY0 = Math.max(0, sampleH - win);
+    for (var y0 = 0; y0 <= maxY0; y0++) {
+      var e = 0, sk = 0, bd = 0, m = 0;
+      for (var yy = y0; yy < y0 + win; yy++) {
+        e += rowEdge[yy];
+        sk += rowSky[yy];
+        bd += rowBuild[yy];
+        m += rowMean[yy];
+      }
+      e /= win; sk /= win; bd /= win; m /= win;
+      // Campus : structure + un peu de ciel en tête, éviter parking/vase bas.
+      var score = e * 1.35 + bd * 1.1 - Math.max(0, sk - 0.42) * 0.9;
+      // Pénaliser une fenêtre trop basse (souvent parking / herbe).
+      var bottomBias = y0 / Math.max(1, maxY0);
+      score -= Math.max(0, bottomBias - 0.55) * 0.45;
+      // Un peu de ciel en haut de bande est bienvenu.
+      var topSky = 0;
+      for (var t = y0; t < y0 + Math.max(2, Math.round(win * 0.22)); t++) topSky += rowSky[t];
+      topSky /= Math.max(1, Math.round(win * 0.22));
+      if (topSky > 0.12 && topSky < 0.7) score += 0.25;
+      if (score > bestScore) { bestScore = score; bestY0 = y0; }
+    }
+
+    // topFrac = (1 − visibleFrac) · focalY  ⇒  focalY = topFrac / (1 − visibleFrac)
+    var topFrac = bestY0 / sampleH;
+    var denom = 1 - visibleFrac;
+    if (denom < 1e-6) return 0.5;
+    return Math.min(1, Math.max(0, topFrac / denom));
+  }
+
+  function mastheadAspectRatio(masthead) {
+    if (masthead && masthead.clientWidth > 40 && masthead.clientHeight > 20) {
+      return Math.max(2.5, masthead.clientWidth / masthead.clientHeight);
+    }
+    return 3.55;
+  }
+
+  function parseAuthoredFocalY(position) {
+    // "50% 48%" → 0.48 ; null si absent ou purement horizontal.
+    if (!position || typeof position !== 'string') return null;
+    var parts = position.trim().split(/\s+/);
+    if (parts.length < 2) return null;
+    var m = /^([\d.]+)%$/.exec(parts[1]);
+    if (!m) return null;
+    var y = Number(m[1]) / 100;
+    return Number.isFinite(y) ? Math.min(1, Math.max(0, y)) : null;
+  }
+
   function initMastheadBackgrounds() {
     var image = document.querySelector('[data-masthead-background]');
     var data = document.getElementById('masthead-backgrounds');
@@ -62,14 +178,44 @@
     if (!images.length) return;
     var credit = document.querySelector('[data-masthead-credit]');
     var masthead = image.closest('.masthead');
-    image.addEventListener('error', function () { masthead?.classList.add('masthead--image-error'); });
-    image.addEventListener('load', function () { masthead?.classList.remove('masthead--image-error'); });
     var index = Math.floor(Math.random() * images.length);
+
+    function applyPosition(item) {
+      // Auto-cadrage selon le ratio réel du bandeau (LE-RADAR).
+      var authored = parseAuthoredFocalY(item.backgroundPosition);
+      function place() {
+        masthead?.classList.remove('masthead--image-error');
+        var ar = mastheadAspectRatio(masthead);
+        var focalY = 0.5;
+        try {
+          // Les points YAML ~50 % sont des défauts génériques : on affine.
+          // Un focal explicite hors [0.42, 0.58] est respecté (choix éditorial).
+          if (authored != null && (authored < 0.42 || authored > 0.58)) {
+            focalY = authored;
+          } else if (image.naturalWidth > 32) {
+            focalY = computeMastheadFocalY(image, ar);
+            if (authored != null) focalY = authored * 0.25 + focalY * 0.75;
+          } else if (authored != null) {
+            focalY = authored;
+          }
+        } catch (_) {
+          focalY = authored != null ? authored : 0.5;
+        }
+        var pct = Math.round(focalY * 1000) / 10;
+        image.style.objectPosition = '50% ' + pct + '%';
+      }
+      if (image.complete && image.naturalWidth > 0) place();
+      else image.addEventListener('load', place, { once: true });
+    }
+
+    image.addEventListener('error', function () { masthead?.classList.add('masthead--image-error'); });
+
     function show(next) {
       index = (next + images.length) % images.length;
       var item = images[index];
-      image.src = item.src;
-      image.style.objectPosition = item.backgroundPosition || '50% 50%';
+      // Toujours repartir du manifeste (src absolue sous basePath).
+      if (image.getAttribute('src') !== item.src) image.src = item.src;
+      applyPosition(item);
       if (credit) {
         credit.replaceChildren();
         if (item.credit) {
@@ -84,10 +230,19 @@
         }
       }
     }
+
     show(index);
     document.getElementById('masthead-shuffle')?.addEventListener('click', function () {
       show(images.length > 1 ? index + 1 + Math.floor(Math.random() * (images.length - 1)) : 0);
     });
+    // Recadrer si le bandeau change de taille (rotation, redimensionnement).
+    var resizeTimer;
+    window.addEventListener('resize', function () {
+      clearTimeout(resizeTimer);
+      resizeTimer = setTimeout(function () {
+        if (images[index]) applyPosition(images[index]);
+      }, 160);
+    }, { passive: true });
   }
 
   /** Mêmes libellés de fichier que LE-RADAR (assets/meteocons/animated). */
