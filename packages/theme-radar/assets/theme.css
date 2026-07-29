@@ -477,21 +477,87 @@ body.with-radio .nav {
   .is-marquee > span { animation: none; }
 }
 
-/* ─────────────── PIED DE PAGE ─────────────── */
+/* ─────────────── PIED DE PAGE (inspiré LE-RADAR site-foot) ─────────────── */
 
+.site-foot,
 .footer {
-  border-top: 2px solid var(--rule-strong);
-  padding: 26px 0 50px;
+  margin-top: 44px;
+  padding: 28px 0 48px;
+  border-top: 1px solid var(--rule);
   font-size: 0.84rem;
   color: var(--muted);
+  line-height: 1.55;
 }
-.footer p { margin: 0 0 8px; }
-.footer a { color: var(--ink-soft); }
-.footer a:hover { color: var(--accent); }
+.site-foot a,
+.footer a {
+  color: var(--ink-soft);
+  text-decoration: none;
+  font-weight: 600;
+}
+.site-foot a:hover,
+.footer a:hover {
+  color: var(--accent);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+.site-foot__brand {
+  margin: 0 0 16px;
+}
+.site-foot__wordmark {
+  margin: 0 0 4px;
+  font-family: var(--serif);
+  font-size: 1.2rem;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+  line-height: 1.2;
+  color: var(--ink);
+}
+.site-foot__signature {
+  margin: 0;
+  max-width: 52ch;
+  font-size: 0.9rem;
+  line-height: 1.45;
+  color: var(--ink-soft);
+}
+.site-foot__links {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 4px 8px;
+  margin: 0 0 18px;
+  font-size: 0.88rem;
+}
+.site-foot__sep {
+  color: var(--rule-strong);
+  opacity: 0.45;
+  user-select: none;
+}
+.site-foot__credit {
+  margin: 0;
+  padding-top: 16px;
+  border-top: 1px solid var(--rule);
+}
+.site-foot__contact {
+  margin: 0 0 8px;
+  font-size: 0.86rem;
+  color: var(--muted);
+}
+.site-foot__legal {
+  margin: 0 0 8px;
+  font-size: 0.8rem;
+  line-height: 1.5;
+  color: var(--muted);
+}
+.site-foot__built,
 .footer-built {
-  margin-top: 14px;
-  font-size: 12px;
-  opacity: 0.85;
+  margin: 10px 0 0;
+  font-size: 0.75rem;
+  line-height: 1.45;
+  color: var(--muted);
+  opacity: 0.9;
+}
+.site-foot__built a {
+  font-weight: 600;
 }
 
 /* ─────────────── PAGINATION / LISTES ─────────────── */

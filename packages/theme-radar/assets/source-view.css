@@ -100,14 +100,41 @@
 .article-title a:hover { text-decoration: underline; text-underline-offset: .14em; }
 @media (min-width: 600px) { .article-title { font-size: 1.6rem; } }
 .article-byline {
+  display: block;
   margin: 0 0 6px;
   color: var(--muted);
   font-size: .84rem;
   font-weight: 500;
+  line-height: 1.35;
 }
-.article-byline .article-author { margin-inline-start: .35em; color: var(--ink); font-weight: 600; }
+.article-byline__label {
+  display: inline;
+  margin: 0;
+  margin-inline-end: 0.3em;
+  font-weight: 500;
+  color: var(--muted);
+  white-space: nowrap;
+}
+.article-byline__sep {
+  display: inline;
+  margin: 0;
+  font-weight: 500;
+  color: var(--muted);
+  white-space: pre-wrap;
+}
+.article-byline .article-author {
+  display: inline;
+  margin: 0;
+  padding: 0;
+  color: var(--ink);
+  font-weight: 600;
+}
 .article-byline a.article-author { text-decoration: none; }
-.article-byline a.article-author:hover { color: var(--accent); text-decoration: underline; }
+.article-byline a.article-author:hover {
+  color: var(--accent);
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
 .article-brief {
   margin: 0;
   color: var(--ink-soft);

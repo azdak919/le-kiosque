@@ -44,11 +44,19 @@ function authorsMarkup(authors, linkAttributes) {
   const names = authors.map((author) => {
     const name = escapeSourceViewHtml(author?.name || '');
     const attributes = linkAttributes ? `${linkAttributes} ` : '';
-    return author?.href ? `<a class="article-author" ${attributes}href="${escapeSourceViewHtml(author.href)}">${name}</a>` : `<span class="article-author">${name}</span>`;
+    return author?.href
+      ? `<a class="article-author" ${attributes}href="${escapeSourceViewHtml(author.href)}">${name}</a>`
+      : `<span class="article-author">${name}</span>`;
   }).filter(Boolean);
   if (!names.length) return '';
-  const joined = names.length > 1 ? `${names.slice(0, -1).join(', ')} et ${names[names.length - 1]}` : names[0];
-  return `<p class="article-byline">Par ${joined}</p>`;
+  // Libellé + séparateurs en spans : évite les blancs bizarres (margin sur chaque auteur).
+  let joined = names[0];
+  if (names.length === 2) {
+    joined = `${names[0]}<span class="article-byline__sep"> et </span>${names[1]}`;
+  } else if (names.length > 2) {
+    joined = `${names.slice(0, -1).join('<span class="article-byline__sep">, </span>')}<span class="article-byline__sep"> et </span>${names[names.length - 1]}`;
+  }
+  return `<p class="article-byline"><span class="article-byline__label">Par</span> ${joined}</p>`;
 }
 
 /**

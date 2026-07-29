@@ -380,15 +380,38 @@ ${radio}
 <main id="contenu">
 ${content}
 </main>
-<footer class="footer">
+<footer class="site-foot">
   <div class="wrap">
-    <p><strong>${esc(pub.name)}</strong>${pub.founded ? ` — depuis ${esc(pub.founded)}` : ''}. ${esc(pub.institution)}.</p>
-    ${pub.governance.contact ? `<p>Contact : <a href="mailto:${esc(pub.governance.contact)}">${esc(pub.governance.contact)}</a></p>` : ''}
-    <p><a href="${asset('/feed.xml', ctx)}">Flux RSS</a> · <a href="${asset('/plan-du-site/', ctx)}">Plan du site</a>${
-      pub.governance.repo ? ` · <a href="${safeUrl(pub.governance.repo)}">Code source</a>` : ''
-    }</p>
-    ${pub.license ? `<p>Contenus sous licence ${esc(pub.license)}, sauf mention contraire.</p>` : ''}
-    <p class="footer-built">Site statique produit par <a href="https://github.com/kiosque/kiosque">Le Kiosque</a> — socle libre pour les journaux étudiants. © ${ctx.buildYear}</p>
+    <div class="site-foot__brand">
+      <p class="site-foot__wordmark">${esc(pub.name)}</p>
+      <p class="site-foot__signature">${esc(pub.institution)}${pub.founded ? ` · depuis ${esc(pub.founded)}` : ''}${pub.tagline ? ` — ${esc(pub.tagline)}` : ''}</p>
+    </div>
+    <nav class="site-foot__links" aria-label="Liens de pied de page">
+      <a href="${asset('/feed.xml', ctx)}">Flux RSS</a>
+      <span class="site-foot__sep" aria-hidden="true">·</span>
+      <a href="${asset('/plan-du-site/', ctx)}">Plan du site</a>
+      <span class="site-foot__sep" aria-hidden="true">·</span>
+      <a href="${asset('/auteurs/', ctx)}">L’équipe</a>${
+        pub.governance.repo
+          ? `
+      <span class="site-foot__sep" aria-hidden="true">·</span>
+      <a href="${safeUrl(pub.governance.repo)}" rel="noopener">Code source</a>`
+          : ''
+      }
+    </nav>
+    <div class="site-foot__credit">
+      ${
+        pub.governance.contact
+          ? `<p class="site-foot__contact"><a href="mailto:${esc(pub.governance.contact)}">${esc(pub.governance.contact)}</a>${
+              pub.governance.stewardEntity ? ` · ${esc(pub.governance.stewardEntity)}` : ''
+            }</p>`
+          : pub.governance.stewardEntity
+            ? `<p class="site-foot__contact">${esc(pub.governance.stewardEntity)}</p>`
+            : ''
+      }
+      ${pub.license ? `<p class="site-foot__legal">Contenus sous licence ${esc(pub.license)}, sauf mention contraire.</p>` : ''}
+      <p class="site-foot__built">Site statique produit par <a href="https://github.com/azdak919/le-kiosque" rel="noopener">Le Kiosque</a> — socle libre pour les journaux étudiants. © ${ctx.buildYear}</p>
+    </div>
   </div>
 </footer>
 <script src="${asset('/assets/kiosque.js', ctx)}" defer></script>
