@@ -318,13 +318,17 @@
       else image.parentNode.appendChild(incoming);
 
       var settled = false;
+      var fadeStarted = false;
       var timer = 0;
 
       function settle() {
         if (settled) return;
         settled = true;
         window.clearTimeout(timer);
-        commit(item);
+        // Base déjà à jour pendant le fondu ; finaliser crédit/cadrage au besoin.
+        applyPosition(item);
+        updateCredit(item);
+        hasShown = true;
         incoming.remove();
         if (activeTransition && activeTransition.incoming === incoming) {
           activeTransition = null;
@@ -345,18 +349,30 @@
       };
 
       function startFade() {
-        if (settled) return;
+        if (settled || fadeStarted) return;
+        fadeStarted = true;
         masthead?.classList.remove('masthead--image-error');
+        var position;
         try {
-          incoming.style.objectPosition = computeObjectPosition(item, incoming);
+          position = computeObjectPosition(item, incoming);
         } catch (_) {
-          incoming.style.objectPosition = item.backgroundPosition || '50% 50%';
+          position = item.backgroundPosition || '50% 50%';
         }
+        incoming.style.objectPosition = position;
+        // Préparer la couche persistante sous le fondu (évite un flash au settle).
+        if (image.getAttribute('src') !== item.src) image.src = item.src;
+        image.style.objectPosition = position;
+        updateCredit(item);
+        hasShown = true;
+
         incoming.addEventListener('transitionend', function (event) {
           if (event.propertyName === 'opacity') settle();
         }, { once: true });
+        // Double rAF : laisse le navigateur peindre opacity:0 avant d’animer.
         requestAnimationFrame(function () {
-          incoming.classList.add('is-visible');
+          requestAnimationFrame(function () {
+            if (!settled) incoming.classList.add('is-visible');
+          });
         });
         timer = window.setTimeout(settle, 560);
       }
@@ -371,13 +387,10 @@
         commit(item);
       }, { once: true });
 
-      if (incoming.complete && incoming.naturalWidth > 0) {
-        // Cache hit — src déjà en mémoire (rare si src pas encore posé).
-        startFade();
-      } else {
-        incoming.addEventListener('load', startFade, { once: true });
-      }
+      incoming.addEventListener('load', startFade, { once: true });
       incoming.src = item.src;
+      // Cache navigateur : load peut ne pas se re-déclencher si déjà complete.
+      if (incoming.complete && incoming.naturalWidth > 0) startFade();
     }
 
     show(index, { animate: false });
