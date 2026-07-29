@@ -738,13 +738,14 @@ export function authorsIndexPage(authors: Author[], counts: Map<string, number>,
 }
 
 // ---------------------------------------------------------------------------
-// Archives (SEO / catalogue chronologique — une seule source, ce journal)
+// Archives (registre chronologique du journal)
 // ---------------------------------------------------------------------------
 //
-// Sur LE-RADAR, les archives regroupent plusieurs médias avec lien d’origine.
-// Ici le journal *est* la source : chaque fiche renvoie vers /articles/<slug>/,
-// le fil d’accueil reste le « fil vivant », l’archive est le registre durable
-// (published + archived, jamais les brouillons). Lisible sans JavaScript.
+// Différence volontaire avec LE-RADAR : ici le journal héberge *son* contenu
+// sur *son* serveur. Les fiches d’archive gardent donc vignettes, extraits,
+// crédits photo et liens internes vers /articles/<slug>/ — pas un simple
+// renvoi vers un média tiers. Le fil d’accueil reste le « fil vivant » ;
+// published + archived (jamais les brouillons). Lisible sans JavaScript.
 
 function archiveYearOf(article: Article, timeZone: string): number {
   const iso = article.publishedAt ?? article.updatedAt;
@@ -768,38 +769,18 @@ export function groupArticlesByYear(articles: Article[], timeZone: string): Arra
     .map(([year, list]) => ({ year, articles: list }));
 }
 
-function truncateArchiveExcerpt(text: string | undefined, max = 220): string {
-  const raw = String(text ?? '').replace(/\s+/g, ' ').trim();
-  if (!raw) return '';
-  if (raw.length <= max) return raw;
-  const cut = raw.slice(0, max - 1);
-  const at = cut.lastIndexOf(' ');
-  return `${(at > 80 ? cut.slice(0, at) : cut).trim()}…`;
-}
-
+/**
+ * Fiche d’archive riche : même carte « vedette » que le fil (vignette à gauche
+ * si photo, extrait, « Lire la suite »), car le multimédia est local.
+ */
 function archiveRecordHtml(article: Article, ctx: RenderContext): string {
-  const pub = ctx.publication;
-  const href = safeUrl(relative(articleUrl(pub, article), ctx));
-  const dateIso = article.publishedAt ?? article.updatedAt;
-  const dateLabel = formatDate(dateIso, pub.timeZone);
-  const authors = article.authors
-    .map((slug) => ctx.authorsBySlug.get(slug)?.name ?? slug)
-    .filter(Boolean);
-  const section = sectionName(article.section, ctx);
-  const excerpt = truncateArchiveExcerpt(article.excerpt || article.dek);
   const offWire = article.status === 'archived';
-  const metaBits = [
-    authors.length ? `Par ${authors.map(esc).join(' et ')}` : '',
-    dateLabel ? esc(dateLabel) : '',
-    section ? esc(section.name) : '',
-  ].filter(Boolean);
-  return `<article class="archive-record${offWire ? ' archive-record--off-wire' : ''}">
-  ${section ? `<p class="archive-record__section">${esc(section.name)}</p>` : ''}
-  <h3 class="archive-record__title"><a href="${href}">${esc(article.title)}</a></h3>
-  <p class="archive-record__meta">${metaBits.join(' · ')}${offWire ? ' · <span class="archive-record__badge">Hors fil</span>' : ''}</p>
-  ${excerpt ? `<p class="archive-record__excerpt">${esc(excerpt)}</p>` : ''}
-  <p class="archive-record__origin"><a href="${href}">Lire l’article <span aria-hidden="true">→</span></a></p>
-</article>`;
+  // feature = vignette + extrait long ; sans lead, la carte reste textuelle.
+  const card = articleCard(article, ctx, 'feature');
+  return `<div class="archive-entry${offWire ? ' archive-entry--off-wire' : ''}">
+  ${offWire ? '<p class="archive-entry__badge"><span class="archive-record__badge">Hors fil</span></p>' : ''}
+  ${card}
+</div>`;
 }
 
 function archivesJsonLd(
@@ -813,6 +794,11 @@ function archivesJsonLd(
     const authors = article.authors
       .map((slug) => ctx.authorsBySlug.get(slug)?.name ?? slug)
       .filter(Boolean);
+    const imageSrc = article.lead?.src
+      ? article.lead.src.startsWith('http')
+        ? article.lead.src
+        : `${base}${article.lead.src.startsWith('/') ? '' : '/'}${article.lead.src}`
+      : undefined;
     return {
       '@type': 'ListItem',
       position: i + 1,
@@ -824,6 +810,8 @@ function archivesJsonLd(
         datePublished: article.publishedAt ?? article.updatedAt,
         dateModified: article.updatedAt,
         inLanguage: pub.lang || 'fr',
+        ...(article.excerpt ? { description: article.excerpt } : {}),
+        ...(imageSrc ? { image: imageSrc } : {}),
         ...(authors.length
           ? { author: authors.map((name) => ({ '@type': 'Person', name })) }
           : {}),
@@ -851,6 +839,21 @@ function archivesJsonLd(
   }).replace(/</g, '\\u003c');
 }
 
+function archiveYearSectionHtml(year: number, articles: Article[], ctx: RenderContext, linkYear = true): string {
+  const head = linkYear
+    ? `<h2 class="archive-year__title" id="archive-y-${year}"><a href="${asset(`/archives/${year}/`, ctx)}">${year}</a></h2>`
+    : `<h2 class="archive-year__title" id="archive-y-${year}">${year}</h2>`;
+  return `<section class="archive-year" id="annee-${year}" aria-labelledby="archive-y-${year}">
+  <div class="archive-year__head">
+    ${head}
+    <span class="archive-year__count">${articles.length} article${articles.length > 1 ? 's' : ''}</span>
+  </div>
+  <div class="archive-year__list">
+  ${articles.map((a) => archiveRecordHtml(a, ctx)).join('\n  ')}
+  </div>
+</section>`;
+}
+
 /**
  * Catalogue chronologique du journal — tous les articles qui ont une page
  * publique (published + archived), regroupés par année de publication.
@@ -864,7 +867,7 @@ export function archivesPage(articles: Article[], ctx: RenderContext): string {
   const description =
     `Archives de ${pub.name}` +
     (pub.institution ? `, journal étudiant de ${pub.institution}` : '') +
-    `. ${articles.length} article${articles.length > 1 ? 's' : ''} classé${articles.length > 1 ? 's' : ''} par année, avec date, signature et lien vers chaque page.`;
+    `. ${articles.length} article${articles.length > 1 ? 's' : ''} classé${articles.length > 1 ? 's' : ''} par année — textes, photos et liens permanents hébergés ici.`;
 
   const yearNav = groups.length
     ? `<nav class="archive-year-nav" aria-label="Années d’archives">
@@ -878,17 +881,7 @@ export function archivesPage(articles: Article[], ctx: RenderContext): string {
     : '';
 
   const body = groups.length
-    ? groups
-        .map(
-          (g) => `<section class="archive-year" id="annee-${g.year}" aria-labelledby="archive-y-${g.year}">
-  <div class="archive-year__head">
-    <h2 class="archive-year__title" id="archive-y-${g.year}"><a href="${asset(`/archives/${g.year}/`, ctx)}">${g.year}</a></h2>
-    <span class="archive-year__count">${g.articles.length} article${g.articles.length > 1 ? 's' : ''}</span>
-  </div>
-  ${g.articles.map((a) => archiveRecordHtml(a, ctx)).join('\n  ')}
-</section>`,
-        )
-        .join('\n')
+    ? groups.map((g) => archiveYearSectionHtml(g.year, g.articles, ctx, true)).join('\n')
     : '<p class="empty">Aucun article dans les archives pour le moment.</p>';
 
   return page(
@@ -899,7 +892,7 @@ export function archivesPage(articles: Article[], ctx: RenderContext): string {
     <span class="wire-status">${articles.length} article${articles.length > 1 ? 's' : ''}</span>
   </div>
   <p class="section-intro">${esc(description)}</p>
-  <p class="archive-lead">Le fil d’accueil met en avant l’actualité récente. Cette page est le registre complet du journal : chaque article conserve son adresse permanente, y compris ceux retirés du fil (« hors fil »).</p>
+  <p class="archive-lead">Le fil d’accueil met en avant l’actualité récente. Les archives sont le registre complet du journal : chaque article garde sa page, sa photo et son adresse permanente — y compris les pièces retirées du fil (« hors fil »).</p>
   ${yearNav}
   ${body}
 </div>`,
@@ -923,10 +916,10 @@ export function archivesYearPage(year: number, articles: Article[], ctx: RenderC
   const description =
     `Articles de ${pub.name} publiés en ${year}` +
     (pub.institution ? ` (${pub.institution})` : '') +
-    `. ${articles.length} article${articles.length > 1 ? 's' : ''}.`;
+    `. ${articles.length} article${articles.length > 1 ? 's' : ''} avec médias et liens hébergés sur ce site.`;
 
   const body = articles.length
-    ? articles.map((a) => archiveRecordHtml(a, ctx)).join('\n  ')
+    ? archiveYearSectionHtml(year, articles, ctx, false)
     : '<p class="empty">Aucun article pour cette année.</p>';
 
   return page(
@@ -938,9 +931,7 @@ export function archivesYearPage(year: number, articles: Article[], ctx: RenderC
   </div>
   <p class="section-intro">${esc(description)}</p>
   <p class="archive-back"><a href="${asset('/archives/', ctx)}">← Toutes les années</a></p>
-  <section class="archive-year" aria-label="Articles de ${year}">
   ${body}
-  </section>
 </div>`,
     {
       title,
