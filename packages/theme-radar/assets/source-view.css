@@ -430,30 +430,7 @@
   overflow: visible;
   transition: max-height 0.45s ease;
 }
-/*
- * « Réduire » reste accessible : au dépliage le corps s’allonge *au-dessus*
- * du bouton et le scroll est figé (LE-RADAR) → le bouton part hors écran.
- * On le fixe en bas du viewport tant que le fil est ouvert.
- */
-.news-tail.is-expanded {
-  /* Place réservée en bas de liste (le fixed sort du flux). */
-  padding-bottom: 4.5rem;
-}
-.news-tail.is-expanded .news-tail-toggle {
-  position: fixed;
-  left: 50%;
-  bottom: max(12px, env(safe-area-inset-bottom, 0px));
-  z-index: 40;
-  width: min(calc(100% - 2 * var(--pad, 16px)), var(--maxw, 1180px));
-  max-width: calc(100vw - 2 * var(--pad, 16px));
-  margin: 0;
-  transform: translateX(-50%);
-  background: var(--bg);
-  border-color: var(--rule-strong, var(--rule));
-  box-shadow:
-    0 1px 0 color-mix(in srgb, var(--ink) 6%, transparent),
-    0 8px 28px color-mix(in srgb, var(--ink) 14%, transparent);
-}
+/* « Réduire » reste en bas du fil (flux normal), comme LE-RADAR — pas fixed. */
 /*
  * Rangée peek (6e) : n’exposer que titre + auteurs sous le fondu
  * (meta / extrait hors zone — sinon on ne voit que rubrique + date).
