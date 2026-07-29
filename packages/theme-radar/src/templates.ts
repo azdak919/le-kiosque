@@ -604,6 +604,7 @@ ${article.body.html ?? ''}
       canonical: article.canonicalUrl,
       image: lead ? `${pub.siteUrl}${lead.src}` : undefined,
       type: 'article',
+      bodyClass: 'is-article-page',
       jsonLd,
     },
     ctx,
