@@ -243,8 +243,23 @@
 }
 
 /* Même grille magazine que la référence : bloc principal, rail et suite.
-   Les vedettes s’empilent sous la une (colonne unique) — pas côte à côte. */
+   Les vedettes s’empilent sous la une (colonne unique) — pas côte à côte.
+   Les pages article réutilisent la même grille (colonne + En bref). */
 .magazine-layout { display: grid; grid-template-columns: minmax(0, 1.15fr) minmax(300px, 370px); gap: 0; align-items: start; }
+.magazine-layout--article { align-items: start; }
+.magazine-layout--article .article-column {
+  min-width: 0;
+  padding-right: 32px;
+  border-bottom: 1px solid var(--rule);
+}
+.magazine-layout--article .brief-rail--article {
+  position: sticky;
+  top: 12px;
+  align-self: start;
+  max-height: calc(100vh - 24px);
+  overflow-y: auto;
+  overscroll-behavior: contain;
+}
 .news-hero { min-width: 0; padding-right: 32px; border-bottom: 1px solid var(--rule); }
 .news-features {
   display: flex;
@@ -269,6 +284,15 @@
 @media (max-width: 1099px) {
   .magazine-layout { display: block; }
   .news-hero { padding-right: 0; border-bottom: 0; }
+  .magazine-layout--article .article-column { padding-right: 0; border-bottom: 0; }
+  .magazine-layout--article .brief-rail--article {
+    position: static;
+    max-height: none;
+    overflow: visible;
+    margin-top: 28px;
+    padding-top: 8px;
+    border-top: 2px solid var(--rule-strong);
+  }
   .brief-rail { padding-left: 0; border-bottom: 0; border-left: 0; }
 }
 @media (max-width: 720px) {

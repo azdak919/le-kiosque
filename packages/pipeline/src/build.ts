@@ -312,7 +312,9 @@ export async function build(options: BuildOptions): Promise<BuildResult> {
   let redirects = 0;
   for (const article of paged) {
     const withHtml: Article = { ...article, body: { ...article.body, html: renderBody(article) } };
-    await emit(outDir, `/articles/${article.slug}/`, articlePage(withHtml, ctx));
+    // Rail « En bref » : listés (published), du plus récent, hors l’article courant.
+    const related = listed.filter((item) => item.slug !== article.slug);
+    await emit(outDir, `/articles/${article.slug}/`, articlePage(withHtml, ctx, related));
     urls.push({ loc: article.canonicalUrl, lastmod: article.updatedAt });
     pages++;
 

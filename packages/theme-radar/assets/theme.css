@@ -225,6 +225,11 @@ a { color: inherit; }
 /* ─────────────── PAGE D'ARTICLE ─────────────── */
 
 .post { padding: 26px 0 80px; }
+/* Page article dans la grille magazine : pas de largeur artificielle
+   qui décale le texte par rapport au reste du site. */
+.post--in-magazine { padding: 14px 32px 56px 0; max-width: none; width: 100%; box-sizing: border-box; }
+.wire--article { padding-top: 8px; }
+.article-column { min-width: 0; }
 
 .post-eyebrow {
   font-size: 11px;
@@ -688,6 +693,8 @@ body.with-radio .masthead--illustrated {
 
 @media (min-width: 1100px) {
   :root { --maxw: 1180px; --pad: 32px; }
-  .post { max-width: 800px; }
   .wire { padding-bottom: 56px; }
+}
+@media (max-width: 1099px) {
+  .post--in-magazine { padding-right: 0; }
 }

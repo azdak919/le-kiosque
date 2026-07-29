@@ -437,11 +437,22 @@ export function homePage(articles: Article[], ctx: RenderContext): string {
   );
 }
 
-export function articlePage(article: Article, ctx: RenderContext): string {
+/** Nombre d’articles dans le rail « En bref » des pages article. */
+const ARTICLE_BRIEF_COUNT = 7;
+
+/**
+ * Page d’un article.
+ * @param relatedArticles articles listés (déjà triés du plus récent), hors l’article courant —
+ *        alimente le rail « En bref » (particularité Kiosque).
+ */
+export function articlePage(article: Article, ctx: RenderContext, relatedArticles: Article[] = []): string {
   const pub = ctx.publication;
   const section = sectionName(article.section, ctx);
   const date = article.publishedAt ?? article.updatedAt;
   const lead = article.lead;
+  const briefs = relatedArticles
+    .filter((item) => item.slug !== article.slug)
+    .slice(0, ARTICLE_BRIEF_COUNT);
 
   const jsonLd = JSON.stringify({
     '@context': 'https://schema.org',
@@ -476,8 +487,7 @@ export function articlePage(article: Article, ctx: RenderContext): string {
     .map((x) => esc(x))
     .join(' — ');
 
-  return page(
-    `<article class="wrap post">
+  const post = `<article class="post post--in-magazine">
       ${section ? `<a class="post-eyebrow" href="${safeUrl(relative(sectionUrl(pub, section.slug), ctx))}">${esc(section.name)}</a>` : ''}
       <h1 class="post-title">${esc(article.title)}</h1>
       ${article.subtitle ? `<p class="post-subtitle">${esc(article.subtitle)}</p>` : ''}
@@ -512,7 +522,26 @@ export function articlePage(article: Article, ctx: RenderContext): string {
 ${article.body.html ?? ''}
       </div>
       ${categories || tags ? `<div class="post-tags">\n      ${categories}\n      ${tags}\n      </div>` : ''}
-    </article>`,
+    </article>`;
+
+  // Même grille que l’accueil : article à gauche, « En bref » à droite
+  // (articles les plus récents sauf l’article affiché).
+  const body = `<div class="wrap wire wire--article">
+      <div class="magazine-layout magazine-layout--article">
+        <div class="article-column">${post}</div>
+        ${
+          briefs.length
+            ? `<aside class="brief-rail brief-rail--article" aria-label="En bref">
+          <h2>En bref</h2>
+          ${briefs.map((item) => articleCard(item, ctx, 'brief')).join('\n          ')}
+        </aside>`
+            : ''
+        }
+      </div>
+    </div>`;
+
+  return page(
+    body,
     {
       title: `${article.title} — ${pub.name}`,
       description: article.excerpt,
