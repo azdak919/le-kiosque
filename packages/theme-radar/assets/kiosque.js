@@ -869,6 +869,9 @@
       toggle.className = 'news-tail-toggle';
       toggle.innerHTML = '<span class="news-tail-toggle__label">Plus d\'articles</span>';
       toggle.setAttribute('aria-expanded', 'false');
+    }
+    // Toujours en dernier enfant de la section (hors .news-tail-body).
+    if (toggle.parentNode !== tail || tail.lastElementChild !== toggle) {
       tail.appendChild(toggle);
     }
 
@@ -884,10 +887,17 @@
         : ('Plus d\'articles (' + hidden + ')');
     }
     toggle.setAttribute('aria-expanded', newsTailExpanded ? 'true' : 'false');
+    // Accessible même en position fixed (annonce l’action courante).
+    toggle.setAttribute(
+      'aria-label',
+      newsTailExpanded ? 'Réduire la suite du fil' : ('Plus d\'articles, ' + hidden + ' restants')
+    );
 
     if (newsTailExpanded) {
       // Hauteur explicite → none (transition fiable vs max-height:none seul).
-      var fullH = body.scrollHeight;
+      // Forcer un reflow après retrait de .is-tail-overflow (cartes redeviennent pleines).
+      void body.offsetHeight;
+      var fullH = Math.max(body.scrollHeight, body.offsetHeight);
       body.style.maxHeight = fullH + 'px';
       body.style.removeProperty('--news-tail-collapsed-h');
       body.style.removeProperty('--news-tail-peek');
