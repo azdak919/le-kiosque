@@ -172,6 +172,11 @@ radio:
   theme: dark
   position: top
 
+# Photos d’articles : l’algo stock propose une image de la banque locale
+# si la rédaction n’en soumet pas (ne remplace jamais une photo manuelle).
+media:
+  autoStockPhoto: true
+
 founded: '2026'
 license: CC-BY-SA-4.0
 

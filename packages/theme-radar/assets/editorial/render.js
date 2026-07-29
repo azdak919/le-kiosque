@@ -137,23 +137,49 @@ export function renderRoute(bundle, base, pathname, renderBody) {
     };
   }
   if (parts[0] === 'auteurs') {
+    const avatarHtml = (author, size = 88) => {
+      const av = author.avatar;
+      if (av?.src) {
+        const src = safeMediaUrl(av.src) || av.src;
+        const pos = av.focalPoint ? `object-position:${av.focalPoint.x}% ${av.focalPoint.y}%` : 'object-position:50% 35%';
+        return `<span class="author-avatar" style="--author-avatar-size:${size}px"><img class="author-avatar__img" src="${esc(src)}" alt="${esc(av.alt || `Portrait de ${author.name}`)}" width="${size}" height="${size}" loading="lazy" decoding="async" style="${pos}"></span>`;
+      }
+      const initials = String(author.name || '')
+        .split(/\s+/)
+        .filter(Boolean)
+        .slice(0, 2)
+        .map((w) => w[0]?.toUpperCase() || '')
+        .join('');
+      return `<span class="author-avatar" style="--author-avatar-size:${size}px"><span class="author-avatar__initials" aria-hidden="true">${esc(initials || '?')}</span></span>`;
+    };
     if (!parts[1]) {
       const active = bundle.authors.filter((a) => a.active !== false);
       const past = bundle.authors.filter((a) => a.active === false);
       const card = (author, alumni = false) => {
         const n = published.filter((article) => article.authors.includes(author.slug)).length;
-        return `<div class="author-card${alumni ? ' author-card--alumni' : ''}"><div><h2 class="author-name"><a data-editorial-link href="${link(base, `/auteurs/${encodeURIComponent(author.slug)}/`)}">${esc(author.name)}</a>${alumni ? ' <span class="author-badge">Alumni</span>' : ''}</h2>${author.role ? `<p class="author-role">${esc(author.role)}</p>` : ''}${author.cohort ? `<p class="author-cohort">Cohorte ${esc(author.cohort)}</p>` : ''}${author.bio ? `<p class="author-bio">${esc(author.bio)}</p>` : ''}<p class="author-role">${n} article${n > 1 ? 's' : ''}</p></div></div>`;
+        const href = link(base, `/auteurs/${encodeURIComponent(author.slug)}/`);
+        return `<div class="author-card${alumni ? ' author-card--alumni' : ''}"><a class="author-avatar-link" data-editorial-link href="${href}" aria-hidden="true" tabindex="-1">${avatarHtml(author, 88)}</a><div class="author-card__body"><h2 class="author-name"><a data-editorial-link href="${href}">${esc(author.name)}</a>${alumni ? ' <span class="author-badge">Alumni</span>' : ''}</h2>${author.role ? `<p class="author-role">${esc(author.role)}</p>` : ''}${author.cohort ? `<p class="author-cohort">Cohorte ${esc(author.cohort)}</p>` : ''}${author.bio ? `<p class="author-bio">${esc(author.bio)}</p>` : ''}<p class="author-role">${n} article${n > 1 ? 's' : ''}</p></div></div>`;
       };
+      const briefs = published.slice(0, 7);
+      const brief = briefs.length
+        ? `<aside class="brief-rail" aria-label="En bref"><h2>En bref</h2>${briefs.map((item) => articleCard(item, bundle, base, 'brief')).join('')}</aside>`
+        : '';
+      const alumniBlock = past.length
+        ? `<div class="wire-head team-alumni-head"><h2 class="wire-title">Alumni</h2></div><p class="section-intro">Membres ayant gradué ou quitté la rédaction. Leurs signatures restent : une archive ne se réécrit pas quand quelqu’un part.</p>${past.map((a) => card(a, true)).join('')}`
+        : '';
       return {
         title: `L’équipe — ${bundle.publication.name}`,
-        html: `<div class="wrap wire"><div class="wire-head"><h1 class="wire-title">L’équipe</h1><span class="wire-status">${active.length} membre${active.length > 1 ? 's' : ''} · ${past.length} alumni</span></div><p class="section-intro">Rédaction en poste cette année — rôles et cohortes affichés pour chaque signature.</p>${active.map((a) => card(a, false)).join('')}${past.length ? `<div class="wire-head" style="margin-top:34px"><h2 class="wire-title">Alumni</h2></div><p class="section-intro">Membres ayant gradué ou quitté la rédaction. Leurs signatures restent : une archive ne se réécrit pas quand quelqu’un part.</p>${past.map((a) => card(a, true)).join('')}` : ''}</div>`,
+        html: `<div class="wrap wire"><div class="wire-head"><h1 class="wire-title">L’équipe</h1><span class="wire-status">${active.length} membre${active.length > 1 ? 's' : ''} · ${past.length} alumni</span></div><p class="section-intro">Rédaction en poste cette année — rôles et cohortes affichés pour chaque signature.</p><div class="magazine-layout magazine-layout--team"><div class="article-column team-column">${active.map((a) => card(a, false)).join('')}${alumniBlock}</div>${brief}</div></div>`,
       };
     }
     const author = bundle.authors.find((item) => item.slug === decodeURIComponent(parts[1]));
     if (!author) return null;
     const articles = published.filter((article) => article.authors.includes(author.slug));
     const statusNote = author.active === false ? ' · a quitté la rédaction' : '';
-    return { title: `${author.name} — ${bundle.publication.name}`, html: `<div class="wrap wire"><div class="wire-head"><h1 class="wire-title">${esc(author.name)}</h1>${author.active === false ? '<span class="author-badge">Alumni</span>' : ''}</div><p class="author-role">${esc(author.role || '')}${author.cohort ? ` · cohorte ${esc(author.cohort)}` : ''}${statusNote}</p><p class="author-bio">${esc(author.bio || '')}</p>${articles.map((item) => articleCard(item, bundle, base)).join('')}</div>` };
+    return {
+      title: `${author.name} — ${bundle.publication.name}`,
+      html: `<div class="wrap wire"><header class="author-page-head">${avatarHtml(author, 112)}<div class="author-page-head__text"><div class="wire-head" style="margin:0;border:0;padding:0"><h1 class="wire-title">${esc(author.name)}</h1><span class="wire-status">${articles.length} signature${articles.length > 1 ? 's' : ''}${author.active === false ? ' · alumni' : ''}</span></div><p class="author-role">${esc(author.role || '')}${author.cohort ? ` · cohorte ${esc(author.cohort)}` : ''}${statusNote}</p>${author.bio ? `<p class="author-bio">${esc(author.bio)}</p>` : ''}</div></header>${articles.length ? magazineFeedHtml(articles, bundle, base, `Articles de ${author.name}`, 'Aucun article signé pour le moment.') : '<p class="empty">Aucun article signé pour le moment.</p>'}</div>`,
+    };
   }
   return null;
 }

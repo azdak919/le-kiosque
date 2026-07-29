@@ -306,6 +306,15 @@ export interface Publication {
     position?: 'top' | 'bottom';
   };
   /**
+   * Politique média du journal (photos d’articles).
+   * `autoStockPhoto` : si aucune photo principale n’est fournie à
+   * l’enregistrement, l’algo stock LE-RADAR (banque locale / Openverse /
+   * Commons selon le contenu) en propose une.
+   */
+  media?: {
+    autoStockPhoto?: boolean;
+  };
+  /**
    * Libellés d’interface paramétrables (focus group / rédaction).
    * Fallbacks thème : « À la une ».
    */

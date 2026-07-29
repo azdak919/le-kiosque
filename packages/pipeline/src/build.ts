@@ -355,7 +355,8 @@ export async function build(options: BuildOptions): Promise<BuildResult> {
   for (const a of listed) for (const s of a.authors) counts.set(s, (counts.get(s) ?? 0) + 1);
 
   const orderedAuthors = [...bundle.authors].sort((a, b) => a.name.localeCompare(b.name, 'fr'));
-  await emit(outDir, '/auteurs/', authorsIndexPage(orderedAuthors, counts, ctx));
+  // En bref sur /auteurs/ : mêmes dernières manches que le fil d’accueil.
+  await emit(outDir, '/auteurs/', authorsIndexPage(orderedAuthors, counts, ctx, listed));
   urls.push({ loc: `${base}/auteurs/` });
   pages++;
 

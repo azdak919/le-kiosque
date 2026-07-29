@@ -21,7 +21,8 @@
     "typecheck": "tsc --noEmit",
     "radar:reference:check": "node tools/check-radar-source-view.mjs",
     "demo:photos": "node tools/seed-demo-photos.mjs",
-    "demo:match-photos": "node tools/match-article-photos.mjs"
+    "demo:match-photos": "node tools/match-article-photos.mjs",
+    "demo:portraits": "node tools/seed-author-portraits.mjs"
   },
   "engines": {
     "node": ">=22.18"

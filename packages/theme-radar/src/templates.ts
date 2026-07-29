@@ -668,18 +668,56 @@ export function categoryPage(category: { slug: string; name: string; description
   );
 }
 
+function authorAvatarHtml(author: Author, ctx: RenderContext, opts: { size?: number; link?: boolean } = {}): string {
+  const size = opts.size ?? 88;
+  const href = safeUrl(relative(authorUrl(ctx.publication, author.slug), ctx));
+  const av = author.avatar;
+  let media: string;
+  if (av?.src) {
+    const pos = av.focalPoint
+      ? `object-position:${esc(String(av.focalPoint.x))}% ${esc(String(av.focalPoint.y))}%`
+      : 'object-position:50% 35%';
+    media = `<img class="author-avatar__img" src="${safeUrl(asset(av.src, ctx))}" alt="${esc(av.alt || `Portrait de ${author.name}`)}" width="${size}" height="${size}" loading="lazy" decoding="async" style="${pos}">`;
+  } else {
+    const initials = author.name
+      .split(/\s+/)
+      .filter(Boolean)
+      .slice(0, 2)
+      .map((w) => w[0]?.toUpperCase() ?? '')
+      .join('');
+    media = `<span class="author-avatar__initials" aria-hidden="true">${esc(initials || '?')}</span>`;
+  }
+  const inner = `<span class="author-avatar" style="--author-avatar-size:${size}px">${media}</span>`;
+  if (opts.link === false) return inner;
+  return `<a class="author-avatar-link" href="${href}" aria-hidden="true" tabindex="-1">${inner}</a>`;
+}
+
+function briefRailHtml(articles: Article[], ctx: RenderContext, limit = 7): string {
+  const briefs = articles.slice(0, limit);
+  if (!briefs.length) return '';
+  return `<aside class="brief-rail" aria-label="En bref"><h2>En bref</h2>${briefs.map((a) => articleCard(a, ctx, 'brief')).join('\n')}</aside>`;
+}
+
 export function authorPage(author: Author, articles: Article[], ctx: RenderContext): string {
   return page(
     `<div class="wrap wire">
-      <div class="wire-head">
-        <h1 class="wire-title">${esc(author.name)}</h1>
-        <span class="wire-status">${articles.length} signature${articles.length > 1 ? 's' : ''}</span>
-      </div>
-      ${author.role ? `<p class="author-role">${esc(author.role)}${author.cohort ? ` · cohorte ${esc(author.cohort)}` : ''}${author.active === false ? ' · a quitté la rédaction' : ''}</p>` : ''}
-      ${author.bio ? `<p class="author-bio">${esc(author.bio)}</p>` : ''}
+      <header class="author-page-head">
+        ${authorAvatarHtml(author, ctx, { size: 112, link: false })}
+        <div class="author-page-head__text">
+          <div class="wire-head" style="margin:0;border:0;padding:0">
+            <h1 class="wire-title">${esc(author.name)}</h1>
+            <span class="wire-status">${articles.length} signature${articles.length > 1 ? 's' : ''}${author.active === false ? ' · alumni' : ''}</span>
+          </div>
+          ${author.role ? `<p class="author-role">${esc(author.role)}${author.cohort ? ` · cohorte ${esc(author.cohort)}` : ''}${author.active === false ? ' · a quitté la rédaction' : ''}</p>` : ''}
+          ${author.bio ? `<p class="author-bio">${esc(author.bio)}</p>` : ''}
+        </div>
+      </header>
       ${
         articles.length
-          ? `<div class="news-list">\n${articles.map((a) => articleCard(a, ctx)).join('\n')}\n      </div>`
+          ? magazineFeedHtml(articles, ctx, {
+              heroLabel: `Articles de ${author.name}`,
+              empty: 'Aucun article signé pour le moment.',
+            })
           : '<p class="empty">Aucun article signé pour le moment.</p>'
       }
     </div>`,
@@ -687,18 +725,29 @@ export function authorPage(author: Author, articles: Article[], ctx: RenderConte
       title: `${author.name} — ${ctx.publication.name}`,
       description: author.bio,
       canonical: authorUrl(ctx.publication, author.slug),
+      image: author.avatar?.src
+        ? author.avatar.src.startsWith('http')
+          ? author.avatar.src
+          : `${ctx.publication.siteUrl.replace(/\/+$/, '')}${author.avatar.src.startsWith('/') ? '' : '/'}${author.avatar.src}`
+        : undefined,
     },
     ctx,
   );
 }
 
-export function authorsIndexPage(authors: Author[], counts: Map<string, number>, ctx: RenderContext): string {
+export function authorsIndexPage(
+  authors: Author[],
+  counts: Map<string, number>,
+  ctx: RenderContext,
+  recentArticles: Article[] = [],
+): string {
   const render = (list: Author[], alumni = false) =>
     list
       .map(
         (a) => `
       <div class="author-card${alumni ? ' author-card--alumni' : ''}">
-        <div>
+        ${authorAvatarHtml(a, ctx, { size: 88 })}
+        <div class="author-card__body">
           <h2 class="author-name"><a href="${safeUrl(relative(authorUrl(ctx.publication, a.slug), ctx))}" style="text-decoration:none;color:inherit">${esc(a.name)}</a>${alumni ? ' <span class="author-badge">Alumni</span>' : ''}</h2>
           ${a.role ? `<p class="author-role">${esc(a.role)}</p>` : ''}
           ${a.cohort ? `<p class="author-cohort">Cohorte ${esc(a.cohort)}</p>` : ''}
@@ -711,6 +760,7 @@ export function authorsIndexPage(authors: Author[], counts: Map<string, number>,
 
   const active = authors.filter((a) => a.active !== false);
   const past = authors.filter((a) => a.active === false);
+  const brief = briefRailHtml(recentArticles, ctx, 7);
 
   return page(
     `<div class="wrap wire">
@@ -719,14 +769,19 @@ export function authorsIndexPage(authors: Author[], counts: Map<string, number>,
         <span class="wire-status">${active.length} membre${active.length > 1 ? 's' : ''} · ${past.length} alumni</span>
       </div>
       <p class="section-intro">Rédaction en poste cette année — rôles et cohortes affichés pour chaque signature.</p>
-      ${render(active, false)}
-      ${
-        past.length
-          ? `<div class="wire-head" style="margin-top:34px"><h2 class="wire-title">Alumni</h2></div>
-      <p class="section-intro">Membres ayant gradué ou quitté la rédaction. Leurs signatures restent : une archive ne se réécrit pas quand quelqu’un part.</p>
-      ${render(past, true)}`
-          : ''
-      }
+      <div class="magazine-layout magazine-layout--team">
+        <div class="article-column team-column">
+          ${render(active, false)}
+          ${
+            past.length
+              ? `<div class="wire-head team-alumni-head"><h2 class="wire-title">Alumni</h2></div>
+          <p class="section-intro">Membres ayant gradué ou quitté la rédaction. Leurs signatures restent : une archive ne se réécrit pas quand quelqu’un part.</p>
+          ${render(past, true)}`
+              : ''
+          }
+        </div>
+        ${brief}
+      </div>
     </div>`,
     {
       title: `L’équipe — ${ctx.publication.name}`,

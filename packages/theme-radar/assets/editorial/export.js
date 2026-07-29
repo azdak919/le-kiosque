@@ -76,6 +76,8 @@ radio:
   station: ${yaml(publication.radio?.station || '')}
   theme: ${yaml(publication.radio?.theme || 'auto')}
   position: ${yaml(publication.radio?.position || 'top')}
+media:
+  autoStockPhoto: ${Boolean(publication.media?.autoStockPhoto)}
 founded: ${yaml(publication.founded || '')}
 license: ${yaml(publication.license || 'CC-BY-SA-4.0')}
 governance:
@@ -89,7 +91,10 @@ governance:
   }
   files.push({ path: 'content/taxonomies.yml', content: `categories:\n${bundle.taxonomies.categories.map((item) => `  - name: ${yaml(item.name)}\n    slug: ${yaml(item.slug)}`).join('\n')}\ntags:\n${bundle.taxonomies.tags.map((item) => `  - name: ${yaml(item.name)}\n    slug: ${yaml(item.slug)}`).join('\n')}\n` });
   for (const author of bundle.authors) {
-    files.push({ path: `content/auteurs/${author.slug}.md`, content: `---\nid: ${yaml(author.id)}\nslug: ${yaml(author.slug)}\nname: ${yaml(author.name)}\nrole: ${yaml(author.role || '')}\neditorialRole: ${yaml(author.editorialRole || 'auteur')}\ncohort: ${yaml(author.cohort || '')}\nactive: ${author.active !== false}\n---\n\n${author.bio || ''}\n` });
+    const avatarYaml = author.avatar?.src
+      ? `avatar:\n  src: ${yaml(author.avatar.src)}\n  alt: ${yaml(author.avatar.alt || '')}\n  credit: ${yaml(author.avatar.credit || '')}\n  license: ${yaml(author.avatar.license || '')}\n`
+      : '';
+    files.push({ path: `content/auteurs/${author.slug}.md`, content: `---\nid: ${yaml(author.id)}\nslug: ${yaml(author.slug)}\nname: ${yaml(author.name)}\nrole: ${yaml(author.role || '')}\neditorialRole: ${yaml(author.editorialRole || 'auteur')}\ncohort: ${yaml(author.cohort || '')}\nactive: ${author.active !== false}\n${avatarYaml}---\n\n${author.bio || ''}\n` });
   }
   for (const article of bundle.articles) {
     const date = new Date(article.publishedAt || article.updatedAt || Date.now());

@@ -170,6 +170,15 @@ export function buildCmsConfig(options: CmsConfigOptions): Record<string, unknow
               { name: 'theme', label: 'Ancien thème', widget: 'hidden', required: false },
               { name: 'position', label: 'Ancienne position', widget: 'hidden', required: false },
             ] },
+            { name: 'media', label: 'Photos d’articles', widget: 'object', required: false, fields: [
+              {
+                name: 'autoStockPhoto',
+                label: 'Proposer une photo libre si aucune n’est fournie',
+                widget: 'boolean',
+                default: false,
+                hint: 'Algo LE-RADAR : banque du journal puis Openverse / Wikimedia Commons selon le titre et le texte. Une photo soumise manuellement n’est jamais remplacée.',
+              },
+            ] },
             { name: 'founded', label: 'Année de fondation', widget: 'string', required: false },
             { name: 'license', label: 'Licence', widget: 'string', required: false },
             { name: 'governance', label: 'Gouvernance', widget: 'object', fields: [

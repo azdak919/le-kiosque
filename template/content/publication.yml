@@ -39,6 +39,11 @@ radio:
   theme: dark
   position: top
 
+# Si true : à l’enregistrement sans photo, l’algo stock propose une image
+# de la banque locale (ne remplace jamais une photo manuelle).
+media:
+  autoStockPhoto: false
+
 founded: '2026'
 license: CC-BY-SA-4.0
 

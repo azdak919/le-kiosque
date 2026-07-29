@@ -310,15 +310,46 @@ function articleEditor(article) {
     if (editorMode === 'visual' && format.value === 'html') body.value = sanitizePreview(visual.innerHTML);
     let lead = current.lead;
     const leadFile = document.getElementById('article-lead-file').files[0];
+    let autoStockNote = '';
     if (leadFile) lead = { ...await readArticleImage(leadFile, { alt: form.get('leadAlt').trim(), credit: form.get('leadCredit').trim(), caption: form.get('leadCaption').trim(), license: form.get('leadLicense').trim() }), focalPoint: { x: Number(form.get('leadFocalX')), y: Number(form.get('leadFocalY')) } };
     else if (lead) lead = { ...lead, alt: form.get('leadAlt').trim(), credit: form.get('leadCredit').trim(), caption: form.get('leadCaption').trim(), license: form.get('leadLicense').trim(), focalPoint: { x: Number(form.get('leadFocalX')), y: Number(form.get('leadFocalY')) } };
+    // Option journal : algo stock si aucune photo principale (ne remplace jamais une photo fournie).
+    if (!lead?.src && bundle.publication?.media?.autoStockPhoto) {
+      const ranked = rankLocalMedia(
+        {
+          title: form.get('title').trim(),
+          excerpt: form.get('excerpt').trim(),
+          body: body.value,
+        },
+        (bundle.media || []).filter((m) => (m.usages || []).includes('article') || (m.src || '').includes('/articles/')),
+        { usage: 'article', minScore: 50, limit: 1 },
+      );
+      if (ranked[0]) {
+        const pick = structuredClone(ranked[0]);
+        delete pick.score;
+        lead = {
+          ...pick,
+          alt: form.get('leadAlt').trim() || pick.alt || '',
+          credit: form.get('leadCredit').trim() || pick.credit || '',
+          caption: form.get('leadCaption').trim() || pick.caption || '',
+          license: form.get('leadLicense').trim() || pick.license || '',
+          focalPoint: pick.focalPoint || { x: 50, y: 48 },
+        };
+        autoStockNote = ` Photo libre proposée (score ${Math.round(ranked[0].score)}).`;
+        articleForm.elements.leadAlt.value = lead.alt;
+        articleForm.elements.leadCredit.value = lead.credit || '';
+        articleForm.elements.leadCaption.value = lead.caption || '';
+        articleForm.elements.leadLicense.value = lead.license || '';
+        document.getElementById('article-lead-preview').innerHTML = cropFrames(lead, 'article');
+      }
+    }
     if (form.get('status') === 'published' && lead && !lead.alt.trim()) { notify('La description de la photo principale est obligatoire.'); return; }
     const requestedPublication = form.get('publishedAt');
     const enteredPublication = requestedPublication ? new Date(requestedPublication).toISOString() : undefined;
     const saved = {
       ...current, id: form.get('id'), title: form.get('title').trim(), slug: slugify(form.get('slug')), excerpt: form.get('excerpt').trim(), section: form.get('section'), status: form.get('status'), authors: form.getAll('authors'), categories: form.getAll('categories'), tags: form.getAll('tags'), body: { format: format.value, raw: body.value }, lead, media: current.media, publishedAt: enteredPublication || (form.get('status') === 'published' ? (current.publishedAt || new Date().toISOString()) : current.publishedAt), updatedAt: new Date().toISOString(), canonicalUrl: `${bundle.publication.siteUrl.replace(/\/$/, '')}/articles/${slugify(form.get('slug'))}/`, source: current.source || source('article', form.get('id')),
     };
-    await backend.save('article', saved); await refresh(); notify('Article enregistré.'); setView('articles');
+    await backend.save('article', saved); await refresh(); notify(`Article enregistré.${autoStockNote}`); setView('articles');
   });
   main.querySelector('[data-action="preview"]').addEventListener('click', () => {
     if (editorMode === 'visual' && format.value === 'html') body.value = sanitizePreview(visual.innerHTML);
@@ -357,6 +388,10 @@ function settings() {
     <fieldset class="field"><legend>Météo</legend><label><input name="weatherEnabled" type="checkbox" ${masthead.weather?.enabled ? 'checked' : ''}> Afficher la météo</label><label>Localités, séparées par des virgules<input name="weatherLocalities" value="${esc((masthead.weather?.localities || []).join(', '))}" placeholder="Québec"></label><small>Maximum quatre.</small></fieldset>
     <fieldset class="field"><legend>Outils</legend><label><input name="pomodoro" type="checkbox" ${masthead.tools?.pomodoro !== false ? 'checked' : ''}> Pomodoro LE-RADAR.ca</label><label><input name="solitaire" type="checkbox" ${masthead.tools?.solitaire !== false ? 'checked' : ''}> Solitaire LE-RADAR.ca</label></fieldset>
     <div class="field"><label><input name="radioEnabled" type="checkbox" ${publication.radio?.enabled !== false ? 'checked' : ''}> Barre radio sombre LE-RADAR.ca</label></div><div class="field"><label>Station<input name="station" value="${esc(publication.radio?.station || '')}"></label></div>
+    <fieldset class="field full"><legend>Photos d’articles</legend>
+      <label><input name="autoStockPhoto" type="checkbox" ${publication.media?.autoStockPhoto ? 'checked' : ''}> Proposer une photo libre si aucune n’est fournie</label>
+      <small>Algo LE-RADAR (banque du journal selon le titre et le texte). Une photo choisie ou téléversée manuellement n’est jamais remplacée. Désactivez pour exiger une photo soumise à chaque article.</small>
+    </fieldset>
     <div class="field full"><label>Logo local (SVG, PNG, WebP ou JPEG)<input id="logo-file" type="file" accept="image/svg+xml,image/png,image/webp,image/jpeg"></label><label>Texte alternatif<input name="logoAlt" value="${esc(publication.logo?.alt || publication.name)}"></label><small>Vérifiez vos droits d’utilisation pour chaque image téléversée.</small></div>
     <div class="actions full"><button class="primary">Enregistrer</button><button type="button" data-action="recommended-theme">Réinitialiser le thème recommandé</button></div></form></section>`;
 }
@@ -471,7 +506,7 @@ function render() {
     }, 'masthead');
     const updateContrast = () => { const ratio = contrastRatio(form.elements.accent.value); document.getElementById('admin-contrast').textContent = ratio >= 4.5 ? `Contraste AA avec du texte blanc : ${ratio.toFixed(2)}:1.` : `Avertissement : contraste de ${ratio.toFixed(2)}:1 avec du texte blanc. La sauvegarde reste permise.`; };
     form.elements.accent.addEventListener('input', updateContrast); updateContrast();
-    form.onsubmit = async (event) => { event.preventDefault(); const data = new FormData(form); const publication = structuredClone(bundle.publication); publication.name = data.get('name').trim(); publication.tagline = data.get('tagline').trim(); publication.institution = data.get('institution').trim(); publication.timeZone = data.get('timeZone'); publication.theme = { accent: data.get('accent'), accentDark: data.get('accentDark'), typography: data.get('typography') }; publication.radio = { ...publication.radio, enabled: data.has('radioEnabled'), station: data.get('station').trim(), theme: 'dark', position: 'top' }; const localities = data.get('weatherLocalities').split(',').map((value) => value.trim()).filter(Boolean).slice(0, 4); const priorImages = clearMastheadImages ? [] : (publication.masthead?.backgrounds?.images || []); const selected = selectedMasthead ? { ...selectedMasthead, focalPoint: { x: Number(data.get('mastheadFocalX')), y: Number(data.get('mastheadFocalY')) } } : null; publication.masthead = { backgrounds: { enabled: data.has('backgroundsEnabled'), images: selected ? [selected, ...priorImages.filter((item) => item.id !== selected.id)] : priorImages }, weather: { enabled: data.has('weatherEnabled'), localities }, tools: { pomodoro: data.has('pomodoro'), solitaire: data.has('solitaire') }, overlayStrength: Math.min(0.9, Math.max(0, Number(data.get('overlayStrength')))), textAlignment: data.get('textAlignment') }; for (const file of document.getElementById('background-files').files) publication.masthead.backgrounds.images.push({ ...await readArticleImage(file, { alt: `Arrière-plan du journal ${publication.name}` }), focalPoint: { x: 50, y: 50 } }); const logoFile = document.getElementById('logo-file').files[0]; if (logoFile) publication.logo = await readLogo(logoFile, data.get('logoAlt').trim()); else if (publication.logo) publication.logo.alt = data.get('logoAlt').trim() || publication.name; await backend.savePublication(publication); await refresh(); notify('Configuration enregistrée.'); render(); };
+    form.onsubmit = async (event) => { event.preventDefault(); const data = new FormData(form); const publication = structuredClone(bundle.publication); publication.name = data.get('name').trim(); publication.tagline = data.get('tagline').trim(); publication.institution = data.get('institution').trim(); publication.timeZone = data.get('timeZone'); publication.theme = { accent: data.get('accent'), accentDark: data.get('accentDark'), typography: data.get('typography') }; publication.radio = { ...publication.radio, enabled: data.has('radioEnabled'), station: data.get('station').trim(), theme: 'dark', position: 'top' }; publication.media = { ...publication.media, autoStockPhoto: data.has('autoStockPhoto') }; const localities = data.get('weatherLocalities').split(',').map((value) => value.trim()).filter(Boolean).slice(0, 4); const priorImages = clearMastheadImages ? [] : (publication.masthead?.backgrounds?.images || []); const selected = selectedMasthead ? { ...selectedMasthead, focalPoint: { x: Number(data.get('mastheadFocalX')), y: Number(data.get('mastheadFocalY')) } } : null; publication.masthead = { backgrounds: { enabled: data.has('backgroundsEnabled'), images: selected ? [selected, ...priorImages.filter((item) => item.id !== selected.id)] : priorImages }, weather: { enabled: data.has('weatherEnabled'), localities }, tools: { pomodoro: data.has('pomodoro'), solitaire: data.has('solitaire') }, overlayStrength: Math.min(0.9, Math.max(0, Number(data.get('overlayStrength')))), textAlignment: data.get('textAlignment') }; for (const file of document.getElementById('background-files').files) publication.masthead.backgrounds.images.push({ ...await readArticleImage(file, { alt: `Arrière-plan du journal ${publication.name}` }), focalPoint: { x: 50, y: 50 } }); const logoFile = document.getElementById('logo-file').files[0]; if (logoFile) publication.logo = await readLogo(logoFile, data.get('logoAlt').trim()); else if (publication.logo) publication.logo.alt = data.get('logoAlt').trim() || publication.name; await backend.savePublication(publication); await refresh(); notify('Configuration enregistrée.'); render(); };
     main.querySelector('[data-action="clear-backgrounds"]').onclick = () => { selectedMasthead = null; clearMastheadImages = true; form.elements.backgroundsEnabled.checked = false; document.getElementById('masthead-crop-preview').innerHTML = cropFrames(null, 'masthead'); notify('Les images seront retirées à l’enregistrement.'); };
     main.querySelector('[data-action="recommended-theme"]').onclick = () => { form.elements.typography.value = 'modern-accessible'; form.elements.accent.value = '#6c2163'; form.elements.accentDark.value = '#cf7ec1'; };
   }

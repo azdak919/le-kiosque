@@ -389,6 +389,14 @@ export class MarkdownSource implements ContentSource<MarkdownConfig> {
             };
           })()
         : undefined,
+      media: raw.media
+        ? (() => {
+            const media = raw.media as Record<string, unknown>;
+            return {
+              autoStockPhoto: Boolean(media.autoStockPhoto),
+            };
+          })()
+        : undefined,
       founded: str(raw.founded),
       governance: {
         owner: str(governance.owner) ?? '',
