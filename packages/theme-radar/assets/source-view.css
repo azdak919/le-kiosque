@@ -432,17 +432,23 @@
 }
 /* « Réduire » reste en bas du fil (flux normal), comme LE-RADAR — pas fixed. */
 /*
- * Rangée peek (6e) : n’exposer que titre + auteurs sous le fondu
- * (meta / extrait hors zone — sinon on ne voit que rubrique + date).
+ * Rangée peek (6e) : rubrique + titre + auteurs (pas l’extrait ni la date
+ * longue). Le flou démarre sous la 1ʳᵉ ligne lisible (voir ::after).
  */
 .news-tail.has-overflow:not(.is-expanded) .article.is-tail-overflow {
   padding-top: 6px;
   padding-bottom: 0;
   border-bottom-color: transparent;
 }
-.news-tail.has-overflow:not(.is-expanded) .article.is-tail-overflow .article-meta,
-.news-tail.has-overflow:not(.is-expanded) .article.is-tail-overflow .article-brief {
+.news-tail.has-overflow:not(.is-expanded) .article.is-tail-overflow .article-brief,
+.news-tail.has-overflow:not(.is-expanded) .article.is-tail-overflow .article-time {
   display: none;
+}
+.news-tail.has-overflow:not(.is-expanded) .article.is-tail-overflow .article-meta {
+  margin-bottom: 3px;
+}
+.news-tail.has-overflow:not(.is-expanded) .article.is-tail-overflow .article-section {
+  font-size: 0.68rem;
 }
 .news-tail.has-overflow:not(.is-expanded) .article.is-tail-overflow .article-title {
   display: -webkit-box;
@@ -499,8 +505,9 @@
   outline-offset: 2px;
 }
 /*
- * Dégradé + flou sur la zone peek (6e rangée) : haut du titre encore lisible,
- * bas + auteurs s’estompent vers le bouton — même recette LE-RADAR.
+ * Dégradé + flou sur la zone peek (6e rangée).
+ * Haut net (rubrique + 1ʳᵉ ligne de titre) ; le flou/dégradé commence
+ * vers le bas de la 1ʳᵉ ligne de contenu, puis s’intensifie vers le bouton.
  */
 .news-tail.has-overflow:not(.is-expanded) .news-tail-body::after {
   content: "";
@@ -514,14 +521,28 @@
   background: linear-gradient(
     to bottom,
     color-mix(in srgb, var(--bg) 0%, transparent) 0%,
-    color-mix(in srgb, var(--bg) 28%, transparent) 35%,
-    color-mix(in srgb, var(--bg) 72%, transparent) 70%,
+    color-mix(in srgb, var(--bg) 0%, transparent) 22%,
+    color-mix(in srgb, var(--bg) 32%, transparent) 48%,
+    color-mix(in srgb, var(--bg) 78%, transparent) 78%,
     var(--bg) 100%
   );
   -webkit-backdrop-filter: blur(1.25px);
   backdrop-filter: blur(1.25px);
-  -webkit-mask-image: linear-gradient(to bottom, transparent 0%, #000 40%, #000 100%);
-  mask-image: linear-gradient(to bottom, transparent 0%, #000 40%, #000 100%);
+  /* Masque : aucun flou sur le haut ; le blur n’apparaît qu’après ~28 %. */
+  -webkit-mask-image: linear-gradient(
+    to bottom,
+    transparent 0%,
+    transparent 28%,
+    #000 55%,
+    #000 100%
+  );
+  mask-image: linear-gradient(
+    to bottom,
+    transparent 0%,
+    transparent 28%,
+    #000 55%,
+    #000 100%
+  );
 }
 .news-tail.is-expanded .news-tail-body::after { display: none; }
 @media (prefers-reduced-motion: reduce) {

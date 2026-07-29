@@ -763,9 +763,9 @@
   // ── Suite du fil : « Plus d'articles » (port LE-RADAR syncNewsTailCollapse) ──
   // 10 cartes = 5 rangées en 2 colonnes ; peek 6e rangée = titre + auteurs floutés.
   var NEWS_TAIL_VISIBLE = 10;
-  /** Plancher peek (titre 1 ligne + auteurs) ; affiné par mesure DOM. */
-  var NEWS_TAIL_PEEK_MIN_PX = 56;
-  var NEWS_TAIL_PEEK_MAX_PX = 110;
+  /** Plancher peek (rubrique + titre + auteurs) ; affiné par mesure DOM. */
+  var NEWS_TAIL_PEEK_MIN_PX = 72;
+  var NEWS_TAIL_PEEK_MAX_PX = 130;
   var newsTailExpanded = false;
   var newsTailBound = false;
 
@@ -787,18 +787,20 @@
 
   /**
    * Hauteur de la zone peek = bas du byline (ou titre) de la 6e rangée.
-   * Les cartes overflow ont déjà meta/extrait masqués en CSS.
+   * Inclut la rubrique (meta) ; extrait et date restent masqués en CSS.
    */
   function measureNewsTailPeekPx(cards, visibleCount) {
     var peekCards = cards.slice(visibleCount, visibleCount + 2);
     var peek = NEWS_TAIL_PEEK_MIN_PX;
     for (var i = 0; i < peekCards.length; i++) {
       var card = peekCards[i];
-      var end = card.querySelector('.article-byline') || card.querySelector('.article-title');
+      var end = card.querySelector('.article-byline')
+        || card.querySelector('.article-title')
+        || card.querySelector('.article-meta');
       if (!end) continue;
       var cardTop = card.getBoundingClientRect().top;
       var endBottom = end.getBoundingClientRect().bottom;
-      peek = Math.max(peek, Math.ceil(endBottom - cardTop + 6));
+      peek = Math.max(peek, Math.ceil(endBottom - cardTop + 8));
     }
     return Math.min(NEWS_TAIL_PEEK_MAX_PX, Math.max(NEWS_TAIL_PEEK_MIN_PX, peek));
   }
