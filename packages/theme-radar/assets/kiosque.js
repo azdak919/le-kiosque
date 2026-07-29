@@ -668,7 +668,8 @@
     if (!host) return;
     var payload;
     try {
-      payload = JSON.parse(host.dataset.sportsPayload || 'null');
+      /* dataset décode les entités HTML (&quot; → ") du SSR. */
+      payload = JSON.parse(host.getAttribute('data-sports-payload') || host.dataset.sportsPayload || 'null');
     } catch (_) {
       payload = null;
     }
@@ -681,6 +682,9 @@
       host.remove();
       return;
     }
+
+    /* Idempotent : re-remplit après applyBranding / seed PGlite. */
+    host.textContent = '';
 
     var team = payload.team;
     var code = String(team.code || 'EQ').toUpperCase().slice(0, 4);
@@ -742,6 +746,15 @@
     host.hidden = false;
     syncMastheadWeatherDock();
   }
+
+  /** Appelé après applyBranding (front éditorial) pour peindre la puce sports. */
+  function refreshMastheadStatus() {
+    initMastheadSports();
+    syncMastheadWeatherDock();
+  }
+  try {
+    window.KiosqueRefreshMasthead = refreshMastheadStatus;
+  } catch (_) {}
 
   function initMastheadWeather() {
     var host = document.querySelector('[data-weather-localities]');

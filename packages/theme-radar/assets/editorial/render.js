@@ -259,6 +259,10 @@ export function applyBranding(bundle, base) {
     weatherHost?.remove();
     sportsHost?.remove();
   }
+  /* Peint la puce sports (kiosque.js) après injection du payload — init DOM a déjà tourné. */
+  try {
+    if (typeof window.KiosqueRefreshMasthead === 'function') window.KiosqueRefreshMasthead();
+  } catch (_) { /* kiosque.js pas encore chargé */ }
   document.querySelector('a[href="https://le-radar.ca/pomo/"]')?.toggleAttribute('hidden', publication.masthead?.tools?.pomodoro === false);
   document.querySelector('a[href="https://le-radar.ca/solitaire/"]')?.toggleAttribute('hidden', publication.masthead?.tools?.solitaire === false);
   const nav = document.querySelector('.nav');

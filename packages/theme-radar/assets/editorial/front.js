@@ -30,6 +30,10 @@ async function render(push = false) {
   const backend = await getBackend();
   const bundle = await backend.getSnapshot({ audience: 'public' });
   applyBranding(bundle, config.publicBasePath);
+  /* S’assurer que la puce sports est peinte même si kiosque.js a init avant le branding. */
+  try {
+    if (typeof window.KiosqueRefreshMasthead === 'function') window.KiosqueRefreshMasthead();
+  } catch (_) {}
   const result = renderRoute(bundle, config.publicBasePath, location.pathname, articleBody);
   if (!result) return;
   if (push) history.pushState({}, '', location.pathname);

@@ -144,6 +144,19 @@ export class DemoBackendPGlite {
    */
   async #refreshUnmodifiedDemo(seed) {
     await this.db.transaction(async (tx) => {
+      /*
+       * Publication complète depuis le seed (mât sports, météo, labels…).
+       * Sans ça, une IDB antérieure n’a pas masthead.sports et front.js
+       * retire la puce HTML statique à l’applyBranding.
+       */
+      if (seed.publication && typeof seed.publication === 'object') {
+        const pub = { ...seed.publication, id: entityId(seed.publication) };
+        await tx.query(
+          `INSERT INTO publication(id, data) VALUES ($1, $2::jsonb)
+           ON CONFLICT(id) DO UPDATE SET data = excluded.data`,
+          [pub.id, JSON.stringify(pub)],
+        );
+      }
       for (const raw of seed.media || []) {
         const entity = { ...raw, id: entityId(raw) };
         await tx.query(
