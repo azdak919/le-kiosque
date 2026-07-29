@@ -358,21 +358,55 @@ body.with-radio .nav {
 .masthead-status {
   display: flex;
   align-items: stretch;
-  gap: 6px;
+  gap: 8px;
   min-width: 0;
   max-width: 100%;
   flex: 1 1 auto;
+  width: 100%;
   overflow: hidden; /* jamais de clipping hors de la cellule mât */
 }
 /* À côté du score : la météo cède de la place (pas de min-width rigide). */
 .masthead-status .masthead-weather {
-  flex: 1 1 auto;
+  flex: 0 1 auto;
   min-width: 0;
 }
 .masthead-status .weather-chip,
 .masthead-status .masthead-weather__city {
   min-width: 0;
   max-width: 100%;
+}
+/*
+ * Bureau : météo à gauche de la zone centrale, sports calé à droite
+ * (près des outils), largeurs de puces plus compactes et homogènes.
+ */
+@media (min-width: 721px) {
+  .masthead-status {
+    justify-content: flex-start;
+    align-items: center;
+    gap: 10px;
+  }
+  .masthead-status .masthead-weather {
+    flex: 0 1 auto;
+    max-width: 11rem;
+  }
+  .masthead-status .masthead-sports {
+    flex: 0 0 auto;
+    margin-left: auto; /* aligne la puce sports à droite de la cellule 1fr */
+    max-width: 10.75rem;
+    justify-content: flex-end;
+  }
+  .masthead-status .weather-chip,
+  .masthead-status .masthead-weather__city {
+    width: 100%;
+    min-width: 8.25rem;
+    max-width: 11rem;
+  }
+  .masthead-status .sports-chip,
+  .masthead-status .masthead-sports__chip {
+    width: max-content;
+    min-width: 8.25rem;
+    max-width: 10.75rem;
+  }
 }
 /*
  * Sous la radio (mobile) : météo et sports se partagent la rangée.
@@ -1374,8 +1408,8 @@ a.masthead-weather__city:focus-visible {
   display: flex;
   align-items: stretch;
   min-width: 0;
-  max-width: min(11.5rem, 38vw);
-  flex: 0 1 auto;
+  max-width: min(10.75rem, 36vw);
+  flex: 0 0 auto;
 }
 .sports-chip,
 .masthead-sports__chip {
