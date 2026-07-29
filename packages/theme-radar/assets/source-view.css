@@ -242,10 +242,19 @@
   .news-hero .article--feature.article--thumb.has-image { grid-template-columns: clamp(140px, 36%, 184px) minmax(0, 1fr); column-gap: 18px; }
 }
 
-/* Même grille magazine que la référence : bloc principal, rail et suite. */
+/* Même grille magazine que la référence : bloc principal, rail et suite.
+   Les vedettes s’empilent sous la une (colonne unique) — pas côte à côte. */
 .magazine-layout { display: grid; grid-template-columns: minmax(0, 1.15fr) minmax(300px, 370px); gap: 0; align-items: start; }
 .news-hero { min-width: 0; padding-right: 32px; border-bottom: 1px solid var(--rule); }
-.news-features { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 22px; }
+.news-features {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  margin: 0;
+  padding: 0;
+}
+.news-features > .article { border-bottom: 1px solid var(--rule); }
+.news-features > .article:last-child { border-bottom: 0; }
 .brief-rail { min-width: 0; padding-left: 28px; border-bottom: 1px solid var(--rule); border-left: 1px solid var(--rule); }
 .brief-rail > h2, .news-tail > h2 {
   margin: 14px 0 6px;
@@ -263,7 +272,7 @@
   .brief-rail { padding-left: 0; border-bottom: 0; border-left: 0; }
 }
 @media (max-width: 720px) {
-  .news-features, .news-tail-grid { grid-template-columns: 1fr; }
+  .news-tail-grid { grid-template-columns: 1fr; }
   .article--lead .article-title { font-size: clamp(2rem, 10vw, 3rem); }
   .article-meta { grid-template-columns: 1fr; }
   .article-time { justify-self: start; text-align: left; }

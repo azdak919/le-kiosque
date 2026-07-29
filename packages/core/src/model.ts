@@ -185,6 +185,12 @@ export interface Section {
   description?: string;
   order?: number;
   parent?: Slug;
+  /**
+   * Couleur d’étiquette pour les cartes (pastille, survol).
+   * Distincte de la couleur de marque du journal : chaque rubrique peut
+   * porter son identité visuelle.
+   */
+  color?: string;
 }
 
 export interface Category {
@@ -192,6 +198,8 @@ export interface Category {
   slug: Slug;
   name: string;
   parent?: Slug;
+  /** Couleur optionnelle pour pastilles / filtres de catégorie. */
+  color?: string;
 }
 
 export interface Tag {

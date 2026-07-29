@@ -395,6 +395,7 @@ export class MarkdownSource implements ContentSource<MarkdownConfig> {
         description: str(raw.description),
         order: typeof raw.order === 'number' ? raw.order : undefined,
         parent: str(raw.parent),
+        color: str(raw.color),
       });
     }
     sections.sort((a, b) => (a.order ?? 999) - (b.order ?? 999) || a.name.localeCompare(b.name, 'fr'));
@@ -410,7 +411,13 @@ export class MarkdownSource implements ContentSource<MarkdownConfig> {
         const o = typeof entry === 'string' ? { name: entry } : (entry as Record<string, unknown>);
         const slug = str(o.slug) ?? slugify(str(o.name) ?? '');
         if (slug) {
-          categories.push({ id: derivedId('category', slug), slug, name: str(o.name) ?? slug, parent: str(o.parent) });
+          categories.push({
+            id: derivedId('category', slug),
+            slug,
+            name: str(o.name) ?? slug,
+            parent: str(o.parent),
+            color: str(o.color),
+          });
         }
       }
       for (const entry of (raw.tags as unknown[]) ?? []) {

@@ -197,7 +197,7 @@ masthead:
   tools:
     pomodoro: true
     solitaire: true
-  overlayStrength: 0.55
+  overlayStrength: 0.42
   textAlignment: left
 
 # Station de campus à afficher dans la barre radio (jalon 3).

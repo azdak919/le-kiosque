@@ -77,8 +77,12 @@ export function renderSourceArticle(view, requestedRole = 'tail') {
   const readMore = href && (view?.readMore || excerpt.truncated)
     ? ` <a class="article-more" ${linkAttributesPrefix}href="${escapeSourceViewHtml(href)}">Lire la suite <span aria-hidden="true">→</span><span class="sr-only"> : ${title}</span></a>`
     : '';
+  // Couleur de rubrique (section) — optionnelle, distincte de la marque.
+  const colorRaw = String(view?.color || '').trim();
+  const color = /^#[0-9a-fA-F]{3,8}$/.test(colorRaw) ? colorRaw : '';
+  const colorStyle = color ? ` style="--c:${escapeSourceViewHtml(color)}"` : '';
 
-  return `<article class="${roleClasses}">
+  return `<article class="${roleClasses}"${colorStyle}>
   ${role === 'lead' ? '<span class="article-eyebrow">À la une</span>' : ''}
   <div class="article-meta">
     ${section ? `<span class="article-section">${escapeSourceViewHtml(section)}</span>` : '<span class="article-section article-section--empty" aria-hidden="true"></span>'}

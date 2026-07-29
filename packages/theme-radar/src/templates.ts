@@ -173,15 +173,25 @@ function radioTuner(ctx: RenderContext): string {
 </radar-tuner>`;
 }
 
-function icon(label: 'home' | 'rss' | 'pomo' | 'solitaire' | 'shuffle'): string {
-  const paths = {
-    home: '<path d="M3 11.2 12 4l9 7.2v8.3a.5.5 0 0 1-.5.5H15v-6H9v6H3.5a.5.5 0 0 1-.5-.5z"/>',
-    rss: '<path d="M5 4a15 15 0 0 1 15 15h-3A12 12 0 0 0 5 7zm0 6a9 9 0 0 1 9 9h-3a6 6 0 0 0-6-6zm2 6.5A2.5 2.5 0 1 1 7 21a2.5 2.5 0 0 1 0-4.5z"/>',
-    pomo: '<path d="M9 2h6v2H9zm2 3h2v2.1a7 7 0 1 1-2 0zm1 4a5 5 0 1 0 5 5 5 5 0 0 0-5-5z"/>',
-    solitaire: '<path d="m12 2 5 5-5 5-5-5zm-6 9 5 5-5 5-5-5zm12 0 5 5-5 5-5-5zm-6 5 5 5-5 5-5-5z"/>',
-    shuffle: '<path d="M16 3h5v5h-2V6.4l-3.8 3.8-1.4-1.4L17.6 5H16zM3 6h4.2l10.4 10.4V15H20v5h-5v-2h1.6L6.4 8H3zm0 10h4.2l2.6-2.6 1.4 1.4L8 18H3z"/>',
-  };
-  return `<svg viewBox="0 0 24 24" aria-hidden="true">${paths[label]}</svg>`;
+/** Icônes du mât — mêmes tracés que LE-RADAR (index.html). */
+function icon(label: 'home' | 'rss' | 'shuffle' | 'sun' | 'moon', _assetsBase?: string): string {
+  if (label === 'home') {
+    return `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 10.5 12 3l9 7.5V20a1 1 0 0 1-1 1h-5v-6H9v6H4a1 1 0 0 1-1-1v-9.5z"/></svg>`;
+  }
+  if (label === 'rss') {
+    return `<svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><circle cx="6.18" cy="17.82" r="2.18"/><path d="M4 4.44v2.83c7.03 0 12.73 5.7 12.73 12.73h2.83C19.56 12.06 12.94 5.44 4 4.44z"/><path d="M4 10.11v2.83c3.9 0 7.07 3.17 7.07 7.07h2.83c0-5.46-4.42-9.9-9.9-9.9z"/></svg>`;
+  }
+  if (label === 'shuffle') {
+    return `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m16 3 4 4-4 4"/><path d="M20 7H9a5 5 0 0 0-5 5v1"/><path d="m8 21-4-4 4-4"/><path d="M4 17h11a5 5 0 0 0 5-5v-1"/></svg>`;
+  }
+  if (label === 'sun') {
+    return `<svg class="ico-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41"/></svg>`;
+  }
+  return `<svg class="ico-moon" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true" hidden><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>`;
+}
+
+function emojiIcon(assetsBase: string, file: 'tomato.png' | 'playing-cards.png'): string {
+  return `<img class="app-emoji" src="${esc(assetsBase)}emoji/${file}" width="16" height="16" alt="" decoding="async" aria-hidden="true">`;
 }
 
 function mastheadBackground(ctx: RenderContext, options: MastheadOptions): string {
@@ -209,18 +219,19 @@ function mastheadTools(ctx: RenderContext): string {
   const backgrounds = masthead?.backgrounds;
   const tools = masthead?.tools;
   const localities = weather?.enabled === false ? [] : (weather?.localities ?? []);
+  const assetsBase = asset('/assets/', ctx);
   const button = (href: string, label: string, glyph: string) =>
     `<a class="masthead-tool" href="${safeUrl(href)}" aria-label="${esc(label)}" title="${esc(label)}">${glyph}</a>`;
   return `<div class="masthead-utility">
     <p class="masthead-clock"><span data-masthead-date></span><time data-masthead-time></time></p>
-    ${localities.length ? `<div class="masthead-weather" data-weather-localities="${esc(JSON.stringify(localities))}" aria-label="Météo"></div>` : ''}
+    ${localities.length ? `<div class="masthead-weather" data-weather-localities="${esc(JSON.stringify(localities))}" data-meteocons-base="${esc(asset('/assets/meteocons/animated/', ctx))}" aria-label="Météo"></div>` : ''}
     <div class="masthead-tools">
-      ${button(asset('/', ctx), 'Accueil', icon('home'))}
-      ${button(asset('/feed.xml', ctx), 'Flux RSS', icon('rss'))}
-      ${tools?.pomodoro !== false ? button('https://le-radar.ca/pomo/', 'Pomodoro', icon('pomo')) : ''}
-      ${tools?.solitaire !== false ? button('https://le-radar.ca/solitaire/', 'Solitaire', icon('solitaire')) : ''}
-      <button type="button" id="theme-toggle" class="masthead-tool" aria-label="Changer de thème" title="Changer de thème" aria-pressed="false" hidden><span aria-hidden="true">☼</span></button>
-      ${backgrounds?.enabled !== false && (backgrounds?.images?.length ?? 0) > 1 ? `<button type="button" id="masthead-shuffle" class="masthead-tool" aria-label="Changer l’image de fond" title="Changer l’image de fond">${icon('shuffle')}</button>` : ''}
+      ${button(asset('/', ctx), 'Accueil', icon('home', assetsBase))}
+      ${button(asset('/feed.xml', ctx), 'Flux RSS', icon('rss', assetsBase))}
+      ${tools?.pomodoro !== false ? button('https://le-radar.ca/pomo/', 'Pomodoro', emojiIcon(assetsBase, 'tomato.png')) : ''}
+      ${tools?.solitaire !== false ? button('https://le-radar.ca/solitaire/', 'Solitaire', emojiIcon(assetsBase, 'playing-cards.png')) : ''}
+      <button type="button" id="theme-toggle" class="masthead-tool" aria-label="Changer de thème" title="Mode clair / sombre" aria-pressed="false" hidden>${icon('sun', assetsBase)}${icon('moon', assetsBase)}</button>
+      ${backgrounds?.enabled !== false && (backgrounds?.images?.length ?? 0) > 1 ? `<button type="button" id="masthead-shuffle" class="masthead-tool" aria-label="Changer la photo du mât" title="Changer la photo du mât">${icon('shuffle', assetsBase)}</button>` : ''}
     </div>
   </div>`;
 }
@@ -232,10 +243,15 @@ function mastheadTools(ctx: RenderContext): string {
 export function articleCard(article: Article, ctx: RenderContext, variant: boolean | 'lead' | 'feature' | 'brief' | 'tail' = false): string {
   const role = variant === true ? 'lead' : variant === false ? 'tail' : variant;
   const section = sectionName(article.section, ctx);
+  // Couleur de rubrique ; à défaut première catégorie colorée (choix éditorial).
+  const categoryColor = article.categories
+    .map((slug) => ctx.taxonomies.categories.find((c) => c.slug === slug)?.color)
+    .find((c) => c && /^#/.test(c));
   const href = relative(articleUrl(ctx.publication, article), ctx);
   const date = article.publishedAt ?? article.updatedAt;
   return renderSourceArticle({
     section: section?.name,
+    color: section?.color || categoryColor,
     href: safeUrl(href),
     title: article.title,
     excerpt: article.excerpt,
@@ -377,9 +393,12 @@ ${ctx.editorial ? `<script>window.KIOSQUE_EDITORIAL=${JSON.stringify({ mode: 'de
 
 export function homePage(articles: Article[], ctx: RenderContext): string {
   const [first, ...rest] = articles;
-  const features = rest.slice(0, 2);
-  const briefs = rest.slice(2, 9);
-  const tail = rest.slice(9);
+  // Magazine type LE-RADAR : 1 une + plusieurs vedettes empilées (pas côte à côte),
+  // puis rail « En bref » et suite. 3 vedettes équilibrent mieux une page de journal
+  // unique qu’un agrégateur multi-sources.
+  const features = rest.slice(0, 3);
+  const briefs = rest.slice(3, 10);
+  const tail = rest.slice(10);
   const body = !articles.length
     ? '<p class="empty">Aucun article publié pour le moment.</p>'
     : `<div class="magazine-layout">

@@ -5,11 +5,16 @@
 
 categories:
   - name: Vie étudiante
+    color: '#0f766e'
   - name: Culture
+    color: '#6c2163'
   - name: Actualité locale
     slug: actualite-locale
+    color: '#c45c26'
   - name: Sports
+    color: '#0b5cab'
   - name: Opinion
+    color: '#b45309'
 
 tags:
   - name: assemblée générale

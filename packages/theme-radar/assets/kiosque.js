@@ -31,8 +31,10 @@
       btn.setAttribute('aria-pressed', theme === 'dark' ? 'true' : 'false');
       btn.setAttribute('aria-label', theme === 'dark' ? 'Passer au thème clair' : 'Passer au thème sombre');
       btn.title = btn.getAttribute('aria-label');
-      var glyph = btn.querySelector('span');
-      if (glyph) glyph.textContent = theme === 'dark' ? '☾' : '☼';
+      var sun = btn.querySelector('.ico-sun');
+      var moon = btn.querySelector('.ico-moon');
+      if (sun) sun.hidden = theme === 'dark';
+      if (moon) moon.hidden = theme !== 'dark';
     }
   }
 
@@ -88,13 +90,26 @@
     });
   }
 
-  function weatherSymbol(code) {
-    if (code === 0) return '☀';
-    if (code <= 3) return '⛅';
-    if (code <= 48) return '☁';
-    if (code <= 67 || (code >= 80 && code <= 82)) return '☂';
-    if (code <= 77 || code >= 85) return '❄';
-    return '⚡';
+  /** Mêmes libellés de fichier que LE-RADAR (assets/meteocons/animated). */
+  function weatherIconName(code, isDay) {
+    var day = isDay !== 0;
+    if (code === 0) return day ? 'clear-day' : 'clear-night';
+    if (code === 1 || code === 2) return day ? 'partly-cloudy-day' : 'partly-cloudy-night';
+    if (code === 3) return day ? 'overcast-day' : 'overcast-night';
+    if (code === 45 || code === 48) return day ? 'fog-day' : 'fog-night';
+    if ([51, 53, 55, 56, 57].indexOf(code) !== -1) return 'drizzle';
+    if ([61, 63, 65, 66, 67, 80, 81, 82].indexOf(code) !== -1) return 'rain';
+    if ([71, 73, 75, 77, 85, 86].indexOf(code) !== -1) return 'snow';
+    if ([95, 96, 99].indexOf(code) !== -1) return day ? 'thunderstorms-day' : 'thunderstorms-night';
+    return day ? 'overcast-day' : 'overcast-night';
+  }
+
+  function weatherTone(code) {
+    if (code === 0 || code === 1 || code === 2) return '#f0b429';
+    if ([51, 53, 55, 56, 57, 61, 63, 65, 66, 67, 80, 81, 82].indexOf(code) !== -1) return '#5b9fd4';
+    if ([71, 73, 75, 77, 85, 86].indexOf(code) !== -1) return '#a8c5d4';
+    if ([95, 96, 99].indexOf(code) !== -1) return '#8b7ec8';
+    return '#8fa3b0';
   }
 
   function initMastheadWeather() {
@@ -102,6 +117,12 @@
     if (!host || typeof fetch !== 'function') return;
     var localities = [];
     try { localities = JSON.parse(host.dataset.weatherLocalities || '[]').slice(0, 4); } catch (_) {}
+    var meteoBase = host.dataset.meteoconsBase || '';
+    if (!meteoBase) {
+      var tokens = document.querySelector('link[href*="tokens.css"]');
+      if (tokens) meteoBase = tokens.href.replace(/tokens\.css.*$/, 'meteocons/animated/');
+      else meteoBase = 'assets/meteocons/animated/';
+    }
     Promise.all(localities.map(async function (name) {
       var cacheKey = 'kiosque-weather:' + name.toLowerCase();
       try {
@@ -111,15 +132,36 @@
       var geocode = await fetch('https://geocoding-api.open-meteo.com/v1/search?count=1&language=fr&countryCode=CA&name=' + encodeURIComponent(name)).then(function (r) { if (!r.ok) throw new Error('geocoding'); return r.json(); });
       var place = geocode.results && geocode.results[0];
       if (!place) throw new Error('locality');
-      var forecast = await fetch('https://api.open-meteo.com/v1/forecast?current=temperature_2m,weather_code&timezone=auto&latitude=' + encodeURIComponent(place.latitude) + '&longitude=' + encodeURIComponent(place.longitude)).then(function (r) { if (!r.ok) throw new Error('forecast'); return r.json(); });
-      var value = { name: place.name || name, temperature: Math.round(forecast.current.temperature_2m), code: Number(forecast.current.weather_code) };
+      var forecast = await fetch('https://api.open-meteo.com/v1/forecast?current=temperature_2m,weather_code,is_day&timezone=auto&latitude=' + encodeURIComponent(place.latitude) + '&longitude=' + encodeURIComponent(place.longitude)).then(function (r) { if (!r.ok) throw new Error('forecast'); return r.json(); });
+      var value = {
+        name: place.name || name,
+        temperature: Math.round(forecast.current.temperature_2m),
+        code: Number(forecast.current.weather_code),
+        isDay: Number(forecast.current.is_day),
+      };
       try { localStorage.setItem(cacheKey, JSON.stringify({ savedAt: Date.now(), value: value })); } catch (_) {}
       return value;
     })).then(function (values) {
       values.forEach(function (value) {
         var chip = document.createElement('span');
         chip.className = 'weather-chip';
-        chip.textContent = weatherSymbol(value.code) + ' ' + value.name + '  ' + value.temperature + '°';
+        chip.style.setProperty('--weather-tone', weatherTone(value.code));
+        var img = document.createElement('img');
+        img.className = 'weather-icon-meteocon';
+        img.src = meteoBase + weatherIconName(value.code, value.isDay) + '.svg';
+        img.alt = '';
+        img.setAttribute('aria-hidden', 'true');
+        img.width = 22;
+        img.height = 22;
+        var nameEl = document.createElement('span');
+        nameEl.className = 'weather-chip__name';
+        nameEl.textContent = value.name;
+        var temp = document.createElement('span');
+        temp.className = 'weather-chip__temp';
+        temp.textContent = value.temperature + '°';
+        chip.appendChild(img);
+        chip.appendChild(nameEl);
+        chip.appendChild(temp);
         host.appendChild(chip);
       });
     }).catch(function () { host.remove(); });

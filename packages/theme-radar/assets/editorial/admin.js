@@ -80,7 +80,7 @@ function articles() {
 }
 
 const MEDIA_USAGE_LABELS = {
-  exterior: 'Extérieur', interior: 'Intérieur', sport: 'Sport', masthead: 'Masthead', article: 'Article',
+  exterior: 'Extérieur', interior: 'Intérieur', sport: 'Sport', masthead: 'Mât illustré', article: 'Article',
 };
 
 function mediaSrc(media) {
@@ -125,13 +125,13 @@ function bindMediaFilters(host) {
 }
 
 function mediaLibrary() {
-  return `<section class="panel"><div class="toolbar"><div><h2>Médias de démonstration</h2><p>Ces campus réels illustrent la démonstration et ne représentent pas l'établissement fictif Le Quorum.</p></div></div>${mediaFilters()}<div class="media-grid">${mediaCards()}</div></section>`;
+  return `<section class="panel"><div class="toolbar"><div><h2>Photos</h2><p>Photos libres utilisées pour illustrer les articles et le mât. Les campus réels ne représentent pas l’établissement fictif du journal.</p></div></div>${mediaFilters()}<div class="media-grid">${mediaCards()}</div></section>`;
 }
 
 function chooseSharedMedia(onSelect, usage = '') {
   const dialog = document.createElement('dialog');
   dialog.className = 'media-picker';
-  dialog.innerHTML = `<div class="toolbar"><h2>Choisir dans la banque</h2><button type="button" data-close-media aria-label="Fermer">×</button></div><p>La sélection copie une référence locale; aucun téléversement ni traitement distant n'est lancé.</p>${mediaFilters()}<div class="media-grid">${mediaCards(true)}</div>`;
+  dialog.innerHTML = `<div class="toolbar"><h2>Choisir une photo</h2><button type="button" data-close-media aria-label="Fermer">×</button></div><p>La sélection copie une référence locale ; aucun téléversement distant n’est lancé.</p>${mediaFilters()}<div class="media-grid">${mediaCards(true)}</div>`;
   document.body.appendChild(dialog);
   if (usage) dialog.querySelector('[data-media-usage]').value = usage;
   bindMediaFilters(dialog);
@@ -170,7 +170,7 @@ function articleEditor(article) {
     <fieldset class="field"><legend>Auteurs</legend>${bundle.authors.map((author) => `<label><input type="checkbox" name="authors" value="${esc(author.slug)}" ${current.authors.includes(author.slug) ? 'checked' : ''}> ${esc(author.name)}</label>`).join('')}</fieldset>
     <fieldset class="field"><legend>Catégories</legend>${bundle.taxonomies.categories.map((item) => `<label><input type="checkbox" name="categories" value="${esc(item.slug)}" ${current.categories.includes(item.slug) ? 'checked' : ''}> ${esc(item.name)}</label>`).join('')}</fieldset>
     <fieldset class="field full"><legend>Mots-clés</legend>${bundle.taxonomies.tags.map((item) => `<label><input type="checkbox" name="tags" value="${esc(item.slug)}" ${current.tags.includes(item.slug) ? 'checked' : ''}> ${esc(item.name)}</label>`).join('')}</fieldset>
-    <fieldset class="field full media-editor"><legend>Photo principale</legend><label>Photo JPEG, PNG ou WebP<input id="article-lead-file" type="file" accept="image/jpeg,image/png,image/webp"></label><button type="button" data-action="choose-lead-media">Choisir dans la banque de démonstration</button><label>Description accessible<input name="leadAlt" value="${esc(current.lead?.alt || '')}"></label><label>Crédit<input name="leadCredit" value="${esc(current.lead?.credit || '')}"></label><label>Légende<input name="leadCaption" value="${esc(current.lead?.caption || '')}"></label><label>Licence<input name="leadLicense" value="${esc(current.lead?.license || '')}"></label><label>Point focal X<input name="leadFocalX" type="range" min="0" max="100" value="${current.lead?.focalPoint?.x ?? 50}"></label><label>Point focal Y<input name="leadFocalY" type="range" min="0" max="100" value="${current.lead?.focalPoint?.y ?? 50}"></label><div id="article-lead-preview" class="full">${cropFrames(current.lead, 'article')}</div>${current.lead ? `<p class="media-quality">Photo actuelle : ${current.lead.width || '?'} × ${current.lead.height || '?'} px${current.lead.width && (current.lead.width < 720 || current.lead.height < 405) ? ' — résolution faible pour la vedette' : ''}.</p>` : ''}</fieldset>
+    <fieldset class="field full media-editor"><legend>Photo principale</legend><label>Photo JPEG, PNG ou WebP<input id="article-lead-file" type="file" accept="image/jpeg,image/png,image/webp"></label><button type="button" data-action="choose-lead-media">Choisir une photo</button><label>Description accessible<input name="leadAlt" value="${esc(current.lead?.alt || '')}"></label><label>Crédit<input name="leadCredit" value="${esc(current.lead?.credit || '')}"></label><label>Légende<input name="leadCaption" value="${esc(current.lead?.caption || '')}"></label><label>Licence<input name="leadLicense" value="${esc(current.lead?.license || '')}"></label><label>Point focal X<input name="leadFocalX" type="range" min="0" max="100" value="${current.lead?.focalPoint?.x ?? 50}"></label><label>Point focal Y<input name="leadFocalY" type="range" min="0" max="100" value="${current.lead?.focalPoint?.y ?? 50}"></label><div id="article-lead-preview" class="full">${cropFrames(current.lead, 'article')}</div>${current.lead ? `<p class="media-quality">Photo actuelle : ${current.lead.width || '?'} × ${current.lead.height || '?'} px${current.lead.width && (current.lead.width < 720 || current.lead.height < 405) ? ' — résolution faible pour la vedette' : ''}.</p>` : ''}</fieldset>
     <div class="field full"><label for="article-format">Format du texte</label><select id="article-format" name="bodyFormat"><option value="markdown" ${current.body?.format !== 'html' ? 'selected' : ''}>Markdown</option><option value="html" ${current.body?.format === 'html' ? 'selected' : ''}>HTML assaini</option></select></div>
     <div class="field full editor-shell"><div class="editor-toolbar"><button type="button" data-editor-mode="visual">Visuel</button><button type="button" data-editor-mode="source">Source</button><span data-html-tools><button type="button" data-command="bold"><strong>G</strong></button><button type="button" data-command="italic"><em>I</em></button><button type="button" data-command="formatBlock" data-value="h2">Titre</button><button type="button" data-command="createLink">Lien</button></span><label class="button">Ajouter une photo<input id="article-inline-file" type="file" accept="image/jpeg,image/png,image/webp" hidden></label></div><label for="article-body" class="sr-only">Texte de l’article</label><textarea class="body" id="article-body" name="body">${esc(current.body?.raw || '')}</textarea><div id="article-visual" class="visual-editor" contenteditable="true"></div><p class="media-quality">Les photos téléversées restent dans ce navigateur et seront incluses dans les exports. Recommandation : 720 × 405 px pour une vedette.</p></div>
     <div class="actions full"><button class="primary" type="submit">Enregistrer</button><button type="button" data-action="preview">Prévisualiser sans publier</button></div></form><div id="article-preview"></div></section>`;
@@ -194,7 +194,7 @@ function articleEditor(article) {
     articleForm.elements.leadFocalX.value = media.focalPoint?.x ?? 50;
     articleForm.elements.leadFocalY.value = media.focalPoint?.y ?? 50;
     document.getElementById('article-lead-preview').innerHTML = cropFrames(media, 'article');
-    notify('Photo de démonstration sélectionnée.');
+    notify('Photo sélectionnée.');
   }, 'article');
   let editorMode = current.body?.format === 'html' ? 'visual' : 'source';
   visual.innerHTML = current.body?.format === 'html' ? sanitizePreview(current.body.raw || '') : sanitizePreview(marked.parse(current.body?.raw || '', { async: false }));
@@ -258,8 +258,11 @@ function authorEditor(author) {
 }
 
 function taxonomies() {
-  const group = (title, kind, values) => `<section><div class="toolbar"><h3>${title}</h3><button data-add-taxonomy="${kind}">Ajouter</button></div><ul class="entity-list">${values.map((item) => `<li><div><strong>${esc(item.name)}</strong><small>/${esc(item.slug)}</small></div><div><button data-edit-taxonomy="${kind}:${esc(item.id)}">Modifier</button> <button class="danger" data-delete-taxonomy="${kind}:${esc(item.id)}">Supprimer</button></div></li>`).join('')}</ul></section>`;
-  return `<section class="panel"><h2>Structure éditoriale</h2>${group('Sections', 'section', bundle.taxonomies.sections)}${group('Catégories', 'category', bundle.taxonomies.categories)}${group('Mots-clés', 'tag', bundle.taxonomies.tags)}</section>`;
+  const swatch = (item) => item.color
+    ? `<span class="taxonomy-swatch" style="--c:${esc(item.color)}" title="${esc(item.color)}"></span>`
+    : '';
+  const group = (title, kind, values, withColor = false) => `<section><div class="toolbar"><h3>${title}</h3><button data-add-taxonomy="${kind}">Ajouter</button></div><p class="media-quality">${withColor ? 'Chaque rubrique peut avoir sa propre couleur d’étiquette (pastille sur les cartes), distincte de la couleur de marque du journal.' : ''}</p><ul class="entity-list">${values.map((item) => `<li><div>${swatch(item)}<strong>${esc(item.name)}</strong><small>/${esc(item.slug)}${item.color ? ` · ${esc(item.color)}` : ''}</small></div><div><button data-edit-taxonomy="${kind}:${esc(item.id)}">Modifier</button> <button class="danger" data-delete-taxonomy="${kind}:${esc(item.id)}">Supprimer</button></div></li>`).join('')}</ul></section>`;
+  return `<section class="panel"><h2>Structure éditoriale</h2>${group('Sections', 'section', bundle.taxonomies.sections, true)}${group('Catégories', 'category', bundle.taxonomies.categories, true)}${group('Mots-clés', 'tag', bundle.taxonomies.tags, false)}</section>`;
 }
 
 function settings() {
@@ -269,7 +272,7 @@ function settings() {
     <div class="field"><label>Nom<input name="name" required value="${esc(publication.name)}"></label></div><div class="field"><label>Signature<input name="tagline" value="${esc(publication.tagline || '')}"></label></div><div class="field"><label>Institution<input name="institution" value="${esc(publication.institution || '')}"></label></div><div class="field"><label>Typographie<select name="typography"><option value="modern-accessible">Moderne accessible</option><option value="editorial-classic" ${publication.theme?.typography === 'editorial-classic' ? 'selected' : ''}>Éditoriale classique</option><option value="institutional" ${publication.theme?.typography === 'institutional' ? 'selected' : ''}>Institutionnelle</option></select></label></div>
     <div class="field"><label>Fuseau horaire<select name="timeZone"><option value="America/Toronto" ${publication.timeZone !== 'America/Blanc-Sablon' ? 'selected' : ''}>Heure de l’Est — majorité du Québec</option><option value="America/Blanc-Sablon" ${publication.timeZone === 'America/Blanc-Sablon' ? 'selected' : ''}>Heure de l’Atlantique — Blanc-Sablon</option></select></label></div>
     <div class="field"><label>Couleur principale<input name="accent" type="color" value="${esc(publication.theme?.accent || '#6c2163')}"></label></div><div class="field"><label>Couleur sombre<input name="accentDark" type="color" value="${esc(publication.theme?.accentDark || '#cf7ec1')}"></label></div><div id="admin-contrast" class="notice full" role="status"></div>
-    <fieldset class="field full"><legend>Mât illustré</legend><label><input name="backgroundsEnabled" type="checkbox" ${masthead.backgrounds?.enabled !== false ? 'checked' : ''}> Afficher les images de fond</label><label>Ajouter mes propres images<input id="background-files" type="file" accept="image/jpeg,image/png,image/webp" multiple></label><div class="actions"><button type="button" data-action="choose-masthead-media">Choisir dans la banque de démonstration</button><button type="button" data-action="clear-backgrounds">Retirer toutes les images</button></div><p>${masthead.backgrounds?.images?.length || 0} image(s) enregistrée(s). Un nouvel envoi les ajoute à la rotation.</p><label>Point focal X<input name="mastheadFocalX" type="range" min="0" max="100" value="${masthead.backgrounds?.images?.[0]?.focalPoint?.x ?? 50}"></label><label>Point focal Y<input name="mastheadFocalY" type="range" min="0" max="100" value="${masthead.backgrounds?.images?.[0]?.focalPoint?.y ?? 50}"></label><label>Force du voile<input name="overlayStrength" type="range" min="0" max="0.9" step="0.05" value="${masthead.overlayStrength ?? 0.55}"></label><label>Alignement du titre<select name="textAlignment"><option value="left">Gauche</option><option value="center" ${masthead.textAlignment === 'center' ? 'selected' : ''}>Centre</option><option value="right" ${masthead.textAlignment === 'right' ? 'selected' : ''}>Droite</option></select></label><div id="masthead-crop-preview">${cropFrames(masthead.backgrounds?.images?.[0], 'masthead')}</div></fieldset>
+    <fieldset class="field full"><legend>Mât illustré</legend><label><input name="backgroundsEnabled" type="checkbox" ${masthead.backgrounds?.enabled !== false ? 'checked' : ''}> Afficher les images de fond</label><label>Ajouter mes propres images<input id="background-files" type="file" accept="image/jpeg,image/png,image/webp" multiple></label><div class="actions"><button type="button" data-action="choose-masthead-media">Choisir une photo</button><button type="button" data-action="clear-backgrounds">Retirer toutes les images</button></div><p>${masthead.backgrounds?.images?.length || 0} image(s) enregistrée(s). Un nouvel envoi les ajoute à la rotation.</p><label>Point focal X<input name="mastheadFocalX" type="range" min="0" max="100" value="${masthead.backgrounds?.images?.[0]?.focalPoint?.x ?? 50}"></label><label>Point focal Y<input name="mastheadFocalY" type="range" min="0" max="100" value="${masthead.backgrounds?.images?.[0]?.focalPoint?.y ?? 50}"></label><label>Force du voile<input name="overlayStrength" type="range" min="0" max="0.9" step="0.05" value="${masthead.overlayStrength ?? 0.55}"></label><label>Alignement du titre<select name="textAlignment"><option value="left">Gauche</option><option value="center" ${masthead.textAlignment === 'center' ? 'selected' : ''}>Centre</option><option value="right" ${masthead.textAlignment === 'right' ? 'selected' : ''}>Droite</option></select></label><div id="masthead-crop-preview">${cropFrames(masthead.backgrounds?.images?.[0], 'masthead')}</div></fieldset>
     <fieldset class="field"><legend>Météo</legend><label><input name="weatherEnabled" type="checkbox" ${masthead.weather?.enabled ? 'checked' : ''}> Afficher la météo</label><label>Localités, séparées par des virgules<input name="weatherLocalities" value="${esc((masthead.weather?.localities || []).join(', '))}" placeholder="Québec"></label><small>Maximum quatre.</small></fieldset>
     <fieldset class="field"><legend>Outils</legend><label><input name="pomodoro" type="checkbox" ${masthead.tools?.pomodoro !== false ? 'checked' : ''}> Pomodoro LE-RADAR.ca</label><label><input name="solitaire" type="checkbox" ${masthead.tools?.solitaire !== false ? 'checked' : ''}> Solitaire LE-RADAR.ca</label></fieldset>
     <div class="field"><label><input name="radioEnabled" type="checkbox" ${publication.radio?.enabled !== false ? 'checked' : ''}> Barre radio sombre LE-RADAR.ca</label></div><div class="field"><label>Station<input name="station" value="${esc(publication.radio?.station || '')}"></label></div>
@@ -326,8 +329,43 @@ function render() {
     };
   }
   if (view === 'taxonomies') {
-    main.querySelectorAll('[data-add-taxonomy]').forEach((button) => button.onclick = async () => { const name = prompt('Nom'); if (!name) return; const kind = button.dataset.addTaxonomy; await backend.save(kind, { id: crypto.randomUUID(), name, slug: slugify(name), order: kind === 'section' ? bundle.taxonomies.sections.length + 1 : undefined }); await refresh(); render(); });
-    main.querySelectorAll('[data-edit-taxonomy]').forEach((button) => button.onclick = async () => { const [kind, id] = button.dataset.editTaxonomy.split(':'); const values = kind === 'section' ? bundle.taxonomies.sections : kind === 'category' ? bundle.taxonomies.categories : bundle.taxonomies.tags; const current = values.find((item) => item.id === id); const name = prompt('Nom', current.name); if (!name) return; await backend.save(kind, { ...current, name, slug: current.slug }); await refresh(); render(); });
+    main.querySelectorAll('[data-add-taxonomy]').forEach((button) => button.onclick = async () => {
+      const name = prompt('Nom');
+      if (!name) return;
+      const kind = button.dataset.addTaxonomy;
+      let color;
+      if (kind === 'section' || kind === 'category') {
+        color = prompt('Couleur d’étiquette (hex, ex. #0b5cab) — laisser vide pour la couleur de marque', '#6c2163') || undefined;
+        if (color && !/^#[0-9a-fA-F]{3,8}$/.test(color.trim())) { notify('Couleur invalide.'); return; }
+        color = color?.trim();
+      }
+      await backend.save(kind, {
+        id: crypto.randomUUID(),
+        name,
+        slug: slugify(name),
+        order: kind === 'section' ? bundle.taxonomies.sections.length + 1 : undefined,
+        color,
+      });
+      await refresh();
+      render();
+    });
+    main.querySelectorAll('[data-edit-taxonomy]').forEach((button) => button.onclick = async () => {
+      const [kind, id] = button.dataset.editTaxonomy.split(':');
+      const values = kind === 'section' ? bundle.taxonomies.sections : kind === 'category' ? bundle.taxonomies.categories : bundle.taxonomies.tags;
+      const current = values.find((item) => item.id === id);
+      const name = prompt('Nom', current.name);
+      if (!name) return;
+      let color = current.color;
+      if (kind === 'section' || kind === 'category') {
+        const next = prompt('Couleur d’étiquette (hex) — vide pour retirer', current.color || '');
+        if (next === null) return;
+        if (next.trim() && !/^#[0-9a-fA-F]{3,8}$/.test(next.trim())) { notify('Couleur invalide.'); return; }
+        color = next.trim() || undefined;
+      }
+      await backend.save(kind, { ...current, name, slug: current.slug, color });
+      await refresh();
+      render();
+    });
     main.querySelectorAll('[data-delete-taxonomy]').forEach((button) => button.onclick = async () => { const [kind, id] = button.dataset.deleteTaxonomy.split(':'); if (!confirm('Supprimer cette entrée?')) return; await backend.remove(kind, id); await refresh(); render(); });
   }
   if (view === 'media') bindMediaFilters(main);
@@ -348,7 +386,7 @@ function render() {
       form.elements.mastheadFocalY.value = media.focalPoint?.y ?? 50;
       document.getElementById('masthead-crop-preview').innerHTML = cropFrames(media, 'masthead');
       form.elements.backgroundsEnabled.checked = true;
-      notify('Photo de masthead sélectionnée.');
+      notify('Photo du mât sélectionnée.');
     }, 'masthead');
     const updateContrast = () => { const ratio = contrastRatio(form.elements.accent.value); document.getElementById('admin-contrast').textContent = ratio >= 4.5 ? `Contraste AA avec du texte blanc : ${ratio.toFixed(2)}:1.` : `Avertissement : contraste de ${ratio.toFixed(2)}:1 avec du texte blanc. La sauvegarde reste permise.`; };
     form.elements.accent.addEventListener('input', updateContrast); updateContrast();

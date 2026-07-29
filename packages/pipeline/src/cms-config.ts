@@ -387,6 +387,13 @@ export function buildCmsConfig(options: CmsConfigOptions): Record<string, unknow
             required: false,
             value_type: 'int',
           },
+          {
+            name: 'color',
+            label: 'Couleur d’étiquette',
+            widget: 'color',
+            required: false,
+            hint: 'Pastille sur les cartes d’articles. Distincte de la couleur de marque du journal.',
+          },
         ],
       },
     ],

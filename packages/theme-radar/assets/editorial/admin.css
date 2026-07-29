@@ -21,6 +21,16 @@ button.danger { color: #9b1717; border-color: #d9aaaa; }
 .entity-list { list-style: none; padding: 0; margin: 0; border-top: 1px solid var(--admin-rule); }
 .entity-list li { display: flex; justify-content: space-between; align-items: center; gap: 1rem; padding: .8rem 0; border-bottom: 1px solid var(--admin-rule); }
 .entity-list small { display: block; color: #686b71; }
+.entity-list li > div:first-child { display: flex; flex-wrap: wrap; align-items: baseline; gap: .35rem .55rem; min-width: 0; }
+.taxonomy-swatch {
+  display: inline-block;
+  width: .72rem;
+  height: .72rem;
+  border-radius: 999px;
+  background: var(--c, var(--accent, #6c2163));
+  flex: 0 0 auto;
+  box-shadow: 0 0 0 1px rgba(0, 0, 0, .12);
+}
 .grid { display: grid; grid-template-columns: repeat(2,minmax(0,1fr)); gap: 1rem; }
 .field { display: grid; gap: .3rem; }.field.full { grid-column: 1/-1; }.field label { font-weight: 650; }
 .full { grid-column: 1/-1; }

@@ -34,10 +34,14 @@ function mediaFigure(article, base) {
 function articleCard(article, bundle, base, variant = 'tail') {
   const role = variant === true ? 'lead' : variant;
   const section = bundle.taxonomies.sections.find((item) => item.slug === article.section);
+  const categoryColor = (article.categories || [])
+    .map((slug) => bundle.taxonomies.categories.find((item) => item.slug === slug)?.color)
+    .find((value) => value && /^#/.test(value));
   const lead = article.lead;
   const src = safeMediaUrl(lead?.src);
   return renderSourceArticle({
     section: section?.name,
+    color: section?.color || categoryColor,
     href: link(base, `/articles/${encodeURIComponent(article.slug)}/`),
     linkAttributes: 'data-editorial-link',
     title: article.title,
@@ -66,7 +70,9 @@ export function renderRoute(bundle, base, pathname, renderBody) {
   const published = bundle.articles.filter((article) => article.status === 'published');
   if (!parts.length) {
     const [first, ...rest] = published;
-    const features = rest.slice(0, 2), briefs = rest.slice(2, 9), tail = rest.slice(9);
+    const features = rest.slice(0, 3);
+    const briefs = rest.slice(3, 10);
+    const tail = rest.slice(10);
     return {
       title: `${bundle.publication.name} — ${bundle.publication.tagline || bundle.publication.institution}`,
       html: `<div class="wrap wire"><div class="wire-head"><h1 class="wire-title">À la une</h1><span class="wire-status">${published.length} article${published.length > 1 ? 's' : ''}</span></div>${first ? `<div class="magazine-layout"><section class="news-hero" aria-label="À la une">${articleCard(first, bundle, base, 'lead')}<div class="news-features">${features.map((item) => articleCard(item, bundle, base, 'feature')).join('')}</div></section>${briefs.length ? `<aside class="brief-rail"><h2>En bref</h2>${briefs.map((item) => articleCard(item, bundle, base, 'brief')).join('')}</aside>` : ''}${tail.length ? `<section class="news-tail"><h2>Suite du fil</h2><div class="news-tail-grid">${tail.map((item) => articleCard(item, bundle, base, 'tail')).join('')}</div></section>` : ''}</div>` : '<p class="empty">Aucun article publié pour le moment.</p>'}</div>`,
