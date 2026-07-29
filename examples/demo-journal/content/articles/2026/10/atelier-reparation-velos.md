@@ -2,6 +2,10 @@
 id: 018f2c1a-7b3e-5000-9a4d-2f1e5c8b0d40
 title: Un atelier de réparation de vélos ouvrira deux midis par semaine
 slug: atelier-reparation-velos
+excerpt: >-
+  Le nouvel atelier de réparation de vélos ouvrira ses portes dès la semaine prochaine,
+  les mardis et jeudis de 11 h 30 à 13 h 30, dans le local adjacent au local des
+  associations. Des bénévoles formés offriront des…
 status: published
 demo: true
 publishedAt: 2026-10-02T13:00:00Z
@@ -21,8 +25,6 @@ lead:
   width: 1920
   height: 2560
   focalPoint: { x: 50, y: 48 }
-excerpt: >-
-  Des bénévoles fictifs proposeront des outils, des conseils de mécanique de base et un espace de réparation partagé les mardis et jeudis sur l'heure du dîner. L'atelier ne remplace pas un magasin spécialisé : il vise surtout à éviter qu'un pneu crevé ou une chaîne sautée laisse un vélo inutilisé pendant des semaines.
 ---
 
 Le nouvel atelier de réparation de vélos ouvrira ses portes dès la semaine prochaine, les mardis et jeudis de 11 h 30 à 13 h 30, dans le local adjacent au local des associations. Des bénévoles formés offriront des outils, des conseils de mécanique de base et un coup de main pour les pannes courantes : pneus, freins, chaînes et éclairage.
@@ -34,5 +36,3 @@ Les réparations demeureront sous la responsabilité des propriétaires des vél
 Aucune inscription formelle n'est exigée pour une première visite. Les personnes qui souhaitent devenir bénévoles pourront toutefois s'inscrire à une courte formation de deux heures, offerte deux fois en octobre. Un calendrier partagé indiquera qui est de permanence et quelles pièces de rechange sont disponibles.
 
 Le projet s'inscrit dans les efforts du comité environnemental pour favoriser les déplacements actifs sur le campus. Une signalisation temporaire indiquera l'entrée de l'atelier depuis le stationnement à vélos principal.
-
-> Cette activité et tous ses détails sont fictifs, créés pour la démonstration du journal étudiant.

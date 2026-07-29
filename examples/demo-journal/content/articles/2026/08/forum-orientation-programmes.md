@@ -2,6 +2,10 @@
 id: 018f2c1a-7b3e-5000-9a4d-2f1e5c8b0000
 title: Le forum d’orientation des programmes se tiendra en octobre
 slug: forum-orientation-programmes
+excerpt: >-
+  Le forum d’orientation des programmes investit le hall d’honneur le 8 octobre. Kiosques,
+  confidences de finissantes et finissants, et café assez fort pour affronter les
+  questions de parents.
 status: published
 demo: true
 publishedAt: 2026-08-28T10:00:00Z
@@ -23,23 +27,14 @@ lead:
   width: 1920
   height: 1286
   focalPoint: { x: 50, y: 48 }
-excerpt: >-
-  Texte de démonstration pour la suite du fil du Kiosque. L’article élargit
-  le volume du fil afin d’activer le bouton « Plus d’articles » après cinq
-  rangées, comme sur LE-RADAR. Sujet, campus et résultats entièrement fictifs.
 ---
 
-Le forum d’orientation des programmes se tiendra en octobre. Ce billet de démonstration complète la banque d’articles du journal
-exemple afin de tester la pagination visuelle de la suite du fil.
+Le 8 octobre, de 10 h à 15 h, le forum d’orientation des programmes occupe le hall d’honneur. Chaque département tient un kiosque ; des finissantes et finissants répondent aux questions que les guides officiels n’osent pas formuler (« est-ce que je vais vraiment manquer de sommeil ? »).
 
-La rédaction fictive y décrit un enjeu de campus, des modalités simples et un
-rappel éthique : aucun événement réel n’est annoncé ici. Les signatures actives
-et alumni cohabitent pour illustrer la continuité des archives.
+Un parcours libre permet de circuler sans inscription. Des mini-causeries de quinze minutes sont annoncées sur un tableau blanc qui change à midi.
 
-## Contexte
+## Public
 
-Les détails (horaires, lieux, inscriptions) restent inventés. Ils servent
-uniquement à peupler la grille « Suite du fil » et à valider le repli après
-dix cartes visibles, soit cinq rangées en deux colonnes.
+Ouvert à la communauté collégiale et aux familles. Les personnes en hésitation de programme sont particulièrement bienvenues : personne ne vous jugera si vous prenez des dépliants de trois départements différents.
 
-> Contenu entièrement fictif — journal de démonstration du Kiosque.
+La cafétéria prolonge son service de café jusqu’à 15 h ce jour-là. C’est non négociable pour la survie collective.

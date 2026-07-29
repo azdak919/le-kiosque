@@ -49,6 +49,3 @@ troisième, qui ajoutait une clause de réévaluation hebdomadaire, a été adop
 
 Un comité de suivi doit remettre un rapport à la prochaine assemblée. Les cours
 reprennent normalement dans les programmes non visés par le mandat.
-
-> Cet article est une **démonstration technique**. Les faits, les personnes et
-> l'établissement sont fictifs.

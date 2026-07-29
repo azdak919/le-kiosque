@@ -34,5 +34,3 @@ La discussion qui suit la projection se révèle souvent aussi intéressante que
 Les projections ont lieu le mercredi de 12 h 15 à 13 h 10 dans la petite salle du pavillon des arts. L'entrée est libre pour la communauté collégiale; une contribution volontaire finance les sous-titres et la location occasionnelle de copies. Les prochaines séances annonceront leurs titres une semaine à l'avance sur le site du journal.
 
 La chronique recommande d'arriver quelques minutes tôt : la salle se remplit rapidement lorsque le sujet touche à la santé mentale ou au travail étudiant.
-
-> Les titres, les œuvres et la programmation de cette chronique sont fictifs.

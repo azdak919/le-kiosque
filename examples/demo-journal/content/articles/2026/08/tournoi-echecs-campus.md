@@ -2,6 +2,9 @@
 id: 018f2c1a-7b3e-5012-9a4d-2f1e5c8b0012
 title: "Tournoi d’échecs du midi : places limitées"
 slug: tournoi-echecs-campus
+excerpt: >-
+  Le tournoi d’échecs du midi revient avec 24 places, cadence rapide et une règle d’or :
+  pas de commentaire à voix haute sur la fourchette de dame de la table d’à côté.
 status: published
 demo: true
 publishedAt: 2026-08-16T14:00:00Z
@@ -24,23 +27,14 @@ lead:
   width: 1920
   height: 1280
   focalPoint: { x: 50, y: 48 }
-excerpt: >-
-  Texte de démonstration pour la suite du fil du Kiosque. L’article élargit
-  le volume du fil afin d’activer le bouton « Plus d’articles » après cinq
-  rangées, comme sur LE-RADAR. Sujet, campus et résultats entièrement fictifs.
 ---
 
-Tournoi d’échecs du midi : places limitées. Ce billet de démonstration complète la banque d’articles du journal
-exemple afin de tester la pagination visuelle de la suite du fil.
+Inscriptions ouvertes pour le tournoi d’échecs du midi, le 18 septembre, salle polyvalente. Vingt-quatre places, cadence 10+5, matériel fourni. Débutant·es bienvenu·es : des parties amicales se tiendront en parallèle pour qui veut pratiquer sans classement.
 
-La rédaction fictive y décrit un enjeu de campus, des modalités simples et un
-rappel éthique : aucun événement réel n’est annoncé ici. Les signatures actives
-et alumni cohabitent pour illustrer la continuité des archives.
+Le prix : une tasse gravée « Roi / Reine du midi » et la gloire temporaire près de la machine à café.
 
-## Contexte
+## Déroulement
 
-Les détails (horaires, lieux, inscriptions) restent inventés. Ils servent
-uniquement à peupler la grille « Suite du fil » et à valider le repli après
-dix cartes visibles, soit cinq rangées en deux colonnes.
+Accueil à 11 h 45, première ronde à midi pile. On joue pendant l’heure du dîner ; un sandwich discret est toléré, un repas complet bruyant l’est moins.
 
-> Contenu entièrement fictif — journal de démonstration du Kiosque.
+Inscription au club d’échecs (local 0-08) ou par formulaire en ligne. Les retardataires prendront la place de celles et ceux qui n’ont pas confirmé 24 h avant.

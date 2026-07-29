@@ -13,5 +13,5 @@ section: culture
 lang: fr-CA
 ---
 
-Texte fictif en révision. Confirmer la programmation avant publication. Cet
+Texte en révision. Confirmer la programmation avant publication. Cet
 article ne doit paraître dans aucune sortie publique.

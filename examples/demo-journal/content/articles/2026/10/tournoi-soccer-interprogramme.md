@@ -39,4 +39,4 @@ Le règlement reste volontairement simple : cartons pour les fautes dangereuses,
 
 Les équipes devront désigner une personne responsable des communications. Les listes d'inscription seront affichées près du gymnase 48 heures avant le tournoi. Les places sont limitées à six formations; au-delà, une liste d'attente sera ouverte.
 
-> Annonce entièrement fictive. Aucune inscription réelle n'est offerte.
+> Aucune inscription réelle n'est offerte.

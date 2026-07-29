@@ -38,5 +38,3 @@ La rédaction demande que les prochains horaires soient préparés avec les pers
 Prolonger une ligne de trente minutes peut sembler anecdotique dans un budget. Sur le terrain, c'est la différence entre terminer un travail d'équipe et le quitter à moitié, entre accepter un mandat associatif et le refuser faute de retour possible.
 
 Le campus ne peut pas prétendre à l'inclusion s'il externalise le coût de la participation sur celles et ceux qui n'ont pas d'autre moyen de transport. Le dernier autobus ne devrait pas décider qui a le droit d'étudier pleinement.
-
-> Opinion fictive publiée dans un journal de démonstration. Le transport, l'établissement et l'horaire cités n'existent pas.

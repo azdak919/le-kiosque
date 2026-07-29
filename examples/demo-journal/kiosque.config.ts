@@ -28,8 +28,7 @@ const config: Partial<KiosqueConfig> = {
     // cname: 'journal-exemple.invalid',
   },
 
-  demoNotice:
-    'Journal de démonstration — contenu fictif, produit pour illustrer Le Kiosque',
+  demoNotice: 'Démonstration du Kiosque — journal étudiant fictif',
 
   demoContent: true,
 

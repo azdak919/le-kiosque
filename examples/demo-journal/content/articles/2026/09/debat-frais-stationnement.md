@@ -2,6 +2,9 @@
 id: 018f2c1a-7b3e-5000-9a4d-2f1e5c8b0d48
 title: "Débat : les frais de stationnement devraient-ils financer le transport actif?"
 slug: debat-frais-stationnement
+excerpt: >-
+  Faut-il que les frais de stationnement financent le transport actif? Une proposition
+  budgétaire pour ce débat oppose deux camps sur le campus.
 status: published
 demo: true
 publishedAt: 2026-09-24T10:00:00Z
@@ -23,11 +26,9 @@ lead:
   width: 1120
   height: 845
   focalPoint: { x: 50, y: 48 }
-excerpt: >-
-  Deux points de vue fictifs discutent d'une proposition budgétaire inventée : une hausse ciblée des frais de stationnement pour financer supports à vélo, sentiers et titres collectifs. L'autre camp craint que la transition pèse surtout sur les personnes sans alternative de transport.
 ---
 
-Faut-il que les frais de stationnement financent le transport actif? Une proposition budgétaire inventée pour ce débat oppose deux camps sur le campus.
+Faut-il que les frais de stationnement financent le transport actif? Une proposition budgétaire pour ce débat oppose deux camps sur le campus.
 
 D'un côté, une hausse ciblée pourrait soutenir l'installation de supports à vélo sécurisés, l'entretien des sentiers et des titres de transport collectif subventionnés. De l'autre, la mesure soulève des questions d'équité pour les personnes qui n'ont pas d'autre solution de rechange, notamment celles qui travaillent hors des horaires de bus ou qui vivent loin des corridors bien desservis.
 
@@ -36,5 +37,3 @@ D'un côté, une hausse ciblée pourrait soutenir l'installation de supports à 
 Les partisans de la hausse demandent un fonds dédié, transparent, dont le bilan serait publié chaque session. Les opposants préfèrent une cotisation générale ou un financement issu du budget institutionnel, afin de ne pas faire porter la transition écologique aux seules personnes qui utilisent encore la voiture.
 
 La rédaction fictive ne tranche pas. Elle invite toutefois à chiffrer les besoins réels — places de stationnement, kilomètres de pistes, nombre de titres de transport — avant d'adopter un pourcentage de hausse. Un forum public est annoncé pour le 8 octobre.
-
-> Les montants, la proposition et les prises de position sont fictifs.

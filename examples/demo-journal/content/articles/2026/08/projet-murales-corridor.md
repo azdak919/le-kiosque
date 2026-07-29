@@ -2,6 +2,10 @@
 id: 018f2c1a-7b3e-5014-9a4d-2f1e5c8b0014
 title: Des murales pour humaniser le corridor du bloc B
 slug: projet-murales-corridor
+excerpt: >-
+  Un projet de murales vise le corridor du bloc B, trop longtemps champion du beige
+  institutionnel. Appel à propositions jusqu’au 25 septembre, jury mixte, peinture
+  fournie.
 status: published
 demo: true
 publishedAt: 2026-08-14T16:00:00Z
@@ -24,23 +28,14 @@ lead:
   width: 1920
   height: 1280
   focalPoint: { x: 50, y: 48 }
-excerpt: >-
-  Texte de démonstration pour la suite du fil du Kiosque. L’article élargit
-  le volume du fil afin d’activer le bouton « Plus d’articles » après cinq
-  rangées, comme sur LE-RADAR. Sujet, campus et résultats entièrement fictifs.
 ---
 
-Des murales pour humaniser le corridor du bloc B. Ce billet de démonstration complète la banque d’articles du journal
-exemple afin de tester la pagination visuelle de la suite du fil.
+Le comité arts et l’association étudiante lancent un appel à murales pour le long corridor du bloc B. Thème libre, dans le respect des politiques du cégep ; formats imposés selon les pans de mur numérotés sur le plan affiché au local 1-22.
 
-La rédaction fictive y décrit un enjeu de campus, des modalités simples et un
-rappel éthique : aucun événement réel n’est annoncé ici. Les signatures actives
-et alumni cohabitent pour illustrer la continuité des archives.
+Les propositions (croquis + court texte) se déposent jusqu’au 25 septembre. Un jury composé de membres du personnel, d’étudiantes et d’étudiants et d’une personne diplômée en arts sélectionnera trois projets.
 
-## Contexte
+## Réalisation
 
-Les détails (horaires, lieux, inscriptions) restent inventés. Ils servent
-uniquement à peupler la grille « Suite du fil » et à valider le repli après
-dix cartes visibles, soit cinq rangées en deux colonnes.
+Peinture et apprêt fournis. Les équipes auront deux fins de semaine en octobre pour peindre, sous supervision. Les murales resteront en place au moins deux ans, sauf usure héroïque des sacs à dos.
 
-> Contenu entièrement fictif — journal de démonstration du Kiosque.
+Objectif avoué : que le trajet vers les casiers ressemble moins à un tunnel administratif et davantage à un lieu habité.

@@ -2,6 +2,10 @@
 id: 018f2c1a-7b3e-5006-9a4d-2f1e5c8b0006
 title: Journée portes ouvertes dans les laboratoires de sciences
 slug: journee-portes-ouvertes-labos
+excerpt: >-
+  Les laboratoires de sciences ouvrent leurs portes le 20 septembre. Lunettes de sécurité
+  fournies, blouses en option, interdiction de toucher aux choses qui clignotent sans
+  supervision.
 status: published
 demo: true
 publishedAt: 2026-08-22T16:00:00Z
@@ -22,23 +26,14 @@ lead:
   width: 1920
   height: 1280
   focalPoint: { x: 50, y: 48 }
-excerpt: >-
-  Texte de démonstration pour la suite du fil du Kiosque. L’article élargit
-  le volume du fil afin d’activer le bouton « Plus d’articles » après cinq
-  rangées, comme sur LE-RADAR. Sujet, campus et résultats entièrement fictifs.
 ---
 
-Journée portes ouvertes dans les laboratoires de sciences. Ce billet de démonstration complète la banque d’articles du journal
-exemple afin de tester la pagination visuelle de la suite du fil.
+Le 20 septembre, de 13 h à 16 h, les laboratoires de biologie, chimie et physique accueillent le public collégial pour une journée portes ouvertes. Des démonstrations courtes, des postes « essayez sous supervision » et une chasse aux instruments bizarres pour les curieuses et curieux.
 
-La rédaction fictive y décrit un enjeu de campus, des modalités simples et un
-rappel éthique : aucun événement réel n’est annoncé ici. Les signatures actives
-et alumni cohabitent pour illustrer la continuité des archives.
+Lunettes de sécurité obligatoires dans certaines salles — un stock d’accueil est prévu à l’entrée. Les cheveux longs se attachent ; les collations se mangent dehors.
 
-## Contexte
+## Pourquoi y aller
 
-Les détails (horaires, lieux, inscriptions) restent inventés. Ils servent
-uniquement à peupler la grille « Suite du fil » et à valider le repli après
-dix cartes visibles, soit cinq rangées en deux colonnes.
+Même si vous n’êtes pas en sciences, c’est l’occasion de voir ce qui se passe derrière les portes souvent fermées à clé. Les enseignantes et enseignants aiment parler de leurs projets ; les étudiantes et étudiants en stage aiment qu’on leur pose des questions.
 
-> Contenu entièrement fictif — journal de démonstration du Kiosque.
+Inscription conseillée pour les ateliers de 20 minutes (places limitées). Le reste du parcours se fait en libre circulation, flèches au sol incluses.

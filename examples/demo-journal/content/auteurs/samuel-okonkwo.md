@@ -6,7 +6,4 @@ cohort: '2026-2027'
 active: true
 ---
 
-Anime une émission hebdomadaire à la radio de campus et couvre la scène musicale
-locale.
-
-*Personnage fictif — journal de démonstration.*
+Culture. Collectionne les affiches de soirées et les rumeurs de salle de spectacle.

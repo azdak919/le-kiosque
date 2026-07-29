@@ -2,6 +2,9 @@
 id: 018f2c1a-7b3e-5001-9a4d-2f1e5c8b0001
 title: Une collecte de sang revient sur le campus en septembre
 slug: collecte-sang-campus
+excerpt: >-
+  La collecte de sang revient sur le campus les 12 et 13 septembre au gymnase annexe.
+  Collations promises, chaises confortables, et un badge « j’ai donné » très convoité.
 status: published
 demo: true
 publishedAt: 2026-08-27T11:00:00Z
@@ -22,23 +25,14 @@ lead:
   width: 1920
   height: 1280
   focalPoint: { x: 50, y: 48 }
-excerpt: >-
-  Texte de démonstration pour la suite du fil du Kiosque. L’article élargit
-  le volume du fil afin d’activer le bouton « Plus d’articles » après cinq
-  rangées, comme sur LE-RADAR. Sujet, campus et résultats entièrement fictifs.
 ---
 
-Une collecte de sang revient sur le campus en septembre. Ce billet de démonstration complète la banque d’articles du journal
-exemple afin de tester la pagination visuelle de la suite du fil.
+La collecte de sang annuelle s’installe au gymnase annexe les 12 et 13 septembre, de 9 h à 16 h. Inscription recommandée ; les places sans rendez-vous existent, mais la file du midi est légendaire.
 
-La rédaction fictive y décrit un enjeu de campus, des modalités simples et un
-rappel éthique : aucun événement réel n’est annoncé ici. Les signatures actives
-et alumni cohabitent pour illustrer la continuité des archives.
+Hydratez-vous, mangez un vrai déjeuner, apportez une pièce d’identité. Les personnes qui font un malaise auront droit à du jus et à la compassion collective — on a tous été là.
 
-## Contexte
+## Pourquoi ça compte
 
-Les détails (horaires, lieux, inscriptions) restent inventés. Ils servent
-uniquement à peupler la grille « Suite du fil » et à valider le repli après
-dix cartes visibles, soit cinq rangées en deux colonnes.
+Chaque don peut aider plusieurs patientes et patients. Sur le campus, c’est aussi l’un des rares événements où l’on voit des programmes complètement différents patienter sur la même rangée de chaises.
 
-> Contenu entièrement fictif — journal de démonstration du Kiosque.
+Un kiosque d’information sera tenu par le comité santé. Et oui, le badge autocollant reste optionnel… mais très photogénique.

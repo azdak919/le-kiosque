@@ -34,5 +34,3 @@ La rédaction fictive demande une signalisation claire : zones silencieuses, zon
 Des casques antibruit en prêt, des prises électriques mieux réparties et des horaires d'ouverture prolongés pendant les examens seraient déjà des gains concrets. Une cartographie simple des lieux calmes, mise à jour chaque session, aiderait les nouvelles cohortes à s'orienter.
 
 Le silence n'est pas un luxe esthétique. Pour plusieurs, c'est la condition d'un examen réussi, d'un mémoire avancé ou d'une soirée de révision possible après un quart de travail.
-
-> Opinion fictive publiée à des fins de démonstration. L'établissement et les lieux cités n'existent pas.

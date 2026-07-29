@@ -6,7 +6,7 @@ const config: Partial<KiosqueConfig> = {
   source: { adapter: 'markdown' },
   editorial: { mode: 'demo-local' },
   deploy: { basePath: '/le-kiosque' },
-  demoNotice: 'Journal de démonstration — toutes les personnes et tous les faits sont fictifs',
+  demoNotice: 'Démonstration du Kiosque — journal étudiant fictif',
   demoContent: true,
   feedLimit: 30,
 };

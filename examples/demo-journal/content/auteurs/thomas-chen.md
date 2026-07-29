@@ -6,8 +6,4 @@ cohort: '2025-2027'
 active: true
 ---
 
-Suit les équipes interprogrammes et les sports intramuros. Ancien joueur de
-soccer collégial, il écrit surtout les comptes rendus de match et les profils
-de recrues.
-
-*Personnage fictif — journal de démonstration.*
+Sports. Chronomètre tout, même le temps d’attente aux fontaines d’eau du gymnase.

@@ -3,8 +3,8 @@
 
 slug: le-quorum
 name: Le Quorum
-tagline: Journal de démonstration du Kiosque
-institution: Cégep de démonstration
+tagline: On vote, on débat, on imprime
+institution: Cégep du Quorum
 institutionType: cegep
 region: Québec
 lang: fr-CA
@@ -33,7 +33,7 @@ masthead:
       - id: 1c05402e-3d91-54df-8638-1105d7dbcdd8
         src: /media/demo-library/mcgill-roddick.jpg
         alt: "Portails Roddick de l’Université McGill à Montréal"
-        caption: "Campus McGill (Montréal) — illustration de démonstration uniquement."
+        caption: "Campus McGill (Montréal)."
         credit: "Gene.arboit"
         creditUrl: https://commons.wikimedia.org/wiki/User:Gene.arboit
         license: CC BY-SA 3.0
@@ -45,7 +45,7 @@ masthead:
       - id: 556552aa-0082-5038-a067-57c87da0996c
         src: /media/demo-library/mcgill-campus.jpg
         alt: "Campus centre-ville de l’Université McGill"
-        caption: "McGill (Montréal) — illustration de démonstration uniquement."
+        caption: "McGill (Montréal)."
         credit: "Jeangagnon"
         creditUrl: https://commons.wikimedia.org/wiki/File:McGill_University_downtown_campus_31.JPG
         license: CC BY-SA 3.0
@@ -57,7 +57,7 @@ masthead:
       - id: 90e7c65a-3dc6-5b98-8694-19c7a320701c
         src: /media/demo-library/ulaval-parc.jpg
         alt: "Parc sur le campus de l’Université Laval"
-        caption: "Université Laval (Québec) — illustration de démonstration uniquement."
+        caption: "Université Laval (Québec)."
         credit: "Wilfredor"
         creditUrl: https://commons.wikimedia.org/wiki/File:Park_in_Universit%C3%A9_Laval.jpg
         license: CC BY-SA 4.0
@@ -69,7 +69,7 @@ masthead:
       - id: d46be5d9-6524-5846-8576-68d9680fd191
         src: /media/demo-library/ulaval-campus.jpg
         alt: "Campus de l’Université Laval à Québec"
-        caption: "Université Laval (Québec) — illustration de démonstration uniquement."
+        caption: "Université Laval (Québec)."
         credit: "Wilfredor"
         creditUrl: https://commons.wikimedia.org/wiki/File:Universit%C3%A9_Laval%2C_Quebec%2C_Canada_02.jpg
         license: CC0
@@ -81,7 +81,7 @@ masthead:
       - id: 00117e7b-3263-55db-99dd-b89436785bb5
         src: /media/demo-library/bishops-campus.jpg
         alt: "Campus de Bishop’s University"
-        caption: "Bishop’s University — illustration de démonstration uniquement."
+        caption: "Bishop’s University."
         credit: "Balcer"
         creditUrl: https://commons.wikimedia.org/wiki/File:Bishop's_University_campus_2011.jpg
         license: CC BY 3.0
@@ -93,7 +93,7 @@ masthead:
       - id: f45f6860-ba3f-536d-9db0-12ddbf5bc5db
         src: /media/demo-library/uqam-jasmin.jpg
         alt: "Pavillon Judith-Jasmin de l’UQAM à Montréal"
-        caption: "UQAM (Montréal) — illustration de démonstration uniquement."
+        caption: "UQAM (Montréal)."
         credit: "Great11"
         creditUrl: https://commons.wikimedia.org/wiki/File:Pavillon_Judith-Jasmin_UQAM_1.jpg
         license: CC BY-SA 4.0
@@ -105,7 +105,7 @@ masthead:
       - id: e1345729-c51f-585e-9c97-105d82bcccff
         src: /media/demo-library/concordia-hall.jpg
         alt: "Édifice Henry F. Hall de l’Université Concordia"
-        caption: "Concordia (Montréal) — illustration de démonstration uniquement."
+        caption: "Concordia (Montréal)."
         credit: "Jeangagnon"
         creditUrl: https://commons.wikimedia.org/wiki/File:Henry_F._Hall_Building_07.JPG
         license: CC BY-SA 3.0
@@ -117,7 +117,7 @@ masthead:
       - id: 77b1f574-1be1-57af-8413-ca80b7f3bccc
         src: /media/demo-library/udem-gaudry.jpg
         alt: "Pavillon Roger-Gaudry de l’Université de Montréal"
-        caption: "Université de Montréal — illustration de démonstration uniquement."
+        caption: "Université de Montréal."
         credit: "Funke"
         creditUrl: https://commons.wikimedia.org/wiki/File:Pavillon_Roger-Gaudry_II.jpg
         license: CC BY-SA 4.0
@@ -141,7 +141,7 @@ masthead:
       - id: 4ad82ff9-79a6-5a8f-9c40-3e2073a54b9b
         src: /media/demo-library/sherbrooke-longueuil.jpg
         alt: "Campus de Longueuil de l’Université de Sherbrooke"
-        caption: "Université de Sherbrooke (Longueuil) — illustration de démonstration uniquement."
+        caption: "Université de Sherbrooke (Longueuil)."
         credit: "Jeangagnon"
         creditUrl: https://commons.wikimedia.org/wiki/File:Campus_de_Longueuil_-_Universite_de_Sherbrooke_09.jpg
         license: CC BY-SA 3.0
@@ -183,13 +183,13 @@ governance:
   # Une ORGANISATION, jamais un compte personnel.
   owner: kiosque-demo
   # L'entité permanente qui survit aux cohortes.
-  stewardEntity: Association étudiante (exemple)
+  stewardEntity: Association étudiante du Cégep du Quorum
   # Une adresse institutionnelle, pas celle d'une personne.
-  contact: redaction@journal-exemple.invalid
+  contact: redaction@lequorum.ca
   repo: https://github.com/kiosque-demo/le-quorum
-  domainRegistrar: exemple
+  domainRegistrar: registraire-campus
   domainExpiresAt: '2030-08-01T00:00:00Z'
   # Deux personnes minimum, toujours.
   recoveryContacts:
-    - redaction@journal-exemple.invalid
-    - vie-etudiante@journal-exemple.invalid
+    - redaction@lequorum.ca
+    - vie-etudiante@cegep-du-quorum.qc.ca

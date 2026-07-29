@@ -2,6 +2,10 @@
 id: 018f2c1a-7b3e-5008-9a4d-2f1e5c8b0008
 title: "Hockey intérieur : horaires d’entraînement publiés"
 slug: entrainement-hockey-interieur
+excerpt: >-
+  Les horaires d’entraînement de hockey intérieur sont collés au gymnase : lundis et
+  mercredis 21 h, équipement partiellement fourni, motivation non fournie — amenez la
+  vôtre.
 status: published
 demo: true
 publishedAt: 2026-08-20T10:00:00Z
@@ -23,23 +27,14 @@ lead:
   width: 1920
   height: 1440
   focalPoint: { x: 50, y: 48 }
-excerpt: >-
-  Texte de démonstration pour la suite du fil du Kiosque. L’article élargit
-  le volume du fil afin d’activer le bouton « Plus d’articles » après cinq
-  rangées, comme sur LE-RADAR. Sujet, campus et résultats entièrement fictifs.
 ---
 
-Hockey intérieur : horaires d’entraînement publiés. Ce billet de démonstration complète la banque d’articles du journal
-exemple afin de tester la pagination visuelle de la suite du fil.
+L’équipe de hockey intérieur a publié ses créneaux d’entraînement : lundis et mercredis, 21 h à 22 h 30, gymnase principal. Ouvert aux personnes déjà inscrites au club et, selon les places, à quelques essayages en début de session.
 
-La rédaction fictive y décrit un enjeu de campus, des modalités simples et un
-rappel éthique : aucun événement réel n’est annoncé ici. Les signatures actives
-et alumni cohabitent pour illustrer la continuité des archives.
+Bâtons et balles fournis ; gants et protecteurs restent personnels. L’intensité varie : on vise le fun structuré, pas le circuit professionnel.
 
-## Contexte
+## Inscriptions
 
-Les détails (horaires, lieux, inscriptions) restent inventés. Ils servent
-uniquement à peupler la grille « Suite du fil » et à valider le repli après
-dix cartes visibles, soit cinq rangées en deux colonnes.
+Passez au local des sports avant vendredi pour confirmer votre présence. Les absences répétées sans avis libèrent la place au profit de la liste d’attente — une liste qui, cette année, ressemble déjà à une file de billetterie.
 
-> Contenu entièrement fictif — journal de démonstration du Kiosque.
+Premier match amical prévu fin septembre contre un cégep voisin. Venez encourager, ou du moins ne pas confondre le ballon avec un ballon de soccer.

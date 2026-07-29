@@ -6,7 +6,4 @@ cohort: '2023-2025'
 active: false
 ---
 
-A lancé la chronique cinéma et plusieurs dossiers culture avant de graduer.
-La rédaction conserve ses textes tels quels dans le fil et les archives.
-
-*Personnage fictif — journal de démonstration.*
+Alumni et archives. Se souvient des mandats de grève mieux que les procès-verbaux.

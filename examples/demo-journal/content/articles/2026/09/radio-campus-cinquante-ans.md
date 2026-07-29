@@ -45,5 +45,3 @@ Les premières émissions étaient enregistrées sur bobines et rediffusées à 
 « Le plus difficile n'a jamais été de produire, mais de conserver », résume un ancien de la station. Trois générations d'enregistrements ont été perdues faute de matériel de lecture. C'est exactement le problème que cherche à régler l'archivage en formats ouverts : un fichier qu'on ne peut plus ouvrir n'est pas une archive.
 
 Une exposition sonore d'une heure, montée à partir des bobines sauvées, sera diffusée en boucle dans le hall du pavillon des arts pendant la semaine anniversaire. Des ateliers d'initiation à la prise de son resteront ouverts aux nouvelles cohortes tout au long de l'automne.
-
-> Cet article est une **démonstration technique**. Les faits, les personnes et l'établissement sont fictifs.

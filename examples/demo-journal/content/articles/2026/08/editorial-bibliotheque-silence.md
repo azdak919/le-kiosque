@@ -2,6 +2,9 @@
 id: 018f2c1a-7b3e-5009-9a4d-2f1e5c8b0009
 title: "Éditorial : le silence, un bien collectif en bibliothèque"
 slug: editorial-bibliotheque-silence
+excerpt: >-
+  Le silence en bibliothèque n’est pas une lubie de bibliothécaires : c’est le dernier
+  bien commun encore gratuit sur le campus. Défendons-le comme on défend le Wi-Fi.
 status: published
 demo: true
 publishedAt: 2026-08-19T11:00:00Z
@@ -23,23 +26,14 @@ lead:
   width: 1920
   height: 1280
   focalPoint: { x: 50, y: 48 }
-excerpt: >-
-  Texte de démonstration pour la suite du fil du Kiosque. L’article élargit
-  le volume du fil afin d’activer le bouton « Plus d’articles » après cinq
-  rangées, comme sur LE-RADAR. Sujet, campus et résultats entièrement fictifs.
 ---
 
-Éditorial : le silence, un bien collectif en bibliothèque. Ce billet de démonstration complète la banque d’articles du journal
-exemple afin de tester la pagination visuelle de la suite du fil.
+Il reste peu d’endroits où l’on peut entendre tourner une page. La bibliothèque en est un — ou devrait l’être. Or, depuis la rentrée, les appels en haut-parleur, les réunions improvisées et les rires de corridor ont colonisé les tables du deuxième étage.
 
-La rédaction fictive y décrit un enjeu de campus, des modalités simples et un
-rappel éthique : aucun événement réel n’est annoncé ici. Les signatures actives
-et alumni cohabitent pour illustrer la continuité des archives.
+Personne ne demande le silence monastique. On demande que les appels se fassent dans l’escalier, que les travaux d’équipe choisissent les salles prévues, et que les écouteurs restent une politesse, pas une option.
 
-## Contexte
+## Un bien collectif
 
-Les détails (horaires, lieux, inscriptions) restent inventés. Ils servent
-uniquement à peupler la grille « Suite du fil » et à valider le repli après
-dix cartes visibles, soit cinq rangées en deux colonnes.
+Le silence profite à celles et ceux qui n’ont pas de chambre tranquille, qui travaillent entre deux jobs, qui révisent à la dernière minute. Le déranger, c’est privatiser un espace public.
 
-> Contenu entièrement fictif — journal de démonstration du Kiosque.
+La rédaction propose une signalétique claire, des zones de collaboration bien définies, et un rappel simple : si votre conversation porte sur le weekend, elle peut descendre d’un étage. Le savoir, lui, a besoin d’un peu de calme pour s’installer.

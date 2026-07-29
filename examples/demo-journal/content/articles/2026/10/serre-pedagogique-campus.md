@@ -69,6 +69,3 @@ donnée à une cuisine collective ou vendue pour financer les semences.
 Une première rencontre ouverte est annoncée pour le 15 octobre. Les personnes
 intéressées pourront choisir un chantier sans connaissances préalables : semis,
 construction, documentation ou communications.
-
-> Article, établissement, personnes et projet entièrement fictifs, créés pour
-> démontrer un format long dans Le Kiosque.

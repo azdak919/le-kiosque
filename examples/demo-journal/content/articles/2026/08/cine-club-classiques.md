@@ -2,6 +2,10 @@
 id: 018f2c1a-7b3e-5016-9a4d-2f1e5c8b0016
 title: "Ciné-club : classiques québécois en version restaurée"
 slug: cine-club-classiques
+excerpt: >-
+  Le ciné-club projette des classiques québécois restaurés les jeudis soirs à
+  l’amphithéâtre. Première séance : entrée libre, maïs soufflé à prix étudiant, débats
+  aimables après le générique.
 status: published
 demo: true
 publishedAt: 2026-08-12T10:00:00Z
@@ -22,23 +26,14 @@ lead:
   width: 1920
   height: 1317
   focalPoint: { x: 50, y: 48 }
-excerpt: >-
-  Texte de démonstration pour la suite du fil du Kiosque. L’article élargit
-  le volume du fil afin d’activer le bouton « Plus d’articles » après cinq
-  rangées, comme sur LE-RADAR. Sujet, campus et résultats entièrement fictifs.
 ---
 
-Ciné-club : classiques québécois en version restaurée. Ce billet de démonstration complète la banque d’articles du journal
-exemple afin de tester la pagination visuelle de la suite du fil.
+Le ciné-club relance sa saison avec une série de classiques québécois en copies restaurées. Rendez-vous les jeudis à 19 h, amphithéâtre principal. Entrée libre pour la communauté collégiale ; maïs soufflé à prix qui ne ruine pas la bourse d’études.
 
-La rédaction fictive y décrit un enjeu de campus, des modalités simples et un
-rappel éthique : aucun événement réel n’est annoncé ici. Les signatures actives
-et alumni cohabitent pour illustrer la continuité des archives.
+La première séance ouvre sur un film souvent cité en cours de littérature… et rarement vu d’un bout à l’autre hors extrait en ligne. Un court mot d’intro (moins de cinq minutes, promesse solennelle) précédera la projection.
 
-## Contexte
+## Après le générique
 
-Les détails (horaires, lieux, inscriptions) restent inventés. Ils servent
-uniquement à peupler la grille « Suite du fil » et à valider le repli après
-dix cartes visibles, soit cinq rangées en deux colonnes.
+Discussion facultative dans le foyer. On tolère les désaccords ; on ne tolère pas les téléphones allumés pendant le film. Les prochaines dates seront collées près de la cafétéria et publiées ici.
 
-> Contenu entièrement fictif — journal de démonstration du Kiosque.
+« On veut une salle pleine et respectueuse, résume la responsable. Et si quelqu’un pleure à la fin, on a des mouchoirs. »

@@ -2,6 +2,9 @@
 id: 018f2c1a-7b3e-5013-9a4d-2f1e5c8b0013
 title: "Lettre ouverte : horaires d’autobus et fin de cours"
 slug: lettre-ouverte-transport
+excerpt: >-
+  Lettre ouverte : quand le dernier autobus part avant la fin des labs, ce n’est pas un
+  détail d’horaire — c’est une barrière à la réussite déguisée en billet de bus.
 status: published
 demo: true
 publishedAt: 2026-08-15T15:00:00Z
@@ -24,23 +27,16 @@ lead:
   width: 1600
   height: 1200
   focalPoint: { x: 50, y: 48 }
-excerpt: >-
-  Texte de démonstration pour la suite du fil du Kiosque. L’article élargit
-  le volume du fil afin d’activer le bouton « Plus d’articles » après cinq
-  rangées, comme sur LE-RADAR. Sujet, campus et résultats entièrement fictifs.
 ---
 
-Lettre ouverte : horaires d’autobus et fin de cours. Ce billet de démonstration complète la banque d’articles du journal
-exemple afin de tester la pagination visuelle de la suite du fil.
+Chères décideuses, chers décideurs du transport et du campus,
 
-La rédaction fictive y décrit un enjeu de campus, des modalités simples et un
-rappel éthique : aucun événement réel n’est annoncé ici. Les signatures actives
-et alumni cohabitent pour illustrer la continuité des archives.
+Nous finissons nos laboratoires à 18 h 40. Le dernier autobus utile quitte l’arrêt principal à 18 h 10. L’écart n’est pas une anecdote : c’est le moment exact où l’on doit choisir entre réussir un protocole et rentrer chez soi sans marcher 40 minutes dans le noir.
 
-## Contexte
+Nous demandons un départ supplémentaire en semaine, aligné sur les fermetures de labs et de bibliothèque. Nous demandons aussi que les données de fréquentation soient discutées avec les comités étudiants, pas seulement dans des salles sans nous.
 
-Les détails (horaires, lieux, inscriptions) restent inventés. Ils servent
-uniquement à peupler la grille « Suite du fil » et à valider le repli après
-dix cartes visibles, soit cinq rangées en deux colonnes.
+## Ce n’est pas du confort
 
-> Contenu entièrement fictif — journal de démonstration du Kiosque.
+C’est de la sécurité, de l’équité et du bon sens. Les personnes sans voiture, celles qui travaillent le soir, celles qui habitent hors des grands axes paient déjà assez cher leur présence ici.
+
+Signez cette lettre si le dernier autobus a déjà décidé pour vous. Nous déposerons les signatures à la direction des services et à la société de transport avant la fin du mois.

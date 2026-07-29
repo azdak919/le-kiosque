@@ -2,6 +2,10 @@
 id: 018f2c1a-7b3e-5003-9a4d-2f1e5c8b0003
 title: "Volleyball intercégéps : les recrues déjà sur le terrain"
 slug: match-intercegep-volley
+excerpt: >-
+  Les recrues de volleyball ont déjà mis le pied sur le terrain : matchs préparatoires,
+  nouveaux maillots un peu trop grands, et une ambition discrète de ne pas finir dernières
+  de la section.
 status: published
 demo: true
 publishedAt: 2026-08-25T13:00:00Z
@@ -22,23 +26,14 @@ lead:
   width: 1920
   height: 1280
   focalPoint: { x: 50, y: 48 }
-excerpt: >-
-  Texte de démonstration pour la suite du fil du Kiosque. L’article élargit
-  le volume du fil afin d’activer le bouton « Plus d’articles » après cinq
-  rangées, comme sur LE-RADAR. Sujet, campus et résultats entièrement fictifs.
 ---
 
-Volleyball intercégéps : les recrues déjà sur le terrain. Ce billet de démonstration complète la banque d’articles du journal
-exemple afin de tester la pagination visuelle de la suite du fil.
+L’équipe de volleyball a entamé ses matchs préparatoires contre deux cégeps de la région. Résultat mitigé, énergie intacte : les recrues apprennent vite ce que signifie « lire le filet » sous les encouragements (et les conseils non sollicités) des tribunes.
 
-La rédaction fictive y décrit un enjeu de campus, des modalités simples et un
-rappel éthique : aucun événement réel n’est annoncé ici. Les signatures actives
-et alumni cohabitent pour illustrer la continuité des archives.
+Les entraînements ont lieu les mardis et jeudis à 18 h. Public bienvenu aux matchs à domicile ; le gymnase sonne mieux quand il n’est pas vide.
 
-## Contexte
+## Saison à venir
 
-Les détails (horaires, lieux, inscriptions) restent inventés. Ils servent
-uniquement à peupler la grille « Suite du fil » et à valider le repli après
-dix cartes visibles, soit cinq rangées en deux colonnes.
+Le calendrier officiel sera publié d’ici deux semaines. D’ici là, l’équipe cherche aussi des bénévoles pour le chronométrage et la table de marque — formation fournie, stress inclus.
 
-> Contenu entièrement fictif — journal de démonstration du Kiosque.
+« On n’est pas là pour devenir virales, lance une capitaine. On est là pour améliorer notre réception et peut-être, un jour, gagner un set qu’on n’aurait pas imaginé gagner en août. »

@@ -2,6 +2,9 @@
 id: 018f2c1a-7b3e-5007-9a4d-2f1e5c8b0007
 title: Le club photo expose ses clichés d’été au cégep
 slug: club-photo-exposition
+excerpt: >-
+  Le club photo accroche ses clichés d’été dans le hall du bloc A : campus déserts,
+  festivals, jobs d’été et un chat de bibliothèque devenu vedette malgré lui.
 status: published
 demo: true
 publishedAt: 2026-08-21T17:00:00Z
@@ -23,23 +26,14 @@ lead:
   width: 1920
   height: 1280
   focalPoint: { x: 50, y: 48 }
-excerpt: >-
-  Texte de démonstration pour la suite du fil du Kiosque. L’article élargit
-  le volume du fil afin d’activer le bouton « Plus d’articles » après cinq
-  rangées, comme sur LE-RADAR. Sujet, campus et résultats entièrement fictifs.
 ---
 
-Le club photo expose ses clichés d’été au cégep. Ce billet de démonstration complète la banque d’articles du journal
-exemple afin de tester la pagination visuelle de la suite du fil.
+Jusqu’au 30 septembre, le hall du bloc A accueille l’exposition estivale du club photo. Tirages 30 × 45 cm, cartels manuscrits, et une sélection « coup de cœur du public » votée par QR code.
 
-La rédaction fictive y décrit un enjeu de campus, des modalités simples et un
-rappel éthique : aucun événement réel n’est annoncé ici. Les signatures actives
-et alumni cohabitent pour illustrer la continuité des archives.
+On y croise des terrains de sport vides à 6 h, des cuisines de restos où des membres travaillaient l’été, et — star incontestée — le chat gris qui hante parfois les marches de la bibliothèque.
 
-## Contexte
+## Vernissage
 
-Les détails (horaires, lieux, inscriptions) restent inventés. Ils servent
-uniquement à peupler la grille « Suite du fil » et à valider le repli après
-dix cartes visibles, soit cinq rangées en deux colonnes.
+Jeudi 18 h, boissons non alcoolisées et discours de moins de trois minutes (règle affichée près du punch). Les tirages restent la propriété des photographes ; aucune vente sur place.
 
-> Contenu entièrement fictif — journal de démonstration du Kiosque.
+Le club recrute aussi pour la session : boîtier fourni pour les premières sorties, patience fournie par les membres expérimentés.

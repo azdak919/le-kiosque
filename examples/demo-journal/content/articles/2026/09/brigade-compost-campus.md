@@ -2,6 +2,10 @@
 id: 018f2c1a-7b3e-5000-9a4d-2f1e5c8b0d44
 title: Une brigade étudiante veut réduire les erreurs dans les bacs de compost
 slug: brigade-compost-campus
+excerpt: >-
+  Une brigade étudiante a passé trois semaines à observer les matières déposées dans douze
+  îlots de tri du campus. Son constat : les erreurs les plus fréquentes concernent les
+  contenants alimentaires souillés, les sacs…
 status: published
 demo: true
 publishedAt: 2026-09-28T09:00:00Z
@@ -23,11 +27,9 @@ lead:
   width: 1600
   height: 1135
   focalPoint: { x: 50, y: 48 }
-excerpt: >-
-  Des affiches plus simples, des pictogrammes plus grands et une tournée d'information dans douze îlots de tri fictifs seront mis à l'essai. La brigade étudiante a repéré les erreurs les plus fréquentes — contenants souillés, sacs mal identifiés, liquides — et propose une signalisation uniforme d'un pavillon à l'autre.
 ---
 
-Une brigade étudiante a passé trois semaines à observer les matières déposées dans douze îlots de tri fictifs du campus. Son constat : les erreurs les plus fréquentes concernent les contenants alimentaires souillés, les sacs de plastique compostable mal identifiés et les restes de boissons encore liquides.
+Une brigade étudiante a passé trois semaines à observer les matières déposées dans douze îlots de tri du campus. Son constat : les erreurs les plus fréquentes concernent les contenants alimentaires souillés, les sacs de plastique compostable mal identifiés et les restes de boissons encore liquides.
 
 La brigade recommande des affiches plus simples, des pictogrammes plus grands et une signalisation uniforme d'un pavillon à l'autre. Une tournée d'information aura lieu chaque midi pendant deux semaines, avec des démonstrations de tri et une boîte à questions.
 
@@ -36,5 +38,3 @@ La brigade recommande des affiches plus simples, des pictogrammes plus grands et
 Les nouveaux panneaux indiqueront d'abord ce qui va dans le compost, puis ce qui doit rester au recyclage ou aux ordures. Un code couleur unique remplacera les variantes utilisées par différents services. Les bacs trop souvent contaminés seront temporairement surveillés, non pour sanctionner, mais pour noter les moments de la journée où les erreurs s'accumulent.
 
 Le comité environnemental évaluera la mesure à partir du volume de refus retourné par le collecteur et d'un court questionnaire affiché près des cafétérias. Les résultats seront publiés avant la fin de la session d'automne.
-
-> Le projet, les îlots de tri et l'établissement sont entièrement fictifs.

@@ -1,7 +1,11 @@
 ---
 id: 018f2c1a-7b3e-5015-9a4d-2f1e5c8b0015
-title: Clinique de démonstration en soins infirmiers
+title: "Clinique-école : prise de tension gratuite au local 1-08"
 slug: clinic-soins-infirmiers
+excerpt: >-
+  Les étudiantes et étudiants en soins infirmiers offrent des prises de tension et des
+  conseils de base au local 1-08. Pas un diagnostic : un service d’apprentissage
+  supervisé, sur inscription.
 status: published
 demo: true
 publishedAt: 2026-08-13T17:00:00Z
@@ -22,23 +26,14 @@ lead:
   width: 1920
   height: 1280
   focalPoint: { x: 50, y: 48 }
-excerpt: >-
-  Texte de démonstration pour la suite du fil du Kiosque. L’article élargit
-  le volume du fil afin d’activer le bouton « Plus d’articles » après cinq
-  rangées, comme sur LE-RADAR. Sujet, campus et résultats entièrement fictifs.
 ---
 
-Clinique de démonstration en soins infirmiers. Ce billet de démonstration complète la banque d’articles du journal
-exemple afin de tester la pagination visuelle de la suite du fil.
+La clinique-école du programme de soins infirmiers rouvre ses portes au local 1-08, les mardis et jeudis de 10 h à 15 h. Au menu : prise de tension, mesures simples et discussion sur les saines habitudes — le tout supervisé par le personnel enseignant.
 
-La rédaction fictive y décrit un enjeu de campus, des modalités simples et un
-rappel éthique : aucun événement réel n’est annoncé ici. Les signatures actives
-et alumni cohabitent pour illustrer la continuité des archives.
+Ce n’est pas un remplacement d’une clinique médicale. Les cas urgents restent dirigés vers les services de santé. L’objectif est double : former la cohorte et offrir un point d’accès rapide pour des questions du quotidien.
 
-## Contexte
+## Inscription
 
-Les détails (horaires, lieux, inscriptions) restent inventés. Ils servent
-uniquement à peupler la grille « Suite du fil » et à valider le repli après
-dix cartes visibles, soit cinq rangées en deux colonnes.
+Des plages de quinze minutes se réservent en ligne. Les places sans rendez-vous existent en fin de journée, mais la file peut serpentiner jusque dans le corridor.
 
-> Contenu entièrement fictif — journal de démonstration du Kiosque.
+Apportez votre carte étudiante. Et respirez calmement : on a déjà assez de stress avec les examens de mi-session.

@@ -6,7 +6,4 @@ cohort: '2026-2027'
 active: true
 ---
 
-Photographie le campus et signe aussi des textes courts. Préfère les sujets
-où l’image porte autant que le paragraphe — ateliers, labs, vie associative.
-
-*Personnage fictif — journal de démonstration.*
+Arts et critiques. Note les expositions avec la même sévérité qu’un labo de chimie.

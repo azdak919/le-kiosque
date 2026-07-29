@@ -36,5 +36,3 @@ La rédaction combine archives sonores numérisées, entrevues récentes et narr
 Les six premiers épisodes paraîtront toutes les deux semaines à partir d'octobre. Une version texte des notes de production accompagnera chaque sortie, avec la liste des sources et des extraits d'archives utilisés. Les fichiers audio seront proposés en formats ouverts, sans application exclusive.
 
 Les personnes qui souhaitent proposer un lieu ou un souvenir peuvent écrire à l'adresse de la rédaction fictive. Les témoignages anonymes sont acceptés, mais ne seront diffusés qu'après une vérification minimale de cohérence.
-
-> Le balado, ses archives et l'établissement sont entièrement fictifs.

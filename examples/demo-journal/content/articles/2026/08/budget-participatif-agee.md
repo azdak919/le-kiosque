@@ -2,6 +2,10 @@
 id: 018f2c1a-7b3e-5018-9a4d-2f1e5c8b0018
 title: "Budget participatif de l’AGÉE : cinq projets finalistes"
 slug: budget-participatif-agee
+excerpt: >-
+  Cinq projets finalistes se disputent le budget participatif de l’AGÉE : fontaine à eau,
+  hamacs, atelier vélo, balado étudiant et horloge géante « anti-retard ». Le vote ouvre
+  lundi.
 status: published
 demo: true
 publishedAt: 2026-08-10T12:00:00Z
@@ -23,23 +27,14 @@ lead:
   width: 1920
   height: 1286
   focalPoint: { x: 50, y: 48 }
-excerpt: >-
-  Texte de démonstration pour la suite du fil du Kiosque. L’article élargit
-  le volume du fil afin d’activer le bouton « Plus d’articles » après cinq
-  rangées, comme sur LE-RADAR. Sujet, campus et résultats entièrement fictifs.
 ---
 
-Budget participatif de l’AGÉE : cinq projets finalistes. Ce billet de démonstration complète la banque d’articles du journal
-exemple afin de tester la pagination visuelle de la suite du fil.
+L’Association générale des étudiantes et étudiants a dévoilé les cinq finalistes de son budget participatif. Le pot commun — 12 000 $ — ira au projet qui recueillera le plus de voix en ligne du lundi au vendredi.
 
-La rédaction fictive y décrit un enjeu de campus, des modalités simples et un
-rappel éthique : aucun événement réel n’est annoncé ici. Les signatures actives
-et alumni cohabitent pour illustrer la continuité des archives.
+Les propositions : une deuxième fontaine filtrante près du gymnase, un trio de hamacs dans la cour intérieure, un atelier de réparation de vélos mobile, un balado mensuel produit par les étudiantes et étudiants, et une horloge géante dans le hall « pour que plus personne ne prétende que le cours a commencé sans nous ».
 
-## Contexte
+## Comment voter
 
-Les détails (horaires, lieux, inscriptions) restent inventés. Ils servent
-uniquement à peupler la grille « Suite du fil » et à valider le repli après
-dix cartes visibles, soit cinq rangées en deux colonnes.
+Un lien sera envoyé par courriel institutionnel. Une personne, un vote ; les comptes partagés entre colocataires sont officiellement déconseillés, même si la tentation est réelle.
 
-> Contenu entièrement fictif — journal de démonstration du Kiosque.
+Les résultats seront annoncés à l’AG de fin septembre. Les projets non retenus pourront ressoumissionner l’an prochain, horloge géante comprise.

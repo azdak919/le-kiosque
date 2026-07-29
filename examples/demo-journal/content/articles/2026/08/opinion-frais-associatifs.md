@@ -2,6 +2,10 @@
 id: 018f2c1a-7b3e-5005-9a4d-2f1e5c8b0005
 title: "Frais associatifs : transparence d’abord"
 slug: opinion-frais-associatifs
+excerpt: >-
+  Les frais associatifs financent des services réels. Encore faut-il que les budgets
+  soient lisibles, votés sans jargon et assez clairs pour qu’on arrête de les confondre
+  avec une taxe mystérieuse.
 status: published
 demo: true
 publishedAt: 2026-08-23T15:00:00Z
@@ -22,23 +26,14 @@ lead:
   width: 1920
   height: 1440
   focalPoint: { x: 50, y: 48 }
-excerpt: >-
-  Texte de démonstration pour la suite du fil du Kiosque. L’article élargit
-  le volume du fil afin d’activer le bouton « Plus d’articles » après cinq
-  rangées, comme sur LE-RADAR. Sujet, campus et résultats entièrement fictifs.
 ---
 
-Frais associatifs : transparence d’abord. Ce billet de démonstration complète la banque d’articles du journal
-exemple afin de tester la pagination visuelle de la suite du fil.
+Chaque session, la même phrase revient près des casiers : « C’est quoi, déjà, les frais associatifs ? » La réponse mérite mieux qu’un haussement d’épaules.
 
-La rédaction fictive y décrit un enjeu de campus, des modalités simples et un
-rappel éthique : aucun événement réel n’est annoncé ici. Les signatures actives
-et alumni cohabitent pour illustrer la continuité des archives.
+Ces montants financent des clubs, des événements, parfois des bourses d’urgence et du matériel partagé. Quand la reddition de comptes est claire — postes, montants, décisions d’AG — la confiance suit. Quand elle se noie dans des tableaux illisibles, la rumeur gagne.
 
-## Contexte
+## Transparence d’abord
 
-Les détails (horaires, lieux, inscriptions) restent inventés. Ils servent
-uniquement à peupler la grille « Suite du fil » et à valider le repli après
-dix cartes visibles, soit cinq rangées en deux colonnes.
+Publier un résumé d’une page après chaque budget voté. Annoncer les échéances de consultation avant, pas après. Offrir une séance de questions sans micro intimidant.
 
-> Contenu entièrement fictif — journal de démonstration du Kiosque.
+On peut être fier de son association et exiger qu’elle explique ses choix. Ce n’est pas de l’opposition : c’est de la vie collégiale adulte. Et ça commence par des chiffres qu’on peut lire sans diplôme en comptabilité.

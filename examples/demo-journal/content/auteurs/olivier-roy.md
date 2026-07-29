@@ -6,7 +6,4 @@ cohort: '2025-2027'
 active: true
 ---
 
-Écrit les éditoriaux et les débats ouverts. Étudiant en sciences politiques,
-il s’intéresse aux choix de mobilité et aux espaces publics du cégep.
-
-*Personnage fictif — journal de démonstration.*
+Opinion et éditoriaux. Défend le dernier autobus comme s’il s’agissait d’un droit constitutionnel.
