@@ -26,8 +26,7 @@ lead:
   height: 1317
   focalPoint: { x: 50, y: 48 }
 excerpt: >-
-  Une serre quatre saisons servira à la fois de laboratoire, de garde-manger
-  pédagogique et de lieu de rencontre dès la session d'hiver.
+  Une serre quatre saisons de soixante mètres carrés servira à la fois de laboratoire, de garde-manger pédagogique et de lieu de rencontre pour la biologie, la cuisine et le comité environnemental. Le projet, né dans trois départements, doit prendre racine avant les premières neiges.
 ---
 
 Une structure vitrée de soixante mètres carrés doit être installée derrière le

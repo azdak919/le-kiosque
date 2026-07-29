@@ -24,15 +24,18 @@ lead:
   width: 1920
   height: 1280
   focalPoint: { x: 50, y: 48 }
-excerpt: Six équipes mixtes pourront participer au tournoi amical du 24 octobre.
+excerpt: >-
+  Six équipes mixtes pourront s'inscrire au tournoi amical du 24 octobre : matchs de vingt minutes sur terrain synthétique, inscriptions gratuites du 5 au 12 octobre, arbitrage bénévole et report possible en cas de pluie forte. L'esprit reste celui d'une activité accessible en milieu de session.
 ---
 
-Les inscriptions au tournoi interprogramme seront ouvertes du 5 au 12 octobre.
-L'activité est gratuite et chaque équipe devra compter entre huit et douze
-personnes.
+Les inscriptions au tournoi interprogramme seront ouvertes du 5 au 12 octobre. L'activité est gratuite et chaque équipe devra compter entre huit et douze personnes, avec une composition mixte encouragée mais non imposée par programme.
 
-Les matchs de vingt minutes auront lieu sur le terrain synthétique. En cas de
-pluie forte, l'horaire sera déplacé à la semaine suivante et annoncé sur le site
-du journal.
+Les matchs de vingt minutes auront lieu sur le terrain synthétique le 24 octobre, de 9 h à 16 h. En cas de pluie forte, l'horaire sera déplacé à la semaine suivante et annoncé sur le site du journal. Un arbitrage bénévole sera assuré par des personnes formées lors d'une courte séance la veille.
+
+## Règlement et esprit du tournoi
+
+Le règlement reste volontairement simple : cartons pour les fautes dangereuses, rotations libres et interdiction des crampons métalliques. L'objectif n'est pas de classer les programmes, mais d'offrir une activité physique accessible en milieu de session. Des collations et de l'eau seront disponibles près des bancs de touche.
+
+Les équipes devront désigner une personne responsable des communications. Les listes d'inscription seront affichées près du gymnase 48 heures avant le tournoi. Les places sont limitées à six formations; au-delà, une liste d'attente sera ouverte.
 
 > Annonce entièrement fictive. Aucune inscription réelle n'est offerte.

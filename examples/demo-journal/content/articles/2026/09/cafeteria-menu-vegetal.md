@@ -21,9 +21,18 @@ lead:
   width: 1920
   height: 1440
   focalPoint: { x: 50, y: 48 }
-excerpt: Le projet pilote fictif sera évalué à partir des ventes et d'un court sondage.
+excerpt: >-
+  Le projet pilote fictif d'un menu végétal chaque mercredi sera évalué à partir des ventes, du gaspillage et d'un court sondage. Trois recettes tourneront en rotation en octobre, allergènes affichés près des comptoirs, prix alignés sur les formules du jour pour éviter tout écart dissuasif.
 ---
 
-Trois recettes seront offertes en rotation durant le mois d'octobre. La cafétéria indique que les allergènes seront affichés près de chaque comptoir.
+La cafétéria testera un menu entièrement végétal chaque mercredi du mois d'octobre. Trois recettes tourneront en rotation : un plat principal, une soupe et un dessert, avec les allergènes affichés près de chaque comptoir.
 
-Les menus et les prix cités dans cette démonstration ne sont pas réels.
+Le service de restauration fictif indique que l'évaluation portera sur les ventes, le gaspillage et un court sondage anonyme proposé à la caisse. Si le pilote est jugé concluant, une offre permanente pourrait s'étendre à un second jour de la semaine dès la session d'hiver.
+
+## Prix et accessibilité
+
+Les prix resteront alignés sur les formules du jour actuelles, afin de ne pas créer d'écart dissuasif. Des options sans gluten et sans noix seront identifiées clairement. La cuisine collabore avec le comité environnemental pour réduire les emballages à usage unique sur ces journées.
+
+Une rencontre ouverte avec le personnel de la cafétéria est prévue à la fin octobre pour présenter les premiers chiffres. Les commentaires écrits pourront aussi être déposés dans une boîte près de l'entrée principale.
+
+> Les menus, les prix et le projet pilote cités dans cette démonstration ne sont pas réels.

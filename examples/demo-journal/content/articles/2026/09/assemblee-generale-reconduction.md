@@ -29,6 +29,8 @@ lead:
   width: 1600
   height: 1200
   focalPoint: { x: 50, y: 48 }
+excerpt: >-
+  La proposition de reconduire le mandat de grève a été adoptée à main levée après deux heures de débat. Quorum atteint de justesse, opposition organisée dans l'auditorium, trois amendements déposés : la suite du conflit de financement se jouera aussi dans les corridors et les comités.
 ---
 
 L'assemblée générale extraordinaire de mardi a reconduit le mandat de grève pour
