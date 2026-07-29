@@ -205,6 +205,11 @@
     if (!image || !data) return;
     var images = [];
     try { images = JSON.parse(data.textContent || '[]'); } catch (_) {}
+    if (!Array.isArray(images) || !images.length) return;
+    // Normaliser les src (basePath, /./, query) pour comparer et charger sans 404.
+    images = images.filter(function (item) { return item && item.src; }).map(function (item) {
+      return Object.assign({}, item, { src: resolveAssetUrl(item.src) });
+    });
     if (!images.length) return;
     var credit = document.querySelector('[data-masthead-credit]');
     var masthead = image.closest('.masthead');
@@ -212,6 +217,24 @@
     /** Transition active (LE-RADAR _activePhotoTransition) — annule un shuffle rapide. */
     var activeTransition = null;
     var hasShown = false;
+    var shuffleBusy = false;
+
+    function resolveAssetUrl(src) {
+      if (!src) return '';
+      try { return new URL(src, window.location.href).href; }
+      catch (_) { return String(src); }
+    }
+
+    function sameSrc(a, b) {
+      if (!a || !b) return false;
+      try {
+        var ua = new URL(a, window.location.href);
+        var ub = new URL(b, window.location.href);
+        return ua.pathname === ub.pathname;
+      } catch (_) {
+        return String(a) === String(b);
+      }
+    }
 
     function computeObjectPosition(item, imgEl) {
       var authored = parseAuthoredFocalY(item.backgroundPosition);
@@ -264,7 +287,10 @@
 
     function commit(item) {
       masthead?.classList.remove('masthead--image-error');
-      if (image.getAttribute('src') !== item.src) image.src = item.src;
+      var nextSrc = resolveAssetUrl(item.src);
+      if (!sameSrc(image.currentSrc || image.getAttribute('src') || '', nextSrc)) {
+        image.src = nextSrc;
+      }
       applyPosition(item);
       updateCredit(item);
       hasShown = true;
@@ -293,16 +319,19 @@
         reduceMotion = !!window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
       } catch (_) {}
 
+      var currentSrc = image.currentSrc || image.getAttribute('src') || '';
+      var nextSrc = resolveAssetUrl(item.src);
       var shouldCrossfade =
         options.animate !== false &&
         hasShown &&
-        image.getAttribute('src') &&
-        image.getAttribute('src') !== item.src &&
+        currentSrc &&
+        !sameSrc(currentSrc, nextSrc) &&
         !reduceMotion;
 
       if (!shouldCrossfade) {
         cancelActiveTransition();
         commit(item);
+        shuffleBusy = false;
         return;
       }
 
@@ -314,8 +343,10 @@
       incoming.setAttribute('aria-hidden', 'true');
       incoming.decoding = 'async';
       // Insérer juste après la photo de base, avant le voile (z-order correct).
-      if (image.nextSibling) image.parentNode.insertBefore(incoming, image.nextSibling);
-      else image.parentNode.appendChild(incoming);
+      if (image.parentNode) {
+        if (image.nextSibling) image.parentNode.insertBefore(incoming, image.nextSibling);
+        else image.parentNode.appendChild(incoming);
+      }
 
       var settled = false;
       var fadeStarted = false;
@@ -329,7 +360,8 @@
         applyPosition(item);
         updateCredit(item);
         hasShown = true;
-        incoming.remove();
+        shuffleBusy = false;
+        try { incoming.remove(); } catch (_) {}
         if (activeTransition && activeTransition.incoming === incoming) {
           activeTransition = null;
         }
@@ -341,7 +373,8 @@
           if (settled) return;
           settled = true;
           window.clearTimeout(timer);
-          incoming.remove();
+          shuffleBusy = false;
+          try { incoming.remove(); } catch (_) {}
           if (activeTransition && activeTransition.incoming === incoming) {
             activeTransition = null;
           }
@@ -360,7 +393,9 @@
         }
         incoming.style.objectPosition = position;
         // Préparer la couche persistante sous le fondu (évite un flash au settle).
-        if (image.getAttribute('src') !== item.src) image.src = item.src;
+        if (!sameSrc(image.currentSrc || image.getAttribute('src') || '', nextSrc)) {
+          image.src = nextSrc;
+        }
         image.style.objectPosition = position;
         updateCredit(item);
         hasShown = true;
@@ -382,28 +417,53 @@
         if (settled) return;
         settled = true;
         window.clearTimeout(timer);
-        incoming.remove();
+        try { incoming.remove(); } catch (_) {}
         activeTransition = null;
         commit(item);
+        shuffleBusy = false;
       }, { once: true });
 
       incoming.addEventListener('load', startFade, { once: true });
-      incoming.src = item.src;
+      incoming.src = nextSrc;
       // Cache navigateur : load peut ne pas se re-déclencher si déjà complete.
       if (incoming.complete && incoming.naturalWidth > 0) startFade();
     }
 
     show(index, { animate: false });
 
+    function pickNextIndex() {
+      if (images.length < 2) return 0;
+      // Évite de retomber sur la même photo (src normalisée).
+      var current = resolveAssetUrl(images[index] && images[index].src);
+      var candidates = [];
+      for (var i = 0; i < images.length; i++) {
+        if (!sameSrc(images[i].src, current)) candidates.push(i);
+      }
+      if (!candidates.length) return (index + 1) % images.length;
+      return candidates[Math.floor(Math.random() * candidates.length)];
+    }
+
+    function onShuffle(event) {
+      var btn = event.target && event.target.closest
+        ? event.target.closest('#masthead-shuffle, .masthead-shuffle')
+        : null;
+      if (!btn) return;
+      event.preventDefault();
+      if (shuffleBusy) return;
+      shuffleBusy = true;
+      show(pickNextIndex(), { animate: true });
+      releaseToolButton(btn);
+      // Filet de sécurité si la transition ne se termine pas.
+      window.setTimeout(function () { shuffleBusy = false; }, 900);
+    }
+
+    // Délégation (comme LE-RADAR #masthead-bg-shuffle) : robuste si le bouton
+    // est re-rendu par l’admin éditorial, et ne dépend pas d’un nœud figé.
+    document.addEventListener('click', onShuffle);
     var shuffleBtn = document.getElementById('masthead-shuffle');
     if (shuffleBtn) {
-      shuffleBtn.addEventListener('click', function () {
-        var nextIndex = images.length > 1
-          ? index + 1 + Math.floor(Math.random() * (images.length - 1))
-          : 0;
-        show(nextIndex, { animate: true });
-        releaseToolButton(shuffleBtn);
-      });
+      shuffleBtn.type = 'button';
+      shuffleBtn.removeAttribute('disabled');
     }
 
     // Recadrer si le bandeau change de taille (rotation, redimensionnement).

@@ -26,55 +26,9 @@ labels:
 masthead:
   backgrounds:
     enabled: true
+    # Pool mât : extérieurs campus lisibles (pas d’intérieurs / toits plats /
+    # terrains vides). Ordre = priorité d’affichage et de shuffle.
     images:
-      - id: eab20483-88e4-5c60-ab7c-67b0658e6031
-        src: /media/demo-library/campus-sainte-foy.jpg
-        alt: "Vue extérieure du campus du Cégep de Sainte-Foy à Québec"
-        caption: "Campus du Cégep de Sainte-Foy, à Québec."
-        credit: "Khayman"
-        creditUrl: https://commons.wikimedia.org/wiki/User:Khayman
-        license: CC BY-SA 3.0
-        licenseUrl: https://creativecommons.org/licenses/by-sa/3.0/
-        sourceUrl: https://commons.wikimedia.org/wiki/File:Campus_du_C%C3%A9gep_de_Sainte-Foy01.JPG
-        width: 1920
-        height: 1285
-        focalPoint: { x: 52, y: 48 }
-      - id: 4cbba8aa-5c17-5cd3-964d-8ea9f152656e
-        src: /media/demo-library/interieur-sainte-foy.jpg
-        alt: "Espace intérieur du Cégep de Sainte-Foy à Québec"
-        caption: "Intérieur du Cégep de Sainte-Foy, à Québec."
-        credit: "Khayman"
-        creditUrl: https://commons.wikimedia.org/wiki/User:Khayman
-        license: CC BY-SA 3.0
-        licenseUrl: https://creativecommons.org/licenses/by-sa/3.0/
-        sourceUrl: https://commons.wikimedia.org/wiki/File:C%C3%A9gep_de_Sainte-Foy_(int%C3%A9rieur).JPG
-        width: 1920
-        height: 1285
-        focalPoint: { x: 50, y: 45 }
-      - id: abb5f292-a46a-5b09-8fbd-fb13640cd680
-        src: /media/demo-library/batiment-jonquiere.jpg
-        alt: "Bâtiment du Cégep de Jonquière vu de l’extérieur"
-        caption: "Bâtiment du Cégep de Jonquière."
-        credit: "Khayman"
-        creditUrl: https://commons.wikimedia.org/wiki/User:Khayman
-        license: CC BY-SA 3.0
-        licenseUrl: https://creativecommons.org/licenses/by-sa/3.0/
-        sourceUrl: https://commons.wikimedia.org/wiki/File:B%C3%A2timent_du_C%C3%A9gep_de_Jonqui%C3%A8re.JPG
-        width: 1920
-        height: 1285
-        focalPoint: { x: 50, y: 51 }
-      - id: cdc7eef8-7ed3-5d74-a095-6b3c917586e3
-        src: /media/demo-library/football-jonquiere.jpg
-        alt: "Terrain de football du Cégep de Jonquière"
-        caption: "Terrain de football du Cégep de Jonquière."
-        credit: "Khayman"
-        creditUrl: https://commons.wikimedia.org/wiki/User:Khayman
-        license: CC BY-SA 3.0
-        licenseUrl: https://creativecommons.org/licenses/by-sa/3.0/
-        sourceUrl: https://commons.wikimedia.org/wiki/File:Terrain_de_football_du_C%C3%A9gep_de_Jonqui%C3%A8re.JPG
-        width: 1920
-        height: 1285
-        focalPoint: { x: 48, y: 59 }
       - id: 1c05402e-3d91-54df-8638-1105d7dbcdd8
         src: /media/demo-library/mcgill-roddick.jpg
         alt: "Portails Roddick de l’Université McGill à Montréal"
@@ -86,79 +40,7 @@ masthead:
         sourceUrl: https://commons.wikimedia.org/wiki/File:Roddick_Gates_(McGill_University)_2005-09-02.jpg
         width: 1920
         height: 1440
-        focalPoint: { x: 50, y: 45 }
-      - id: f45f6860-ba3f-536d-9db0-12ddbf5bc5db
-        src: /media/demo-library/uqam-jasmin.jpg
-        alt: "Pavillon Judith-Jasmin de l’UQAM à Montréal"
-        caption: "UQAM (Montréal) — illustration de démonstration uniquement."
-        credit: "Great11"
-        creditUrl: https://commons.wikimedia.org/wiki/File:Pavillon_Judith-Jasmin_UQAM_1.jpg
-        license: CC BY-SA 4.0
-        licenseUrl: https://creativecommons.org/licenses/by-sa/4.0/
-        sourceUrl: https://commons.wikimedia.org/wiki/File:Pavillon_Judith-Jasmin_UQAM_1.jpg
-        width: 1920
-        height: 1280
-        focalPoint: { x: 50, y: 40 }
-      - id: d46be5d9-6524-5846-8576-68d9680fd191
-        src: /media/demo-library/ulaval-campus.jpg
-        alt: "Campus de l’Université Laval à Québec"
-        caption: "Université Laval (Québec) — illustration de démonstration uniquement."
-        credit: "Wilfredor"
-        creditUrl: https://commons.wikimedia.org/wiki/File:Universit%C3%A9_Laval%2C_Quebec%2C_Canada_02.jpg
-        license: CC0
-        licenseUrl: https://creativecommons.org/publicdomain/zero/1.0/
-        sourceUrl: https://commons.wikimedia.org/wiki/File:Universit%C3%A9_Laval%2C_Quebec%2C_Canada_02.jpg
-        width: 1920
-        height: 1305
-        focalPoint: { x: 50, y: 52 }
-      - id: 90e7c65a-3dc6-5b98-8694-19c7a320701c
-        src: /media/demo-library/ulaval-parc.jpg
-        alt: "Parc sur le campus de l’Université Laval"
-        caption: "Université Laval (Québec) — illustration de démonstration uniquement."
-        credit: "Wilfredor"
-        creditUrl: https://commons.wikimedia.org/wiki/File:Park_in_Universit%C3%A9_Laval.jpg
-        license: CC BY-SA 4.0
-        licenseUrl: https://creativecommons.org/licenses/by-sa/4.0/
-        sourceUrl: https://commons.wikimedia.org/wiki/File:Park_in_Universit%C3%A9_Laval.jpg
-        width: 1920
-        height: 1280
-        focalPoint: { x: 50, y: 48 }
-      - id: e1345729-c51f-585e-9c97-105d82bcccff
-        src: /media/demo-library/concordia-hall.jpg
-        alt: "Édifice Henry F. Hall de l’Université Concordia"
-        caption: "Concordia (Montréal) — illustration de démonstration uniquement."
-        credit: "Jeangagnon"
-        creditUrl: https://commons.wikimedia.org/wiki/File:Henry_F._Hall_Building_07.JPG
-        license: CC BY-SA 3.0
-        licenseUrl: https://creativecommons.org/licenses/by-sa/3.0/
-        sourceUrl: https://commons.wikimedia.org/wiki/File:Henry_F._Hall_Building_07.JPG
-        width: 1920
-        height: 1440
         focalPoint: { x: 50, y: 42 }
-      - id: 77b1f574-1be1-57af-8413-ca80b7f3bccc
-        src: /media/demo-library/udem-gaudry.jpg
-        alt: "Pavillon Roger-Gaudry de l’Université de Montréal"
-        caption: "Université de Montréal — illustration de démonstration uniquement."
-        credit: "Funke"
-        creditUrl: https://commons.wikimedia.org/wiki/File:Pavillon_Roger-Gaudry_II.jpg
-        license: CC BY-SA 4.0
-        licenseUrl: https://creativecommons.org/licenses/by-sa/4.0/
-        sourceUrl: https://commons.wikimedia.org/wiki/File:Pavillon_Roger-Gaudry_II.jpg
-        width: 1920
-        height: 1080
-        focalPoint: { x: 50, y: 40 }
-      - id: 00117e7b-3263-55db-99dd-b89436785bb5
-        src: /media/demo-library/bishops-campus.jpg
-        alt: "Campus de Bishop’s University"
-        caption: "Bishop’s University — illustration de démonstration uniquement."
-        credit: "Balcer"
-        creditUrl: https://commons.wikimedia.org/wiki/File:Bishop's_University_campus_2011.jpg
-        license: CC BY 3.0
-        licenseUrl: https://creativecommons.org/licenses/by/3.0/
-        sourceUrl: https://commons.wikimedia.org/wiki/File:Bishop's_University_campus_2011.jpg
-        width: 1920
-        height: 1440
-        focalPoint: { x: 50, y: 48 }
       - id: 556552aa-0082-5038-a067-57c87da0996c
         src: /media/demo-library/mcgill-campus.jpg
         alt: "Campus centre-ville de l’Université McGill"
@@ -170,7 +52,91 @@ masthead:
         sourceUrl: https://commons.wikimedia.org/wiki/File:McGill_University_downtown_campus_31.JPG
         width: 1920
         height: 1440
-        focalPoint: { x: 50, y: 45 }
+        focalPoint: { x: 50, y: 42 }
+      - id: 90e7c65a-3dc6-5b98-8694-19c7a320701c
+        src: /media/demo-library/ulaval-parc.jpg
+        alt: "Parc sur le campus de l’Université Laval"
+        caption: "Université Laval (Québec) — illustration de démonstration uniquement."
+        credit: "Wilfredor"
+        creditUrl: https://commons.wikimedia.org/wiki/File:Park_in_Universit%C3%A9_Laval.jpg
+        license: CC BY-SA 4.0
+        licenseUrl: https://creativecommons.org/licenses/by-sa/4.0/
+        sourceUrl: https://commons.wikimedia.org/wiki/File:Park_in_Universit%C3%A9_Laval.jpg
+        width: 1920
+        height: 1280
+        focalPoint: { x: 50, y: 46 }
+      - id: d46be5d9-6524-5846-8576-68d9680fd191
+        src: /media/demo-library/ulaval-campus.jpg
+        alt: "Campus de l’Université Laval à Québec"
+        caption: "Université Laval (Québec) — illustration de démonstration uniquement."
+        credit: "Wilfredor"
+        creditUrl: https://commons.wikimedia.org/wiki/File:Universit%C3%A9_Laval%2C_Quebec%2C_Canada_02.jpg
+        license: CC0
+        licenseUrl: https://creativecommons.org/publicdomain/zero/1.0/
+        sourceUrl: https://commons.wikimedia.org/wiki/File:Universit%C3%A9_Laval%2C_Quebec%2C_Canada_02.jpg
+        width: 1920
+        height: 1305
+        focalPoint: { x: 50, y: 48 }
+      - id: 00117e7b-3263-55db-99dd-b89436785bb5
+        src: /media/demo-library/bishops-campus.jpg
+        alt: "Campus de Bishop’s University"
+        caption: "Bishop’s University — illustration de démonstration uniquement."
+        credit: "Balcer"
+        creditUrl: https://commons.wikimedia.org/wiki/File:Bishop's_University_campus_2011.jpg
+        license: CC BY 3.0
+        licenseUrl: https://creativecommons.org/licenses/by/3.0/
+        sourceUrl: https://commons.wikimedia.org/wiki/File:Bishop's_University_campus_2011.jpg
+        width: 1920
+        height: 1440
+        focalPoint: { x: 50, y: 46 }
+      - id: f45f6860-ba3f-536d-9db0-12ddbf5bc5db
+        src: /media/demo-library/uqam-jasmin.jpg
+        alt: "Pavillon Judith-Jasmin de l’UQAM à Montréal"
+        caption: "UQAM (Montréal) — illustration de démonstration uniquement."
+        credit: "Great11"
+        creditUrl: https://commons.wikimedia.org/wiki/File:Pavillon_Judith-Jasmin_UQAM_1.jpg
+        license: CC BY-SA 4.0
+        licenseUrl: https://creativecommons.org/licenses/by-sa/4.0/
+        sourceUrl: https://commons.wikimedia.org/wiki/File:Pavillon_Judith-Jasmin_UQAM_1.jpg
+        width: 1920
+        height: 1280
+        focalPoint: { x: 50, y: 38 }
+      - id: e1345729-c51f-585e-9c97-105d82bcccff
+        src: /media/demo-library/concordia-hall.jpg
+        alt: "Édifice Henry F. Hall de l’Université Concordia"
+        caption: "Concordia (Montréal) — illustration de démonstration uniquement."
+        credit: "Jeangagnon"
+        creditUrl: https://commons.wikimedia.org/wiki/File:Henry_F._Hall_Building_07.JPG
+        license: CC BY-SA 3.0
+        licenseUrl: https://creativecommons.org/licenses/by-sa/3.0/
+        sourceUrl: https://commons.wikimedia.org/wiki/File:Henry_F._Hall_Building_07.JPG
+        width: 1920
+        height: 1440
+        focalPoint: { x: 50, y: 40 }
+      - id: 77b1f574-1be1-57af-8413-ca80b7f3bccc
+        src: /media/demo-library/udem-gaudry.jpg
+        alt: "Pavillon Roger-Gaudry de l’Université de Montréal"
+        caption: "Université de Montréal — illustration de démonstration uniquement."
+        credit: "Funke"
+        creditUrl: https://commons.wikimedia.org/wiki/File:Pavillon_Roger-Gaudry_II.jpg
+        license: CC BY-SA 4.0
+        licenseUrl: https://creativecommons.org/licenses/by-sa/4.0/
+        sourceUrl: https://commons.wikimedia.org/wiki/File:Pavillon_Roger-Gaudry_II.jpg
+        width: 1920
+        height: 1080
+        focalPoint: { x: 50, y: 38 }
+      - id: abb5f292-a46a-5b09-8fbd-fb13640cd680
+        src: /media/demo-library/batiment-jonquiere.jpg
+        alt: "Bâtiment du Cégep de Jonquière vu de l’extérieur"
+        caption: "Bâtiment du Cégep de Jonquière."
+        credit: "Khayman"
+        creditUrl: https://commons.wikimedia.org/wiki/User:Khayman
+        license: CC BY-SA 3.0
+        licenseUrl: https://creativecommons.org/licenses/by-sa/3.0/
+        sourceUrl: https://commons.wikimedia.org/wiki/File:B%C3%A2timent_du_C%C3%A9gep_de_Jonqui%C3%A8re.JPG
+        width: 1920
+        height: 1285
+        focalPoint: { x: 50, y: 48 }
       - id: 4ad82ff9-79a6-5a8f-9c40-3e2073a54b9b
         src: /media/demo-library/sherbrooke-longueuil.jpg
         alt: "Campus de Longueuil de l’Université de Sherbrooke"
@@ -182,19 +148,7 @@ masthead:
         sourceUrl: https://commons.wikimedia.org/wiki/File:Campus_de_Longueuil_-_Universite_de_Sherbrooke_09.jpg
         width: 1920
         height: 1440
-        focalPoint: { x: 50, y: 48 }
-      - id: df262e0b-372a-5a5f-a6ee-b535eaaf4ecd
-        src: /media/demo-library/campus-limoilou.jpg
-        alt: "Campus collégial à Québec"
-        caption: "Campus collégial à Québec — illustration de démonstration uniquement."
-        credit: "Pierre-Paul Beaumont"
-        creditUrl: https://commons.wikimedia.org/wiki/File:Campus_de_Qu%C3%A9bec.jpg
-        license: CC BY 2.0 ca
-        licenseUrl: https://creativecommons.org/licenses/by/2.0/ca/deed.en
-        sourceUrl: https://commons.wikimedia.org/wiki/File:Campus_de_Qu%C3%A9bec.jpg
-        width: 1920
-        height: 1297
-        focalPoint: { x: 50, y: 48 }
+        focalPoint: { x: 50, y: 46 }
   weather:
     enabled: true
     localities:
@@ -202,7 +156,7 @@ masthead:
   tools:
     pomodoro: true
     solitaire: true
-  overlayStrength: 0.42
+  overlayStrength: 0.38
   textAlignment: left
 
 # Station de campus à afficher dans la barre radio (jalon 3).
