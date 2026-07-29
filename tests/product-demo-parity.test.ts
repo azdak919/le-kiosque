@@ -122,7 +122,7 @@ test('demo et template reçoivent le même theme.css / kiosque.js (packages/them
     'intro équipe reformulée',
   );
   const seed = await readFile(path.join(demo.out, 'assets/editorial/seed.json'), 'utf8');
-  assert.match(seed, /"version":\s*8/, 'seed démo v8 (adversaires RSEQ collégial)');
+  assert.match(seed, /"version":\s*9/, 'seed démo v9 (page /sports/ + adversaires RSEQ)');
   assert.match(seed, /Les Quorums/, 'seed embarque l’équipe sports maison');
   assert.match(seed, /Les Bulletins|Les Motions|Les Urnes/, 'plusieurs formations fictives maison');
   assert.match(seed, /Titans|Boomerang|Géants|Cheetahs/, 'adversaires = clubs RSEQ collégial réels');

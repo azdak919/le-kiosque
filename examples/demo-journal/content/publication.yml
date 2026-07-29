@@ -164,7 +164,7 @@ masthead:
   # Rotation type gare LE-RADAR (deck brassé, ~5,2 s, animation is-arriving).
   sports:
     enabled: true
-    href: /sections/sports/
+    href: /sports/
     teams:
       - id: demo-quorums-volley
         name: Les Quorums

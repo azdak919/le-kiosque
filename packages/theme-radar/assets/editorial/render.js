@@ -122,6 +122,57 @@ export function renderRoute(bundle, base, pathname, renderBody) {
       html: `<div class="wrap wire wire--article"><div class="magazine-layout magazine-layout--article"><div class="article-column">${post}</div>${rail}</div></div>`,
     };
   }
+  /* Page résultats sportifs (puce mât → /sports/). */
+  if (parts[0] === 'sports' && !parts[1]) {
+    const sports = bundle.publication.masthead?.sports;
+    const teams = Array.isArray(sports?.teams) && sports.teams.length
+      ? sports.teams
+      : (sports?.team ? [sports.team] : []);
+    if (sports && sports.enabled !== false && teams.length) {
+      const sportsArticles = published.filter((a) => a.section === 'sports');
+      const glyph = (sport) => {
+        const s = String(sport || '').toLowerCase();
+        if (s.includes('basket')) return '🏀';
+        if (s.includes('hockey')) return '🏒';
+        if (s.includes('soccer') || (s.includes('foot') && !s.includes('flag'))) return '⚽';
+        if (s.includes('volley')) return '🏐';
+        return '🏅';
+      };
+      const fmt = (iso) => {
+        try {
+          return new Intl.DateTimeFormat('fr-CA', { day: 'numeric', month: 'short', timeZone: bundle.publication.timeZone || 'America/Toronto' }).format(new Date(`${iso}T12:00:00`));
+        } catch { return iso; }
+      };
+      const panels = teams.map((team) => {
+        const nested = Array.isArray(team.results) ? team.results : [];
+        const global = (sports.results || []).filter((g) => !g.teamId || g.teamId === team.id);
+        const results = nested.concat(global).slice().sort((a, b) => String(b.date).localeCompare(String(a.date))).slice(0, 6);
+        let next = team.nextGame || null;
+        if (!next && sports.nextGame && (!sports.nextGame.teamId || sports.nextGame.teamId === team.id)) next = sports.nextGame;
+        const rows = results.map((g) => {
+          const badge = g.result === 'W' ? 'V' : g.result === 'L' ? 'D' : 'N';
+          const opp = g.opponentInstitution
+            ? `${esc(g.opponent)} <span class="sports-result__inst">(${esc(g.opponentInstitution)})</span>`
+            : esc(g.opponent);
+          return `<li class="sports-result sports-result--${esc(g.result)}"><time class="sports-result__time" datetime="${esc(g.date)}">${esc(fmt(g.date))}</time><span class="sports-result__score">${g.scoreFor}–${g.scoreAgainst}</span><span class="sports-result__title"><span class="sports-result__vs">vs</span> ${opp}</span><span class="sports-result__badge">${badge}</span></li>`;
+        });
+        if (next) {
+          const when = [fmt(next.date), next.time ? String(next.time).replace(':', ' h ') : ''].filter(Boolean).join(' · ');
+          rows.push(`<li class="sports-result sports-result--next"><time class="sports-result__time" datetime="${esc(next.date)}">${esc(when)}</time><span class="sports-result__score sports-result__score--next">À venir</span><span class="sports-result__title"><span class="sports-result__vs">vs</span> ${esc(next.opponent)}</span><span class="sports-result__badge sports-result__badge--next">→</span></li>`);
+        }
+        const list = rows.length ? `<ul class="sports-panel__list">${rows.join('')}</ul>` : '<p class="sports-panel__empty">Aucun résultat.</p>';
+        const color = team.colors?.primary || 'var(--accent)';
+        return `<section class="sports-panel" style="--sports-panel-c:${esc(color)}"><header class="sports-panel__head"><span class="sports-panel__glyph" aria-hidden="true">${glyph(team.sport)}</span><div class="sports-panel__identity"><h2 class="sports-panel__name">${esc(team.name)} <span class="sports-panel__code">${esc(team.code)}</span></h2><p class="sports-panel__meta">${esc(team.sportLabel || team.sport)}${team.institution ? ` · ${esc(team.institution)}` : ''}${team.fictional ? ' · formation fictive' : ''}</p></div></header>${list}</section>`;
+      }).join('');
+      const feed = sportsArticles.length
+        ? `<div class="sports-articles"><div class="wire-head"><h2 class="wire-title">Dans le journal</h2><span class="wire-status">${sportsArticles.length} article${sportsArticles.length > 1 ? 's' : ''}</span></div>${magazineFeedHtml(sportsArticles, bundle, base, 'Sports', 'Aucun article.')}</div>`
+        : `<p class="section-intro"><a data-editorial-link href="${link(base, '/sections/sports/')}">Section Sports</a></p>`;
+      return {
+        title: `Résultats sportifs — ${bundle.publication.name}`,
+        html: `<div class="wrap wire wire--sports"><div class="wire-head"><h1 class="wire-title">Résultats sportifs</h1><span class="wire-status">${teams.length} formation${teams.length > 1 ? 's' : ''}</span></div><p class="section-intro">Tableau de bord des formations — inspiré des grilles horaires LE-RADAR.</p><p class="sports-board-meta">Scores embarqués · adversaires RSEQ collégial · formations maison fictives (démo)</p><div class="sports-board-scroll"><div class="sports-board">${panels}</div></div><p class="sports-board-note">Résultats figés dans le dépôt ; mise à jour via la configuration du mât.</p>${feed}</div>`,
+      };
+    }
+  }
   const definitions = {
     sections: { values: bundle.taxonomies.sections, field: 'section', empty: 'Aucun article dans cette section.' },
     categories: { values: bundle.taxonomies.categories, field: 'categories', empty: 'Aucun article dans cette catégorie.' },

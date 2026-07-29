@@ -37,6 +37,7 @@ import {
   page,
   redirectPage,
   sectionPage,
+  sportsResultsPage,
   esc,
   type RenderContext,
 } from '../../theme-radar/src/templates.ts';
@@ -367,6 +368,20 @@ export async function build(options: BuildOptions): Promise<BuildResult> {
     pages++;
   }
 
+  // Résultats sportifs (puce mât) — page dédiée, lisible sans JS.
+  const sportsCfg = bundle.publication.masthead?.sports;
+  const sportsTeams = sportsCfg?.teams?.length
+    ? sportsCfg.teams
+    : sportsCfg?.team
+      ? [sportsCfg.team]
+      : [];
+  if (sportsCfg && sportsCfg.enabled !== false && sportsTeams.length) {
+    const sportsArticles = listed.filter((a) => a.section === 'sports');
+    await emit(outDir, '/sports/', sportsResultsPage(ctx, sportsArticles));
+    urls.push({ loc: `${base}/sports/` });
+    pages++;
+  }
+
   // Archives chronologiques (published + archived) — registre SEO lisible sans JS.
   // Le fil d’accueil reste le « fil vivant » ; /archives/ est le catalogue durable.
   await emit(outDir, '/archives/', archivesPage(paged, ctx));
@@ -395,6 +410,9 @@ export async function build(options: BuildOptions): Promise<BuildResult> {
       <p class="section-intro">${listed.length} article${listed.length > 1 ? 's' : ''} sur le fil, ${paged.length} dans les <a href="${basePath}/archives/">archives</a>, ${bundle.taxonomies.sections.length} sections, ${bundle.authors.length} signatures.</p>
       <ul>
         <li><a href="${basePath}/archives/">Archives</a> — registre chronologique complet</li>
+        ${sportsCfg && sportsCfg.enabled !== false && sportsTeams.length
+          ? `<li><a href="${basePath}/sports/">Résultats sportifs</a> — tableau de bord des formations</li>`
+          : ''}
         ${listed.map((a) => `<li><a href="${basePath}/articles/${esc(a.slug)}/">${esc(a.title)}</a></li>`).join('\n        ')}
       </ul>
     </div>`,
@@ -488,7 +506,7 @@ export async function build(options: BuildOptions): Promise<BuildResult> {
     await writeFile(path.join(outDir, 'assets', 'editorial', 'seed.json'), JSON.stringify({
       // Bump version when demo authors/media/articles change so PGlite
       // re-hydrates unmodified demo rows (portraits, lead photos, etc.).
-      format: 'kiosque-demo-seed', version: 8,
+      format: 'kiosque-demo-seed', version: 9,
       publication: { ...bundle.publication, theme: { ...bundle.publication.theme, typography: bundle.publication.theme.typography ?? 'modern-accessible' } },
       articles: bundle.articles.map((article) => ({ ...article, isDemo: true, isUserModified: false })),
       authors: bundle.authors.map((author) => ({ ...author, isDemo: true, isUserModified: false })),

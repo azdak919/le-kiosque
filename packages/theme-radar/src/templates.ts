@@ -14,9 +14,12 @@ import {
   sectionUrl,
   type Article,
   type Author,
+  type MastheadSports,
   type MediaAsset,
   type Publication,
   type Section,
+  type SportsNextGame,
+  type SportsTeam,
   type Taxonomies,
 } from '../../core/src/model.ts';
 import { renderSourceArticle } from './source-view.js';
@@ -220,14 +223,22 @@ function mastheadBackground(ctx: RenderContext, options: MastheadOptions): strin
   <script type="application/json" id="masthead-backgrounds">${JSON.stringify(manifest).replace(/</g, '\\u003c')}</script>`;
 }
 
+/** Route de la page résultats (puce mât) — `/sports/` par défaut. */
+export function sportsPagePath(sports: MastheadSports | undefined, ctx: RenderContext): string {
+  if (sports?.href) return asset(sports.href, ctx);
+  return asset('/sports/', ctx);
+}
+
+function sportsTeamRoster(sports: MastheadSports): SportsTeam[] {
+  if (sports.teams?.length) return sports.teams;
+  if (sports.team) return [sports.team];
+  return [];
+}
+
 function sportsPayload(ctx: RenderContext): string {
   const sports = ctx.publication.masthead?.sports;
   if (!sports || sports.enabled === false) return '';
-  const teams = sports.teams?.length
-    ? sports.teams
-    : sports.team
-      ? [sports.team]
-      : [];
+  const teams = sportsTeamRoster(sports);
   if (!teams.length) return '';
   const payload = {
     teams,
@@ -235,9 +246,160 @@ function sportsPayload(ctx: RenderContext): string {
     results: sports.results ?? [],
     nextGame: sports.nextGame ?? null,
     nextGames: sports.nextGames ?? [],
-    href: sports.href ? asset(sports.href, ctx) : '',
+    href: sportsPagePath(sports, ctx),
   };
   return `<div class="masthead-sports" data-sports-payload="${esc(JSON.stringify(payload))}" aria-label="Résultats sportifs" aria-live="polite"></div>`;
+}
+
+function sportsGlyphHtml(sport: string): string {
+  const s = sport.toLowerCase();
+  if (s.includes('basket')) return '🏀';
+  if (s.includes('hockey')) return '🏒';
+  if (s.includes('soccer') || (s.includes('foot') && !s.includes('flag'))) return '⚽';
+  if (s.includes('flag') || s.includes('football')) return '🏈';
+  if (s.includes('volley')) return '🏐';
+  return '🏅';
+}
+
+function formatSportsDate(iso: string, timeZone: string): string {
+  if (!iso) return '';
+  try {
+    return new Intl.DateTimeFormat('fr-CA', {
+      day: 'numeric',
+      month: 'short',
+      timeZone,
+    }).format(new Date(`${iso}T12:00:00`));
+  } catch {
+    return iso;
+  }
+}
+
+function sportsResultRows(
+  team: SportsTeam,
+  sports: MastheadSports,
+  timeZone: string,
+): string {
+  const global = (sports.results ?? []).filter((g) => !g.teamId || g.teamId === team.id);
+  const nested = team.results ?? [];
+  const results = [...nested, ...global]
+    .sort((a, b) => String(b.date).localeCompare(String(a.date)))
+    .slice(0, 6);
+
+  let next: SportsNextGame | undefined = team.nextGame;
+  if (!next && sports.nextGame && (!sports.nextGame.teamId || sports.nextGame.teamId === team.id)) {
+    next = sports.nextGame;
+  }
+  if (!next && sports.nextGames?.length) {
+    next = sports.nextGames.find((n) => !n.teamId || n.teamId === team.id);
+  }
+
+  const rows: string[] = [];
+  for (const g of results) {
+    const badge = g.result === 'W' ? 'V' : g.result === 'L' ? 'D' : 'N';
+    const label = g.result === 'W' ? 'Victoire' : g.result === 'L' ? 'Défaite' : 'Nul';
+    const opp = g.opponentInstitution
+      ? `${esc(g.opponent)} <span class="sports-result__inst">(${esc(g.opponentInstitution)})</span>`
+      : esc(g.opponent);
+    rows.push(`<li class="sports-result sports-result--${esc(g.result)}" data-result="${esc(g.result)}">
+  <time class="sports-result__time" datetime="${esc(g.date)}">${esc(formatSportsDate(g.date, timeZone))}</time>
+  <span class="sports-result__score" aria-label="${esc(label)}">${g.scoreFor}–${g.scoreAgainst}</span>
+  <span class="sports-result__title"><span class="sports-result__vs">vs</span> ${opp}</span>
+  <span class="sports-result__badge" title="${esc(label)}">${badge}</span>
+</li>`);
+  }
+  if (next) {
+    const when = [
+      formatSportsDate(next.date, timeZone),
+      next.time ? next.time.replace(':', ' h ') : '',
+    ].filter(Boolean).join(' · ');
+    const opp = esc(next.opponent);
+    rows.push(`<li class="sports-result sports-result--next">
+  <time class="sports-result__time" datetime="${esc(next.date)}">${esc(when || next.date)}</time>
+  <span class="sports-result__score sports-result__score--next">À venir</span>
+  <span class="sports-result__title"><span class="sports-result__vs">vs</span> ${opp}${next.home === false ? ' <span class="sports-result__venue">(extérieur)</span>' : next.home ? ' <span class="sports-result__venue">(domicile)</span>' : ''}</span>
+  <span class="sports-result__badge sports-result__badge--next" title="Prochain match">→</span>
+</li>`);
+  }
+  if (!rows.length) {
+    return '<p class="sports-panel__empty">Aucun résultat pour le moment.</p>';
+  }
+  return `<ul class="sports-panel__list">${rows.join('\n')}</ul>`;
+}
+
+/**
+ * Page résultats sportifs — inspirée de la grille horaire SEO LE-RADAR
+ * (panneaux par entité + lignes date / détail), adaptée au journal.
+ */
+export function sportsResultsPage(ctx: RenderContext, sportsArticles: Article[] = []): string {
+  const sports = ctx.publication.masthead?.sports;
+  const teams = sports && sports.enabled !== false ? sportsTeamRoster(sports) : [];
+  if (!sports || !teams.length) {
+    return page(
+      `<div class="wrap wire">
+      <div class="wire-head"><h1 class="wire-title">Résultats sportifs</h1></div>
+      <p class="section-intro">Aucun scoreboard n’est configuré pour ce journal.</p>
+      <p><a href="${asset('/sections/sports/', ctx)}">Voir la section Sports</a></p>
+    </div>`,
+      {
+        title: `Résultats sportifs — ${ctx.publication.name}`,
+        canonical: `${ctx.publication.siteUrl.replace(/\/+$/, '')}/sports/`,
+        current: asset('/sports/', ctx),
+      },
+      ctx,
+    );
+  }
+
+  const tz = ctx.publication.timeZone || 'America/Toronto';
+  const panels = teams.map((team) => {
+    const color = team.colors?.primary || 'var(--accent)';
+    return `<section class="sports-panel" data-sport="${esc(team.sport)}" data-team="${esc(team.id)}" style="--sports-panel-c:${esc(color)}">
+  <header class="sports-panel__head">
+    <span class="sports-panel__glyph" aria-hidden="true">${sportsGlyphHtml(team.sport)}</span>
+    <div class="sports-panel__identity">
+      <h2 class="sports-panel__name">${esc(team.name)} <span class="sports-panel__code">${esc(team.code)}</span></h2>
+      <p class="sports-panel__meta">${esc(team.sportLabel || team.sport)}${team.sex ? ` · ${esc(team.sex)}` : ''}${team.institution ? ` · ${esc(team.institution)}` : ''}${team.fictional ? ' · formation fictive' : ''}</p>
+    </div>
+  </header>
+  ${sportsResultRows(team, sports, tz)}
+</section>`;
+  }).join('\n');
+
+  const feed = sportsArticles.length
+    ? `<div class="sports-articles">
+      <div class="wire-head"><h2 class="wire-title">Dans le journal</h2>
+        <span class="wire-status">${sportsArticles.length} article${sportsArticles.length > 1 ? 's' : ''}</span>
+      </div>
+      ${magazineFeedHtml(sportsArticles, ctx, {
+        heroLabel: 'Sports',
+        empty: 'Aucun article dans la section Sports.',
+      })}
+    </div>`
+    : `<p class="section-intro"><a href="${asset('/sections/sports/', ctx)}">Voir les articles de la section Sports</a></p>`;
+
+  return page(
+    `<div class="wrap wire wire--sports">
+      <div class="wire-head">
+        <h1 class="wire-title">Résultats sportifs</h1>
+        <span class="wire-status">${teams.length} formation${teams.length > 1 ? 's' : ''}</span>
+      </div>
+      <p class="section-intro">Tableau de bord des formations du ${esc(ctx.publication.institution)} — inspiré des grilles horaires LE-RADAR, adapté au journal étudiant.</p>
+      <p class="sports-board-meta">Scores embarqués dans le site · adversaires nommés d’après des clubs RSEQ collégial · les formations maison de la démo sont fictives</p>
+      <div class="sports-board-scroll">
+        <div class="sports-board" role="list">
+          ${panels}
+        </div>
+      </div>
+      <p class="sports-board-note">Les résultats affichés ici sont figés dans le dépôt (pas de fil en direct). Une équipe rédactionnelle peut les mettre à jour dans la configuration du mât, ou brancher plus tard un bot RSEQ.</p>
+      ${feed}
+    </div>`,
+    {
+      title: `Résultats sportifs — ${ctx.publication.name}`,
+      description: `Résultats et prochains matchs des formations du ${ctx.publication.institution}.`,
+      canonical: `${ctx.publication.siteUrl.replace(/\/+$/, '')}/sports/`,
+      current: asset('/sports/', ctx),
+    },
+    ctx,
+  );
 }
 
 function mastheadTools(ctx: RenderContext, current?: string): string {
