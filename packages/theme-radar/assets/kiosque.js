@@ -586,8 +586,19 @@
     ? window.matchMedia('(max-width: 720px)')
     : null;
 
+  /**
+   * Dock mobile : on déplace le bandeau .masthead-status (météo + sports)
+   * sous le tuner, pour ne pas écraser le mât et éviter le clipping.
+   * Repli : ancienne cible .masthead-weather seule.
+   */
+  function mastheadStatusHost() {
+    return document.querySelector('[data-masthead-status]')
+      || document.querySelector('.masthead-weather[data-weather-localities]')
+      || document.querySelector('.masthead-sports[data-sports-payload]');
+  }
+
   function setMastheadWeatherDocked(docked) {
-    var host = document.querySelector('.masthead-weather[data-weather-localities]');
+    var host = mastheadStatusHost();
     var dock = document.getElementById('masthead-weather-dock');
     if (!host || !dock) return;
     if (!weatherHomeParent) {
@@ -597,6 +608,7 @@
     if (docked === weatherDocked) return;
     weatherDocked = docked;
     host.classList.toggle('masthead-weather--docked', docked);
+    host.classList.toggle('masthead-status--docked', docked);
     if (docked) {
       dock.hidden = false;
       dock.appendChild(host);
@@ -609,6 +621,126 @@
   function syncMastheadWeatherDock() {
     var shouldDock = WEATHER_PHONE_MQ ? WEATHER_PHONE_MQ.matches : (window.innerWidth <= 720);
     setMastheadWeatherDocked(shouldDock);
+  }
+
+  function sportsResultTone(result) {
+    if (result === 'W') return '#3d9a6a';
+    if (result === 'L') return '#c45c5c';
+    if (result === 'D' || result === 'T') return '#8fa3b0';
+    return '#6c2163';
+  }
+
+  function sportsGlyph(sport) {
+    var s = String(sport || '').toLowerCase();
+    if (s.indexOf('basket') !== -1) return '🏀';
+    if (s.indexOf('hockey') !== -1) return '🏒';
+    if (s.indexOf('soccer') !== -1 || s.indexOf('foot') !== -1 && s.indexOf('flag') === -1) return '⚽';
+    if (s.indexOf('flag') !== -1) return '🏈';
+    if (s.indexOf('volley') !== -1) return '🏐';
+    return '🏅';
+  }
+
+  function pickSportsDisplay(payload) {
+    var results = Array.isArray(payload.results) ? payload.results.slice() : [];
+    results.sort(function (a, b) {
+      return String(b.date || '').localeCompare(String(a.date || ''));
+    });
+    var last = results[0] || null;
+    if (last) {
+      return {
+        mode: 'result',
+        game: last,
+        tone: sportsResultTone(last.result),
+      };
+    }
+    if (payload.nextGame) {
+      return {
+        mode: 'next',
+        game: payload.nextGame,
+        tone: (payload.team && payload.team.colors && payload.team.colors.primary) || '#6c2163',
+      };
+    }
+    return null;
+  }
+
+  function initMastheadSports() {
+    var host = document.querySelector('.masthead-sports[data-sports-payload]');
+    if (!host) return;
+    var payload;
+    try {
+      payload = JSON.parse(host.dataset.sportsPayload || 'null');
+    } catch (_) {
+      payload = null;
+    }
+    if (!payload || !payload.team) {
+      host.remove();
+      return;
+    }
+    var display = pickSportsDisplay(payload);
+    if (!display) {
+      host.remove();
+      return;
+    }
+
+    var team = payload.team;
+    var code = String(team.code || 'EQ').toUpperCase().slice(0, 4);
+    var sport = display.game.sport || team.sport || '';
+    var href = payload.href || '';
+    var chip = document.createElement(href ? 'a' : 'span');
+    chip.className = 'sports-chip masthead-sports__chip';
+    chip.style.setProperty('--sports-tone', display.tone);
+    if (team.colors && team.colors.primary) {
+      chip.style.setProperty('--sports-brand', team.colors.primary);
+    }
+    if (chip.tagName === 'A') {
+      chip.href = href;
+    }
+
+    var glyph = document.createElement('span');
+    glyph.className = 'sports-chip__glyph';
+    glyph.setAttribute('aria-hidden', 'true');
+    glyph.textContent = sportsGlyph(sport);
+
+    var line = document.createElement('span');
+    line.className = 'sports-chip__line';
+
+    var titleParts = [];
+    var aria = '';
+    if (display.mode === 'result') {
+      var g = display.game;
+      var oppCode = String(g.opponentCode || g.opponent || 'ADV').toUpperCase().slice(0, 4);
+      var score = g.scoreFor + '–' + g.scoreAgainst;
+      line.innerHTML = '<span class="sports-chip__code">' + code + '</span>'
+        + ' <span class="sports-chip__score">' + score + '</span> '
+        + '<span class="sports-chip__opp">' + oppCode + '</span>';
+      var issue = g.result === 'W' ? 'Victoire' : g.result === 'L' ? 'Défaite' : 'Match nul';
+      aria = issue + ' des ' + team.name + ' : ' + g.scoreFor + ' à ' + g.scoreAgainst
+        + ' contre ' + g.opponent;
+      titleParts.push(issue + ' · ' + team.name + ' ' + score + ' ' + g.opponent);
+      if (g.competition) titleParts.push(g.competition);
+      if (team.fictional) titleParts.push('Équipe fictive (démonstration)');
+    } else {
+      var n = display.game;
+      var nextOpp = String(n.opponentCode || n.opponent || 'ADV').toUpperCase().slice(0, 4);
+      line.innerHTML = '<span class="sports-chip__code">' + code + '</span>'
+        + ' <span class="sports-chip__vs">vs</span> '
+        + '<span class="sports-chip__opp">' + nextOpp + '</span>';
+      aria = 'Prochain match des ' + team.name + ' contre ' + n.opponent
+        + (n.date ? ' le ' + n.date : '');
+      titleParts.push('Prochain · ' + team.name + ' vs ' + n.opponent);
+      if (n.date) titleParts.push(n.date + (n.time ? ' ' + n.time : ''));
+      if (team.fictional) titleParts.push('Équipe fictive (démonstration)');
+    }
+
+    chip.title = titleParts.join(' · ');
+    chip.setAttribute('aria-label', aria);
+    if (team.fictional) chip.dataset.fictional = 'true';
+
+    chip.appendChild(glyph);
+    chip.appendChild(line);
+    host.appendChild(chip);
+    host.hidden = false;
+    syncMastheadWeatherDock();
   }
 
   function initMastheadWeather() {
@@ -631,14 +763,6 @@
 
     /* Dock immédiat sur téléphone (même avant le fetch) pour éviter un flash dans le mât. */
     syncMastheadWeatherDock();
-    if (WEATHER_PHONE_MQ) {
-      var onMq = function () { syncMastheadWeatherDock(); };
-      if (typeof WEATHER_PHONE_MQ.addEventListener === 'function') {
-        WEATHER_PHONE_MQ.addEventListener('change', onMq);
-      } else if (typeof WEATHER_PHONE_MQ.addListener === 'function') {
-        WEATHER_PHONE_MQ.addListener(onMq);
-      }
-    }
 
     Promise.all(localities.map(async function (loc) {
       var cacheKey = 'kiosque-weather:v2:' + loc.name.toLowerCase();
@@ -875,8 +999,9 @@
     }, { passive: true });
   }
 
-  // ── Suite du fil : « Plus d'articles » (port LE-RADAR syncNewsTailCollapse) ──
+  // ── Suite du fil : « Plus d'articles » (repli initial, dépliage manuel) ──
   // 10 cartes = 5 rangées en 2 colonnes ; peek 6e rangée = titre + auteurs floutés.
+  // Une fois déplié : tout le fil reste ouvert, sans bouton « Réduire ».
   var NEWS_TAIL_VISIBLE = 10;
   /** Plancher peek (rubrique + titre + auteurs) ; affiné par mesure DOM. */
   var NEWS_TAIL_PEEK_MIN_PX = 72;
@@ -979,40 +1104,16 @@
       return;
     }
 
-    var toggle = tail.querySelector('.news-tail-toggle');
-    if (!toggle) {
-      toggle = document.createElement('button');
-      toggle.type = 'button';
-      toggle.className = 'news-tail-toggle';
-      toggle.innerHTML = '<span class="news-tail-toggle__label">Plus d\'articles</span>';
-      toggle.setAttribute('aria-expanded', 'false');
-    }
-    // Toujours en dernier enfant de la section (hors .news-tail-body).
-    if (toggle.parentNode !== tail || tail.lastElementChild !== toggle) {
-      tail.appendChild(toggle);
-    }
-
     tail.classList.add('has-overflow');
     tail.classList.toggle('is-expanded', newsTailExpanded);
     tail.dataset.tailVisible = String(NEWS_TAIL_VISIBLE);
 
+    var toggle = tail.querySelector('.news-tail-toggle');
     var hidden = cards.length - NEWS_TAIL_VISIBLE;
-    var label = toggle.querySelector('.news-tail-toggle__label');
-    if (label) {
-      label.textContent = newsTailExpanded
-        ? 'Réduire'
-        : ('Plus d\'articles (' + hidden + ')');
-    }
-    toggle.setAttribute('aria-expanded', newsTailExpanded ? 'true' : 'false');
-    // Accessible même en position fixed (annonce l’action courante).
-    toggle.setAttribute(
-      'aria-label',
-      newsTailExpanded ? 'Réduire la suite du fil' : ('Plus d\'articles, ' + hidden + ' restants')
-    );
 
     if (newsTailExpanded) {
-      // Hauteur explicite → none (transition fiable vs max-height:none seul).
-      // Forcer un reflow après retrait de .is-tail-overflow (cartes redeviennent pleines).
+      /* Déplié : retirer le bouton (pas de « Réduire » en bas du fil). */
+      if (toggle) toggle.remove();
       void body.offsetHeight;
       var fullH = Math.max(body.scrollHeight, body.offsetHeight);
       body.style.maxHeight = fullH + 'px';
@@ -1022,14 +1123,30 @@
       requestAnimationFrame(function () {
         body.style.maxHeight = 'none';
       });
-    } else {
-      // Double rAF : classes overflow + grille peintes avant la mesure (LE-RADAR).
-      requestAnimationFrame(function () {
-        requestAnimationFrame(function () {
-          applyNewsTailCollapsedHeight(tail);
-        });
-      });
+      return;
     }
+
+    /* Replié : bouton « Plus d'articles » uniquement (jamais auto-déplié). */
+    if (!toggle) {
+      toggle = document.createElement('button');
+      toggle.type = 'button';
+      toggle.className = 'news-tail-toggle';
+      toggle.innerHTML = '<span class="news-tail-toggle__label">Plus d\'articles</span>';
+      toggle.setAttribute('aria-expanded', 'false');
+    }
+    if (toggle.parentNode !== tail || tail.lastElementChild !== toggle) {
+      tail.appendChild(toggle);
+    }
+    var label = toggle.querySelector('.news-tail-toggle__label');
+    if (label) label.textContent = 'Plus d\'articles (' + hidden + ')';
+    toggle.setAttribute('aria-expanded', 'false');
+    toggle.setAttribute('aria-label', 'Plus d\'articles, ' + hidden + ' restants');
+
+    requestAnimationFrame(function () {
+      requestAnimationFrame(function () {
+        applyNewsTailCollapsedHeight(tail);
+      });
+    });
   }
 
   function initNewsTailCollapse() {
@@ -1048,26 +1165,18 @@
         event.stopPropagation();
         var section = btn.closest('.news-tail');
         if (!section) return;
+        /* Une seule action : déplier. Pas de repli / pas de « Réduire ». */
+        if (newsTailExpanded) return;
 
-        var willExpand = !newsTailExpanded;
         var yBefore = window.scrollY || window.pageYOffset || 0;
-        var toggleTopBefore = btn.getBoundingClientRect().top;
-
-        newsTailExpanded = willExpand;
+        newsTailExpanded = true;
         syncNewsTailCollapse();
         releaseToolButton(btn);
 
         requestAnimationFrame(function () {
           requestAnimationFrame(function () {
-            if (willExpand) {
-              // Contenu s’ouvre vers le bas : ne pas suivre le bouton (LE-RADAR).
-              window.scrollTo({ top: yBefore, left: 0, behavior: 'auto' });
-            } else {
-              var delta = btn.getBoundingClientRect().top - toggleTopBefore;
-              if (Math.abs(delta) > 1) {
-                window.scrollBy({ top: delta, left: 0, behavior: 'auto' });
-              }
-            }
+            // Contenu s’ouvre vers le bas : ne pas suivre le bouton.
+            window.scrollTo({ top: yBefore, left: 0, behavior: 'auto' });
           });
         });
       });
@@ -1081,6 +1190,7 @@
       }, { passive: true });
     }
 
+    /* Toujours replié au chargement — jamais de dépliage automatique. */
     newsTailExpanded = false;
     syncNewsTailCollapse();
 
@@ -1185,11 +1295,24 @@
     customElements.define('radar-tuner', RadarTuner);
   }
 
+  function initMastheadStatusDock() {
+    syncMastheadWeatherDock();
+    if (!WEATHER_PHONE_MQ) return;
+    var onMq = function () { syncMastheadWeatherDock(); };
+    if (typeof WEATHER_PHONE_MQ.addEventListener === 'function') {
+      WEATHER_PHONE_MQ.addEventListener('change', onMq);
+    } else if (typeof WEATHER_PHONE_MQ.addListener === 'function') {
+      WEATHER_PHONE_MQ.addListener(onMq);
+    }
+  }
+
   function init() {
     initTheme();
     initMastheadClock();
     initMastheadBackgrounds();
+    initMastheadSports();
     initMastheadWeather();
+    initMastheadStatusDock();
     initMastheadToolRelease();
     initNavCollapse();
     initNewsTailCollapse();

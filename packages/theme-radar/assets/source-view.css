@@ -166,11 +166,23 @@
   aspect-ratio: 16 / 9;
 }
 .article.has-image .article-media { display: block; }
+/* Crédit sous la photo : le ratio porte l’image, pas la légende. */
+.article.has-image .article-media:has(.article-media-credit) {
+  aspect-ratio: auto;
+  overflow: visible;
+  background: transparent;
+}
 .article-media img {
   display: block;
   width: 100%;
   height: 100%;
   object-fit: cover;
+}
+.article.has-image .article-media:has(.article-media-credit) img {
+  height: auto;
+  aspect-ratio: 16 / 9;
+  border-radius: 8px;
+  background: var(--bg-soft);
 }
 .article-media-credit {
   display: block;
@@ -208,7 +220,37 @@
   line-height: 1.1;
 }
 .article--lead.has-image .article-title { margin-bottom: 14px; }
-.article--lead.has-image .article-media { margin-bottom: 12px; }
+/*
+ * À la une : photo pleine largeur (16:9), jamais vignette flottante.
+ * Les vedettes (feature) restent en carré à gauche ; la une ne partage pas
+ * ce traitement — accueil, section, catégorie et fiche journaliste inclus.
+ */
+.article--lead.has-image .article-media {
+  float: none;
+  width: 100%;
+  max-width: 100%;
+  margin: 0 0 12px;
+  aspect-ratio: 16 / 9;
+  overflow: hidden;
+  background: var(--bg-soft);
+}
+.article--lead.has-image .article-media:has(.article-media-credit) {
+  aspect-ratio: auto;
+  overflow: visible;
+  background: transparent;
+}
+.article--lead.has-image .article-media img {
+  width: 100%;
+  height: 100%;
+  aspect-ratio: auto;
+  object-fit: cover;
+  border-radius: 0;
+}
+.article--lead.has-image .article-media:has(.article-media-credit) img {
+  height: auto;
+  aspect-ratio: 16 / 9;
+  border-radius: 8px;
+}
 .article--lead .article-byline { margin-bottom: 10px; font-size: .95rem; }
 .article--lead .article-brief { max-width: none; font-size: 1.08rem; line-height: 1.6; }
 .article--feature .article-brief { max-width: none; font-size: .98rem; line-height: 1.52; }
@@ -430,7 +472,10 @@
   overflow: visible;
   transition: max-height 0.45s ease;
 }
-/* « Réduire » reste en bas du fil (flux normal), comme LE-RADAR — pas fixed. */
+/* Dépliage unidirectionnel : pas de « Réduire » sticky ni en bas du fil. */
+.news-tail.is-expanded .news-tail-toggle {
+  display: none !important;
+}
 /*
  * Rangée peek (6e) : rubrique + titre + auteurs (pas l’extrait ni la date
  * longue). Le flou démarre sous la 1ʳᵉ ligne lisible (voir ::after).
@@ -661,31 +706,26 @@
     aspect-ratio: 1 / 1;
   }
 
-  /* À la une mobile : photo flottante + extrait long qui enroule dessous. */
+  /*
+   * À la une mobile : reste en colonne (eyebrow → méta → titre → byline →
+   * photo pleine largeur 16:9 → extrait). Ne pas flotter la photo : le
+   * 16:9 forcé dans une pastille ~140 px donnait le crop bizarre vu sur
+   * l’accueil et les fiches journaliste. Les vedettes gardent le float.
+   */
   .news-hero .article--lead.has-image {
-    display: block;
+    display: flex;
+    flex-direction: column;
   }
   .news-hero .article--lead.has-image > .article-media {
-    float: left;
-    width: clamp(118px, 36vw, 156px);
-    margin: 4px 14px 6px 0;
-    shape-outside: margin-box;
+    float: none;
+    width: 100%;
+    max-width: 100%;
+    margin: 0 0 12px;
+    shape-outside: none;
   }
   .news-hero .article--lead.has-image > .article-brief {
     display: block;
     overflow: visible;
-  }
-  .news-hero .article--lead.has-image::after {
-    content: "";
-    display: table;
-    clear: both;
-  }
-  .news-hero .article--lead.has-image .article-media img {
-    width: 100%;
-    height: auto;
-    aspect-ratio: 4 / 3;
-    object-fit: cover;
-    border-radius: 8px;
   }
 
   /* Moins d’air sous le bouton « Plus d’articles » avant le footer. */
