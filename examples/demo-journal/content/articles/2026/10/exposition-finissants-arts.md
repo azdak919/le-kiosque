@@ -11,12 +11,17 @@ section: culture
 categories: [culture]
 tags: []
 lang: fr-CA
-bodyFormat: html
 lead:
-  src: /media/2026/10/serre.svg
-  alt: Illustration fictive aux teintes vertes utilisée comme affiche d'exposition
-  credit: Le Quorum, illustration fictive
-  license: CC-BY-SA-4.0
+  src: /media/demo-library/articles/arts.jpg
+  alt: "Exposition d’art dans une galerie"
+  credit: "YessMendez"
+  license: CC BY-SA 4.0
+  licenseUrl: https://creativecommons.org/licenses/by-sa/4.0
+  sourceUrl: https://commons.wikimedia.org/wiki/File:Art_exhibition.jpg
+  width: 1920
+  height: 1440
+  focalPoint: { x: 50, y: 48 }
+bodyFormat: html
 excerpt: Quinze œuvres fictives explorent la mémoire, le territoire et la vie collégiale.
 ---
 

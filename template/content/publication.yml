@@ -16,7 +16,7 @@ timeZone: America/Toronto
 
 theme:
   # La couleur officielle de votre établissement.
-  # Voir brand-colors.json de LE RADAR.
+  # Voir brand-colors.json de LE-RADAR.
   accent: '#6c2163'
   # Version éclaircie, lisible sur fond sombre.
   accentDark: '#cf7ec1'

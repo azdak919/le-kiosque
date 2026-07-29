@@ -267,7 +267,7 @@ export interface Publication {
     overlayStrength?: number;
     textAlignment?: 'left' | 'center' | 'right';
   };
-  /** Barre d'écoute facultative de LE RADAR. */
+  /** Barre d'écoute facultative de LE-RADAR. */
   radio?: {
     enabled?: boolean;
     station?: string;

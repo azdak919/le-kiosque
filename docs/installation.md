@@ -90,10 +90,10 @@ radio:
   position: top
 ```
 
-Passez `enabled` à `false` pour la retirer. Le lecteur de LE RADAR ne traite pas
+Passez `enabled` à `false` pour la retirer. Le lecteur de LE-RADAR ne traite pas
 encore le paramètre `station`, et la synchronisation du thème est limitée à la
 même origine. KIOSQUE émet déjà les paramètres; ils seront pris en compte quand
-LE RADAR les acceptera. Aucun changement du dépôt LE RADAR n’est requis.
+LE-RADAR les acceptera. Aucun changement du dépôt LE-RADAR n’est requis.
 
 ## Domaine personnalisé
 
@@ -132,9 +132,9 @@ renouvelle et ne garantit aucun domaine.
 - Le projet est expérimental, développé avec des ressources limitées, sans
   garantie d’hébergement, de maintenance ou de soutien permanent.
 
-## KIOSQUE et LE RADAR
+## KIOSQUE et LE-RADAR
 
 KIOSQUE produit un journal que l’équipe possède : domaine, hébergement, comptes
-et contenus. LE RADAR est un projet distinct de découverte et d’agrégation des
-médias étudiants. KIOSQUE n’héberge rien, et l’inscription éventuelle au RADAR
+et contenus. LE-RADAR est un projet distinct de découverte et d’agrégation des
+médias étudiants. KIOSQUE n’héberge rien, et l’inscription éventuelle à LE-RADAR
 ne transfère aucune propriété.

@@ -7,7 +7,7 @@
 Socle libre pour les journaux étudiants, les médias de campus et les équipes
 éditoriales. Conçu pour survivre à ses fondateurs.
 
-**LE RADAR** est l'agrégateur et le réseau de découverte des médias étudiants.
+**LE-RADAR** est l'agrégateur et le réseau de découverte des médias étudiants.
 **LE KIOSQUE** est le kit qui permet d'en créer un. Deux projets distincts : un
 journal sous LE KIOSQUE reste propriétaire de son domaine, de son hébergement,
 de ses comptes et de ses contenus.
@@ -22,7 +22,8 @@ site, qui est le problème facile.
 
 > **Agents et personnes qui reprennent le projet :** lire
 > **[`AGENTS.md`](AGENTS.md)** (architecture, invariants, pièges déjà payés)
-> puis **[`SUITE.md`](SUITE.md)** (la mission en cours et son prompt d'amorçage).
+> puis la section **« Registre officiel de livraison »** de
+> **[`AGENTS.md`](AGENTS.md)** (mission en cours et décisions de continuité).
 
 **État : démonstration locale PGlite.** La vitrine, Le Quorum, le configurateur
 et une interface de rédaction persistante dans le navigateur fonctionnent sans
@@ -146,7 +147,7 @@ et ne sont copiés que pour construire et tester la démonstration locale.
 |---|---|---|
 | **1** | Noyau, adaptateur Markdown, thème, chaîne complète, test de continuité | **fait** |
 | **2** | Sveltia CMS, statut éditorial, identifiants permanents | **fait** |
-| **3** | Vitrine, Le Quorum, configurateur et barre radio LE RADAR | **fait** |
+| **3** | Vitrine, Le Quorum, configurateur et barre radio LE-RADAR | **fait** |
 | **Démo locale** | PGlite, administration navigateur, import/export et front vivant | **fait** |
 | 4 | `doctor`, `adopt`, passation, `export` | à venir |
 | 5 | Adaptateur WordPress/Newspack | à venir |
@@ -166,7 +167,7 @@ feuille de route.
 comptes d'administration, ses sauvegardes, sa sécurité, ses dépenses, et la
 gestion et la publication de son contenu.
 
-**Le Kiosque et LE RADAR n'hébergent pas les sites.** Le projet est expérimental
+**Le Kiosque et LE-RADAR n'hébergent pas les sites.** Le projet est expérimental
 et développé avec des ressources limitées. Il ne garantit aucune infrastructure,
 maintenance permanente, niveau de service ni service commercial.
 L'accompagnement est bénévole et offert selon les disponibilités.
@@ -174,7 +175,7 @@ L'accompagnement est bénévole et offert selon les disponibilités.
 L'architecture laisse la porte ouverte à des partenariats, des services payants
 facultatifs ou une coopérative — **sans qu'aucun journal ne devienne dépendant
 du Kiosque pour conserver ou migrer ses contenus.** Le référencement dans
-l'annuaire signifie seulement que LE RADAR lit un flux RSS public et conserve
+l'annuaire signifie seulement que LE-RADAR lit un flux RSS public et conserve
 les métadonnées nécessaires à l'agrégation.
 
 ---
@@ -182,7 +183,7 @@ les métadonnées nécessaires à l'agrégation.
 ## Licence
 
 **GNU GPL v2** ([`LICENSE`](LICENSE)), comme
-[LE RADAR](https://github.com/azdak919/le-radar), dont ce projet reprend
+[LE-RADAR](https://github.com/azdak919/le-radar), dont ce projet reprend
 l'identité visuelle (valeurs **copiées** dans
 `packages/theme-radar/assets/tokens.css`, pas liées — chaque projet garde sa
 liberté d'évoluer).

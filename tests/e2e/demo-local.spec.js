@@ -1,6 +1,9 @@
 import { expect, test } from '@playwright/test';
 
 test('configurer, rédiger, prévisualiser, publier, persister et exporter sans serveur', async ({ page, context }) => {
+  // Ce parcours exerce PGlite, deux téléchargements et une réimportation ; il
+  // reste volontairement intégral, mais peut dépasser 90 s sur un CI saturé.
+  test.setTimeout(150_000);
   await page.goto('/autre-nom/configurer/');
   await page.getByRole('button', { name: 'Commencer' }).click();
   await page.getByLabel('Nom du journal').fill('La Relève locale');
@@ -47,6 +50,10 @@ test('configurer, rédiger, prévisualiser, publier, persister et exporter sans 
   await front.waitForFunction(() => document.documentElement.dataset.editorialReady === 'true', null, { timeout: 45_000 });
   await expect(front.locator('.publication-logo')).toBeVisible();
   await expect(front.locator('html')).toHaveAttribute('data-typography', 'editorial-classic');
+  // La démo PGlite doit employer le même noyau de carte que le HTML statique :
+  // vignettes en bref, mais aucune image réintroduite dans la suite du fil.
+  await expect(front.locator('article.article--brief.has-image .article-media').first()).toBeVisible();
+  await expect(front.locator('article.article--tail .article-media')).toHaveCount(0);
   await expect(front.getByText('Un article créé dans le navigateur')).toHaveCount(0);
 
   await row.getByRole('button', { name: 'Modifier' }).click();
@@ -57,8 +64,9 @@ test('configurer, rédiger, prévisualiser, publier, persister et exporter sans 
   await page.locator('.entity-list li').filter({ hasText: 'Un article créé dans le navigateur' }).getByRole('button', { name: 'Modifier' }).click();
   await page.getByLabel('Statut').selectOption('published');
   await page.getByRole('button', { name: 'Enregistrer' }).click();
-  await expect(front.getByText('Un article créé dans le navigateur')).toBeVisible();
-  await front.getByText('Un article créé dans le navigateur').click();
+  const createdArticleLink = front.getByRole('link', { name: 'Un article créé dans le navigateur', exact: true });
+  await expect(createdArticleLink).toBeVisible();
+  await createdArticleLink.click();
   await expect(front.getByRole('heading', { level: 1, name: 'Un article créé dans le navigateur' })).toBeVisible();
   await expect(front.locator('.post-meta time')).toHaveAttribute('datetime', new Date('2026-07-27T08:45').toISOString());
 
@@ -122,8 +130,11 @@ test('configurer, rédiger, prévisualiser, publier, persister et exporter sans 
   await page.getByRole('button', { name: 'Exporter et poursuivre' }).click();
   const chooser = page.waitForEvent('filechooser');
   await page.getByRole('button', { name: 'Importer une sauvegarde' }).click();
-  page.once('dialog', (dialog) => dialog.accept());
+  // Le handler de fichier est asynchrone : attendre explicitement le dialogue
+  // évite de rater la confirmation lorsque PGlite répond plus vite qu’un CI.
+  const importDialog = page.waitForEvent('dialog');
   await (await chooser).setFiles(jsonPath);
+  await importDialog.then((dialog) => dialog.accept());
   await expect(page.getByRole('heading', { name: 'Tableau de bord' })).toBeVisible();
   await page.getByRole('button', { name: 'Articles' }).click();
   await expect(page.getByText('Un article local mis à jour')).toBeVisible();

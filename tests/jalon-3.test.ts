@@ -53,7 +53,7 @@ test('demoContent=false masque tous les articles fictifs sans les supprimer du m
   await assert.rejects(() => readdir(path.join(out, 'articles')));
 });
 
-test('la barre radio suit le contrat sombre et reste masquée avant la confirmation du RADAR', async (t) => {
+test('la barre radio suit le contrat sombre et reste masquée avant la confirmation de LE-RADAR', async (t) => {
   const out = await mkdtemp(path.join(os.tmpdir(), 'kiosque-radio-'));
   t.after(() => rm(out, { recursive: true, force: true }));
 
@@ -93,9 +93,9 @@ test('la vitrine expose le bandeau illustré, les outils et la composition magaz
   assert.match(home, /data-weather-localities="\[&quot;Québec&quot;\]"/);
   assert.match(home, /href="https:\/\/le-radar\.ca\/pomo\/"/);
   assert.match(home, /href="https:\/\/le-radar\.ca\/solitaire\/"/);
-  assert.match(home, /class="article article--lead"/);
-  assert.match(home, /class="article article--feature"/);
-  assert.match(home, /class="article article--brief"/);
+  assert.match(home, /class="article article--lead(?: [^"]*)?"/);
+  assert.match(home, /class="article article--feature(?: [^"]*)?"/);
+  assert.match(home, /class="article article--brief(?: [^"]*)?"/);
   assert.match(home, /5 octobre 2026, 06 h 00/, 'l’heure doit être présentée dans le fuseau éditorial du journal');
   assert.match(feed, /<published>2026-10-05T10:00:00\.000Z<\/published>/);
   assert.match(feed, /<media:content url="https:\/\/journal-exemple\.invalid\/media\//);

@@ -11,6 +11,16 @@ section: campus
 categories: [vie-etudiante]
 tags: []
 lang: fr-CA
+lead:
+  src: /media/demo-library/articles/livres.jpg
+  alt: "Rayons de livres en bibliothèque"
+  credit: "w:it:Utente:OrbiliusMagister"
+  license: Public domain
+  licenseUrl: https://commons.wikimedia.org/wiki/File:Bookshelves.jpg
+  sourceUrl: https://commons.wikimedia.org/wiki/File:Bookshelves.jpg
+  width: 1920
+  height: 1318
+  focalPoint: { x: 50, y: 48 }
 excerpt: La consultation fictive compare trois scénarios durant les examens de fin de session.
 ---
 

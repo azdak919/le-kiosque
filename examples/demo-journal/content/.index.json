@@ -1,9 +1,9 @@
 {
   "_comment": "Index dérivé, régénéré par `kiosque sync`. Reconstructible à 100 % depuis content/. Ne pas éditer à la main.",
-  "syncedAt": "2026-07-27T09:10:02.653Z",
+  "syncedAt": "2026-07-29T12:51:29.103Z",
   "publication": "le-quorum",
   "counts": {
-    "articles": 8,
+    "articles": 22,
     "authors": 3,
     "sections": 5
   },
@@ -18,12 +18,129 @@
       "canonicalUrl": "https://journal-exemple.invalid/articles/assemblee-generale-reconduction/"
     },
     {
+      "id": "018f2c1a-7b3e-5000-9a4d-2f1e5c8b0d40",
+      "slug": "atelier-reparation-velos",
+      "status": "published",
+      "demo": true,
+      "publishedAt": "2026-10-02T13:00:00.000Z",
+      "updatedAt": "2026-10-02T13:00:00.000Z",
+      "canonicalUrl": "https://journal-exemple.invalid/articles/atelier-reparation-velos/"
+    },
+    {
+      "id": "018f2c1a-7b3e-5000-9a4d-2f1e5c8b0d47",
+      "slug": "balado-histoire-campus",
+      "status": "published",
+      "demo": true,
+      "publishedAt": "2026-09-25T15:00:00.000Z",
+      "updatedAt": "2026-09-25T15:00:00.000Z",
+      "canonicalUrl": "https://journal-exemple.invalid/articles/balado-histoire-campus/"
+    },
+    {
+      "id": "018f2c1a-7b3e-5000-9a4d-2f1e5c8b0d45",
+      "slug": "basketball-equipe-recrues",
+      "status": "published",
+      "demo": true,
+      "publishedAt": "2026-09-27T18:00:00.000Z",
+      "updatedAt": "2026-09-27T18:00:00.000Z",
+      "canonicalUrl": "https://journal-exemple.invalid/articles/basketball-equipe-recrues/"
+    },
+    {
+      "id": "018f2c1a-7b3e-5000-9a4d-2f1e5c8b0d44",
+      "slug": "brigade-compost-campus",
+      "status": "published",
+      "demo": true,
+      "publishedAt": "2026-09-28T09:00:00.000Z",
+      "updatedAt": "2026-09-28T09:00:00.000Z",
+      "canonicalUrl": "https://journal-exemple.invalid/articles/brigade-compost-campus/"
+    },
+    {
       "id": "018f2c1a-7b3e-5000-9a4d-2f1e5c8b0d33",
       "slug": "brouillon-budget",
       "status": "draft",
       "demo": true,
       "updatedAt": "2026-10-02T16:20:00.000Z",
       "canonicalUrl": "https://journal-exemple.invalid/articles/brouillon-budget/"
+    },
+    {
+      "id": "018f2c1a-7b3e-5000-9a4d-2f1e5c8b0d42",
+      "slug": "cafeteria-menu-vegetal",
+      "status": "published",
+      "demo": true,
+      "publishedAt": "2026-09-30T11:30:00.000Z",
+      "updatedAt": "2026-09-30T11:30:00.000Z",
+      "canonicalUrl": "https://journal-exemple.invalid/articles/cafeteria-menu-vegetal/"
+    },
+    {
+      "id": "018f2c1a-7b3e-5000-9a4d-2f1e5c8b0d43",
+      "slug": "chronique-cinema-midi",
+      "status": "published",
+      "demo": true,
+      "publishedAt": "2026-09-29T14:00:00.000Z",
+      "updatedAt": "2026-09-29T14:00:00.000Z",
+      "canonicalUrl": "https://journal-exemple.invalid/articles/chronique-cinema-midi/"
+    },
+    {
+      "id": "018f2c1a-7b3e-5000-9a4d-2f1e5c8b0d51",
+      "slug": "club-lecture-rentree",
+      "status": "published",
+      "demo": true,
+      "publishedAt": "2026-09-21T16:30:00.000Z",
+      "updatedAt": "2026-09-21T16:30:00.000Z",
+      "canonicalUrl": "https://journal-exemple.invalid/articles/club-lecture-rentree/"
+    },
+    {
+      "id": "018f2c1a-7b3e-5000-9a4d-2f1e5c8b0d50",
+      "slug": "course-cross-country",
+      "status": "published",
+      "demo": true,
+      "publishedAt": "2026-09-22T14:30:00.000Z",
+      "updatedAt": "2026-09-22T14:30:00.000Z",
+      "canonicalUrl": "https://journal-exemple.invalid/articles/course-cross-country/"
+    },
+    {
+      "id": "018f2c1a-7b3e-5000-9a4d-2f1e5c8b0d48",
+      "slug": "debat-frais-stationnement",
+      "status": "published",
+      "demo": true,
+      "publishedAt": "2026-09-24T10:00:00.000Z",
+      "updatedAt": "2026-09-24T10:00:00.000Z",
+      "canonicalUrl": "https://journal-exemple.invalid/articles/debat-frais-stationnement/"
+    },
+    {
+      "id": "018f2c1a-7b3e-5000-9a4d-2f1e5c8b0d53",
+      "slug": "editorial-espaces-calmes",
+      "status": "published",
+      "demo": true,
+      "publishedAt": "2026-09-19T12:00:00.000Z",
+      "updatedAt": "2026-09-19T12:00:00.000Z",
+      "canonicalUrl": "https://journal-exemple.invalid/articles/editorial-espaces-calmes/"
+    },
+    {
+      "id": "018f2c1a-7b3e-5000-9a4d-2f1e5c8b0d41",
+      "slug": "exposition-finissants-arts",
+      "status": "published",
+      "demo": true,
+      "publishedAt": "2026-10-01T16:00:00.000Z",
+      "updatedAt": "2026-10-01T16:00:00.000Z",
+      "canonicalUrl": "https://journal-exemple.invalid/articles/exposition-finissants-arts/"
+    },
+    {
+      "id": "018f2c1a-7b3e-5000-9a4d-2f1e5c8b0d49",
+      "slug": "laboratoire-sciences-ouvert",
+      "status": "published",
+      "demo": true,
+      "publishedAt": "2026-09-23T17:00:00.000Z",
+      "updatedAt": "2026-09-23T17:00:00.000Z",
+      "canonicalUrl": "https://journal-exemple.invalid/articles/laboratoire-sciences-ouvert/"
+    },
+    {
+      "id": "018f2c1a-7b3e-5000-9a4d-2f1e5c8b0d46",
+      "slug": "pret-ordinateurs-bibliotheque",
+      "status": "published",
+      "demo": true,
+      "publishedAt": "2026-09-26T12:00:00.000Z",
+      "updatedAt": "2026-09-26T12:00:00.000Z",
+      "canonicalUrl": "https://journal-exemple.invalid/articles/pret-ordinateurs-bibliotheque/"
     },
     {
       "id": "018f2c1a-7b3e-5000-9a4d-2f1e5c8b0d32",
@@ -54,6 +171,15 @@
       "publishedAt": "2026-10-01T13:15:00.000Z",
       "updatedAt": "2026-10-01T13:15:00.000Z",
       "canonicalUrl": "https://journal-exemple.invalid/articles/serre-pedagogique-campus/"
+    },
+    {
+      "id": "018f2c1a-7b3e-5000-9a4d-2f1e5c8b0d52",
+      "slug": "sondage-horaires-bibliotheque",
+      "status": "published",
+      "demo": true,
+      "publishedAt": "2026-09-20T09:30:00.000Z",
+      "updatedAt": "2026-09-20T09:30:00.000Z",
+      "canonicalUrl": "https://journal-exemple.invalid/articles/sondage-horaires-bibliotheque/"
     },
     {
       "id": "018f2c1a-7b3e-5000-9a4d-2f1e5c8b0d36",

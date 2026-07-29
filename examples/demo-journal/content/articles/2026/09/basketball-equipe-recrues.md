@@ -12,10 +12,15 @@ categories: [sports]
 tags: []
 lang: fr-CA
 lead:
-  src: /media/2026/10/terrain.svg
-  alt: Illustration fictive d'une surface sportive vue du ciel
-  credit: Le Quorum, illustration fictive
-  license: CC-BY-SA-4.0
+  src: /media/demo-library/articles/basketball.jpg
+  alt: "Match de basketball en gymnase"
+  credit: "Bama in ATL"
+  license: CC BY-SA 4.0
+  licenseUrl: https://creativecommons.org/licenses/by-sa/4.0/
+  sourceUrl: https://commons.wikimedia.org/wiki/File:2016_Auburn_at_Alabama_NCAAM_Basketball_Game.jpg
+  width: 1920
+  height: 1440
+  focalPoint: { x: 50, y: 48 }
 excerpt: Le personnel d'entraînement fictif mise sur la profondeur et la transition rapide.
 ---
 

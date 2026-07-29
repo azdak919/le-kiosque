@@ -11,6 +11,16 @@ section: campus
 categories: [vie-etudiante]
 tags: []
 lang: fr-CA
+lead:
+  src: /media/demo-library/articles/biblio-pc.jpg
+  alt: "Ordinateurs en bibliothèque"
+  credit: "Mshuang2"
+  license: CC0
+  licenseUrl: https://commons.wikimedia.org/wiki/File:Library_computers.jpg
+  sourceUrl: https://commons.wikimedia.org/wiki/File:Library_computers.jpg
+  width: 1920
+  height: 1440
+  focalPoint: { x: 50, y: 48 }
 excerpt: Le prêt fictif passe de trois à sept jours pour mieux couvrir les périodes d'examens.
 ---
 

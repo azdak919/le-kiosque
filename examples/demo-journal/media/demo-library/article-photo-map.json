@@ -1,0 +1,302 @@
+{
+  "tournoi-soccer-interprogramme": {
+    "src": "/media/demo-library/articles/soccer.jpg",
+    "alt": "Ballon de soccer sur un terrain en herbe",
+    "credit": "Peter Glaser baraida",
+    "license": "CC0",
+    "licenseUrl": "https://creativecommons.org/publicdomain/mark/1.0/",
+    "sourceUrl": "https://commons.wikimedia.org/wiki/File:Adidas_soccer_ball_on_a_grass_pitch_(Unsplash).jpg",
+    "width": 1920,
+    "height": 1280,
+    "focalPoint": {
+      "x": 50,
+      "y": 48
+    },
+    "theme": "soccer"
+  },
+  "basketball-equipe-recrues": {
+    "src": "/media/demo-library/articles/basketball.jpg",
+    "alt": "Match de basketball en gymnase",
+    "credit": "Bama in ATL",
+    "license": "CC BY-SA 4.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0/",
+    "sourceUrl": "https://commons.wikimedia.org/wiki/File:2016_Auburn_at_Alabama_NCAAM_Basketball_Game.jpg",
+    "width": 1920,
+    "height": 1440,
+    "focalPoint": {
+      "x": 50,
+      "y": 48
+    },
+    "theme": "basketball"
+  },
+  "course-cross-country": {
+    "src": "/media/demo-library/articles/course.jpg",
+    "alt": "Course à pied en nature",
+    "credit": "Isaacvp",
+    "license": "CC BY-SA 4.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0/",
+    "sourceUrl": "https://commons.wikimedia.org/wiki/File:2018_Orizaba_Running_race_01.jpg",
+    "width": 1920,
+    "height": 1080,
+    "focalPoint": {
+      "x": 50,
+      "y": 48
+    },
+    "theme": "course"
+  },
+  "serre-pedagogique-campus": {
+    "src": "/media/demo-library/articles/serre.jpg",
+    "alt": "Serre pédagogique avec des plants",
+    "credit": "Rodrigo.Argenton",
+    "license": "CC BY-SA 4.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0/",
+    "sourceUrl": "https://commons.wikimedia.org/wiki/File:Estufa_principal_do_Jardim_Bot%C3%A2nico_de_Curitiba_02.jpg",
+    "width": 1920,
+    "height": 1317,
+    "focalPoint": {
+      "x": 50,
+      "y": 48
+    },
+    "theme": "serre"
+  },
+  "laboratoire-sciences-ouvert": {
+    "src": "/media/demo-library/articles/labo.jpg",
+    "alt": "Laboratoire de chimie moderne",
+    "credit": "Horia Varlan",
+    "license": "CC BY 2.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by/2.0/",
+    "sourceUrl": "https://commons.wikimedia.org/wiki/File:Chemistry_laboratory.jpg",
+    "width": 1920,
+    "height": 1325,
+    "focalPoint": {
+      "x": 50,
+      "y": 48
+    },
+    "theme": "labo"
+  },
+  "radio-campus-cinquante-ans": {
+    "src": "/media/demo-library/articles/radio.jpg",
+    "alt": "Studio de radio avec microphones",
+    "credit": "Ethan Long",
+    "license": "CC BY-SA 2.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by-sa/2.0/",
+    "sourceUrl": "https://commons.wikimedia.org/wiki/File:Broadcast_Studio_(53998133689).jpg",
+    "width": 1920,
+    "height": 2880,
+    "focalPoint": {
+      "x": 50,
+      "y": 48
+    },
+    "theme": "radio"
+  },
+  "balado-histoire-campus": {
+    "src": "/media/demo-library/articles/radio.jpg",
+    "alt": "Studio de radio avec microphones",
+    "credit": "Ethan Long",
+    "license": "CC BY-SA 2.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by-sa/2.0/",
+    "sourceUrl": "https://commons.wikimedia.org/wiki/File:Broadcast_Studio_(53998133689).jpg",
+    "width": 1920,
+    "height": 2880,
+    "focalPoint": {
+      "x": 50,
+      "y": 48
+    },
+    "theme": "radio"
+  },
+  "veille-sante-mentale": {
+    "src": "/media/demo-library/articles/campus-vie.jpg",
+    "alt": "Étudiantes et étudiants sur un campus au printemps",
+    "credit": "Tulane Public Relations",
+    "license": "CC BY 2.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by/2.0/",
+    "sourceUrl": "https://commons.wikimedia.org/wiki/File:Students_enjoy_springtime_weather._(5554288570).jpg",
+    "width": 1920,
+    "height": 1286,
+    "focalPoint": {
+      "x": 50,
+      "y": 48
+    },
+    "theme": "campus-vie"
+  },
+  "atelier-reparation-velos": {
+    "src": "/media/demo-library/articles/velo.jpg",
+    "alt": "Station de réparation de vélos",
+    "credit": "Briana18091440",
+    "license": "CC BY-SA 4.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
+    "sourceUrl": "https://commons.wikimedia.org/wiki/File:Bike_repair_station.jpg",
+    "width": 1920,
+    "height": 2560,
+    "focalPoint": {
+      "x": 50,
+      "y": 48
+    },
+    "theme": "velo"
+  },
+  "brigade-compost-campus": {
+    "src": "/media/demo-library/articles/compost.jpg",
+    "alt": "Bac de compost et matières organiques",
+    "credit": "fir0002 flagstaffotos [at] gmail.com Canon 20D + Tamron 28-75mm f/2.8",
+    "license": "CC BY-SA 3.0",
+    "licenseUrl": "https://commons.wikimedia.org/wiki/File:Compost_bin.jpg",
+    "sourceUrl": "https://commons.wikimedia.org/wiki/File:Compost_bin.jpg",
+    "width": 1600,
+    "height": 1135,
+    "focalPoint": {
+      "x": 50,
+      "y": 48
+    },
+    "theme": "compost"
+  },
+  "pret-ordinateurs-bibliotheque": {
+    "src": "/media/demo-library/articles/biblio-pc.jpg",
+    "alt": "Ordinateurs en bibliothèque",
+    "credit": "Mshuang2",
+    "license": "CC0",
+    "licenseUrl": "https://commons.wikimedia.org/wiki/File:Library_computers.jpg",
+    "sourceUrl": "https://commons.wikimedia.org/wiki/File:Library_computers.jpg",
+    "width": 1920,
+    "height": 1440,
+    "focalPoint": {
+      "x": 50,
+      "y": 48
+    },
+    "theme": "biblio-pc"
+  },
+  "sondage-horaires-bibliotheque": {
+    "src": "/media/demo-library/articles/livres.jpg",
+    "alt": "Rayons de livres en bibliothèque",
+    "credit": "w:it:Utente:OrbiliusMagister",
+    "license": "Public domain",
+    "licenseUrl": "https://commons.wikimedia.org/wiki/File:Bookshelves.jpg",
+    "sourceUrl": "https://commons.wikimedia.org/wiki/File:Bookshelves.jpg",
+    "width": 1920,
+    "height": 1318,
+    "focalPoint": {
+      "x": 50,
+      "y": 48
+    },
+    "theme": "livres"
+  },
+  "assemblee-generale-reconduction": {
+    "src": "/media/demo-library/articles/amphi.jpg",
+    "alt": "Amphithéâtre universitaire rempli",
+    "credit": "Kannan5645",
+    "license": "CC BY-SA 3.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by-sa/3.0",
+    "sourceUrl": "https://commons.wikimedia.org/wiki/File:Lecture_hall.jpg",
+    "width": 1600,
+    "height": 1200,
+    "focalPoint": {
+      "x": 50,
+      "y": 48
+    },
+    "theme": "amphi"
+  },
+  "cafeteria-menu-vegetal": {
+    "src": "/media/demo-library/articles/caf.jpg",
+    "alt": "Cafétéria ou salle à manger collective",
+    "credit": "Tanvir Hussain",
+    "license": "CC BY-SA 3.0",
+    "licenseUrl": "https://commons.wikimedia.org/wiki/File:Cafeteria.jpg",
+    "sourceUrl": "https://commons.wikimedia.org/wiki/File:Cafeteria.jpg",
+    "width": 1920,
+    "height": 1440,
+    "focalPoint": {
+      "x": 50,
+      "y": 48
+    },
+    "theme": "caf"
+  },
+  "chronique-cinema-midi": {
+    "src": "/media/demo-library/articles/cinema.jpg",
+    "alt": "Salle de cinéma vue depuis les sièges",
+    "credit": "Fernandaodapassos",
+    "license": "CC BY-SA 4.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
+    "sourceUrl": "https://commons.wikimedia.org/wiki/File:Movie_theater.jpg",
+    "width": 1920,
+    "height": 1440,
+    "focalPoint": {
+      "x": 50,
+      "y": 48
+    },
+    "theme": "cinema"
+  },
+  "club-lecture-rentree": {
+    "src": "/media/demo-library/articles/livres.jpg",
+    "alt": "Rayons de livres en bibliothèque",
+    "credit": "w:it:Utente:OrbiliusMagister",
+    "license": "Public domain",
+    "licenseUrl": "https://commons.wikimedia.org/wiki/File:Bookshelves.jpg",
+    "sourceUrl": "https://commons.wikimedia.org/wiki/File:Bookshelves.jpg",
+    "width": 1920,
+    "height": 1318,
+    "focalPoint": {
+      "x": 50,
+      "y": 48
+    },
+    "theme": "livres"
+  },
+  "editorial-espaces-calmes": {
+    "src": "/media/demo-library/articles/calme.jpg",
+    "alt": "Étudiantes et étudiants en zone d’étude calme",
+    "credit": "SJISE",
+    "license": "CC BY-SA 4.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
+    "sourceUrl": "https://commons.wikimedia.org/wiki/File:Students_studying.jpg",
+    "width": 1920,
+    "height": 1280,
+    "focalPoint": {
+      "x": 50,
+      "y": 48
+    },
+    "theme": "calme"
+  },
+  "exposition-finissants-arts": {
+    "src": "/media/demo-library/articles/arts.jpg",
+    "alt": "Exposition d’art dans une galerie",
+    "credit": "YessMendez",
+    "license": "CC BY-SA 4.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
+    "sourceUrl": "https://commons.wikimedia.org/wiki/File:Art_exhibition.jpg",
+    "width": 1920,
+    "height": 1440,
+    "focalPoint": {
+      "x": 50,
+      "y": 48
+    },
+    "theme": "arts"
+  },
+  "transport-collectif-editorial": {
+    "src": "/media/demo-library/articles/bus.jpg",
+    "alt": "Autobus de transport collectif",
+    "credit": "Ici2015",
+    "license": "CC BY-SA 3.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by-sa/3.0",
+    "sourceUrl": "https://commons.wikimedia.org/wiki/File:Bus.jpg",
+    "width": 1600,
+    "height": 1200,
+    "focalPoint": {
+      "x": 50,
+      "y": 48
+    },
+    "theme": "bus"
+  },
+  "debat-frais-stationnement": {
+    "src": "/media/demo-library/articles/parking.jpg",
+    "alt": "Stationnement pour vélos sur un campus",
+    "credit": "David Shay",
+    "license": "CC BY-SA 2.5",
+    "licenseUrl": "https://creativecommons.org/licenses/by-sa/2.5",
+    "sourceUrl": "https://commons.wikimedia.org/wiki/File:Bicycle_parking.jpg",
+    "width": 1120,
+    "height": 845,
+    "focalPoint": {
+      "x": 50,
+      "y": 48
+    },
+    "theme": "parking"
+  }
+}

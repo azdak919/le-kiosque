@@ -11,6 +11,16 @@ section: campus
 categories: [vie-etudiante]
 tags: [transition-ecologique]
 lang: fr-CA
+lead:
+  src: /media/demo-library/articles/caf.jpg
+  alt: "Cafétéria ou salle à manger collective"
+  credit: "Tanvir Hussain"
+  license: CC BY-SA 3.0
+  licenseUrl: https://commons.wikimedia.org/wiki/File:Cafeteria.jpg
+  sourceUrl: https://commons.wikimedia.org/wiki/File:Cafeteria.jpg
+  width: 1920
+  height: 1440
+  focalPoint: { x: 50, y: 48 }
 excerpt: Le projet pilote fictif sera évalué à partir des ventes et d'un court sondage.
 ---
 

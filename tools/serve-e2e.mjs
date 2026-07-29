@@ -5,6 +5,7 @@ import path from 'node:path';
 
 const root = path.resolve('dist');
 const prefix = '/autre-nom';
+const port = Number(process.env.PLAYWRIGHT_PORT || 4173);
 const mime = { '.html': 'text/html; charset=utf-8', '.js': 'text/javascript; charset=utf-8', '.css': 'text/css; charset=utf-8', '.json': 'application/json', '.wasm': 'application/wasm', '.data': 'application/octet-stream', '.xml': 'application/xml; charset=utf-8', '.svg': 'image/svg+xml' };
 
 createServer(async (request, response) => {
@@ -22,4 +23,4 @@ createServer(async (request, response) => {
   }
   response.setHeader('Content-Type', mime[path.extname(file)] || 'application/octet-stream');
   createReadStream(file).pipe(response);
-}).listen(4173, '127.0.0.1', () => console.log('E2E: http://127.0.0.1:4173/autre-nom/'));
+}).listen(port, '127.0.0.1', () => console.log(`E2E: http://127.0.0.1:${port}/autre-nom/`));

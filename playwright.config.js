@@ -1,5 +1,8 @@
 import { defineConfig } from '@playwright/test';
 
+const e2ePort = Number(process.env.PLAYWRIGHT_PORT || 4173);
+const e2eOrigin = `http://127.0.0.1:${e2ePort}`;
+
 const browserProjects = [
   { name: 'chromium', use: { browserName: 'chromium' } },
   { name: 'firefox', use: { browserName: 'firefox' } },
@@ -14,14 +17,14 @@ export default defineConfig({
   expect: { timeout: 15_000 },
   reporter: process.env.CI ? [['line'], ['html', { open: 'never' }]] : 'line',
   use: {
-    baseURL: 'http://127.0.0.1:4173',
+    baseURL: e2eOrigin,
     trace: 'retain-on-failure',
     screenshot: 'only-on-failure',
     video: 'off',
   },
   webServer: {
     command: 'node tools/serve-e2e.mjs',
-    url: 'http://127.0.0.1:4173/autre-nom/',
+    url: `${e2eOrigin}/autre-nom/`,
     reuseExistingServer: !process.env.CI,
     timeout: 20_000,
   },

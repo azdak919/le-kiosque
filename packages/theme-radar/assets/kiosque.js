@@ -184,8 +184,8 @@
     }, { passive: true });
   }
 
-  // ── Barre radio LE RADAR ───────────────────────────────────────────────
-  // Le composant reste invisible jusqu'à ce que LE RADAR confirme explicitement
+  // ── Barre radio LE-RADAR ───────────────────────────────────────────────
+  // Le composant reste invisible jusqu'à ce que LE-RADAR confirme explicitement
   // le protocole kiosque-v1. En cas de panne, il disparaît et laisse la simple
   // ligne de séparation du thème à sa place.
   function initRadarTuner() {
@@ -207,7 +207,7 @@
         if (!src) return;
         var frame = document.createElement('iframe');
         frame.src = src;
-        frame.title = 'Barre d’écoute de LE RADAR';
+        frame.title = 'Barre d’écoute de LE-RADAR';
         // Le parent est volontairement masqué jusqu'au message de disponibilité.
         // Un iframe lazy sous [hidden] peut ne jamais être chargé par le navigateur,
         // ce qui empêcherait précisément ce message d'arriver.

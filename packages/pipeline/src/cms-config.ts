@@ -251,7 +251,7 @@ export function buildCmsConfig(options: CmsConfigOptions): Record<string, unknow
             required: false,
             picker_utc: true,
             format: "yyyy-MM-dd'T'HH:mm:ss'Z'",
-            hint: 'Obligatoire pour publier. L’heure exacte alimente aussi le flux lu par LE RADAR.',
+            hint: 'Obligatoire pour publier. L’heure exacte alimente aussi le flux lu par LE-RADAR.',
           },
           {
             name: 'updatedAt',

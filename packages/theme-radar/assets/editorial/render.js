@@ -1,3 +1,5 @@
+import { renderSourceArticle } from './source-view.js';
+
 const ESCAPES = { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' };
 export const esc = (value) => String(value ?? '').replace(/[&<>"']/g, (character) => ESCAPES[character]);
 
@@ -31,15 +33,31 @@ function mediaFigure(article, base) {
 
 function articleCard(article, bundle, base, variant = 'tail') {
   const role = variant === true ? 'lead' : variant;
-  const lead = role === 'lead';
-  const showImage = role === 'lead' || role === 'feature' || role === 'tail';
   const section = bundle.taxonomies.sections.find((item) => item.slug === article.section);
-  return `<article class="article article--${role}">
-    ${lead ? '<span class="article-eyebrow">À la une</span>' : ''}
-    <div class="article-meta"><span class="article-section">${esc(section?.name || '')}</span><time datetime="${esc(article.publishedAt || article.updatedAt)}">${esc(formatDateTime(article.publishedAt || article.updatedAt, bundle.publication.timeZone))}</time></div>
-    <h2 class="article-title"><a data-editorial-link href="${link(base, `/articles/${encodeURIComponent(article.slug)}/`)}">${esc(article.title)}</a></h2>
-    ${byline(article, bundle)}${showImage ? mediaFigure(article, base) : ''}<p class="article-brief">${esc(article.excerpt || '')}</p>
-  </article>`;
+  const lead = article.lead;
+  const src = safeMediaUrl(lead?.src);
+  return renderSourceArticle({
+    section: section?.name,
+    href: link(base, `/articles/${encodeURIComponent(article.slug)}/`),
+    linkAttributes: 'data-editorial-link',
+    title: article.title,
+    excerpt: article.excerpt,
+    readMore: true,
+    date: {
+      iso: article.publishedAt || article.updatedAt,
+      label: formatDateTime(article.publishedAt || article.updatedAt, bundle.publication.timeZone),
+    },
+    authors: article.authors.map((slug) => ({ name: bundle.authors.find((author) => author.slug === slug)?.name || slug })),
+    image: src ? {
+      src: src.startsWith('/') ? link(base, src) : src,
+      alt: lead.alt || '',
+      caption: lead.caption,
+      credit: lead.credit,
+      focalPoint: lead.focalPoint,
+      width: lead.width,
+      height: lead.height,
+    } : undefined,
+  }, role);
 }
 
 export function renderRoute(bundle, base, pathname, renderBody) {
@@ -136,7 +154,7 @@ export function applyBranding(bundle, base) {
     tuner.className = 'radar-tuner';
     tuner.dataset.src = src;
     tuner.hidden = true;
-    tuner.innerHTML = '<a href="https://le-radar.ca/" rel="noopener">Écouter LE RADAR</a>';
+    tuner.innerHTML = '<a href="https://le-radar.ca/" rel="noopener">Écouter LE-RADAR</a>';
     document.querySelector('header')?.after(tuner);
   }
 }

@@ -1,8 +1,8 @@
 /*
  * LE KIOSQUE — jetons de conception (thème « radar »).
  *
- * Repris de LE RADAR : style.css (:root, ligne 7) et docs/identite-visuelle.md.
- * Les valeurs sont COPIÉES, pas liées : LE RADAR garde sa liberté d'évoluer et
+ * Repris de LE-RADAR : style.css (:root, ligne 7) et docs/identite-visuelle.md.
+ * Les valeurs sont COPIÉES, pas liées : LE-RADAR garde sa liberté d'évoluer et
  * un journal garde la sienne. C'est le seul fichier qu'une équipe doit modifier
  * pour s'approprier le site.
  *
@@ -10,7 +10,7 @@
  *   pourpre = qui nous sommes · rouge = c'est en direct · bleu = c'est la radio
  *
  * Pour s'approprier le journal : remplacer --accent par la couleur officielle de
- * l'établissement (voir brand-colors.json de LE RADAR) et --accent-dark par sa
+ * l'établissement (voir brand-colors.json de LE-RADAR) et --accent-dark par sa
  * version éclaircie, lisible sur fond sombre. Ne rien toucher d'autre suffit.
  */
 
@@ -42,7 +42,7 @@
   --maxw: 800px;
   --pad: 24px;
 
-  /* Échelle fluide (LE RADAR style.css:978). La manchette reste toujours
+  /* Échelle fluide (LE-RADAR style.css:978). La manchette reste toujours
      inférieure au bloc-titre du journal. */
   --wordmark-size: clamp(2.05rem, 6.8vw + 0.3rem, 4.25rem);
   --lead-title-size: clamp(1.55rem, 4.1vw + 0.15rem, 2.55rem);

@@ -1,7 +1,7 @@
 /*
  * LE KIOSQUE — thème éditorial « radar ».
  *
- * Reprend le rythme éditorial de LE RADAR (style.css, section WIRE) : titres
+ * Reprend le rythme éditorial de LE-RADAR (style.css, section WIRE) : titres
  * serif, filets fins, hiérarchie par la typographie plutôt que par la couleur.
  * Beaucoup de blanc. Une couleur par rôle.
  *
@@ -154,7 +154,7 @@ a { color: inherit; }
 }
 .demo-banner a { color: #fff; }
 
-/* ─────────────── BARRE RADIO LE RADAR ─────────────── */
+/* ─────────────── BARRE RADIO LE-RADAR ─────────────── */
 
 .radar-tuner {
   display: block;
@@ -208,136 +208,8 @@ a { color: inherit; }
 
 .news-list { margin-top: 4px; }
 
-.article {
-  position: relative;
-  display: block;
-  text-decoration: none;
-  color: inherit;
-  padding: 22px 0;
-  border-bottom: 1px solid var(--rule);
-  min-width: 0;
-}
-/* Filet d'accent dans la gouttière, jamais par-dessus le contenu. */
-.article::before {
-  content: "";
-  position: absolute;
-  left: -14px;
-  top: 22px;
-  bottom: 22px;
-  width: 3px;
-  background: var(--c, var(--accent));
-  opacity: 0;
-  transition: opacity 160ms ease;
-}
-.article:hover::before { opacity: 1; }
-.article:hover .article-title { color: var(--accent); }
-
-.article-meta {
-  display: grid;
-  grid-template-columns: minmax(0, 1fr) auto;
-  align-items: start;
-  column-gap: 10px;
-  row-gap: 2px;
-  font-size: 12px;
-  margin-bottom: 6px;
-}
-.article-section {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  font-weight: 700;
-  letter-spacing: 0.04em;
-  text-transform: uppercase;
-  color: var(--c, var(--accent));
-  min-width: 0;
-}
-.article-section::before {
-  content: "";
-  width: 6px; height: 6px;
-  border-radius: 50%;
-  background: currentColor;
-  flex-shrink: 0;
-}
-.article-time { color: var(--muted); white-space: nowrap; }
-
-.article-title {
-  font-family: var(--serif);
-  font-weight: 600;
-  font-size: 1.45rem;
-  line-height: 1.2;
-  letter-spacing: -0.012em;
-  margin: 0 0 7px;
-  color: var(--ink);
-  transition: color 140ms ease;
-  overflow-wrap: anywhere;
-  hyphens: auto;
-}
-.article-byline {
-  font-size: 0.84rem;
-  color: var(--muted);
-  margin: 0 0 6px;
-  font-weight: 500;
-}
-.article-byline .article-author {
-  color: var(--ink);
-  font-weight: 600;
-  margin-inline-start: 0.35em;
-}
-.article-brief {
-  font-family: var(--sans);
-  font-size: 0.95rem;
-  line-height: 1.55;
-  color: var(--ink-soft);
-  margin: 0;
-}
-
-.article-media {
-  margin: 12px 0 10px;
-  border-radius: 6px;
-  overflow: hidden;
-  background: var(--bg-soft);
-}
-.article-media img {
-  display: block;
-  width: 100%;
-  height: auto;
-}
-.article-media-credit {
-  font-size: 11px;
-  color: var(--muted);
-  margin-top: 5px;
-  letter-spacing: 0.01em;
-}
-
-/* ── À la une ── */
-.article--lead {
-  padding: 14px 0 22px;
-  border-bottom: 2px solid var(--rule-strong);
-  display: flex;
-  flex-direction: column;
-}
-.article--lead > .article-eyebrow { order: 1; }
-.article--lead > .article-meta    { order: 2; }
-.article--lead > .article-title   { order: 3; }
-.article--lead > .article-byline  { order: 4; }
-.article--lead > .article-media   { order: 5; }
-.article--lead > .article-brief   { order: 6; }
-.article--lead::before { top: 56px; }
-
-.article-eyebrow {
-  display: inline-block;
-  font-size: 11px;
-  font-weight: 800;
-  letter-spacing: 0.18em;
-  text-transform: uppercase;
-  color: var(--accent);
-  margin-bottom: 14px;
-}
-.article--lead .article-title {
-  font-size: var(--lead-title-size);
-  line-height: 1.1;
-  margin-bottom: 12px;
-}
+/* Les cartes de liste vivent exclusivement dans source-view.css : même
+   contrat LE-RADAR pour le build statique et le navigateur PGlite. */
 
 /* ─────────────── PAGE D'ARTICLE ─────────────── */
 
@@ -495,7 +367,7 @@ a { color: inherit; }
 /*
  * Un titre qui ne tient pas défile doucement plutôt que d'être tronqué par une
  * ellipse : on ne cache pas la fin d'un titre de journal. Repris du motif
- * `applyMarquee` de LE RADAR. `will-change: transform` suffit — empiler les
+ * `applyMarquee` de LE-RADAR. `will-change: transform` suffit — empiler les
  * promotions de couche GPU rend le texte flou sur écran dense.
  */
 .is-marquee {
@@ -641,46 +513,7 @@ a { color: inherit; }
 .masthead--image-error .masthead-photo-credit { display: none; }
 .masthead--image-error { color: var(--ink); }
 
-/* ─────────────── ACCUEIL MAGAZINE ─────────────── */
-
-.magazine-layout {
-  display: grid;
-  grid-template-columns: minmax(0, 1.15fr) minmax(300px, 370px);
-  gap: 0;
-  align-items: start;
-}
-.news-hero { min-width: 0; padding-right: 32px; border-bottom: 1px solid var(--rule); }
-.news-features { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 22px; }
-.brief-rail { border-left: 1px solid var(--rule); border-bottom: 1px solid var(--rule); padding-left: 28px; min-width: 0; }
-.brief-rail > h2,
-.news-tail > h2 {
-  margin: 14px 0 6px;
-  padding-bottom: 8px;
-  font: 800 10px/1.2 var(--sans);
-  letter-spacing: .16em;
-  text-transform: uppercase;
-  color: var(--muted);
-}
-.brief-rail .article { padding: 15px 0; }
-.brief-rail .article-title { font-size: 1.05rem; }
-.brief-rail .article-brief,
-.brief-rail .article-byline { display: none; }
-.news-tail { grid-column: 1 / -1; margin-top: 28px; border-top: 2px solid var(--rule-strong); }
-.news-tail-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 0 28px; }
-.article--feature .article-title { font-size: 1.2rem; }
-.article--feature .article-media,
-.article--tail .article-media { aspect-ratio: 16 / 10; }
-.article--feature .article-media img,
-.article--tail .article-media img { width: 100%; height: 100%; object-fit: cover; }
-.article--lead .article-media { aspect-ratio: 16 / 10; }
-.article--lead .article-media img { width: 100%; height: 100%; object-fit: cover; }
-
-@media (max-width: 1099px) {
-  .magazine-layout { display: block; }
-  .news-hero { padding-right: 0; border-bottom: 0; }
-  .brief-rail { border-left: 0; border-bottom: 0; padding-left: 0; }
-  .brief-rail .article-brief { display: block; }
-}
+/* La grille magazine est portée par source-view.css avec les cartes. */
 
 @media (max-width: 720px) {
   .masthead { min-height: 0; padding: 10px 0 12px; }
@@ -690,11 +523,6 @@ a { color: inherit; }
   .masthead-tool { width: 28px; height: 28px; }
   .masthead-top { align-items: flex-end; }
   .masthead-meta { width: 100%; }
-  .news-features,
-  .news-tail-grid { grid-template-columns: 1fr; }
-  .article--lead .article-title { font-size: clamp(2rem, 10vw, 3rem); }
-  .article-meta { grid-template-columns: 1fr; }
-  .article-time { white-space: normal; }
 }
 
 @media (min-width: 1100px) {

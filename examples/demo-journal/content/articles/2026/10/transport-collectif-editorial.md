@@ -14,6 +14,16 @@ categories:
 tags:
   - sante-etudiante
 lang: fr-CA
+lead:
+  src: /media/demo-library/articles/bus.jpg
+  alt: "Autobus de transport collectif"
+  credit: "Ici2015"
+  license: CC BY-SA 3.0
+  licenseUrl: https://creativecommons.org/licenses/by-sa/3.0
+  sourceUrl: https://commons.wikimedia.org/wiki/File:Bus.jpg
+  width: 1600
+  height: 1200
+  focalPoint: { x: 50, y: 48 }
 excerpt: >-
   Les horaires de transport déterminent discrètement qui peut rester à la
   bibliothèque, participer à un comité ou accepter un quart de travail.

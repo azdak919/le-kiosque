@@ -16,10 +16,15 @@ tags:
   - transition-ecologique
 lang: fr-CA
 lead:
-  src: /media/2026/10/serre.svg
-  alt: Illustration d'une serre vitrée entourée de jeunes pousses
-  credit: Le Quorum, illustration fictive
-  license: CC-BY-SA-4.0
+  src: /media/demo-library/articles/serre.jpg
+  alt: "Serre pédagogique avec des plants"
+  credit: "Rodrigo.Argenton"
+  license: CC BY-SA 4.0
+  licenseUrl: https://creativecommons.org/licenses/by-sa/4.0/
+  sourceUrl: https://commons.wikimedia.org/wiki/File:Estufa_principal_do_Jardim_Bot%C3%A2nico_de_Curitiba_02.jpg
+  width: 1920
+  height: 1317
+  focalPoint: { x: 50, y: 48 }
 excerpt: >-
   Une serre quatre saisons servira à la fois de laboratoire, de garde-manger
   pédagogique et de lieu de rencontre dès la session d'hiver.

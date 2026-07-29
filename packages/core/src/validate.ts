@@ -84,8 +84,32 @@ export function validateMedia(asset: MediaAsset, path: string): Issue[] {
   return issues;
 }
 
-const SHARED_MEDIA_LICENSES = new Set(['CC BY-SA 3.0', 'CC BY 2.0 Canada', 'CC BY-SA 2.5']);
+/** Licences libres acceptées pour la banque partagée (campus QC + scènes Commons). */
+const SHARED_MEDIA_LICENSES = new Set([
+  'CC0',
+  'CC0 1.0',
+  'Public domain',
+  'Public Domain',
+  'CC BY 2.0',
+  'CC BY 2.0 Canada',
+  'CC BY 2.0 ca',
+  'CC BY 3.0',
+  'CC BY 4.0',
+  'CC BY-SA 2.0',
+  'CC BY-SA 2.5',
+  'CC BY-SA 3.0',
+  'CC BY-SA 4.0',
+  'GFDL',
+  'GFDL 1.2',
+]);
 const SHARED_MEDIA_USAGES = new Set(['exterior', 'interior', 'sport', 'masthead', 'article']);
+
+function normalizeSharedLicense(license: string | undefined): string {
+  return String(license || '')
+    .replace(/\s+/g, ' ')
+    .replace(/creativecommons\.org\/publicdomain\/zero.*/i, 'CC0')
+    .trim();
+}
 
 export function validateSharedMedia(asset: SharedMediaAsset, path = 'media'): Issue[] {
   const issues = validateMedia(asset, path);
@@ -96,13 +120,24 @@ export function validateSharedMedia(asset: SharedMediaAsset, path = 'media'): Is
     if (!/^https:\/\//.test(value ?? '')) err(issues, `${path}.${field}`, 'une URL HTTPS est requise');
   }
   if (!asset.credit?.trim()) err(issues, `${path}.credit`, 'auteur ou autrice requis');
-  if (!SHARED_MEDIA_LICENSES.has(asset.license)) {
+  const license = normalizeSharedLicense(asset.license);
+  if (!SHARED_MEDIA_LICENSES.has(license) && !SHARED_MEDIA_LICENSES.has(asset.license)) {
     err(issues, `${path}.license`, `licence non reconnue : « ${asset.license ?? ''} »`);
   }
   if (!Number.isInteger(asset.width) || asset.width <= 0) err(issues, `${path}.width`, 'largeur positive requise');
   if (!Number.isInteger(asset.height) || asset.height <= 0) err(issues, `${path}.height`, 'hauteur positive requise');
-  if (!asset.institution?.trim()) err(issues, `${path}.institution`, 'établissement requis');
-  if (!asset.campus?.trim()) err(issues, `${path}.campus`, 'campus requis');
+  const articleOnly = (asset.usages?.length === 1 && asset.usages[0] === 'article')
+    || (asset.usages?.includes('article') && !asset.usages?.includes('masthead'));
+  // Les photos thématiques d'articles (scènes Commons) n'ont pas d'établissement
+  // québécois rattaché ; le campus de démonstration suffit.
+  if (!asset.institution?.trim()) {
+    if (articleOnly) warn(issues, `${path}.institution`, 'établissement absent (scène thématique)');
+    else err(issues, `${path}.institution`, 'établissement requis');
+  }
+  if (!asset.campus?.trim()) {
+    if (articleOnly) warn(issues, `${path}.campus`, 'campus absent (scène thématique)');
+    else err(issues, `${path}.campus`, 'campus requis');
+  }
   if (!asset.keywords?.length) err(issues, `${path}.keywords`, 'au moins un mot-clé requis');
   if (!asset.usages?.length || asset.usages.some((usage) => !SHARED_MEDIA_USAGES.has(usage))) {
     err(issues, `${path}.usages`, 'usage absent ou inconnu');

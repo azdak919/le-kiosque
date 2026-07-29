@@ -11,6 +11,16 @@ section: opinion
 categories: [opinion]
 tags: []
 lang: fr-CA
+lead:
+  src: /media/demo-library/articles/calme.jpg
+  alt: "Étudiantes et étudiants en zone d’étude calme"
+  credit: "SJISE"
+  license: CC BY-SA 4.0
+  licenseUrl: https://creativecommons.org/licenses/by-sa/4.0
+  sourceUrl: https://commons.wikimedia.org/wiki/File:Students_studying.jpg
+  width: 1920
+  height: 1280
+  focalPoint: { x: 50, y: 48 }
 excerpt: La rédaction fictive réclame une signalisation claire et des zones sans appels vidéo.
 ---
 

@@ -67,6 +67,10 @@ async function copyPgliteModule(entry: string, sourceRoot: string, targetRoot: s
 async function copyDemoRuntime(outDir: string): Promise<void> {
   const editorialDir = path.join(outDir, 'assets', 'editorial');
   const pgliteDir = path.join(editorialDir, 'pglite');
+  // Le même noyau de carte est exécuté par les gabarits statiques et par la
+  // démo PGlite. Il vit côté thème, puis est copié explicitement dans le
+  // runtime navigateur — jamais recopié à la main dans render.js.
+  await cp(path.resolve(THEME_ASSETS, '..', 'src', 'source-view.js'), path.join(editorialDir, 'source-view.js'));
   await copyPgliteModule(path.join(PGLITE_DIST, 'index.js'), PGLITE_DIST, pgliteDir);
   await copyPgliteModule(path.join(PGLITE_DIST, 'worker', 'index.js'), PGLITE_DIST, pgliteDir);
   for (const file of ['pglite.wasm', 'pglite.data', 'initdb.wasm']) {

@@ -16,10 +16,15 @@ tags:
   - sante-etudiante
 lang: fr-CA
 lead:
-  src: /media/2026/09/auditorium.svg
-  alt: Illustration fictive de personnes étudiantes réunies dans un auditorium
-  credit: Le Quorum, illustration fictive
-  license: CC-BY-SA-4.0
+  src: /media/demo-library/articles/campus-vie.jpg
+  alt: "Étudiantes et étudiants sur un campus au printemps"
+  credit: "Tulane Public Relations"
+  license: CC BY 2.0
+  licenseUrl: https://creativecommons.org/licenses/by/2.0/
+  sourceUrl: https://commons.wikimedia.org/wiki/File:Students_enjoy_springtime_weather._(5554288570).jpg
+  width: 1920
+  height: 1286
+  focalPoint: { x: 50, y: 48 }
 excerpt: >-
   Deux journalistes expliquent ensemble les limites et les constats d'un
   sondage fictif sur le bien-être de la communauté étudiante.

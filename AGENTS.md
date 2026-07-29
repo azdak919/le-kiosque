@@ -4,7 +4,9 @@
 > personnes qui reprennent le projet. Lis-le en entier avant de toucher au code :
 > il contient des contraintes qui ne se devinent pas et des pièges déjà payés.
 >
-> **La mission en cours est décrite dans [`SUITE.md`](SUITE.md).**
+> **`AGENTS.md` est le registre et la source de vérité uniques du projet.**
+> [`SUITE.md`](SUITE.md) est conservé uniquement comme pointeur historique : il
+> ne porte aucune décision, dette ou état de livraison.
 
 ---
 
@@ -17,7 +19,7 @@ gradué, et que dix ans d'archives partent avec.
 
 Tout le projet découle d'un seul objectif : **survivre à ses fondateurs**.
 
-**LE RADAR** (`github.com/azdak919/le-radar`, dépôt séparé) est l'agrégateur et
+**LE-RADAR** (`github.com/azdak919/le-radar`, dépôt séparé) est l'agrégateur et
 le réseau de découverte des médias étudiants. **LE KIOSQUE** est le kit qui
 permet d'en créer un. Ne confonds pas les deux : un journal sous KIOSQUE reste
 propriétaire de son domaine, de son hébergement et de ses contenus. **KIOSQUE
@@ -48,7 +50,7 @@ adaptateur : c'est vérifié par un test.
 ## Commandes
 
 ```bash
-npm test                    # 41 tests — doit rester vert
+npm test                    # tests unitaires — doit rester vert
 npm run test:e2e            # parcours Chromium PGlite sous un basePath renommé
 npm run test:continuity     # le test décisif du projet (voir plus bas)
 npm run typecheck           # tsc --noEmit (typage seul, aucune compilation)
@@ -59,7 +61,11 @@ node packages/pipeline/src/cli.ts verify --root examples/demo-journal
 node packages/pipeline/src/cli.ts cms:config --root examples/demo-journal
 
 node tools/vendor-cms.mjs   # fige Sveltia CMS dans le dépôt
+npm run radar:reference:check -- --from=../le-radar  # revue du port éditorial
 ```
+
+Si un serveur local occupe `4173`, choisir un port libre sans l’interrompre :
+`PLAYWRIGHT_PORT=43818 npm run test:e2e`.
 
 Node **≥ 22.18** exécute le TypeScript directement. Il n'y a **aucune étape de
 compilation** et il ne doit pas y en avoir.
@@ -131,9 +137,11 @@ packages/
     sanitize.ts       liste blanche HTML (le CMS tiers n'est pas de confiance)
     mirror.ts         miroir, empreintes sha256, intégrité
     cli.ts            sync · build · verify · cms:config
-  theme-radar/        identité éditoriale reprise de LE RADAR
+  theme-radar/        identité éditoriale reprise de LE-RADAR
     assets/tokens.css  ← le SEUL fichier qu'une équipe modifie
     src/templates.ts   gabarits (fonctions pures : modèle → HTML)
+    src/source-view.js noyau de carte partagé build statique + démo PGlite
+    LE-RADAR-SOURCE-VIEW.json  révision de référence et adaptations admises
     src/admin.ts       page /admin
     assets/admin/      Sveltia CMS figé (2 Mo, MIT)
     assets/editorial/  PGlite local, administration, rendu et exports navigateur
@@ -196,3 +204,44 @@ Ils ne sont pas committés, chargés depuis un CDN ou émis dans un build Git.
 Français québécois, ton éditorial et sobre. Les commentaires de code expliquent
 **pourquoi**, pas **quoi** — surtout quand le choix est contre-intuitif. Les
 messages d'erreur disent quoi faire, pas seulement ce qui a échoué.
+
+---
+
+## Registre officiel de livraison
+
+Ce registre remplace l'ancien ledger `SUITE.md`. Un état doit être mis à jour
+ici, dans le même changement que son code. Git conserve le détail historique;
+on ne recrée pas de deuxième journal d’état.
+
+| État | Chantier | Décision, critères et suites |
+|---|---|---|
+| **fait** | Jalon 3 — vitrine, Le Quorum et administration locale | Le build statique, le mode `demo-local` PGlite, la banque média locale, les points focaux, la barre radio et les validations correspondantes sont livrés. PGlite reste exclu des builds Git/Sveltia. |
+| **fait** | Modèle éditorial de source individuelle | `source-view.js` est le noyau unique appelé par `templates.ts` et `assets/editorial/render.js`; `source-view.css` porte les mesures/rôles de LE-RADAR. La démonstration ne possède plus de carte concurrente. |
+| **à surveiller** | Synchronisation LE-RADAR → LE-KIOSQUE | LE-RADAR est la référence du modèle de carte seulement. Avant de faire évoluer ce modèle dans LE-KIOSQUE, exécuter `npm run radar:reference:check -- --from=../le-radar`, examiner les écarts, puis actualiser le manifeste avec les adaptations réellement nécessaires. Les empreintes portent seulement sur `partitionSourceFeed`, `createArticle` et leurs CSS : une évolution du lecteur radio ne déclenche donc pas une fausse migration. Le build ne dépend jamais du dépôt voisin. |
+| **à venir** | Jalon 4 | `doctor`, `adopt`, passation et export; aucun backend ni installation automatique ne doit être supposé disponible. |
+| **bloqué par produit/opérations** | Fédération LE-RADAR, API distante, stockage, rôles et DAM | Ne commencer qu’après définition des responsabilités d’authentification, d’exploitation et de stockage. |
+
+### Port éditorial LE-RADAR : contrat d’acceptation
+
+- La génération statique et le rendu PGlite utilisent le même HTML de carte;
+  aucun copier-coller de `articleCard` n’est autorisé.
+- La carte conserve les rôles, images proportionnées, absence d’image pour la
+  suite du fil, métadonnées, date/heure, auteur, liens et états de champs
+  absents définis par le noyau.
+- Les images locales gardent `width`/`height`, `object-fit: cover`, point focal,
+  texte alternatif, chargement approprié et chemins préfixés par `basePath`.
+- Toute divergence volontaire est ajoutée à
+  `packages/theme-radar/LE-RADAR-SOURCE-VIEW.json`; elle ne doit pas devenir une
+  seconde interprétation visuelle.
+- Les tests de build, la démo sous sous-répertoire et le contrôle de référence
+  doivent rester exécutables avant une livraison.
+
+### Risques connus et garde-fous
+
+- LE-RADAR peut évoluer indépendamment : le manifeste et le contrôle manuel
+  rendent la divergence visible sans créer de dépendance réseau ou de sous-module.
+- Les articles de LE-KIOSQUE sont des contenus dont le journal est l’éditeur :
+  le port garde donc des liens locaux et ne copie pas la règle de lien externe
+  de l’agrégateur.
+- Le compteur historique des tests dans les anciens documents est indicatif;
+  exécuter les commandes plutôt que lui faire confiance.

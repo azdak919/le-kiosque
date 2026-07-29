@@ -200,19 +200,19 @@ test('5. l’archive se corrompt en silence → le contrôle d’intégrité le 
   assert.ok(clean.ok, `le miroir fraîchement synchronisé doit être intègre : ${JSON.stringify(clean)}`);
 
   // Corruption silencieuse : un octet change, la taille ne bouge pas.
-  const image = path.join(root, 'media', '2026', '09', 'auditorium.svg');
+  const image = path.join(root, 'media', 'demo-library', 'articles', 'soccer.jpg');
   const bytes = await readFile(image);
   bytes[Math.floor(bytes.length / 2)] ^= 0xff;
   await writeFile(image, bytes);
 
   const after = await verifyMediaIntegrity(root);
   assert.equal(after.ok, false, 'la corruption doit être détectée');
-  assert.deepEqual(after.corrupted, ['/media/2026/09/auditorium.svg']);
+  assert.deepEqual(after.corrupted, ['/media/demo-library/articles/soccer.jpg']);
 
   // Disparition pure et simple.
   await rm(image);
   const gone = await verifyMediaIntegrity(root);
-  assert.deepEqual(gone.missing, ['/media/2026/09/auditorium.svg']);
+  assert.deepEqual(gone.missing, ['/media/demo-library/articles/soccer.jpg']);
 });
 
 test('6. les brouillons ne fuitent jamais vers le site publié', async (t) => {

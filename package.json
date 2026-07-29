@@ -18,7 +18,8 @@
     "test": "node --test 'tests/**/*.test.ts'",
     "test:continuity": "node --test tests/continuity.test.ts",
     "test:e2e": "BASE=/autre-nom npm run site && playwright test",
-    "typecheck": "tsc --noEmit"
+    "typecheck": "tsc --noEmit",
+    "radar:reference:check": "node tools/check-radar-source-view.mjs"
   },
   "engines": {
     "node": ">=22.18"

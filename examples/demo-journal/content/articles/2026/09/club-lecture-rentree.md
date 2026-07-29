@@ -11,6 +11,16 @@ section: culture
 categories: [culture]
 tags: []
 lang: fr-CA
+lead:
+  src: /media/demo-library/articles/livres.jpg
+  alt: "Rayons de livres en bibliothèque"
+  credit: "w:it:Utente:OrbiliusMagister"
+  license: Public domain
+  licenseUrl: https://commons.wikimedia.org/wiki/File:Bookshelves.jpg
+  sourceUrl: https://commons.wikimedia.org/wiki/File:Bookshelves.jpg
+  width: 1920
+  height: 1318
+  focalPoint: { x: 50, y: 48 }
 excerpt: Une rencontre mensuelle fictive sera consacrée aux œuvres proposées par les membres.
 ---
 

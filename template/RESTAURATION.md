@@ -122,7 +122,7 @@ Quand le backend éditorial tombe :
 | Les archives, jusqu'au premier numéro | Modifier un article |
 | Le flux RSS | Publier |
 | La recherche par moteur | Téléverser une image |
-| L'agrégation par LE RADAR | |
+| L'agrégation par LE-RADAR | |
 | La reconstruction complète du site | |
 
 **Un journal peut rester lisible pendant des années sans que personne ne

@@ -19,6 +19,7 @@ import {
   type Section,
   type Taxonomies,
 } from '../../core/src/model.ts';
+import { renderSourceArticle } from './source-view.js';
 
 export interface RenderContext {
   publication: Publication;
@@ -140,20 +141,6 @@ export function formatDateTime(iso?: string, timeZone = 'America/Toronto'): stri
 // Fragments
 // ---------------------------------------------------------------------------
 
-function byline(article: Article, ctx: RenderContext, linked: boolean): string {
-  if (!article.authors.length) return '';
-  const names = article.authors.map((slug) => {
-    const author = ctx.authorsBySlug.get(slug);
-    const name = esc(author?.name ?? slug);
-    if (!linked) return `<span class="article-author">${name}</span>`;
-    return `<a class="article-author" href="${safeUrl(relative(authorUrl(ctx.publication, slug), ctx))}">${name}</a>`;
-  });
-  const joined = names.length > 1
-    ? `${names.slice(0, -1).join(', ')} et ${names[names.length - 1]}`
-    : names[0];
-  return `<p class="article-byline">Par${joined}</p>`;
-}
-
 /**
  * Convertit une URL absolue du site en chemin servable — le site reste
  * déplaçable, et fonctionne aussi bien à la racine d'un domaine que dans le
@@ -174,21 +161,6 @@ function sectionName(slug: string | undefined, ctx: RenderContext): Section | un
   return ctx.taxonomies.sections.find((s) => s.slug === slug);
 }
 
-function mediaFigure(article: Article, ctx: RenderContext): string {
-  const lead = article.lead;
-  if (!lead) return '';
-  const credit = [lead.caption, lead.credit && `Photo : ${lead.credit}`]
-    .filter(Boolean)
-    .map((x) => esc(x))
-    .join(' — ');
-  return `
-        <div class="article-media">
-          <img src="${safeUrl(asset(lead.src, ctx))}" alt="${esc(lead.alt)}" loading="lazy" decoding="async" style="object-position:${clampPercent(lead.focalPoint?.x)}% ${clampPercent(lead.focalPoint?.y)}%"${
-            lead.width ? ` width="${lead.width}"` : ''
-          }${lead.height ? ` height="${lead.height}"` : ''}>
-        </div>${credit ? `\n        <p class="article-media-credit">${credit}</p>` : ''}`;
-}
-
 function radioTuner(ctx: RenderContext): string {
   const radio = ctx.publication.radio;
   if (!radio || radio.enabled === false) return '';
@@ -197,7 +169,7 @@ function radioTuner(ctx: RenderContext): string {
   params.set('surface', 'kiosque-v1');
   const src = `https://le-radar.ca/tuner-embed.html?${params.toString()}`;
   return `<radar-tuner class="radar-tuner" data-src="${esc(src)}" data-surface="kiosque-v1" hidden>
-  <a href="https://le-radar.ca/" rel="noopener">Écouter LE RADAR</a>
+  <a href="https://le-radar.ca/" rel="noopener">Écouter LE-RADAR</a>
 </radar-tuner>`;
 }
 
@@ -259,24 +231,30 @@ function mastheadTools(ctx: RenderContext): string {
 
 export function articleCard(article: Article, ctx: RenderContext, variant: boolean | 'lead' | 'feature' | 'brief' | 'tail' = false): string {
   const role = variant === true ? 'lead' : variant === false ? 'tail' : variant;
-  const lead = role === 'lead';
-  const showImage = role === 'lead' || role === 'feature' || role === 'tail';
   const section = sectionName(article.section, ctx);
   const href = relative(articleUrl(ctx.publication, article), ctx);
   const date = article.publishedAt ?? article.updatedAt;
-
-  return `
-      <article class="article article--${role}">
-        ${lead ? '<span class="article-eyebrow">À la une</span>' : ''}
-        <div class="article-meta">
-          ${section ? `<span class="article-section">${esc(section.name)}</span>` : '<span></span>'}
-          <time class="article-time" datetime="${esc(date)}">${formatDateTime(date, ctx.publication.timeZone)}</time>
-        </div>
-        <h2 class="article-title"><a href="${safeUrl(href)}" style="text-decoration:none;color:inherit">${esc(article.title)}</a></h2>
-        ${byline(article, ctx, true)}
-        ${showImage ? mediaFigure(article, ctx) : ''}
-        <p class="article-brief">${esc(article.excerpt)}</p>
-      </article>`;
+  return renderSourceArticle({
+    section: section?.name,
+    href: safeUrl(href),
+    title: article.title,
+    excerpt: article.excerpt,
+    readMore: true,
+    date: { iso: date, label: formatDateTime(date, ctx.publication.timeZone) },
+    authors: article.authors.map((slug) => ({
+      name: ctx.authorsBySlug.get(slug)?.name ?? slug,
+      href: safeUrl(relative(authorUrl(ctx.publication, slug), ctx)),
+    })),
+    image: article.lead ? {
+      src: safeUrl(asset(article.lead.src, ctx)),
+      alt: article.lead.alt,
+      caption: article.lead.caption,
+      credit: article.lead.credit,
+      focalPoint: article.lead.focalPoint,
+      width: article.lead.width,
+      height: article.lead.height,
+    } : undefined,
+  }, role);
 }
 
 // ---------------------------------------------------------------------------
@@ -335,6 +313,7 @@ export function page(content: string, options: PageOptions, ctx: RenderContext):
 <link rel="alternate" type="application/atom+xml" title="${esc(pub.name)}" href="${asset('/feed.xml', ctx)}">
 <link rel="stylesheet" href="${asset('/assets/tokens.css', ctx)}">
 <link rel="stylesheet" href="${asset('/assets/theme.css', ctx)}">
+<link rel="stylesheet" href="${asset('/assets/source-view.css', ctx)}">
 <style>:root{--accent:${esc(pub.theme.accent)}}${
     pub.theme.accentDark ? `:root[data-theme="dark"]{--accent:${esc(pub.theme.accentDark)}}` : ''
   }</style>

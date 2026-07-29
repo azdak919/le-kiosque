@@ -20,10 +20,15 @@ tags:
   - financement
 lang: fr-CA
 lead:
-  src: /media/2026/09/auditorium.svg
-  alt: Vue d'un auditorium bondé pendant une assemblée étudiante
-  credit: Marie Tremblay
-  license: CC-BY-SA-4.0
+  src: /media/demo-library/articles/amphi.jpg
+  alt: "Amphithéâtre universitaire rempli"
+  credit: "Kannan5645"
+  license: CC BY-SA 3.0
+  licenseUrl: https://creativecommons.org/licenses/by-sa/3.0
+  sourceUrl: https://commons.wikimedia.org/wiki/File:Lecture_hall.jpg
+  width: 1600
+  height: 1200
+  focalPoint: { x: 50, y: 48 }
 ---
 
 L'assemblée générale extraordinaire de mardi a reconduit le mandat de grève pour
