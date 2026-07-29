@@ -42,10 +42,12 @@
   --maxw: 800px;
   --pad: 24px;
 
-  /* Échelle fluide (LE-RADAR style.css:978). La manchette reste toujours
-     inférieure au bloc-titre du journal. */
+  /* Échelle fluide (LE-RADAR --radar-wordmark-size / --radar-lead-title-size). */
   --wordmark-size: clamp(2.05rem, 6.8vw + 0.3rem, 4.25rem);
   --lead-title-size: clamp(1.55rem, 4.1vw + 0.15rem, 2.55rem);
+  /* Fond barre radio = session hiver LE-RADAR (aligné embed kiosque-v1). */
+  --tuner-session-base: #121820;
+  --tuner-bg: #121820;
 }
 
 :root[data-typography="editorial-classic"] { --serif: Georgia, "Times New Roman", serif; --sans: system-ui, sans-serif; }

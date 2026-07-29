@@ -168,13 +168,14 @@ a { color: inherit; }
   display: block;
   width: 100%;
   margin: 0;
-  /* Pas de min-height : tant que la barre est masquée, zéro espace réservé
-     (évite la « bande blanche/vide » sous le mât). */
-  background: var(--tuner-bg, #111317);
-  border-bottom: 1px solid var(--rule);
+  /* Même chrome que .tuner LE-RADAR : fond session, ombre, pas de filet. */
+  background: var(--tuner-session-base, var(--tuner-bg, #121820));
+  border: 0;
+  box-shadow: 0 8px 24px -14px rgba(0, 0, 0, 0.78);
   overflow: hidden;
+  /* Pas de min-height : tant que la barre est masquée, zéro espace réservé. */
 }
-/* Petit air entre la barre radio et la rangée de rubriques. */
+/* Petit air entre la barre radio et la rangée de rubriques (comme après le synthé LE-RADAR). */
 body.with-radio .nav-wrap {
   margin-top: 0;
   padding-top: 12px;
@@ -195,9 +196,14 @@ body.with-radio .nav {
 .radar-tuner iframe {
   display: block;
   width: 100%;
-  /* Aligné sur EMBED_H kiosque-v1 (68) — le postMessage peut encore ajuster. */
+  /*
+   * Hauteur = barre bureau LE-RADAR avec labels volume :
+   * padding 11+11 + contrôles 42 ≈ 64 px ; kiosque-v1 EMBED_H = 68 pour
+   * les libellés 0/100/200 % sous le rail (embed.js). postMessage peut ajuster.
+   */
   height: 68px;
   border: 0;
+  vertical-align: top;
   transition: height 120ms ease;
 }
 
@@ -728,8 +734,6 @@ body.with-radio .nav {
 
 /* ─────────────── MÂT ÉDITORIAL ─────────────── */
 
-:root { --tuner-bg: #111317; }
-
 .masthead {
   position: relative;
   isolation: isolate;
@@ -774,15 +778,15 @@ body.with-radio .nav {
   color: #fff;
   border-bottom: 1px solid rgba(0, 0, 0, 0.18);
   /*
-   * Hauteur de bandeau contrôlée — même ordre de grandeur que LE-RADAR
-   * (MASTHEAD_AR ≈ 3,5–3,8). Sans max-height, le wordmark + utilitaires
-   * étiraient la photo et montraient trop de ciel / parking.
+   * Hauteur de bandeau — parité visuelle LE-RADAR (MASTHEAD_AR = 3,8 dans
+   * quebec-backgrounds.js). Avant max 214 px : trop bas vs le mât radar.
+   * Le bandeau démo rouge (hors .masthead) ne compte pas dans cette hauteur.
    */
-  --masthead-ar: 3.55;
-  height: clamp(156px, calc(100vw / var(--masthead-ar)), 214px);
-  min-height: 156px;
-  max-height: 214px;
-  padding: 10px 0 12px;
+  --masthead-ar: 3.8;
+  height: clamp(200px, calc(100vw / var(--masthead-ar)), 300px);
+  min-height: 200px;
+  max-height: 300px;
+  padding: 12px 0 16px;
   display: flex;
   flex-direction: column;
   justify-content: space-between;
@@ -798,7 +802,7 @@ body.with-radio .nav {
 }
 /* Jointure mât → radio : pas de filet clair (LE-RADAR). Classe posée au build. */
 body.with-radio .masthead--illustrated {
-  border-bottom-color: var(--tuner-bg);
+  border-bottom-color: var(--tuner-session-base, var(--tuner-bg, #121820));
 }
 /*
  * Lettrage sur photo — multi-couches LE-RADAR (style.css wordmark-mark /
@@ -815,29 +819,30 @@ body.with-radio .masthead--illustrated {
 .masthead--illustrated .wordmark {
   position: relative;
   isolation: isolate;
-  font-size: clamp(1.85rem, 5.4vw + 0.2rem, 3.35rem);
+  /* Même échelle que --radar-wordmark-size (LE-RADAR). */
+  font-size: var(--wordmark-size, clamp(2.05rem, 6.8vw + 0.3rem, 4.25rem));
   text-shadow:
     0 0 1px rgba(0, 0, 0, 0.4),
     0 1px 2px rgba(0, 0, 0, 0.5),
     0 2px 8px rgba(0, 0, 0, 0.28),
     0 4px 16px rgba(0, 0, 0, 0.16);
 }
-/* Halo très léger derrière le titre (pas de tache sombre). */
+/* Halo LE-RADAR (quasi transparent) derrière le titre. */
 .masthead--illustrated .wordmark::before {
   content: "";
   position: absolute;
-  left: 0;
-  top: 50%;
+  left: 50%;
+  top: 48%;
   z-index: -1;
-  width: min(28rem, 85vw);
-  height: min(4.5rem, 22vw);
-  transform: translateY(-50%);
+  width: min(40rem, 90vw);
+  height: min(7.2rem, 32vw);
+  transform: translate(-50%, -50%);
   pointer-events: none;
   background: radial-gradient(
-    ellipse 55% 48% at 20% 50%,
-    rgba(0, 0, 0, 0.1) 0%,
-    rgba(0, 0, 0, 0.03) 48%,
-    transparent 72%
+    ellipse 48% 38% at 50% 48%,
+    rgba(0, 0, 0, 0.06) 0%,
+    rgba(0, 0, 0, 0.02) 50%,
+    transparent 74%
   );
 }
 .masthead--illustrated .masthead-tagline {
@@ -1162,10 +1167,11 @@ a.masthead-weather__city:focus-visible {
 @media (max-width: 720px) {
   .masthead { min-height: 0; padding: 10px 0 12px; }
   .masthead--illustrated {
-    --masthead-ar: 2.85;
-    height: clamp(148px, calc(100vw / var(--masthead-ar)), 196px);
-    max-height: 196px;
-    padding: 8px 0 10px;
+    --masthead-ar: 2.6;
+    height: clamp(176px, calc(100vw / var(--masthead-ar)), 240px);
+    min-height: 176px;
+    max-height: 240px;
+    padding: 10px 0 12px;
   }
   .masthead-utility { grid-template-columns: 1fr auto; padding-bottom: 8px; }
   .masthead--illustrated .masthead-utility { padding-bottom: 4px; }
