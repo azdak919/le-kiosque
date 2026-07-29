@@ -778,15 +778,16 @@ body.with-radio .nav {
   color: #fff;
   border-bottom: 1px solid rgba(0, 0, 0, 0.18);
   /*
-   * Hauteur de bandeau — parité visuelle LE-RADAR (MASTHEAD_AR = 3,8 dans
-   * quebec-backgrounds.js). Avant max 214 px : trop bas vs le mât radar.
-   * Le bandeau démo rouge (hors .masthead) ne compte pas dans cette hauteur.
+   * Bande fixe façon journal (Le Quorum) — pas hauteur « contenu » comme
+   * LE-RADAR. Ratio ~3,55, plafonnée pour un strip photo stable (wordmark +
+   * outils + photo) sans s’étirer avec le viewport. Le bandeau démo rouge
+   * (hors .masthead) ne compte pas dans cette hauteur.
    */
-  --masthead-ar: 3.8;
-  height: clamp(200px, calc(100vw / var(--masthead-ar)), 300px);
-  min-height: 200px;
-  max-height: 300px;
-  padding: 12px 0 16px;
+  --masthead-ar: 3.55;
+  height: clamp(156px, calc(100vw / var(--masthead-ar)), 214px);
+  min-height: 156px;
+  max-height: 214px;
+  padding: 10px 0 12px;
   display: flex;
   flex-direction: column;
   justify-content: space-between;
@@ -1167,10 +1168,10 @@ a.masthead-weather__city:focus-visible {
 @media (max-width: 720px) {
   .masthead { min-height: 0; padding: 10px 0 12px; }
   .masthead--illustrated {
-    --masthead-ar: 2.6;
-    height: clamp(176px, calc(100vw / var(--masthead-ar)), 240px);
-    min-height: 176px;
-    max-height: 240px;
+    --masthead-ar: 2.85;
+    height: clamp(148px, calc(100vw / var(--masthead-ar)), 196px);
+    min-height: 148px;
+    max-height: 196px;
     padding: 10px 0 12px;
   }
   .masthead-utility { grid-template-columns: 1fr auto; padding-bottom: 8px; }
