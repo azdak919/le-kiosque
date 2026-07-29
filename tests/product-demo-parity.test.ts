@@ -61,7 +61,13 @@ test('demo et template reçoivent le même theme.css / kiosque.js (packages/them
 
   assert.equal(demoCss, tplCss, 'theme.css doit être identique pour démo et produit');
   assert.equal(demoJs, tplJs, 'kiosque.js doit être identique pour démo et produit');
-  assert.match(demoCss, /--masthead-ar:\s*3\.55/, 'bandeau mât ratio LE-RADAR présent');
+  assert.match(demoCss, /--masthead-ar:\s*3\.8/, 'bandeau mât ratio LE-RADAR présent');
+  // Impression : bandeau démo rouge visible (accueil + article), fond forcé.
+  assert.match(
+    demoCss,
+    /@media\s+print\s*\{[\s\S]*?\.demo-banner\s*\{[\s\S]*?display:\s*block\s*!important[\s\S]*?print-color-adjust:\s*exact/,
+    'impression : bandeau démo rouge conservé',
+  );
   assert.match(demoJs, /computeMastheadFocalY/, 'cadrage auto mât présent');
   assert.match(demoJs, /function applyTheme/, 'bascule thème présente');
 

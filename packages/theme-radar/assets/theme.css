@@ -1192,7 +1192,9 @@ a.masthead-weather__city:focus-visible {
 
 /* ─────────────── IMPRESSION (Ctrl+P) ───────────────
  * Article individuel : lecture papier simple — titre, méta, photo lead,
- * corps. Pas de mât photo, radio, nav, En bref, ni chrome de démo.
+ * corps. Pas de mât photo, radio, nav, En bref. Le bandeau démo rouge
+ * reste visible (journal de démonstration / mode démo) pour marquer
+ * clairement que la sortie papier n’est pas un journal réel.
  */
 @media print {
   @page {
@@ -1205,8 +1207,28 @@ a.masthead-weather__city:focus-visible {
     color: #111 !important;
   }
 
+  /* Bandeau démo : forcé en tête d’impression (accueil + article). */
+  .demo-banner {
+    display: block !important;
+    position: static !important;
+    background: #c8102e !important;
+    color: #fff !important;
+    font-size: 10px !important;
+    font-weight: 700 !important;
+    letter-spacing: 0.08em !important;
+    text-transform: uppercase !important;
+    text-align: center !important;
+    padding: 6px 0 !important;
+    margin: 0 0 10px !important;
+    border: 0 !important;
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+  }
+  .demo-banner a {
+    color: #fff !important;
+  }
+
   .skip-link,
-  .demo-banner,
   .masthead-utility,
   .masthead-tools,
   .masthead-clock,
