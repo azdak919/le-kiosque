@@ -37,6 +37,9 @@ test('le noyau de carte conserve les règles image, métadonnées et absence d�
   assert.match(brief, /width="1200" height="800"/);
   assert.match(brief, /article-byline__label">Par<\/span>\s*<a class="article-author"/);
   assert.match(brief, /Lire la suite/);
+  // Texte et lien séparés : le line-clamp En bref ne doit pas avaler le lien.
+  assert.match(brief, /article-brief-text/);
+  assert.match(brief, /<\/span>\s*<a class="article-more"/);
   assert.doesNotMatch(tail, /<figure class="article-media">/);
   assert.match(tail, /article--tail/);
 });

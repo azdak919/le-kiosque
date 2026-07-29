@@ -82,9 +82,12 @@ export function renderSourceArticle(view, requestedRole = 'tail') {
     role === 'brief' ? 'article--compact' : '',
   ].filter(Boolean).join(' ');
   const articleLink = href ? `<a ${linkAttributesPrefix}href="${escapeSourceViewHtml(href)}">${title}</a>` : title;
+  // Lien hors du span clampé (LE-RADAR) : sinon -webkit-line-clamp sur
+  // .article-brief coupe « Lire la suite » en bas de la colonne En bref.
   const readMore = href && (view?.readMore || excerpt.truncated)
     ? ` <a class="article-more" ${linkAttributesPrefix}href="${escapeSourceViewHtml(href)}">Lire la suite <span aria-hidden="true">→</span><span class="sr-only"> : ${title}</span></a>`
     : '';
+  const briefClass = `article-brief${excerpt.truncated ? ' is-truncated' : ''}`;
   // Couleur de rubrique (section) — optionnelle, distincte de la marque.
   const colorRaw = String(view?.color || '').trim();
   const color = /^#[0-9a-fA-F]{3,8}$/.test(colorRaw) ? colorRaw : '';
@@ -99,7 +102,7 @@ export function renderSourceArticle(view, requestedRole = 'tail') {
   <h2 class="article-title">${articleLink}</h2>
   ${authorsMarkup(view?.authors, linkAttributes)}
   ${showImage ? imageMarkup(view.image, role) : ''}
-  ${excerpt.text ? `<p class="article-brief">${escapeSourceViewHtml(excerpt.text)}${readMore}</p>` : ''}
+  ${excerpt.text ? `<p class="${briefClass}"><span class="article-brief-text">${escapeSourceViewHtml(excerpt.text)}</span>${readMore}</p>` : ''}
 </article>`;
 }
 
