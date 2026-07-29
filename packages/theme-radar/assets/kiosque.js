@@ -734,12 +734,54 @@
     }
   }
 
+  function formatSportsChipWhen(iso, time) {
+    if (!iso) return '';
+    var label = '';
+    try {
+      label = new Intl.DateTimeFormat('fr-CA', {
+        day: 'numeric',
+        month: 'short',
+      }).format(new Date(iso + 'T12:00:00'));
+    } catch (_) {
+      label = iso;
+    }
+    if (time) {
+      label += ' · ' + String(time).replace(':', ' h ');
+    }
+    return label;
+  }
+
+  function applySportsLineMarquee(viewport) {
+    if (!viewport) return;
+    var inner = viewport.firstElementChild;
+    if (!inner) return;
+    viewport.classList.remove('is-sports-marquee');
+    viewport.style.removeProperty('--sports-marquee-shift');
+    viewport.style.removeProperty('--sports-marquee-duration');
+    if (sportsReducedMotion) return;
+    /* Mesure après paint (arrive anim + fonts). */
+    requestAnimationFrame(function () {
+      requestAnimationFrame(function () {
+        var overflow = inner.scrollWidth - viewport.clientWidth;
+        if (overflow <= 2) return;
+        viewport.classList.add('is-sports-marquee');
+        viewport.style.setProperty('--sports-marquee-shift', '-' + Math.round(overflow) + 'px');
+        /* ~28 px/s comme applyMarquee des titres kiosque / météo LE-RADAR. */
+        viewport.style.setProperty(
+          '--sports-marquee-duration',
+          Math.max(6, overflow / 28).toFixed(1) + 's',
+        );
+      });
+    });
+  }
+
   function paintSportsChip(host, display, animate) {
     if (!host || !display) return;
     host.textContent = '';
     var team = display.team;
     var code = String(team.code || 'EQ').toUpperCase().slice(0, 4);
     var sport = display.game.sport || team.sport || '';
+    var sportLabel = team.sportLabel || sport || '';
     var href = (sportsPayloadCache && sportsPayloadCache.href) || '';
     var chip = document.createElement(href ? 'a' : 'span');
     chip.className = 'sports-chip masthead-sports__chip';
@@ -755,37 +797,53 @@
     glyph.setAttribute('aria-hidden', 'true');
     glyph.textContent = sportsGlyph(sport);
 
-    var line = document.createElement('span');
-    line.className = 'sports-chip__line';
+    /*
+     * Ligne enrichie + viewport marquee (défilement L→R si trop long),
+     * même principe que les noms météo LE-RADAR / titres is-marquee.
+     */
+    var viewport = document.createElement('span');
+    viewport.className = 'sports-chip__line';
+    var inner = document.createElement('span');
+    inner.className = 'sports-chip__line-inner';
 
     var titleParts = [];
     var aria = '';
+    var lineText = '';
     if (display.mode === 'result') {
       var g = display.game;
-      var oppCode = String(g.opponentCode || g.opponent || 'ADV').toUpperCase().slice(0, 4);
       var score = g.scoreFor + '–' + g.scoreAgainst;
-      line.innerHTML = '<span class="sports-chip__code">' + code + '</span>'
-        + ' <span class="sports-chip__score">' + score + '</span> '
-        + '<span class="sports-chip__opp">' + oppCode + '</span>';
+      var badge = g.result === 'W' ? 'V' : g.result === 'L' ? 'D' : 'N';
       var issue = g.result === 'W' ? 'Victoire' : g.result === 'L' ? 'Défaite' : 'Match nul';
-      aria = issue + ' des ' + team.name + ' (' + (team.sportLabel || sport) + ') : '
-        + g.scoreFor + ' à ' + g.scoreAgainst + ' contre ' + g.opponent;
-      titleParts.push(issue + ' · ' + team.name + ' · ' + (team.sportLabel || sport));
-      titleParts.push(score + ' ' + g.opponent);
+      var oppName = g.opponent || g.opponentCode || 'Adversaire';
+      /* Code · V/D · score · nom adversaire (pas seulement le code). */
+      lineText = code + ' · ' + badge + ' ' + score + ' · ' + oppName;
+      if (sportLabel) lineText += ' · ' + sportLabel;
+      aria = issue + ' des ' + team.name + ' (' + sportLabel + ') : '
+        + g.scoreFor + ' à ' + g.scoreAgainst + ' contre ' + oppName;
+      titleParts.push(issue + ' · ' + team.name + ' · ' + sportLabel);
+      titleParts.push(score + ' vs ' + oppName);
+      if (g.opponentInstitution) titleParts.push(g.opponentInstitution);
       if (g.competition) titleParts.push(g.competition);
+      if (g.date) titleParts.push(formatSportsChipWhen(g.date));
     } else {
       var n = display.game;
-      var nextOpp = String(n.opponentCode || n.opponent || 'ADV').toUpperCase().slice(0, 4);
-      line.innerHTML = '<span class="sports-chip__code">' + code + '</span>'
-        + ' <span class="sports-chip__vs">vs</span> '
-        + '<span class="sports-chip__opp">' + nextOpp + '</span>';
-      aria = 'Prochain match des ' + team.name + ' (' + (team.sportLabel || sport) + ') contre '
-        + n.opponent + (n.date ? ' le ' + n.date : '');
-      titleParts.push('Prochain · ' + team.name + ' · ' + (team.sportLabel || sport));
-      titleParts.push('vs ' + n.opponent);
-      if (n.date) titleParts.push(n.date + (n.time ? ' ' + n.time : ''));
+      var nextOpp = n.opponent || n.opponentCode || 'Adversaire';
+      var when = formatSportsChipWhen(n.date, n.time);
+      lineText = code + ' · À venir vs ' + nextOpp;
+      if (when) lineText += ' · ' + when;
+      if (sportLabel) lineText += ' · ' + sportLabel;
+      if (n.home === true) lineText += ' · domicile';
+      else if (n.home === false) lineText += ' · extérieur';
+      aria = 'Prochain match des ' + team.name + ' (' + sportLabel + ') contre '
+        + nextOpp + (when ? ' le ' + when : '');
+      titleParts.push('Prochain · ' + team.name + ' · ' + sportLabel);
+      titleParts.push('vs ' + nextOpp);
+      if (when) titleParts.push(when);
     }
-    if (team.fictional) titleParts.push('Équipe fictive (démonstration)');
+    if (team.fictional) titleParts.push('Formation fictive (démonstration)');
+
+    inner.textContent = lineText;
+    viewport.appendChild(inner);
 
     chip.title = titleParts.join(' · ');
     chip.setAttribute('aria-label', aria);
@@ -793,12 +851,14 @@
     chip.dataset.sportsKey = display.key || '';
 
     chip.appendChild(glyph);
-    chip.appendChild(line);
+    chip.appendChild(viewport);
     host.appendChild(chip);
     host.hidden = false;
+    applySportsLineMarquee(viewport);
     if (animate && !sportsReducedMotion) {
       window.setTimeout(function () {
         chip.classList.remove('is-arriving');
+        applySportsLineMarquee(viewport);
       }, 500);
     }
   }
