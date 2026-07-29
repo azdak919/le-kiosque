@@ -1,10 +1,9 @@
 /*
- * LE KIOSQUE — le seul JavaScript du site publié.
+ * LE KIOSQUE — JavaScript du site publié (progressive enhancement).
  *
- * Deux choses, et rien d'autre : le bouton clair/sombre, et le défilement des
- * titres qui débordent. Le site doit rester entièrement lisible si ce fichier
- * ne se charge jamais — c'est la même exigence que le reste du projet : la
- * lecture ne dépend de rien.
+ * Thème clair/sombre (système + choix), mât (shuffle, météo), suite du fil
+ * (« Plus d’articles »), défilement des titres, barre radio. Le site reste
+ * lisible si ce fichier ne se charge jamais.
  */
 (function () {
   'use strict';
@@ -64,7 +63,12 @@
     document.querySelectorAll('.masthead-tools .masthead-tool').forEach(function (el) {
       var release = function () { releaseToolButton(el); };
       el.addEventListener('pointerup', release);
+      el.addEventListener('pointercancel', release);
       el.addEventListener('click', release);
+      // Liens (accueil, RSS…) : évite le style :hover « collé » après un tap tactile.
+      el.addEventListener('touchend', function () {
+        window.setTimeout(function () { releaseToolButton(el); }, 50);
+      }, { passive: true });
     });
   }
 
@@ -729,6 +733,127 @@
     }, { passive: true });
   }
 
+  // ── Suite du fil : « Plus d'articles » (comme LE-RADAR, 10 cartes = 5 rangées) ──
+  var NEWS_TAIL_VISIBLE = 10;
+  var NEWS_TAIL_PEEK_PX = 34;
+  var newsTailExpanded = false;
+
+  function getNewsTailCards(tail) {
+    var body = tail.querySelector('.news-tail-body') || tail.querySelector('.news-tail-grid');
+    if (!body) return [];
+    return Array.prototype.slice.call(body.querySelectorAll(':scope > .article, :scope > a.article'));
+  }
+
+  function measureNewsTailCollapsedHeight(body, cards, visibleCount, peekPx) {
+    if (!body || !cards.length) return 0;
+    var lastIdx = Math.min(visibleCount, cards.length) - 1;
+    var last = cards[lastIdx];
+    if (!last) return 0;
+    var bodyTop = body.getBoundingClientRect().top;
+    var lastBottom = last.getBoundingClientRect().bottom;
+    return Math.max(0, Math.ceil(lastBottom - bodyTop + peekPx));
+  }
+
+  function applyNewsTailCollapsedHeight(tail) {
+    var body = tail.querySelector('.news-tail-body') || tail.querySelector('.news-tail-grid');
+    if (!body || !tail.classList.contains('has-overflow') || tail.classList.contains('is-expanded')) {
+      if (body) {
+        body.style.removeProperty('--news-tail-collapsed-h');
+        body.style.removeProperty('max-height');
+      }
+      return;
+    }
+    var cards = getNewsTailCards(tail);
+    var h = measureNewsTailCollapsedHeight(body, cards, NEWS_TAIL_VISIBLE, NEWS_TAIL_PEEK_PX);
+    if (h > 0) {
+      body.style.setProperty('--news-tail-collapsed-h', h + 'px');
+      body.style.maxHeight = h + 'px';
+    }
+  }
+
+  function initNewsTailCollapse() {
+    var tail = document.querySelector('.news-tail');
+    if (!tail) return;
+    var body = tail.querySelector('.news-tail-body') || tail.querySelector('.news-tail-grid');
+    if (!body) return;
+    // Normaliser le nom de classe pour le CSS de repli.
+    if (!body.classList.contains('news-tail-body')) body.classList.add('news-tail-body');
+
+    var cards = getNewsTailCards(tail);
+    var overflow = cards.length > NEWS_TAIL_VISIBLE;
+    if (!overflow) {
+      tail.classList.remove('has-overflow', 'is-expanded');
+      body.style.maxHeight = 'none';
+      body.style.removeProperty('--news-tail-collapsed-h');
+      var old = tail.querySelector('.news-tail-toggle');
+      if (old) old.remove();
+      return;
+    }
+
+    var toggle = tail.querySelector('.news-tail-toggle');
+    if (!toggle) {
+      toggle = document.createElement('button');
+      toggle.type = 'button';
+      toggle.className = 'news-tail-toggle';
+      toggle.innerHTML = '<span class="news-tail-toggle__label">Plus d\'articles</span>';
+      toggle.setAttribute('aria-expanded', 'false');
+      toggle.addEventListener('click', function () {
+        var willExpand = !newsTailExpanded;
+        var yBefore = window.scrollY || window.pageYOffset || 0;
+        var toggleTopBefore = toggle.getBoundingClientRect().top;
+        newsTailExpanded = willExpand;
+        tail.classList.toggle('is-expanded', newsTailExpanded);
+        var label = toggle.querySelector('.news-tail-toggle__label');
+        var hidden = cards.length - NEWS_TAIL_VISIBLE;
+        if (label) {
+          label.textContent = newsTailExpanded ? 'Réduire' : ('Plus d\'articles (' + hidden + ')');
+        }
+        toggle.setAttribute('aria-expanded', newsTailExpanded ? 'true' : 'false');
+        if (newsTailExpanded) {
+          body.style.maxHeight = 'none';
+          body.style.removeProperty('--news-tail-collapsed-h');
+        } else {
+          applyNewsTailCollapsedHeight(tail);
+        }
+        releaseToolButton(toggle);
+        requestAnimationFrame(function () {
+          requestAnimationFrame(function () {
+            if (willExpand) {
+              window.scrollTo({ top: yBefore, left: 0, behavior: 'auto' });
+            } else {
+              var delta = toggle.getBoundingClientRect().top - toggleTopBefore;
+              if (Math.abs(delta) > 1) window.scrollBy({ top: delta, left: 0, behavior: 'auto' });
+            }
+          });
+        });
+      });
+      tail.appendChild(toggle);
+    }
+
+    tail.classList.add('has-overflow');
+    newsTailExpanded = false;
+    tail.classList.remove('is-expanded');
+    tail.dataset.tailVisible = String(NEWS_TAIL_VISIBLE);
+    var labelEl = toggle.querySelector('.news-tail-toggle__label');
+    var hiddenCount = cards.length - NEWS_TAIL_VISIBLE;
+    if (labelEl) labelEl.textContent = 'Plus d\'articles (' + hiddenCount + ')';
+    toggle.setAttribute('aria-expanded', 'false');
+
+    requestAnimationFrame(function () {
+      requestAnimationFrame(function () {
+        applyNewsTailCollapsedHeight(tail);
+      });
+    });
+
+    var resizeTimer;
+    window.addEventListener('resize', function () {
+      clearTimeout(resizeTimer);
+      resizeTimer = setTimeout(function () {
+        if (!newsTailExpanded) applyNewsTailCollapsedHeight(tail);
+      }, 120);
+    }, { passive: true });
+  }
+
   // ── Barre radio LE-RADAR ───────────────────────────────────────────────
   // Le composant reste invisible jusqu'à ce que LE-RADAR confirme explicitement
   // le protocole kiosque-v1. En cas de panne, il disparaît et laisse la simple
@@ -793,6 +918,7 @@
     initMastheadBackgrounds();
     initMastheadWeather();
     initMastheadToolRelease();
+    initNewsTailCollapse();
     initMarquees();
     initRadarTuner();
   }

@@ -306,7 +306,9 @@
 .magazine-layout--article .brief-rail--article > .article:last-child {
   border-bottom: 0;
 }
-.brief-rail > h2, .news-tail > h2 {
+.brief-rail > h2,
+.news-tail > h2,
+.news-tail-title {
   margin: 14px 0 6px;
   padding-bottom: 8px;
   color: var(--muted);
@@ -315,11 +317,102 @@
   text-transform: uppercase;
 }
 .news-tail {
+  --news-tail-peek: 34px;
   grid-column: 1 / -1;
   margin-top: 28px;
   border-top: 2px solid var(--rule-strong);
+  position: relative;
 }
-.news-tail-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 0 28px; }
+.news-tail-body,
+.news-tail-grid {
+  position: relative;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  min-width: 0;
+  column-gap: 0;
+  overflow-anchor: none;
+}
+@media (min-width: 600px) {
+  .news-tail-body,
+  .news-tail-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    column-gap: clamp(14px, 2.4vw, 28px);
+  }
+}
+@media (min-width: 1100px) {
+  .news-tail-body,
+  .news-tail-grid { column-gap: 32px; }
+}
+/* Repli suite du fil (LE-RADAR) : 10 cartes = 5 rangées en 2 col. */
+.news-tail.has-overflow:not(.is-expanded) .news-tail-body {
+  overflow: hidden;
+  max-height: var(--news-tail-collapsed-h, none);
+  transition: max-height 0.4s ease;
+}
+.news-tail.is-expanded .news-tail-body {
+  max-height: none !important;
+  overflow: visible;
+  transition: max-height 0.45s ease;
+}
+.news-tail-toggle {
+  display: none;
+  font-family: var(--sans);
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  margin: 10px 0 4px;
+  padding: 10px 14px;
+  border: 1px solid var(--rule);
+  border-radius: 999px;
+  background: var(--bg-soft);
+  color: var(--ink-soft);
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  cursor: pointer;
+  text-align: center;
+  flex-shrink: 0;
+  transition: border-color 140ms ease, color 140ms ease, background 140ms ease;
+  -webkit-tap-highlight-color: transparent;
+}
+.news-tail.has-overflow .news-tail-toggle { display: inline-flex; }
+.news-tail-toggle:hover {
+  border-color: var(--accent);
+  color: var(--accent);
+  background: color-mix(in srgb, var(--accent) 6%, var(--bg));
+}
+.news-tail-toggle:focus { outline: none; }
+.news-tail-toggle:focus:not(:focus-visible) {
+  border-color: var(--rule);
+  color: var(--ink-soft);
+  background: var(--bg-soft);
+}
+.news-tail-toggle:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+.news-tail.has-overflow:not(.is-expanded) .news-tail-body::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: var(--news-tail-peek);
+  z-index: 2;
+  pointer-events: none;
+  background: linear-gradient(
+    to bottom,
+    color-mix(in srgb, var(--bg) 0%, transparent) 0%,
+    color-mix(in srgb, var(--bg) 35%, transparent) 40%,
+    color-mix(in srgb, var(--bg) 80%, transparent) 75%,
+    var(--bg) 100%
+  );
+}
+.news-tail.is-expanded .news-tail-body::after { display: none; }
+@media (prefers-reduced-motion: reduce) {
+  .news-tail.has-overflow:not(.is-expanded) .news-tail-body,
+  .news-tail.is-expanded .news-tail-body { transition: none; }
+}
 @media (max-width: 1099px) {
   .magazine-layout {
     display: block;
@@ -347,6 +440,7 @@
   .brief-rail { padding-left: 0; border-bottom: 0; border-left: 0; }
 }
 @media (max-width: 720px) {
+  .news-tail-body,
   .news-tail-grid { grid-template-columns: 1fr; }
   .article--lead .article-title { font-size: clamp(2rem, 10vw, 3rem); }
   .article-meta { grid-template-columns: 1fr; }

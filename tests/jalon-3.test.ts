@@ -42,8 +42,8 @@ test('demoContent=false masque tous les articles fictifs sans les supprimer du m
   t.after(() => rm(out, { recursive: true, force: true }));
 
   const content = await bundle();
-  assert.equal(content.articles.length, 22, 'Le Quorum doit offrir vingt articles publiés et deux cas de travail');
-  assert.equal(content.articles.filter((article) => article.status === 'published').length, 20);
+  assert.equal(content.articles.length, 42, 'Le Quorum doit offrir quarante articles publiés et deux cas de travail');
+  assert.equal(content.articles.filter((article) => article.status === 'published').length, 40);
   assert.ok(content.articles.every((article) => article.isDemo), 'chaque article du Quorum doit être marqué fictif');
 
   const result = await build({ config: config({ demoContent: false }), bundle: content, outDir: out, logger: silent });
@@ -88,7 +88,7 @@ test('la vitrine expose le bandeau illustré, les outils et la composition magaz
   assert.equal(content.publication.masthead?.tools?.solitaire, true);
 
   const result = await build({ config: config({ editorial: { mode: 'demo-local' } }), bundle: content, outDir: out, logger: silent });
-  assert.equal(result.articles, 20);
+  assert.equal(result.articles, 40);
   const home = await readFile(path.join(out, 'index.html'), 'utf8');
   const feed = await readFile(path.join(out, 'feed.xml'), 'utf8');
   assert.match(home, /id="masthead-backgrounds"/);

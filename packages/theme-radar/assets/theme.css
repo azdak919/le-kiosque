@@ -863,14 +863,29 @@ a.masthead-weather__city:focus-visible {
   border-color: rgba(155, 215, 255, 0.72);
   background: rgba(15, 61, 92, 0.54);
 }
+/*
+ * Page courante (Accueil) : discret, pas de pastille mauve « engagée ».
+ * aria-current reste pour l’accessibilité ; le look suit les autres outils.
+ */
+.masthead-home[aria-current="page"],
 .masthead--illustrated .masthead-home[aria-current="page"] {
-  color: #fff;
-  background: color-mix(in srgb, var(--accent) 38%, rgba(0, 0, 0, 0.2));
-  border-color: color-mix(in srgb, var(--accent) 45%, rgba(255, 255, 255, 0.25));
+  color: inherit;
+  background: inherit;
+  border-color: inherit;
+  box-shadow: inherit;
+}
+.masthead--illustrated .masthead-home[aria-current="page"] {
+  color: #f7fbff;
+  border-color: rgba(255, 255, 255, 0.46);
+  background: rgba(9, 14, 21, 0.62);
   box-shadow:
-    0 1px 2px rgba(0, 0, 0, 0.2),
-    0 0 0 1px color-mix(in srgb, var(--accent) 25%, transparent),
-    inset 0 1px 0 rgba(255, 255, 255, 0.16);
+    0 2px 5px rgba(0, 0, 0, 0.3),
+    0 5px 14px rgba(0, 0, 0, 0.22),
+    inset 0 1px 0 rgba(255, 255, 255, 0.2);
+}
+/* Indice très léger de page courante (anneau, pas de fond accent). */
+.masthead--illustrated .masthead-home[aria-current="page"]::after {
+  content: none;
 }
 .masthead-tool:hover { border-color: var(--accent); color: var(--accent); }
 @media (hover: hover) and (pointer: fine) {

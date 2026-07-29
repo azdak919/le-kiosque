@@ -420,7 +420,14 @@ export function homePage(articles: Article[], ctx: RenderContext): string {
         <div class="news-features">${features.map((a) => articleCard(a, ctx, 'feature')).join('\n')}</div>
       </section>
       ${briefs.length ? `<aside class="brief-rail"><h2>En bref</h2>${briefs.map((a) => articleCard(a, ctx, 'brief')).join('\n')}</aside>` : ''}
-      ${tail.length ? `<section class="news-tail"><h2>Suite du fil</h2><div class="news-tail-grid">${tail.map((a) => articleCard(a, ctx, 'tail')).join('\n')}</div></section>` : ''}
+      ${
+        tail.length
+          ? `<section class="news-tail" data-tail-visible="10">
+        <h2 class="news-tail-title">Suite du fil</h2>
+        <div class="news-tail-body news-tail-grid">${tail.map((a) => articleCard(a, ctx, 'tail')).join('\n')}</div>
+      </section>`
+          : ''
+      }
     </div>`;
 
   return page(
