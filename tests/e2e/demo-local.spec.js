@@ -22,7 +22,8 @@ test('configurer, rédiger, prévisualiser, publier, persister et exporter sans 
   await expect(page.locator('#publication-name')).toHaveText('La Relève locale');
 
   await page.getByRole('button', { name: 'Médias de démonstration' }).click();
-  await expect(page.locator('.media-card')).toHaveCount(6);
+  // Banque démo : fonds mât campus QC + photos thématiques d’articles.
+  await expect(page.locator('.media-card')).toHaveCount(32);
   await page.getByLabel('Rechercher un établissement, un campus ou un mot-clé').fill('Jonquière');
   await expect(page.locator('.media-card:visible')).toHaveCount(2);
   await page.getByRole('button', { name: 'Tableau de bord' }).click();
