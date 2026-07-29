@@ -239,13 +239,34 @@ body.with-radio .nav {
 .wire--article { padding-top: 8px; }
 .article-column { min-width: 0; }
 
+/*
+ * Rubrique au-dessus du titre — même sémantique visuelle que .article-section
+ * des cartes (pastille + couleur de section), pour ne plus « disparaître ».
+ */
 .post-eyebrow {
-  font-size: 11px;
-  font-weight: 800;
-  letter-spacing: 0.18em;
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  margin: 0 0 2px;
+  max-width: 100%;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
   text-transform: uppercase;
-  color: var(--accent);
+  color: var(--c, var(--accent));
   text-decoration: none;
+  line-height: 1.2;
+}
+.post-eyebrow::before {
+  content: "";
+  width: 8px;
+  height: 8px;
+  flex: 0 0 auto;
+  border-radius: 50%;
+  background: currentColor;
+}
+.post-eyebrow:hover {
+  color: color-mix(in srgb, var(--c, var(--accent)) 78%, #000);
 }
 .post-title {
   font-family: var(--serif);
@@ -253,7 +274,7 @@ body.with-radio .nav {
   font-size: var(--lead-title-size);
   line-height: 1.12;
   letter-spacing: -0.02em;
-  margin: 12px 0 8px;
+  margin: 8px 0 8px;
   overflow-wrap: anywhere;
   hyphens: auto;
 }

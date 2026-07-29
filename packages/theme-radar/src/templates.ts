@@ -489,8 +489,26 @@ export function articlePage(article: Article, ctx: RenderContext, relatedArticle
     .map((x) => esc(x))
     .join(' — ');
 
+  // Rubrique (section) en tête — repli sur la première catégorie colorée si
+  // la section n’est pas renseignée (même priorité que les cartes d’accueil).
+  const categoryFallback = article.categories
+    .map((slug) => ctx.taxonomies.categories.find((c) => c.slug === slug))
+    .find((c) => c?.name);
+  const eyebrowName = section?.name || categoryFallback?.name;
+  const eyebrowColor = section?.color || categoryFallback?.color;
+  const eyebrowHref = section
+    ? safeUrl(relative(sectionUrl(pub, section.slug), ctx))
+    : categoryFallback
+      ? asset(`/categories/${categoryFallback.slug}/`, ctx)
+      : '';
+  const eyebrow = eyebrowName
+    ? eyebrowHref
+      ? `<a class="post-eyebrow" href="${eyebrowHref}"${eyebrowColor ? ` style="--c:${esc(eyebrowColor)}"` : ''}>${esc(eyebrowName)}</a>`
+      : `<span class="post-eyebrow"${eyebrowColor ? ` style="--c:${esc(eyebrowColor)}"` : ''}>${esc(eyebrowName)}</span>`
+    : '';
+
   const post = `<article class="post post--in-magazine">
-      ${section ? `<a class="post-eyebrow" href="${safeUrl(relative(sectionUrl(pub, section.slug), ctx))}">${esc(section.name)}</a>` : ''}
+      ${eyebrow}
       <h1 class="post-title">${esc(article.title)}</h1>
       ${article.subtitle ? `<p class="post-subtitle">${esc(article.subtitle)}</p>` : ''}
       ${article.dek ? `<p class="post-dek">${esc(article.dek)}</p>` : ''}
