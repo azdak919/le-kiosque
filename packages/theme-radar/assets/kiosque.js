@@ -1141,24 +1141,26 @@
             /* Première hauteur idle (≤72) = base barre (68 desktop / 62 mobile embed). */
             if (!frame.dataset.baseH && h <= 72) frame.dataset.baseH = String(h);
             var baseH = Number(frame.dataset.baseH) || 68;
-            frame.style.height = h + 'px';
             /*
-             * Popover volume : l’iframe grandit pour peindre la bulle
-             * (clip iframe), mais margin-bottom négatif annule la poussée
-             * du layout — overlay sans élargir la barre.
+             * Popover volume : d’abord rendre l’hôte transparent et plafonner
+             * sa hauteur, PUIS agrandir l’iframe — sinon un flash noir pleine
+             * largeur apparaît le temps du reflow.
              */
             if (h > baseH + 4) {
-              frame.classList.add('is-vol-overlay');
-              frame.style.marginBottom = (baseH - h) + 'px';
-              /* Hôte = hauteur barre seulement : pas de bandeau sombre sous la bulle. */
               host.style.height = baseH + 'px';
               host.style.zIndex = '60';
               host.style.overflow = 'visible';
               host.style.background = 'transparent';
               host.style.boxShadow = 'none';
+              frame.classList.add('is-vol-overlay');
+              frame.style.background = 'transparent';
+              frame.style.marginBottom = (baseH - h) + 'px';
+              frame.style.height = h + 'px';
             } else {
               frame.classList.remove('is-vol-overlay');
               frame.style.marginBottom = '';
+              frame.style.background = '';
+              frame.style.height = h + 'px';
               host.style.height = '';
               host.style.zIndex = '';
               host.style.overflow = '';

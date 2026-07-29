@@ -303,6 +303,9 @@ body.with-radio .nav {
   height: 68px;
   border: 0;
   vertical-align: top;
+  /* Pas de fond iframe : l’embed peint la barre ; le surplus volume reste transparent. */
+  background: transparent;
+  color-scheme: normal;
   transition: height 120ms ease, margin-bottom 120ms ease;
   position: relative;
   z-index: 1;
