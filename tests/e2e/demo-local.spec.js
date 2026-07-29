@@ -2,8 +2,9 @@ import { expect, test } from '@playwright/test';
 
 test('configurer, rédiger, prévisualiser, publier, persister et exporter sans serveur', async ({ page, context }) => {
   // Ce parcours exerce PGlite, deux téléchargements et une réimportation ; il
-  // reste volontairement intégral, mais peut dépasser 90 s sur un CI saturé.
-  test.setTimeout(150_000);
+  // reste volontairement intégral. La banque élargie (~50 médias) allonge
+  // reset/import — 3 min sur un CI saturé.
+  test.setTimeout(180_000);
   await page.goto('/autre-nom/configurer/');
   await page.getByRole('button', { name: 'Commencer' }).click();
   await page.getByLabel('Nom du journal').fill('La Relève locale');
@@ -127,7 +128,8 @@ test('configurer, rédiger, prévisualiser, publier, persister et exporter sans 
 
   page.once('dialog', (dialog) => dialog.accept());
   await page.getByRole('button', { name: 'Réinitialiser Le Quorum' }).click();
-  await expect(page.getByRole('heading', { name: 'Tableau de bord' })).toBeVisible();
+  // Reset complet + rechargement PGlite de la banque (~50 médias) : long sur CI.
+  await expect(page.getByRole('heading', { name: 'Tableau de bord' })).toBeVisible({ timeout: 60_000 });
   await page.getByRole('button', { name: 'Exporter et poursuivre' }).click();
   const chooser = page.waitForEvent('filechooser');
   await page.getByRole('button', { name: 'Importer une sauvegarde' }).click();
@@ -136,11 +138,11 @@ test('configurer, rédiger, prévisualiser, publier, persister et exporter sans 
   const importDialog = page.waitForEvent('dialog');
   await (await chooser).setFiles(jsonPath);
   await importDialog.then((dialog) => dialog.accept());
-  await expect(page.getByRole('heading', { name: 'Tableau de bord' })).toBeVisible({ timeout: 45_000 });
+  await expect(page.getByRole('heading', { name: 'Tableau de bord' })).toBeVisible({ timeout: 60_000 });
   await page.getByRole('button', { name: 'Articles' }).click();
-  await expect(page.getByText('Un article local mis à jour')).toBeVisible();
+  await expect(page.getByText('Un article local mis à jour')).toBeVisible({ timeout: 30_000 });
   await page.getByRole('button', { name: 'Configuration' }).click();
-  await expect(page.locator('#masthead-crop-preview img').first()).toHaveAttribute('src', /mcgill-(roddick|campus|arts)\.jpg/);
+  await expect(page.locator('#masthead-crop-preview img').first()).toHaveAttribute('src', /mcgill-(roddick|campus|arts)\.jpg/, { timeout: 30_000 });
 });
 
 test('l’alias admin redirige et le bandeau ne promet aucun service distant', async ({ page }) => {
