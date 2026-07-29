@@ -733,15 +733,47 @@
     }, { passive: true });
   }
 
-  // ── Suite du fil : « Plus d'articles » (comme LE-RADAR, 10 cartes = 5 rangées) ──
+  // ── Suite du fil : « Plus d'articles » (port LE-RADAR syncNewsTailCollapse) ──
+  // 10 cartes = 5 rangées en 2 colonnes ; peek 6e rangée = titre + auteurs floutés.
   var NEWS_TAIL_VISIBLE = 10;
-  var NEWS_TAIL_PEEK_PX = 34;
+  /** Plancher peek (titre 1 ligne + auteurs) ; affiné par mesure DOM. */
+  var NEWS_TAIL_PEEK_MIN_PX = 56;
+  var NEWS_TAIL_PEEK_MAX_PX = 110;
   var newsTailExpanded = false;
+  var newsTailBound = false;
+
+  function newsTailBody(tail) {
+    if (!tail) return null;
+    var body = tail.querySelector('.news-tail-body') || tail.querySelector('.news-tail-grid');
+    if (body && !body.classList.contains('news-tail-body')) body.classList.add('news-tail-body');
+    return body;
+  }
 
   function getNewsTailCards(tail) {
-    var body = tail.querySelector('.news-tail-body') || tail.querySelector('.news-tail-grid');
+    var body = newsTailBody(tail);
     if (!body) return [];
-    return Array.prototype.slice.call(body.querySelectorAll(':scope > .article, :scope > a.article'));
+    // Enfants directs seulement (évite de compter des .article imbriqués).
+    return Array.prototype.filter.call(body.children, function (el) {
+      return el.classList && el.classList.contains('article');
+    });
+  }
+
+  /**
+   * Hauteur de la zone peek = bas du byline (ou titre) de la 6e rangée.
+   * Les cartes overflow ont déjà meta/extrait masqués en CSS.
+   */
+  function measureNewsTailPeekPx(cards, visibleCount) {
+    var peekCards = cards.slice(visibleCount, visibleCount + 2);
+    var peek = NEWS_TAIL_PEEK_MIN_PX;
+    for (var i = 0; i < peekCards.length; i++) {
+      var card = peekCards[i];
+      var end = card.querySelector('.article-byline') || card.querySelector('.article-title');
+      if (!end) continue;
+      var cardTop = card.getBoundingClientRect().top;
+      var endBottom = end.getBoundingClientRect().bottom;
+      peek = Math.max(peek, Math.ceil(endBottom - cardTop + 6));
+    }
+    return Math.min(NEWS_TAIL_PEEK_MAX_PX, Math.max(NEWS_TAIL_PEEK_MIN_PX, peek));
   }
 
   function measureNewsTailCollapsedHeight(body, cards, visibleCount, peekPx) {
@@ -749,44 +781,57 @@
     var lastIdx = Math.min(visibleCount, cards.length) - 1;
     var last = cards[lastIdx];
     if (!last) return 0;
+    // Forcer un reflow propre avant mesure (grille 1/2 col + polices + peek CSS).
+    void body.offsetHeight;
     var bodyTop = body.getBoundingClientRect().top;
     var lastBottom = last.getBoundingClientRect().bottom;
-    return Math.max(0, Math.ceil(lastBottom - bodyTop + peekPx));
+    var h = lastBottom - bodyTop + peekPx;
+    return Math.max(120, Math.ceil(h));
   }
 
   function applyNewsTailCollapsedHeight(tail) {
-    var body = tail.querySelector('.news-tail-body') || tail.querySelector('.news-tail-grid');
-    if (!body || !tail.classList.contains('has-overflow') || tail.classList.contains('is-expanded')) {
-      if (body) {
-        body.style.removeProperty('--news-tail-collapsed-h');
-        body.style.removeProperty('max-height');
-      }
+    var body = newsTailBody(tail);
+    if (!body) return;
+    if (!tail.classList.contains('has-overflow') || tail.classList.contains('is-expanded')) {
+      body.style.removeProperty('--news-tail-collapsed-h');
+      body.style.removeProperty('--news-tail-peek');
+      body.style.removeProperty('max-height');
       return;
     }
     var cards = getNewsTailCards(tail);
-    var h = measureNewsTailCollapsedHeight(body, cards, NEWS_TAIL_VISIBLE, NEWS_TAIL_PEEK_PX);
+    var peekPx = measureNewsTailPeekPx(cards, NEWS_TAIL_VISIBLE);
+    tail.style.setProperty('--news-tail-peek', peekPx + 'px');
+    body.style.setProperty('--news-tail-peek', peekPx + 'px');
+    var h = measureNewsTailCollapsedHeight(body, cards, NEWS_TAIL_VISIBLE, peekPx);
     if (h > 0) {
       body.style.setProperty('--news-tail-collapsed-h', h + 'px');
       body.style.maxHeight = h + 'px';
     }
   }
 
-  function initNewsTailCollapse() {
+  function syncNewsTailCollapse() {
     var tail = document.querySelector('.news-tail');
     if (!tail) return;
-    var body = tail.querySelector('.news-tail-body') || tail.querySelector('.news-tail-grid');
+    var body = newsTailBody(tail);
     if (!body) return;
-    // Normaliser le nom de classe pour le CSS de repli.
-    if (!body.classList.contains('news-tail-body')) body.classList.add('news-tail-body');
 
     var cards = getNewsTailCards(tail);
     var overflow = cards.length > NEWS_TAIL_VISIBLE;
+
+    cards.forEach(function (el, i) {
+      var pastFull = overflow && !newsTailExpanded && i >= NEWS_TAIL_VISIBLE;
+      el.classList.toggle('is-tail-overflow', pastFull);
+    });
+
     if (!overflow) {
       tail.classList.remove('has-overflow', 'is-expanded');
       body.style.maxHeight = 'none';
       body.style.removeProperty('--news-tail-collapsed-h');
-      var old = tail.querySelector('.news-tail-toggle');
-      if (old) old.remove();
+      body.style.removeProperty('--news-tail-peek');
+      tail.style.removeProperty('--news-tail-peek');
+      var stale = tail.querySelector('.news-tail-toggle');
+      if (stale) stale.remove();
+      newsTailExpanded = false;
       return;
     }
 
@@ -797,61 +842,103 @@
       toggle.className = 'news-tail-toggle';
       toggle.innerHTML = '<span class="news-tail-toggle__label">Plus d\'articles</span>';
       toggle.setAttribute('aria-expanded', 'false');
-      toggle.addEventListener('click', function () {
-        var willExpand = !newsTailExpanded;
-        var yBefore = window.scrollY || window.pageYOffset || 0;
-        var toggleTopBefore = toggle.getBoundingClientRect().top;
-        newsTailExpanded = willExpand;
-        tail.classList.toggle('is-expanded', newsTailExpanded);
-        var label = toggle.querySelector('.news-tail-toggle__label');
-        var hidden = cards.length - NEWS_TAIL_VISIBLE;
-        if (label) {
-          label.textContent = newsTailExpanded ? 'Réduire' : ('Plus d\'articles (' + hidden + ')');
-        }
-        toggle.setAttribute('aria-expanded', newsTailExpanded ? 'true' : 'false');
-        if (newsTailExpanded) {
-          body.style.maxHeight = 'none';
-          body.style.removeProperty('--news-tail-collapsed-h');
-        } else {
-          applyNewsTailCollapsedHeight(tail);
-        }
-        releaseToolButton(toggle);
-        requestAnimationFrame(function () {
-          requestAnimationFrame(function () {
-            if (willExpand) {
-              window.scrollTo({ top: yBefore, left: 0, behavior: 'auto' });
-            } else {
-              var delta = toggle.getBoundingClientRect().top - toggleTopBefore;
-              if (Math.abs(delta) > 1) window.scrollBy({ top: delta, left: 0, behavior: 'auto' });
-            }
-          });
-        });
-      });
       tail.appendChild(toggle);
     }
 
     tail.classList.add('has-overflow');
-    newsTailExpanded = false;
-    tail.classList.remove('is-expanded');
+    tail.classList.toggle('is-expanded', newsTailExpanded);
     tail.dataset.tailVisible = String(NEWS_TAIL_VISIBLE);
-    var labelEl = toggle.querySelector('.news-tail-toggle__label');
-    var hiddenCount = cards.length - NEWS_TAIL_VISIBLE;
-    if (labelEl) labelEl.textContent = 'Plus d\'articles (' + hiddenCount + ')';
-    toggle.setAttribute('aria-expanded', 'false');
 
-    requestAnimationFrame(function () {
+    var hidden = cards.length - NEWS_TAIL_VISIBLE;
+    var label = toggle.querySelector('.news-tail-toggle__label');
+    if (label) {
+      label.textContent = newsTailExpanded
+        ? 'Réduire'
+        : ('Plus d\'articles (' + hidden + ')');
+    }
+    toggle.setAttribute('aria-expanded', newsTailExpanded ? 'true' : 'false');
+
+    if (newsTailExpanded) {
+      // Hauteur explicite → none (transition fiable vs max-height:none seul).
+      var fullH = body.scrollHeight;
+      body.style.maxHeight = fullH + 'px';
+      body.style.removeProperty('--news-tail-collapsed-h');
+      body.style.removeProperty('--news-tail-peek');
+      tail.style.removeProperty('--news-tail-peek');
       requestAnimationFrame(function () {
-        applyNewsTailCollapsedHeight(tail);
+        body.style.maxHeight = 'none';
       });
-    });
+    } else {
+      // Double rAF : classes overflow + grille peintes avant la mesure (LE-RADAR).
+      requestAnimationFrame(function () {
+        requestAnimationFrame(function () {
+          applyNewsTailCollapsedHeight(tail);
+        });
+      });
+    }
+  }
 
-    var resizeTimer;
-    window.addEventListener('resize', function () {
-      clearTimeout(resizeTimer);
-      resizeTimer = setTimeout(function () {
-        if (!newsTailExpanded) applyNewsTailCollapsedHeight(tail);
-      }, 120);
-    }, { passive: true });
+  function initNewsTailCollapse() {
+    var tail = document.querySelector('.news-tail');
+    if (!tail) return;
+
+    // Délégation : un seul handler, survivant aux re-renders.
+    if (!newsTailBound) {
+      newsTailBound = true;
+      document.addEventListener('click', function (event) {
+        var btn = event.target && event.target.closest
+          ? event.target.closest('.news-tail-toggle')
+          : null;
+        if (!btn) return;
+        event.preventDefault();
+        event.stopPropagation();
+        var section = btn.closest('.news-tail');
+        if (!section) return;
+
+        var willExpand = !newsTailExpanded;
+        var yBefore = window.scrollY || window.pageYOffset || 0;
+        var toggleTopBefore = btn.getBoundingClientRect().top;
+
+        newsTailExpanded = willExpand;
+        syncNewsTailCollapse();
+        releaseToolButton(btn);
+
+        requestAnimationFrame(function () {
+          requestAnimationFrame(function () {
+            if (willExpand) {
+              // Contenu s’ouvre vers le bas : ne pas suivre le bouton (LE-RADAR).
+              window.scrollTo({ top: yBefore, left: 0, behavior: 'auto' });
+            } else {
+              var delta = btn.getBoundingClientRect().top - toggleTopBefore;
+              if (Math.abs(delta) > 1) {
+                window.scrollBy({ top: delta, left: 0, behavior: 'auto' });
+              }
+            }
+          });
+        });
+      });
+
+      var resizeTimer;
+      window.addEventListener('resize', function () {
+        clearTimeout(resizeTimer);
+        resizeTimer = setTimeout(function () {
+          if (!newsTailExpanded) syncNewsTailCollapse();
+        }, 120);
+      }, { passive: true });
+    }
+
+    newsTailExpanded = false;
+    syncNewsTailCollapse();
+
+    // Remesure après polices (titres/auteurs changent la hauteur des cartes).
+    function remeasure() {
+      if (!newsTailExpanded) syncNewsTailCollapse();
+    }
+    if (document.fonts && document.fonts.ready) {
+      document.fonts.ready.then(remeasure).catch(remeasure);
+    }
+    window.setTimeout(remeasure, 300);
+    window.setTimeout(remeasure, 900);
   }
 
   // ── Barre radio LE-RADAR ───────────────────────────────────────────────
