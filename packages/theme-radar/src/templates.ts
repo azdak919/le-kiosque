@@ -721,9 +721,16 @@ export function authorPage(author: Author, articles: Article[], ctx: RenderConte
         <div class="author-page-head__text">
           <div class="wire-head" style="margin:0;border:0;padding:0">
             <h1 class="wire-title">${esc(author.name)}</h1>
-            <span class="wire-status">${articles.length} signature${articles.length > 1 ? 's' : ''}${author.active === false ? ' · alumni' : ''}</span>
+            <span class="wire-status">${articles.length} signature${articles.length > 1 ? 's' : ''}${author.active === false ? ' · Alumni' : ''}</span>
           </div>
-          ${author.role ? `<p class="author-role">${esc(author.role)}${author.cohort ? ` · cohorte ${esc(author.cohort)}` : ''}${author.active === false ? ' · a quitté la rédaction' : ''}</p>` : ''}
+          ${author.role || author.cohort
+            ? `<p class="author-role">${[
+                author.role ? esc(author.role) : '',
+                author.cohort ? `cohorte ${esc(author.cohort)}` : '',
+              ]
+                .filter(Boolean)
+                .join(' · ')}</p>`
+            : ''}
           ${author.bio ? `<p class="author-bio">${esc(author.bio)}</p>` : ''}
         </div>
       </header>

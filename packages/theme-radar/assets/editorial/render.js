@@ -177,10 +177,13 @@ export function renderRoute(bundle, base, pathname, renderBody) {
     const author = bundle.authors.find((item) => item.slug === decodeURIComponent(parts[1]));
     if (!author) return null;
     const articles = published.filter((article) => article.authors.includes(author.slug));
-    const statusNote = author.active === false ? ' · a quitté la rédaction' : '';
+    const roleBits = [author.role, author.cohort ? `cohorte ${author.cohort}` : ''].filter(Boolean);
+    const roleLine = roleBits.length
+      ? `<p class="author-role">${roleBits.map(esc).join(' · ')}</p>`
+      : '';
     return {
       title: `${author.name} — ${bundle.publication.name}`,
-      html: `<div class="wrap wire"><header class="author-page-head">${avatarHtml(author, 112)}<div class="author-page-head__text"><div class="wire-head" style="margin:0;border:0;padding:0"><h1 class="wire-title">${esc(author.name)}</h1><span class="wire-status">${articles.length} signature${articles.length > 1 ? 's' : ''}${author.active === false ? ' · alumni' : ''}</span></div><p class="author-role">${esc(author.role || '')}${author.cohort ? ` · cohorte ${esc(author.cohort)}` : ''}${statusNote}</p>${author.bio ? `<p class="author-bio">${esc(author.bio)}</p>` : ''}</div></header>${articles.length ? magazineFeedHtml(articles, bundle, base, `Articles de ${author.name}`, 'Aucun article signé pour le moment.') : '<p class="empty">Aucun article signé pour le moment.</p>'}</div>`,
+      html: `<div class="wrap wire"><header class="author-page-head">${avatarHtml(author, 112)}<div class="author-page-head__text"><div class="wire-head" style="margin:0;border:0;padding:0"><h1 class="wire-title">${esc(author.name)}</h1><span class="wire-status">${articles.length} signature${articles.length > 1 ? 's' : ''}${author.active === false ? ' · Alumni' : ''}</span></div>${roleLine}${author.bio ? `<p class="author-bio">${esc(author.bio)}</p>` : ''}</div></header>${articles.length ? magazineFeedHtml(articles, bundle, base, `Articles de ${author.name}`, 'Aucun article signé pour le moment.') : '<p class="empty">Aucun article signé pour le moment.</p>'}</div>`,
     };
   }
   return null;

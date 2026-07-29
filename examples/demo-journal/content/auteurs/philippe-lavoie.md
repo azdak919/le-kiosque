@@ -6,8 +6,8 @@ cohort: '2022-2024'
 active: false
 avatar:
   src: /media/demo-library/auteurs/philippe-lavoie.jpg
-  alt: "Portrait fictif de Philippe Lavoie"
-  credit: "randomuser.me (personnage fictif)"
+  alt: "Portrait de Philippe Lavoie"
+  credit: "randomuser.me"
   creditUrl: "https://randomuser.me/"
   license: "CC0"
   licenseUrl: "https://creativecommons.org/publicdomain/zero/1.0/"

@@ -6,8 +6,8 @@ cohort: '2026-2027'
 active: true
 avatar:
   src: /media/demo-library/auteurs/samuel-okonkwo.jpg
-  alt: "Portrait fictif de Samuel Okonkwo"
-  credit: "randomuser.me (personnage fictif)"
+  alt: "Portrait de Samuel Okonkwo"
+  credit: "randomuser.me"
   creditUrl: "https://randomuser.me/"
   license: "CC0"
   licenseUrl: "https://creativecommons.org/publicdomain/zero/1.0/"

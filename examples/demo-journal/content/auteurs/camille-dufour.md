@@ -6,8 +6,8 @@ cohort: '2023-2025'
 active: false
 avatar:
   src: /media/demo-library/auteurs/camille-dufour.jpg
-  alt: "Portrait fictif de Camille Dufour"
-  credit: "randomuser.me (personnage fictif)"
+  alt: "Portrait de Camille Dufour"
+  credit: "randomuser.me"
   creditUrl: "https://randomuser.me/"
   license: "CC0"
   licenseUrl: "https://creativecommons.org/publicdomain/zero/1.0/"

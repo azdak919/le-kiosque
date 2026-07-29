@@ -6,8 +6,8 @@ cohort: '2026-2028'
 active: true
 avatar:
   src: /media/demo-library/auteurs/jade-morin.jpg
-  alt: "Portrait fictif de Jade Morin"
-  credit: "randomuser.me (personnage fictif)"
+  alt: "Portrait de Jade Morin"
+  credit: "randomuser.me"
   creditUrl: "https://randomuser.me/"
   license: "CC0"
   licenseUrl: "https://creativecommons.org/publicdomain/zero/1.0/"
