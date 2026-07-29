@@ -316,19 +316,27 @@ body.with-radio .nav {
   padding-bottom: 2px;
 }
 .masthead-weather--docked {
-  display: inline-flex !important;
+  display: flex !important;
   width: 100%;
   max-width: 100%;
   justify-content: flex-start;
+  align-items: stretch;
+  gap: 8px;
   overflow: visible;
 }
-/* Une seule carte : ~moitié de la largeur (pas pleine barre). */
+/*
+ * Sous la radio (mobile) : chaque carte = ½ de la rangée utile
+ * (padding du dock déjà appliqué). On annule le max 42vw / 15.5rem
+ * des puces mât, sinon la carte reste une pastille étroite.
+ */
 .masthead-weather--docked .weather-chip,
 .masthead-weather--docked .masthead-weather__city {
-  width: min(50%, 11.5rem);
-  max-width: 50%;
-  min-width: 0;
+  flex: 0 0 calc(50% - 4px);
+  width: calc(50% - 4px);
+  max-width: calc(50% - 4px);
+  min-width: 0; /* override 9.75rem du style mât */
   box-sizing: border-box;
+  justify-content: flex-start;
 }
 /* Dock hors mât illustré : puces lisibles sur fond page (pas seulement sur photo). */
 .masthead-weather-dock .weather-chip,
