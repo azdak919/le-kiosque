@@ -318,9 +318,10 @@ body.with-radio .nav {
 .radar-tuner:has(iframe.is-vol-overlay) {
   overflow: visible;
   z-index: 60;
-  /* Hauteur fixée en JS (= baseH) ; fond transparent → page visible sous la bulle. */
+  /* Hauteur fixée en JS (= baseH) ; fond transparent sous la bulle. */
   background: transparent;
-  box-shadow: none;
+  /* Ombre de barre conservée (hôte = hauteur barre uniquement). */
+  box-shadow: 0 8px 24px -14px rgba(0, 0, 0, 0.78);
 }
 .radar-tuner iframe.is-vol-overlay {
   z-index: 50;

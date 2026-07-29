@@ -1274,7 +1274,8 @@
               host.style.zIndex = '60';
               host.style.overflow = 'visible';
               host.style.background = 'transparent';
-              host.style.boxShadow = 'none';
+              /* Garder l’ombre de barre (ne pas la virer avec le popover). */
+              host.style.boxShadow = '0 8px 24px -14px rgba(0, 0, 0, 0.78)';
               frame.classList.add('is-vol-overlay');
               frame.style.background = 'transparent';
               frame.style.marginBottom = (baseH - h) + 'px';
