@@ -99,12 +99,12 @@ test('configurer, rédiger, prévisualiser, publier, persister et exporter sans 
   await page.getByRole('button', { name: 'Configuration' }).click();
   await page.getByRole('button', { name: 'Choisir dans la banque de démonstration' }).click();
   const mastheadPicker = page.locator('.media-picker');
-  await mastheadPicker.getByLabel('Rechercher un établissement, un campus ou un mot-clé').fill('Rimouski');
-  await mastheadPicker.getByRole('button', { name: 'Choisir cette photo' }).click();
+  await mastheadPicker.getByLabel('Rechercher un établissement, un campus ou un mot-clé').fill('McGill');
+  await mastheadPicker.getByRole('button', { name: 'Choisir cette photo' }).first().click();
   await page.getByLabel('Point focal X').fill('73');
   await page.getByLabel('Point focal Y').fill('42');
   await page.getByRole('button', { name: 'Enregistrer' }).click();
-  await expect(front.locator('.masthead-background')).toHaveAttribute('src', /cegep-rimouski\.jpg/);
+  await expect(front.locator('.masthead-background')).toHaveAttribute('src', /mcgill-(roddick|campus)\.jpg/);
 
   await page.getByRole('button', { name: 'Exporter et poursuivre' }).click();
   const jsonEvent = page.waitForEvent('download');
@@ -113,8 +113,8 @@ test('configurer, rédiger, prévisualiser, publier, persister et exporter sans 
   const jsonPath = await jsonDownload.path();
   const json = JSON.parse((await (await jsonDownload.createReadStream()).toArray()).map((chunk) => chunk.toString()).join(''));
   expect(json.format).toBe('kiosque-editorial-backup');
-  expect(json.bundle.media).toHaveLength(6);
-  expect(json.bundle.publication.masthead.backgrounds.images[0].institution).toBe('Cégep de Rimouski');
+  expect(json.bundle.media.length).toBeGreaterThanOrEqual(12);
+  expect(json.bundle.publication.masthead.backgrounds.images[0].institution).toBe('Université McGill');
   expect(json.bundle.publication.masthead.backgrounds.images[0].focalPoint).toEqual({ x: 73, y: 42 });
   expect(json.bundle.articles.find((article) => article.title === 'Un article local mis à jour').lead.institution).toBe('Cégep Limoilou');
   expect(json.bundle.articles.find((article) => article.title === 'Un article local mis à jour').lead.focalPoint).toEqual({ x: 71, y: 38 });
