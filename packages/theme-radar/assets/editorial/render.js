@@ -74,21 +74,25 @@ function articleCard(article, bundle, base, variant = 'tail') {
   }, role);
 }
 
+/** Fil magazine (accueil / section / catégorie) — même partition que le thème statique. */
+function magazineFeedHtml(articles, bundle, base, heroLabel, empty) {
+  if (!articles.length) return `<p class="empty">${esc(empty)}</p>`;
+  const [first, ...rest] = articles;
+  const features = rest.slice(0, 3);
+  const briefs = rest.slice(3, 10);
+  const tail = rest.slice(10);
+  return `<div class="magazine-layout"><section class="news-hero" aria-label="${esc(heroLabel)}">${articleCard(first, bundle, base, 'lead')}<div class="news-features">${features.map((item) => articleCard(item, bundle, base, 'feature')).join('')}</div></section>${briefs.length ? `<aside class="brief-rail" aria-label="En bref"><h2>En bref</h2>${briefs.map((item) => articleCard(item, bundle, base, 'brief')).join('')}</aside>` : ''}${tail.length ? `<section class="news-tail" data-tail-visible="10"><h2 class="news-tail-title">Suite du fil</h2><div class="news-tail-body news-tail-grid">${tail.map((item) => articleCard(item, bundle, base, 'tail')).join('')}</div></section>` : ''}</div>`;
+}
+
 export function renderRoute(bundle, base, pathname, renderBody) {
   const route = pathname.slice(base.length).replace(/^\/+|\/+$/g, '');
   const parts = route ? route.split('/') : [];
   const published = bundle.articles.filter((article) => article.status === 'published');
   if (!parts.length) {
-    const [first, ...rest] = published;
-    const features = rest.slice(0, 3);
-    const briefs = rest.slice(3, 10);
-    const tail = rest.slice(10);
+    const wireTitle = bundle.publication.labels?.wireTitle || 'À la une';
     return {
       title: `${bundle.publication.name} — ${bundle.publication.tagline || bundle.publication.institution}`,
-      html: (() => {
-        const wireTitle = bundle.publication.labels?.wireTitle || 'À la une';
-        return `<div class="wrap wire"><div class="wire-head"><h1 class="wire-title">${esc(wireTitle)}</h1><span class="wire-status">${published.length} article${published.length > 1 ? 's' : ''}</span></div>${first ? `<div class="magazine-layout"><section class="news-hero" aria-label="${esc(wireTitle)}">${articleCard(first, bundle, base, 'lead')}<div class="news-features">${features.map((item) => articleCard(item, bundle, base, 'feature')).join('')}</div></section>${briefs.length ? `<aside class="brief-rail"><h2>En bref</h2>${briefs.map((item) => articleCard(item, bundle, base, 'brief')).join('')}</aside>` : ''}${tail.length ? `<section class="news-tail" data-tail-visible="10"><h2 class="news-tail-title">Suite du fil</h2><div class="news-tail-body news-tail-grid">${tail.map((item) => articleCard(item, bundle, base, 'tail')).join('')}</div></section>` : ''}</div>` : '<p class="empty">Aucun article publié pour le moment.</p>'}</div>`;
-      })(),
+      html: `<div class="wrap wire"><div class="wire-head"><h1 class="wire-title">${esc(wireTitle)}</h1><span class="wire-status">${published.length} article${published.length > 1 ? 's' : ''}</span></div>${magazineFeedHtml(published, bundle, base, wireTitle, 'Aucun article publié pour le moment.')}</div>`,
     };
   }
   if (parts[0] === 'articles' && parts[1]) {
@@ -127,7 +131,10 @@ export function renderRoute(bundle, base, pathname, renderBody) {
     const entity = definition.values.find((item) => item.slug === decodeURIComponent(parts[1]));
     if (!entity) return null;
     const articles = published.filter((article) => Array.isArray(article[definition.field]) ? article[definition.field].includes(entity.slug) : article[definition.field] === entity.slug);
-    return { title: `${entity.name} — ${bundle.publication.name}`, html: `<div class="wrap wire"><div class="wire-head"><h1 class="wire-title">${esc(entity.name)}</h1><span class="wire-status">${articles.length} article${articles.length > 1 ? 's' : ''}</span></div>${entity.description ? `<p class="section-intro">${esc(entity.description)}</p>` : ''}${articles.length ? articles.map((item) => articleCard(item, bundle, base)).join('') : `<p class="empty">${definition.empty}</p>`}</div>` };
+    return {
+      title: `${entity.name} — ${bundle.publication.name}`,
+      html: `<div class="wrap wire"><div class="wire-head"><h1 class="wire-title">${esc(entity.name)}</h1><span class="wire-status">${articles.length} article${articles.length > 1 ? 's' : ''}</span></div>${entity.description ? `<p class="section-intro">${esc(entity.description)}</p>` : ''}${magazineFeedHtml(articles, bundle, base, entity.name, definition.empty)}</div>`,
+    };
   }
   if (parts[0] === 'auteurs') {
     if (!parts[1]) {

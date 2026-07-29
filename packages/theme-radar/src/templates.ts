@@ -422,23 +422,31 @@ ${ctx.editorial ? `<script>window.KIOSQUE_EDITORIAL=${JSON.stringify({ mode: 'de
 // Pages
 // ---------------------------------------------------------------------------
 
-export function homePage(articles: Article[], ctx: RenderContext): string {
+/**
+ * Fil magazine (LE-RADAR) : 1 une + vedettes (vignette à gauche) + En bref + suite.
+ * Partagé par l’accueil, les sections et les catégories — une seule structure.
+ */
+export function magazineFeedHtml(
+  articles: Article[],
+  ctx: RenderContext,
+  opts: { heroLabel: string; empty: string },
+): string {
+  if (!articles.length) return `<p class="empty">${esc(opts.empty)}</p>`;
   const [first, ...rest] = articles;
-  // Magazine type LE-RADAR : 1 une + plusieurs vedettes empilées (pas côte à côte),
-  // puis rail « En bref » et suite. 3 vedettes équilibrent mieux une page de journal
-  // unique qu’un agrégateur multi-sources.
+  // 3 vedettes + jusqu’à 7 en bref : équilibre colonne droite / hauteur une.
   const features = rest.slice(0, 3);
   const briefs = rest.slice(3, 10);
   const tail = rest.slice(10);
-  const wireTitle = ctx.publication.labels?.wireTitle || 'À la une';
-  const body = !articles.length
-    ? '<p class="empty">Aucun article publié pour le moment.</p>'
-    : `<div class="magazine-layout">
-      <section class="news-hero" aria-label="${esc(wireTitle)}">
+  return `<div class="magazine-layout">
+      <section class="news-hero" aria-label="${esc(opts.heroLabel)}">
         ${articleCard(first, ctx, 'lead')}
         <div class="news-features">${features.map((a) => articleCard(a, ctx, 'feature')).join('\n')}</div>
       </section>
-      ${briefs.length ? `<aside class="brief-rail"><h2>En bref</h2>${briefs.map((a) => articleCard(a, ctx, 'brief')).join('\n')}</aside>` : ''}
+      ${
+        briefs.length
+          ? `<aside class="brief-rail" aria-label="En bref"><h2>En bref</h2>${briefs.map((a) => articleCard(a, ctx, 'brief')).join('\n')}</aside>`
+          : ''
+      }
       ${
         tail.length
           ? `<section class="news-tail" data-tail-visible="10">
@@ -448,14 +456,20 @@ export function homePage(articles: Article[], ctx: RenderContext): string {
           : ''
       }
     </div>`;
+}
 
+export function homePage(articles: Article[], ctx: RenderContext): string {
+  const wireTitle = ctx.publication.labels?.wireTitle || 'À la une';
   return page(
     `<div class="wrap wire">
       <div class="wire-head">
         <h1 class="wire-title">${esc(wireTitle)}</h1>
         <span class="wire-status">${articles.length} article${articles.length > 1 ? 's' : ''}</span>
       </div>
-      ${body}
+      ${magazineFeedHtml(articles, ctx, {
+        heroLabel: wireTitle,
+        empty: 'Aucun article publié pour le moment.',
+      })}
     </div>`,
     {
       title: `${ctx.publication.name} — ${ctx.publication.tagline ?? ctx.publication.institution}`,
@@ -615,11 +629,10 @@ export function sectionPage(section: Section, articles: Article[], ctx: RenderCo
         <span class="wire-status">${articles.length} article${articles.length > 1 ? 's' : ''}</span>
       </div>
       ${section.description ? `<p class="section-intro">${esc(section.description)}</p>` : ''}
-      ${
-        articles.length
-          ? `<div class="news-list">\n${articles.map((a) => articleCard(a, ctx)).join('\n')}\n      </div>`
-          : '<p class="empty">Aucun article dans cette section.</p>'
-      }
+      ${magazineFeedHtml(articles, ctx, {
+        heroLabel: section.name,
+        empty: 'Aucun article dans cette section.',
+      })}
     </div>`,
     {
       title: `${section.name} — ${ctx.publication.name}`,
@@ -631,10 +644,26 @@ export function sectionPage(section: Section, articles: Article[], ctx: RenderCo
   );
 }
 
-export function categoryPage(category: { slug: string; name: string }, articles: Article[], ctx: RenderContext): string {
+export function categoryPage(category: { slug: string; name: string; description?: string }, articles: Article[], ctx: RenderContext): string {
+  const base = ctx.publication.siteUrl.replace(/\/+$/, '');
   return page(
-    `<div class="wrap wire"><div class="wire-head"><h1 class="wire-title">${esc(category.name)}</h1><span class="wire-status">${articles.length} article${articles.length > 1 ? 's' : ''}</span></div>${articles.length ? `<div class="news-list">${articles.map((article) => articleCard(article, ctx)).join('\n')}</div>` : '<p class="empty">Aucun article dans cette catégorie.</p>'}</div>`,
-    { title: `${category.name} — ${ctx.publication.name}`, canonical: `${ctx.publication.siteUrl.replace(/\/+$/, '')}/categories/${category.slug}/` },
+    `<div class="wrap wire">
+      <div class="wire-head">
+        <h1 class="wire-title">${esc(category.name)}</h1>
+        <span class="wire-status">${articles.length} article${articles.length > 1 ? 's' : ''}</span>
+      </div>
+      ${category.description ? `<p class="section-intro">${esc(category.description)}</p>` : ''}
+      ${magazineFeedHtml(articles, ctx, {
+        heroLabel: category.name,
+        empty: 'Aucun article dans cette catégorie.',
+      })}
+    </div>`,
+    {
+      title: `${category.name} — ${ctx.publication.name}`,
+      description: category.description,
+      canonical: `${base}/categories/${category.slug}/`,
+      current: asset(`/categories/${category.slug}/`, ctx),
+    },
     ctx,
   );
 }
