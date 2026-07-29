@@ -21,9 +21,9 @@ test('configurer, rédiger, prévisualiser, publier, persister et exporter sans 
   await expect(page.getByRole('heading', { name: 'Tableau de bord' })).toBeVisible({ timeout: 45_000 });
   await expect(page.locator('#publication-name')).toHaveText('La Relève locale');
 
-  await page.getByRole('button', { name: 'Médias de démonstration' }).click();
+  await page.getByRole('button', { name: 'Photos' }).click();
   // Banque démo : fonds mât campus QC + photos thématiques d’articles.
-  await expect(page.locator('.media-card')).toHaveCount(32);
+  await expect(page.locator('.media-card')).toHaveCount(50);
   await page.getByLabel('Rechercher un établissement, un campus ou un mot-clé').fill('Jonquière');
   await expect(page.locator('.media-card:visible')).toHaveCount(2);
   await page.getByRole('button', { name: 'Tableau de bord' }).click();
@@ -34,7 +34,7 @@ test('configurer, rédiger, prévisualiser, publier, persister et exporter sans 
   await page.getByLabel('Date et heure de publication').fill('2026-07-27T08:45');
   await page.getByLabel('Texte de l’article').fill('## Une vraie prévisualisation\n\nLe contenu demeure dans **ce navigateur**.');
   await page.getByLabel('Marie Tremblay').check();
-  await page.getByRole('button', { name: 'Choisir dans la banque de démonstration' }).click();
+  await page.getByRole('button', { name: 'Choisir une photo' }).click();
   const articlePicker = page.locator('.media-picker');
   await articlePicker.getByLabel('Rechercher un établissement, un campus ou un mot-clé').fill('Limoilou');
   await articlePicker.getByRole('button', { name: 'Choisir cette photo' }).click();
@@ -97,14 +97,14 @@ test('configurer, rédiger, prévisualiser, publier, persister et exporter sans 
   await expect(page.getByText('Exemple local').first()).toBeVisible();
 
   await page.getByRole('button', { name: 'Configuration' }).click();
-  await page.getByRole('button', { name: 'Choisir dans la banque de démonstration' }).click();
+  await page.getByRole('button', { name: 'Choisir une photo' }).click();
   const mastheadPicker = page.locator('.media-picker');
   await mastheadPicker.getByLabel('Rechercher un établissement, un campus ou un mot-clé').fill('McGill');
   await mastheadPicker.getByRole('button', { name: 'Choisir cette photo' }).first().click();
   await page.getByLabel('Point focal X').fill('73');
   await page.getByLabel('Point focal Y').fill('42');
   await page.getByRole('button', { name: 'Enregistrer' }).click();
-  await expect(front.locator('.masthead-background')).toHaveAttribute('src', /mcgill-(roddick|campus)\.jpg/);
+  await expect(front.locator('.masthead-background')).toHaveAttribute('src', /mcgill-(roddick|campus|arts)\.jpg/);
 
   await page.getByRole('button', { name: 'Exporter et poursuivre' }).click();
   const jsonEvent = page.waitForEvent('download');
@@ -113,7 +113,7 @@ test('configurer, rédiger, prévisualiser, publier, persister et exporter sans 
   const jsonPath = await jsonDownload.path();
   const json = JSON.parse((await (await jsonDownload.createReadStream()).toArray()).map((chunk) => chunk.toString()).join(''));
   expect(json.format).toBe('kiosque-editorial-backup');
-  expect(json.bundle.media.length).toBeGreaterThanOrEqual(12);
+  expect(json.bundle.media.length).toBeGreaterThanOrEqual(40);
   expect(json.bundle.publication.masthead.backgrounds.images[0].institution).toBe('Université McGill');
   expect(json.bundle.publication.masthead.backgrounds.images[0].focalPoint).toEqual({ x: 73, y: 42 });
   expect(json.bundle.articles.find((article) => article.title === 'Un article local mis à jour').lead.institution).toBe('Cégep Limoilou');
@@ -140,7 +140,7 @@ test('configurer, rédiger, prévisualiser, publier, persister et exporter sans 
   await page.getByRole('button', { name: 'Articles' }).click();
   await expect(page.getByText('Un article local mis à jour')).toBeVisible();
   await page.getByRole('button', { name: 'Configuration' }).click();
-  await expect(page.locator('#masthead-crop-preview img').first()).toHaveAttribute('src', /mcgill-(roddick|campus)\.jpg/);
+  await expect(page.locator('#masthead-crop-preview img').first()).toHaveAttribute('src', /mcgill-(roddick|campus|arts)\.jpg/);
 });
 
 test('l’alias admin redirige et le bandeau ne promet aucun service distant', async ({ page }) => {
