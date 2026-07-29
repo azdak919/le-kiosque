@@ -486,7 +486,9 @@ export async function build(options: BuildOptions): Promise<BuildResult> {
   if (editorialMode === 'demo-local') {
     await copyDemoRuntime(outDir);
     await writeFile(path.join(outDir, 'assets', 'editorial', 'seed.json'), JSON.stringify({
-      format: 'kiosque-demo-seed', version: 2,
+      // Bump version when demo authors/media/articles change so PGlite
+      // re-hydrates unmodified demo rows (portraits, lead photos, etc.).
+      format: 'kiosque-demo-seed', version: 3,
       publication: { ...bundle.publication, theme: { ...bundle.publication.theme, typography: bundle.publication.theme.typography ?? 'modern-accessible' } },
       articles: bundle.articles.map((article) => ({ ...article, isDemo: true, isUserModified: false })),
       authors: bundle.authors.map((author) => ({ ...author, isDemo: true, isUserModified: false })),

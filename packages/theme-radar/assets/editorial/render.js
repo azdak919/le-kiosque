@@ -138,19 +138,21 @@ export function renderRoute(bundle, base, pathname, renderBody) {
   }
   if (parts[0] === 'auteurs') {
     const avatarHtml = (author, size = 88) => {
-      const av = author.avatar;
-      if (av?.src) {
-        const src = safeMediaUrl(av.src) || av.src;
-        const pos = av.focalPoint ? `object-position:${av.focalPoint.x}% ${av.focalPoint.y}%` : 'object-position:50% 35%';
-        return `<span class="author-avatar" style="--author-avatar-size:${size}px"><img class="author-avatar__img" src="${esc(src)}" alt="${esc(av.alt || `Portrait de ${author.name}`)}" width="${size}" height="${size}" loading="lazy" decoding="async" style="${pos}"></span>`;
-      }
       const initials = String(author.name || '')
         .split(/\s+/)
         .filter(Boolean)
         .slice(0, 2)
         .map((w) => w[0]?.toUpperCase() || '')
         .join('');
-      return `<span class="author-avatar" style="--author-avatar-size:${size}px"><span class="author-avatar__initials" aria-hidden="true">${esc(initials || '?')}</span></span>`;
+      const fallback = `<span class="author-avatar__initials" aria-hidden="true">${esc(initials || '?')}</span>`;
+      const av = author.avatar;
+      if (av?.src) {
+        const raw = safeMediaUrl(av.src) || av.src;
+        const src = raw.startsWith('/') ? link(base, raw) : raw;
+        const pos = av.focalPoint ? `object-position:${av.focalPoint.x}% ${av.focalPoint.y}%` : 'object-position:50% 35%';
+        return `<span class="author-avatar" style="--author-avatar-size:${size}px">${fallback}<img class="author-avatar__img" src="${esc(src)}" alt="${esc(av.alt || `Portrait de ${author.name}`)}" width="${size}" height="${size}" loading="lazy" decoding="async" style="${pos}" onerror="this.remove()"></span>`;
+      }
+      return `<span class="author-avatar" style="--author-avatar-size:${size}px">${fallback}</span>`;
     };
     if (!parts[1]) {
       const active = bundle.authors.filter((a) => a.active !== false);
@@ -169,7 +171,7 @@ export function renderRoute(bundle, base, pathname, renderBody) {
         : '';
       return {
         title: `L’équipe — ${bundle.publication.name}`,
-        html: `<div class="wrap wire"><div class="wire-head"><h1 class="wire-title">L’équipe</h1><span class="wire-status">${active.length} membre${active.length > 1 ? 's' : ''} · ${past.length} alumni</span></div><p class="section-intro">Rédaction en poste cette année — rôles et cohortes affichés pour chaque signature.</p><div class="magazine-layout magazine-layout--team"><div class="article-column team-column">${active.map((a) => card(a, false)).join('')}${alumniBlock}</div>${brief}</div></div>`,
+        html: `<div class="wrap wire"><div class="wire-head"><h1 class="wire-title">L’équipe</h1><span class="wire-status">${active.length} membre${active.length > 1 ? 's' : ''} · ${past.length} alumni</span></div><p class="section-intro">L’équipe en poste : rôle, cohorte et bio de chaque signature.</p><div class="magazine-layout magazine-layout--team"><div class="article-column team-column">${active.map((a) => card(a, false)).join('')}${alumniBlock}</div>${brief}</div></div>`,
       };
     }
     const author = bundle.authors.find((item) => item.slug === decodeURIComponent(parts[1]));

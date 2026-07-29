@@ -36,7 +36,10 @@ function imageMarkup(image, role) {
   const height = Number.isFinite(Number(image.height)) ? ` height="${Number(image.height)}"` : '';
   const x = Math.max(0, Math.min(100, Number(image.focalPoint?.x ?? 50)));
   const y = Math.max(0, Math.min(100, Number(image.focalPoint?.y ?? 50)));
-  return `<figure class="article-media"><img src="${escapeSourceViewHtml(image.src)}" alt="${escapeSourceViewHtml(image.alt || '')}" loading="${loading}" decoding="async" style="object-position:${x}% ${y}%"${width}${height}>${credit ? `<figcaption class="article-media-credit">${credit}</figcaption>` : ''}</figure>`;
+  /* onerror : retire la figure si 404 (IDB périmée / chemin mort) pour ne pas
+     afficher l’alt brut en place de la vignette En bref. */
+  const onErr = `onerror="const f=this.closest('figure');const a=this.closest('article');if(f)f.remove();if(a){a.classList.remove('has-image','article--thumb');}"`;
+  return `<figure class="article-media"><img src="${escapeSourceViewHtml(image.src)}" alt="${escapeSourceViewHtml(image.alt || '')}" loading="${loading}" decoding="async" style="object-position:${x}% ${y}%"${width}${height} ${onErr}>${credit ? `<figcaption class="article-media-credit">${credit}</figcaption>` : ''}</figure>`;
 }
 
 function authorsMarkup(authors, linkAttributes) {

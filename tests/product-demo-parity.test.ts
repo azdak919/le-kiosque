@@ -18,7 +18,10 @@ import { build } from '../packages/pipeline/src/build.ts';
 const ROOT = path.resolve(fileURLToPath(new URL('..', import.meta.url)));
 const silent = { info: () => {}, warn: () => {}, error: () => {} };
 
-async function buildFrom(srcRelative: string): Promise<{ dir: string; out: string }> {
+async function buildFrom(
+  srcRelative: string,
+  opts: { editorial?: { mode: 'demo-local' | 'off' } } = {},
+): Promise<{ dir: string; out: string }> {
   const src = path.join(ROOT, srcRelative);
   const dir = await mkdtemp(path.join(os.tmpdir(), 'kiosque-parity-'));
   await cp(path.join(src, 'content'), path.join(dir, 'content'), { recursive: true });
@@ -38,7 +41,12 @@ async function buildFrom(srcRelative: string): Promise<{ dir: string; out: strin
   };
   const out = path.join(dir, 'dist');
   await build({
-    config: { root: dir, source: { adapter: 'markdown' }, deploy: { basePath: '' } },
+    config: {
+      root: dir,
+      source: { adapter: 'markdown' },
+      deploy: { basePath: '' },
+      ...(opts.editorial ? { editorial: opts.editorial } : {}),
+    },
     bundle,
     outDir: out,
     logger: silent,
@@ -47,7 +55,7 @@ async function buildFrom(srcRelative: string): Promise<{ dir: string; out: strin
 }
 
 test('demo et template reçoivent le même theme.css / kiosque.js (packages/theme-radar)', async (t) => {
-  const demo = await buildFrom('examples/demo-journal');
+  const demo = await buildFrom('examples/demo-journal', { editorial: { mode: 'demo-local' } });
   const tpl = await buildFrom('template');
   t.after(async () => {
     await rm(demo.dir, { recursive: true, force: true });
@@ -98,4 +106,18 @@ test('demo et template reçoivent le même theme.css / kiosque.js (packages/them
   assert.match(tplHome, /data-nav-toggle/);
   assert.match(demoHome, /wire-title">Le fil</, 'démo Quorum : libellé focus-group');
   assert.match(tplHome, /wire-title">À la une</, 'template : fallback tant que labels absents');
+
+  // Équipe : portraits + intro lisible ; seed PGlite versionné pour re-sync.
+  const demoAuthors = await readFile(path.join(demo.out, 'auteurs/index.html'), 'utf8');
+  assert.match(demoAuthors, /author-avatar__img/, 'portraits d’équipe dans le HTML statique');
+  assert.match(demoAuthors, /author-avatar__initials/, 'initiales en secours sous la photo');
+  assert.match(
+    demoAuthors,
+    /L’équipe en poste : rôle, cohorte et bio de chaque signature/,
+    'intro équipe reformulée',
+  );
+  const seed = await readFile(path.join(demo.out, 'assets/editorial/seed.json'), 'utf8');
+  assert.match(seed, /"version":\s*3/, 'seed démo v3 (re-sync portraits / leads)');
+  const demoBackend = await readFile(path.join(demo.out, 'assets/editorial/demo-backend.js'), 'utf8');
+  assert.match(demoBackend, /#refreshUnmodifiedDemo|refreshUnmodifiedDemo/, 'upgrade seed local sans perdre les éditions');
 });

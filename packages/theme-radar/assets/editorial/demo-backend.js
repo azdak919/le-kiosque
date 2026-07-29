@@ -108,13 +108,107 @@ export class DemoBackendPGlite {
     this.channel.addEventListener('message', (event) => this.#emit(event.data, false));
     await this.#migrate();
     const result = await this.db.query("SELECT value FROM kiosque_meta WHERE key = 'seeded'");
-    if (!result.rows.length) await this.#seed(context.bootstrap);
-    else {
-      const mediaCount = await this.db.query('SELECT count(*)::int AS count FROM media');
-      if (!mediaCount.rows[0]?.count) {
-        for (const media of (await this.#loadSeed()).media || []) await this.save('media', media);
+    if (!result.rows.length) {
+      await this.#seed(context.bootstrap);
+    } else {
+      /*
+       * Si le seed.json embarqué a une version plus récente que la base
+       * locale, réinjecter les entités démo non modifiées (portraits,
+       * photos d’articles, etc.). Sinon le HTML statique affiche les
+       * images, puis front.js re-rend depuis une IDB périmée → initiales
+       * et vignettes cassées.
+       */
+      const seed = await this.#loadSeed();
+      const stored = result.rows[0]?.value;
+      const storedVersion = stored && typeof stored === 'object' ? Number(stored.version) || 0 : 0;
+      const seedVersion = Number(seed.version) || 0;
+      if (seedVersion > storedVersion) {
+        await this.#refreshUnmodifiedDemo(seed);
+        await this.db.query(
+          `INSERT INTO kiosque_meta(key, value) VALUES ('seeded', $1::jsonb)
+           ON CONFLICT (key) DO UPDATE SET value = excluded.value`,
+          [JSON.stringify({ at: now(), version: seedVersion })],
+        );
+      } else {
+        const mediaCount = await this.db.query('SELECT count(*)::int AS count FROM media');
+        if (!mediaCount.rows[0]?.count) {
+          for (const media of seed.media || []) await this.save('media', media);
+        }
       }
     }
+  }
+
+  /**
+   * Met à jour (ou crée) les articles/auteurs/médias de démo non touchés
+   * par l’utilisatrice — sans écraser les contenus is_user_modified.
+   */
+  async #refreshUnmodifiedDemo(seed) {
+    await this.db.transaction(async (tx) => {
+      for (const raw of seed.media || []) {
+        const entity = { ...raw, id: entityId(raw) };
+        await tx.query(
+          `INSERT INTO media(id, data) VALUES ($1, $2::jsonb)
+           ON CONFLICT(id) DO UPDATE SET data = excluded.data`,
+          [entity.id, JSON.stringify(entity)],
+        );
+      }
+      for (const raw of seed.authors || []) {
+        const entity = { ...raw, id: entityId(raw), isDemo: true, isUserModified: false };
+        const existing = await tx.query(
+          'SELECT is_user_modified, data FROM authors WHERE id = $1 OR slug = $2 LIMIT 1',
+          [entity.id, entity.slug],
+        );
+        const row = existing.rows[0];
+        if (row?.is_user_modified) continue;
+        if (row) {
+          await tx.query(
+            `UPDATE authors SET slug = $2, is_demo = true, is_user_modified = false, data = $3::jsonb
+             WHERE id = $1 OR slug = $2`,
+            [entity.id, entity.slug, JSON.stringify(entity)],
+          );
+        } else {
+          await tx.query(
+            'INSERT INTO authors(id, slug, is_demo, is_user_modified, data) VALUES ($1,$2,true,false,$3::jsonb)',
+            [entity.id, entity.slug, JSON.stringify(entity)],
+          );
+        }
+      }
+      for (const raw of seed.articles || []) {
+        const status = ['draft', 'in-review', 'published'].includes(raw.status) ? raw.status : 'draft';
+        const entity = { ...raw, id: entityId(raw), isDemo: true, isUserModified: false, status };
+        const existing = await tx.query(
+          'SELECT is_user_modified FROM articles WHERE id = $1 OR slug = $2 LIMIT 1',
+          [entity.id, entity.slug],
+        );
+        const row = existing.rows[0];
+        if (row?.is_user_modified) continue;
+        if (row) {
+          await tx.query(
+            `UPDATE articles SET slug = $2, status = $3, is_demo = true, is_user_modified = false,
+               updated_at = $4, data = $5::jsonb
+             WHERE id = $1 OR slug = $2`,
+            [entity.id, entity.slug, status, entity.updatedAt || now(), JSON.stringify(entity)],
+          );
+        } else {
+          await tx.query(
+            `INSERT INTO articles(id, slug, status, is_demo, is_user_modified, updated_at, data)
+             VALUES ($1,$2,$3,true,false,$4,$5::jsonb)`,
+            [entity.id, entity.slug, status, entity.updatedAt || now(), JSON.stringify(entity)],
+          );
+        }
+      }
+      for (const kind of ['section', 'category', 'tag']) {
+        const table = TABLES[kind];
+        for (const raw of seed[table] || []) {
+          const entity = { ...raw, id: entityId(raw) };
+          await tx.query(
+            `INSERT INTO ${table}(id, slug, data) VALUES ($1, $2, $3::jsonb)
+             ON CONFLICT(id) DO UPDATE SET slug = excluded.slug, data = excluded.data`,
+            [entity.id, entity.slug, JSON.stringify(entity)],
+          );
+        }
+      }
+    });
   }
 
   async #migrate() {

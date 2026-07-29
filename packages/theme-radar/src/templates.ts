@@ -677,24 +677,30 @@ export function categoryPage(category: { slug: string; name: string; description
   );
 }
 
+function authorInitials(name: string): string {
+  return name
+    .split(/\s+/)
+    .filter(Boolean)
+    .slice(0, 2)
+    .map((w) => w[0]?.toUpperCase() ?? '')
+    .join('');
+}
+
 function authorAvatarHtml(author: Author, ctx: RenderContext, opts: { size?: number; link?: boolean } = {}): string {
   const size = opts.size ?? 88;
   const href = safeUrl(relative(authorUrl(ctx.publication, author.slug), ctx));
   const av = author.avatar;
+  const initials = authorInitials(author.name);
+  const fallback = `<span class="author-avatar__initials" aria-hidden="true">${esc(initials || '?')}</span>`;
   let media: string;
   if (av?.src) {
     const pos = av.focalPoint
       ? `object-position:${esc(String(av.focalPoint.x))}% ${esc(String(av.focalPoint.y))}%`
       : 'object-position:50% 35%';
-    media = `<img class="author-avatar__img" src="${safeUrl(asset(av.src, ctx))}" alt="${esc(av.alt || `Portrait de ${author.name}`)}" width="${size}" height="${size}" loading="lazy" decoding="async" style="${pos}">`;
+    /* Initiales derrière la photo : si le fichier 404 (cache IDB / chemin), le cercle reste lisible. */
+    media = `${fallback}<img class="author-avatar__img" src="${safeUrl(asset(av.src, ctx))}" alt="${esc(av.alt || `Portrait de ${author.name}`)}" width="${size}" height="${size}" loading="lazy" decoding="async" style="${pos}" onerror="this.remove()">`;
   } else {
-    const initials = author.name
-      .split(/\s+/)
-      .filter(Boolean)
-      .slice(0, 2)
-      .map((w) => w[0]?.toUpperCase() ?? '')
-      .join('');
-    media = `<span class="author-avatar__initials" aria-hidden="true">${esc(initials || '?')}</span>`;
+    media = fallback;
   }
   const inner = `<span class="author-avatar" style="--author-avatar-size:${size}px">${media}</span>`;
   if (opts.link === false) return inner;
@@ -777,7 +783,7 @@ export function authorsIndexPage(
         <h1 class="wire-title">L’équipe</h1>
         <span class="wire-status">${active.length} membre${active.length > 1 ? 's' : ''} · ${past.length} alumni</span>
       </div>
-      <p class="section-intro">Rédaction en poste cette année — rôles et cohortes affichés pour chaque signature.</p>
+      <p class="section-intro">L’équipe en poste : rôle, cohorte et bio de chaque signature.</p>
       <div class="magazine-layout magazine-layout--team">
         <div class="article-column team-column">
           ${render(active, false)}
