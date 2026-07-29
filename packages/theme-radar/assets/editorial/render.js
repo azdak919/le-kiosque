@@ -28,7 +28,15 @@ function mediaFigure(article, base) {
   if (!src) return '';
   const resolved = src.startsWith('/') ? link(base, src) : src;
   const credit = [article.lead.caption, article.lead.credit && `Photo : ${article.lead.credit}`].filter(Boolean).map(esc).join(' — ');
-  return `<div class="article-media"><img src="${esc(resolved)}" alt="${esc(article.lead.alt || '')}" loading="lazy" style="object-position:${Number(article.lead.focalPoint?.x ?? 50)}% ${Number(article.lead.focalPoint?.y ?? 50)}%"></div>${credit ? `<p class="article-media-credit">${credit}</p>` : ''}`;
+  const x = Number(article.lead.focalPoint?.x ?? 50);
+  const y = Number(article.lead.focalPoint?.y ?? 50);
+  const w = article.lead.width ? ` width="${Number(article.lead.width)}"` : '';
+  const h = article.lead.height ? ` height="${Number(article.lead.height)}"` : '';
+  const ratio = article.lead.width && article.lead.height
+    ? `;aspect-ratio:${Number(article.lead.width)}/${Number(article.lead.height)}`
+    : '';
+  // Même figure .post-lead que le build statique (photo + crédit, pas crédit seul).
+  return `<figure class="post-lead"><img class="post-lead__img" src="${esc(resolved)}" alt="${esc(article.lead.alt || '')}" decoding="async" fetchpriority="high"${w}${h} style="object-position:${x}% ${y}%${ratio}">${credit ? `<figcaption class="post-lead__credit">${credit}</figcaption>` : ''}</figure>`;
 }
 
 function articleCard(article, bundle, base, variant = 'tail') {

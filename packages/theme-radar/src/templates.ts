@@ -532,10 +532,15 @@ export function articlePage(article: Article, ctx: RenderContext, relatedArticle
       </div>
       ${
         lead
-          ? `<figure class="post-lead">
-        <img src="${safeUrl(asset(lead.src, ctx))}" alt="${esc(lead.alt)}" style="object-position:${clampPercent(lead.focalPoint?.x)}% ${clampPercent(lead.focalPoint?.y)}%"${lead.width ? ` width="${lead.width}"` : ''}${lead.height ? ` height="${lead.height}"` : ''}>
-        ${caption ? `<figcaption>${caption}</figcaption>` : ''}
-      </figure>`
+          ? (() => {
+              const pos = `object-position:${clampPercent(lead.focalPoint?.x)}% ${clampPercent(lead.focalPoint?.y)}%`;
+              const ratio =
+                lead.width && lead.height ? `;aspect-ratio:${lead.width}/${lead.height}` : '';
+              return `<figure class="post-lead">
+        <img class="post-lead__img" src="${safeUrl(asset(lead.src, ctx))}" alt="${esc(lead.alt || '')}" decoding="async" fetchpriority="high"${lead.width ? ` width="${lead.width}"` : ''}${lead.height ? ` height="${lead.height}"` : ''} style="${pos}${ratio}">
+        ${caption ? `<figcaption class="post-lead__credit">${caption}</figcaption>` : ''}
+      </figure>`;
+            })()
           : ''
       }
       <div class="post-body">
