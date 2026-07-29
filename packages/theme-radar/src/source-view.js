@@ -34,8 +34,14 @@ function imageMarkup(image, role) {
   if (!image?.src) return '';
   const credit = [image.caption, image.credit && `Photo : ${image.credit}`].filter(Boolean).map(escapeSourceViewHtml).join(' — ');
   const loading = role === 'lead' ? 'eager' : 'lazy';
-  const width = Number.isFinite(Number(image.width)) ? ` width="${Number(image.width)}"` : '';
-  const height = Number.isFinite(Number(image.height)) ? ` height="${Number(image.height)}"` : '';
+  /*
+   * Attributs width/height : utiles pour la une (réserve CLS au 16:9).
+   * Sur vignettes (feature/brief), on les omet — le ratio intrinsèque du
+   * JPEG (souvent 3:2 / 16:9) gagnait sur le carré CSS 1:1.
+   */
+  const isThumb = role === 'feature' || role === 'brief';
+  const width = !isThumb && Number.isFinite(Number(image.width)) ? ` width="${Number(image.width)}"` : '';
+  const height = !isThumb && Number.isFinite(Number(image.height)) ? ` height="${Number(image.height)}"` : '';
   const x = Math.max(0, Math.min(100, Number(image.focalPoint?.x ?? 50)));
   const y = Math.max(0, Math.min(100, Number(image.focalPoint?.y ?? 50)));
   /* onerror : retire la figure si 404 (IDB périmée / chemin mort) pour ne pas

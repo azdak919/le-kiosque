@@ -28,13 +28,20 @@ test('le noyau de carte conserve les règles image, métadonnées et absence d�
     },
   };
   const brief = renderSourceArticle(view, 'brief');
+  const feature = renderSourceArticle(view, 'feature');
+  const lead = renderSourceArticle(view, 'lead');
   const tail = renderSourceArticle(view, 'tail');
 
   assert.match(brief, /article--brief/);
   assert.match(brief, /article--thumb/);
   assert.match(brief, /<figure class="article-media">/);
   assert.match(brief, /loading="lazy"/);
-  assert.match(brief, /width="1200" height="800"/);
+  // Vignettes : pas d’attrs width/height (évite le 16:9 intrinsèque du JPEG).
+  assert.doesNotMatch(brief, /width="1200"/);
+  assert.doesNotMatch(feature, /width="1200"/);
+  // À la une : attrs conservés pour le CLS / 16:9 pleine largeur.
+  assert.match(lead, /width="1200" height="800"/);
+  assert.match(lead, /loading="eager"/);
   assert.match(brief, /article-byline__label">Par<\/span>\s*<a class="article-author"/);
   assert.match(brief, /Lire la suite/);
   // Texte et lien séparés : le line-clamp En bref ne doit pas avaler le lien.

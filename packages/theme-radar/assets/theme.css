@@ -376,28 +376,31 @@ body.with-radio .nav {
   max-width: 100%;
 }
 /*
- * Bureau : météo à gauche de la zone centrale, sports calé à droite
- * (près des outils), largeurs de puces plus compactes et homogènes.
+ * Bureau : météo puis sports collés (sports immédiatement à droite de la
+ * météo — pas collé aux outils à l’extrême droite).
  */
 @media (min-width: 721px) {
   .masthead-status {
     justify-content: flex-start;
     align-items: center;
-    gap: 10px;
+    gap: 8px;
+    /* Ne pas étirer toute la colonne 1fr : le groupe météo+sports reste compact. */
+    flex: 0 1 auto;
+    width: auto;
+    max-width: 100%;
   }
   .masthead-status .masthead-weather {
-    flex: 0 1 auto;
+    flex: 0 0 auto;
     max-width: 11rem;
   }
   .masthead-status .masthead-sports {
     flex: 0 0 auto;
-    margin-left: auto; /* aligne la puce sports à droite de la cellule 1fr */
+    margin-left: 0; /* collé après la météo */
     max-width: 10.75rem;
-    justify-content: flex-end;
   }
   .masthead-status .weather-chip,
   .masthead-status .masthead-weather__city {
-    width: 100%;
+    width: auto;
     min-width: 8.25rem;
     max-width: 11rem;
   }
