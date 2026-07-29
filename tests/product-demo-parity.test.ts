@@ -75,6 +75,13 @@ test('demo et template reçoivent le même theme.css / kiosque.js (packages/them
   );
   assert.match(demoJs, /computeMastheadFocalY/, 'cadrage auto mât présent');
   assert.match(demoJs, /function applyTheme/, 'bascule thème présente');
+  // Mobile UX (7 points) : dock météo, nav peek, volume overlay.
+  assert.match(demoJs, /setMastheadWeatherDocked/, 'dock météo mobile');
+  assert.match(demoJs, /initNavCollapse/, 'nav collapse + peek');
+  assert.match(demoJs, /is-vol-overlay/, 'volume popover sans poussée layout');
+  assert.match(demoCss, /masthead-weather-dock/, 'styles dock météo');
+  assert.match(demoCss, /\.nav-shell\.has-overflow/, 'styles nav peek');
+  assert.match(demoCss, /--lead-title-size/, 'titre une ≤ wordmark (token)');
 
   const demoHome = await readFile(path.join(demo.out, 'index.html'), 'utf8');
   const tplHome = await readFile(path.join(tpl.out, 'index.html'), 'utf8');
@@ -83,6 +90,12 @@ test('demo et template reçoivent le même theme.css / kiosque.js (packages/them
   // Même moteur de gabarits : outil thème + shuffle si multi-photos.
   assert.match(demoHome, /id="theme-toggle"/);
   assert.match(tplHome, /id="theme-toggle"/);
+  assert.match(demoHome, /id="masthead-weather-dock"/, 'emplacement dock météo');
+  assert.match(tplHome, /id="masthead-weather-dock"/);
+  assert.match(demoHome, /data-nav-shell/, 'shell nav mobile');
+  assert.match(tplHome, /data-nav-shell/);
+  assert.match(demoHome, /data-nav-toggle/, 'bouton Toutes les rubriques');
+  assert.match(tplHome, /data-nav-toggle/);
   assert.match(demoHome, /wire-title">Le fil</, 'démo Quorum : libellé focus-group');
   assert.match(tplHome, /wire-title">À la une</, 'template : fallback tant que labels absents');
 });

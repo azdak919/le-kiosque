@@ -579,6 +579,38 @@
       + encodeURIComponent(Number(lat).toFixed(4) + ',' + Number(lon).toFixed(4));
   }
 
+  var weatherDocked = false;
+  var weatherHomeParent = null;
+  var weatherHomeNext = null;
+  var WEATHER_PHONE_MQ = typeof window.matchMedia === 'function'
+    ? window.matchMedia('(max-width: 720px)')
+    : null;
+
+  function setMastheadWeatherDocked(docked) {
+    var host = document.querySelector('.masthead-weather[data-weather-localities]');
+    var dock = document.getElementById('masthead-weather-dock');
+    if (!host || !dock) return;
+    if (!weatherHomeParent) {
+      weatherHomeParent = host.parentNode;
+      weatherHomeNext = host.nextSibling;
+    }
+    if (docked === weatherDocked) return;
+    weatherDocked = docked;
+    host.classList.toggle('masthead-weather--docked', docked);
+    if (docked) {
+      dock.hidden = false;
+      dock.appendChild(host);
+    } else if (weatherHomeParent) {
+      weatherHomeParent.insertBefore(host, weatherHomeNext);
+      if (!dock.childNodes.length) dock.hidden = true;
+    }
+  }
+
+  function syncMastheadWeatherDock() {
+    var shouldDock = WEATHER_PHONE_MQ ? WEATHER_PHONE_MQ.matches : (window.innerWidth <= 720);
+    setMastheadWeatherDocked(shouldDock);
+  }
+
   function initMastheadWeather() {
     var host = document.querySelector('[data-weather-localities]');
     if (!host || typeof fetch !== 'function') return;
@@ -595,6 +627,17 @@
       var tokens = document.querySelector('link[href*="tokens.css"]');
       if (tokens) meteoBase = tokens.href.replace(/tokens\.css.*$/, 'meteocons/animated/');
       else meteoBase = 'assets/meteocons/animated/';
+    }
+
+    /* Dock immédiat sur téléphone (même avant le fetch) pour éviter un flash dans le mât. */
+    syncMastheadWeatherDock();
+    if (WEATHER_PHONE_MQ) {
+      var onMq = function () { syncMastheadWeatherDock(); };
+      if (typeof WEATHER_PHONE_MQ.addEventListener === 'function') {
+        WEATHER_PHONE_MQ.addEventListener('change', onMq);
+      } else if (typeof WEATHER_PHONE_MQ.addListener === 'function') {
+        WEATHER_PHONE_MQ.addListener(onMq);
+      }
     }
 
     Promise.all(localities.map(async function (loc) {
@@ -679,7 +722,74 @@
         chip.appendChild(temp);
         host.appendChild(chip);
       });
-    }).catch(function () { host.remove(); });
+      syncMastheadWeatherDock();
+    }).catch(function () {
+      host.remove();
+      var dock = document.getElementById('masthead-weather-dock');
+      if (dock && !dock.childNodes.length) dock.hidden = true;
+    });
+  }
+
+  // ── Nav mobile : 1 rangée + peek flouté + « Toutes les rubriques » ──
+  function initNavCollapse() {
+    var shell = document.querySelector('[data-nav-shell]');
+    if (!shell) return;
+    var nav = shell.querySelector('.nav');
+    var btn = shell.querySelector('[data-nav-toggle]');
+    if (!nav || !btn) return;
+
+    var expanded = false;
+    var phoneMq = typeof window.matchMedia === 'function'
+      ? window.matchMedia('(max-width: 720px)')
+      : null;
+
+    function isPhone() {
+      return phoneMq ? phoneMq.matches : window.innerWidth <= 720;
+    }
+
+    function sync() {
+      if (!isPhone()) {
+        shell.classList.remove('has-overflow', 'is-expanded');
+        btn.hidden = true;
+        btn.setAttribute('aria-expanded', 'false');
+        expanded = false;
+        return;
+      }
+      /* Mesure avec max-height levée. */
+      var wasExpanded = shell.classList.contains('is-expanded');
+      shell.classList.add('is-expanded');
+      var fullH = nav.scrollHeight;
+      if (!wasExpanded) shell.classList.remove('is-expanded');
+      var oneRow = 44; /* ~2.65rem */
+      var overflow = fullH > oneRow + 8;
+      shell.classList.toggle('has-overflow', overflow);
+      btn.hidden = !overflow;
+      if (!overflow) {
+        expanded = false;
+        shell.classList.remove('is-expanded');
+      } else if (expanded) {
+        shell.classList.add('is-expanded');
+      }
+      btn.setAttribute('aria-expanded', expanded ? 'true' : 'false');
+      btn.textContent = expanded ? 'Réduire le menu' : 'Toutes les rubriques';
+    }
+
+    btn.addEventListener('click', function () {
+      expanded = !expanded;
+      shell.classList.toggle('is-expanded', expanded);
+      btn.setAttribute('aria-expanded', expanded ? 'true' : 'false');
+      btn.textContent = expanded ? 'Réduire le menu' : 'Toutes les rubriques';
+    });
+
+    sync();
+    var pending;
+    window.addEventListener('resize', function () {
+      clearTimeout(pending);
+      pending = setTimeout(sync, 120);
+    }, { passive: true });
+    if (document.fonts && document.fonts.ready) {
+      document.fonts.ready.then(sync).catch(function () {});
+    }
   }
 
   function initTheme() {
@@ -1022,13 +1132,36 @@
           }
           var height = Number(message.height);
           if (Number.isFinite(height) && height >= 40 && height <= 500) {
-            frame.style.height = Math.round(height) + 'px';
+            var h = Math.round(height);
+            /* Première hauteur idle (≤72) = base barre (68 desktop / 62 mobile embed). */
+            if (!frame.dataset.baseH && h <= 72) frame.dataset.baseH = String(h);
+            var baseH = Number(frame.dataset.baseH) || 68;
+            frame.style.height = h + 'px';
+            /*
+             * Popover volume : l’iframe grandit pour peindre la bulle
+             * (clip iframe), mais margin-bottom négatif annule la poussée
+             * du layout — overlay sans élargir la barre.
+             */
+            if (h > baseH + 4) {
+              frame.classList.add('is-vol-overlay');
+              frame.style.marginBottom = (baseH - h) + 'px';
+              host.style.zIndex = '60';
+              host.style.overflow = 'visible';
+            } else {
+              frame.classList.remove('is-vol-overlay');
+              frame.style.marginBottom = '';
+              host.style.zIndex = '';
+              host.style.overflow = '';
+            }
           }
           if (message.ready && message.available === true) {
             clearTimeout(timeout);
             host.querySelector('a')?.remove();
             host.hidden = false;
             host.dataset.state = 'ready';
+            if (!frame.dataset.baseH) {
+              frame.dataset.baseH = String(frame.offsetHeight || 68);
+            }
           }
         });
       }
@@ -1044,6 +1177,7 @@
     initMastheadBackgrounds();
     initMastheadWeather();
     initMastheadToolRelease();
+    initNavCollapse();
     initNewsTailCollapse();
     initMarquees();
     initRadarTuner();

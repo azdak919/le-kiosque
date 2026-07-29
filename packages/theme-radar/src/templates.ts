@@ -173,6 +173,11 @@ function radioTuner(ctx: RenderContext): string {
 </radar-tuner>`;
 }
 
+/** Emplacement sous le tuner pour dock météo mobile (rempli en JS). */
+function weatherDockHtml(): string {
+  return `<div class="masthead-weather-dock" id="masthead-weather-dock" hidden></div>`;
+}
+
 /** Icônes du mât — mêmes tracés que LE-RADAR (index.html). */
 function icon(label: 'home' | 'rss' | 'shuffle' | 'sun' | 'moon', _assetsBase?: string): string {
   if (label === 'home') {
@@ -362,9 +367,11 @@ ${ctx.demoNotice ? `<div class="demo-banner">${esc(ctx.demoNotice)}</div>` : ''}
   </div>
 </header>
 ${radio}
+${weatherDockHtml()}
 <nav class="nav-wrap" aria-label="Sections">
   <div class="wrap">
-    <div class="nav">
+    <div class="nav-shell" data-nav-shell>
+      <div class="nav">
       ${nav
         .map((n) => {
           const current = options.current === n.href ? ' aria-current="page"' : '';
@@ -374,6 +381,8 @@ ${radio}
           return `<a href="${safeUrl(n.href)}"${current}${color}>${esc(n.label)}</a>`;
         })
         .join('\n      ')}
+      </div>
+      <button type="button" class="nav-toggle" data-nav-toggle hidden aria-expanded="false">Toutes les rubriques</button>
     </div>
   </div>
 </nav>

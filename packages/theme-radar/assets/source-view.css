@@ -572,17 +572,82 @@
     max-height: none;
     overflow: visible;
     min-height: 0;
-    margin-top: 28px;
-    padding-top: 8px;
+    margin-top: 16px;
+    padding-top: 6px;
     border-top: 2px solid var(--rule-strong);
     border-bottom: 0;
   }
-  .brief-rail { padding-left: 0; border-bottom: 0; border-left: 0; }
+  /* En bref empilé : coller au fil suivant (pas de grand vide). */
+  .brief-rail {
+    padding-left: 0;
+    padding-bottom: 0;
+    border-bottom: 0;
+    border-left: 0;
+    margin-bottom: 0;
+  }
+  .brief-rail > .article:last-child {
+    padding-bottom: 8px;
+  }
+  .news-tail {
+    margin-top: 8px;
+    padding-top: 0;
+  }
+  .news-tail-title {
+    margin-top: 8px;
+  }
 }
 @media (max-width: 720px) {
   .news-tail-body,
   .news-tail-grid { grid-template-columns: 1fr; }
-  .article--lead .article-title { font-size: clamp(2rem, 10vw, 3rem); }
+  /*
+   * Titre à la une : même échelle LE-RADAR (--lead-title-size),
+   * strictement sous le wordmark. L’ancien clamp(2rem, 10vw, 3rem)
+   * dépassait « Le Quorum » sur téléphone.
+   */
+  .article--lead .article-title {
+    font-size: var(--lead-title-size);
+  }
   .article-meta { grid-template-columns: 1fr; }
   .article-time { justify-self: start; text-align: left; }
+
+  /*
+   * Vedettes (feature) : image flottante à gauche, le texte (extrait)
+   * continue dans l’espace sous l’image — s’adapte à chaque article.
+   */
+  .news-hero .article--feature.article--thumb.has-image {
+    display: block;
+  }
+  .news-hero .article--feature.article--thumb.has-image > .article-meta {
+    display: block;
+    margin-bottom: 6px;
+  }
+  .news-hero .article--feature.article--thumb.has-image > .article-media {
+    float: left;
+    width: clamp(96px, 30vw, 128px);
+    margin: 2px 12px 8px 0;
+    grid-column: auto;
+    grid-row: auto;
+  }
+  .news-hero .article--feature.article--thumb.has-image > .article-title,
+  .news-hero .article--feature.article--thumb.has-image > .article-byline,
+  .news-hero .article--feature.article--thumb.has-image > .article-brief {
+    grid-column: auto;
+  }
+  .news-hero .article--feature.article--thumb.has-image::after {
+    content: "";
+    display: table;
+    clear: both;
+  }
+  .news-hero .article--feature.article--thumb.has-image .article-media img {
+    aspect-ratio: 1 / 1;
+  }
+
+  /* Moins d’air sous le bouton « Plus d’articles » avant le footer. */
+  .news-tail-toggle {
+    margin: 8px 0 0;
+  }
+  .news-tail {
+    padding-bottom: 0;
+    margin-bottom: 0;
+  }
 }
