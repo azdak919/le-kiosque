@@ -56,7 +56,7 @@ function articleCard(article, bundle, base, variant = 'tail') {
     title: article.title,
     excerpt: article.excerpt,
     readMore: true,
-    leadEyebrow: labels.leadEyebrow || labels.wireTitle || 'À la une',
+    leadEyebrow: labels.leadEyebrow || 'À la une',
     date: {
       iso: article.publishedAt || article.updatedAt,
       label: formatDateTime(article.publishedAt || article.updatedAt, bundle.publication.timeZone),

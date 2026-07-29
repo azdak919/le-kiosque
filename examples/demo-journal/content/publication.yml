@@ -19,9 +19,10 @@ theme:
   typography: modern-accessible
 
 # Libellés d’interface — verdict focus-group/decisions/le-kiosque-wire-title.json
+# wireTitle = en-tête de la page d’accueil ; leadEyebrow = pastille sur la manchette.
 labels:
   wireTitle: Le fil
-  leadEyebrow: Le fil
+  leadEyebrow: À la une
 
 masthead:
   backgrounds:

@@ -337,9 +337,10 @@ export class MarkdownSource implements ContentSource<MarkdownConfig> {
             const wireTitle = str(labels.wireTitle);
             const leadEyebrow = str(labels.leadEyebrow);
             if (!wireTitle && !leadEyebrow) return undefined;
+            // leadEyebrow distinct de wireTitle (défaut « À la une » au rendu).
             return {
               wireTitle,
-              leadEyebrow: leadEyebrow ?? wireTitle,
+              leadEyebrow,
             };
           })()
         : undefined,

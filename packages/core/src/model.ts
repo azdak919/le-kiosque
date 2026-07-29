@@ -289,7 +289,7 @@ export interface Publication {
   labels?: {
     /** Titre du fil d’accueil (h1). */
     wireTitle?: string;
-    /** Eyebrow de la carte manchette ; défaut = wireTitle. */
+    /** Eyebrow de la carte manchette ; défaut « À la une » (distinct de wireTitle). */
     leadEyebrow?: string;
   };
   founded?: string;

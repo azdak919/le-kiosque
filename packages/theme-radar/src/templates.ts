@@ -260,7 +260,8 @@ export function articleCard(article: Article, ctx: RenderContext, variant: boole
     title: article.title,
     excerpt: article.excerpt,
     readMore: true,
-    leadEyebrow: labels?.leadEyebrow || labels?.wireTitle || 'À la une',
+    // Eyebrow manchette ≠ titre du fil (défaut « À la une », pas wireTitle).
+    leadEyebrow: labels?.leadEyebrow || 'À la une',
     date: { iso: date, label: formatDateTime(date, ctx.publication.timeZone) },
     authors: article.authors.map((slug) => ({
       name: ctx.authorsBySlug.get(slug)?.name ?? slug,
