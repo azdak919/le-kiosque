@@ -285,6 +285,34 @@ export function validatePublication(pub: Publication, path = 'publication'): Iss
   for (const [i, image] of (pub.masthead?.backgrounds?.images ?? []).entries()) {
     issues.push(...validateMedia(image, `${path}.masthead.backgrounds.images[${i}]`));
   }
+  const sports = pub.masthead?.sports;
+  if (sports) {
+    const team = sports.team;
+    if (!team?.id?.trim()) err(issues, `${path}.masthead.sports.team.id`, 'identifiant d’équipe requis');
+    if (!team?.name?.trim()) err(issues, `${path}.masthead.sports.team.name`, 'nom d’équipe requis');
+    if (!team?.code?.trim() || team.code.length > 4) {
+      err(issues, `${path}.masthead.sports.team.code`, 'code d’équipe requis (2–4 lettres)');
+    }
+    if (!team?.sport?.trim()) err(issues, `${path}.masthead.sports.team.sport`, 'sport requis');
+    for (const [i, game] of (sports.results ?? []).entries()) {
+      if (!game?.date?.trim()) err(issues, `${path}.masthead.sports.results[${i}].date`, 'date requise');
+      if (!game?.opponent?.trim()) err(issues, `${path}.masthead.sports.results[${i}].opponent`, 'adversaire requis');
+      if (!['W', 'L', 'D', 'T'].includes(game?.result)) {
+        err(issues, `${path}.masthead.sports.results[${i}].result`, 'résultat W, L, D ou T requis');
+      }
+      if (!Number.isFinite(game?.scoreFor) || !Number.isFinite(game?.scoreAgainst)) {
+        err(issues, `${path}.masthead.sports.results[${i}]`, 'scores numériques requis');
+      }
+    }
+    if (sports.nextGame) {
+      if (!sports.nextGame.date?.trim()) {
+        err(issues, `${path}.masthead.sports.nextGame.date`, 'date du prochain match requise');
+      }
+      if (!sports.nextGame.opponent?.trim()) {
+        err(issues, `${path}.masthead.sports.nextGame.opponent`, 'adversaire du prochain match requis');
+      }
+    }
+  }
   const overlay = pub.masthead?.overlayStrength;
   if (overlay !== undefined && (!Number.isFinite(overlay) || overlay < 0 || overlay > 0.9)) {
     err(issues, `${path}.masthead.overlayStrength`, 'le voile doit être compris entre 0 et 0,9');

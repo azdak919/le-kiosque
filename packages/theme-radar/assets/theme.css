@@ -329,7 +329,7 @@ body.with-radio .nav {
   background: transparent;
 }
 
-/* Dock météo sous le tuner (mobile) — LE-RADAR masthead-weather-dock. */
+/* Dock météo + sports sous le tuner (mobile) — LE-RADAR masthead-weather-dock. */
 .masthead-weather-dock {
   display: none;
   max-width: var(--maxw);
@@ -342,7 +342,8 @@ body.with-radio .nav {
   padding-top: 8px;
   padding-bottom: 2px;
 }
-.masthead-weather--docked {
+.masthead-weather--docked,
+.masthead-status--docked {
   display: flex !important;
   width: 100%;
   max-width: 100%;
@@ -350,20 +351,51 @@ body.with-radio .nav {
   align-items: stretch;
   gap: 8px;
   overflow: visible;
+  min-width: 0;
+  box-sizing: border-box;
+}
+.masthead-status {
+  display: flex;
+  align-items: stretch;
+  gap: 6px;
+  min-width: 0;
+  max-width: 100%;
+  flex: 1 1 auto;
+  overflow: hidden; /* jamais de clipping hors de la cellule mât */
+}
+/* À côté du score : la météo cède de la place (pas de min-width rigide). */
+.masthead-status .masthead-weather {
+  flex: 1 1 auto;
+  min-width: 0;
+}
+.masthead-status .weather-chip,
+.masthead-status .masthead-weather__city {
+  min-width: 0;
+  max-width: 100%;
 }
 /*
- * Sous la radio (mobile) : chaque carte = ½ de la rangée utile
- * (padding du dock déjà appliqué). On annule le max 42vw / 15.5rem
- * des puces mât, sinon la carte reste une pastille étroite.
+ * Sous la radio (mobile) : météo et sports se partagent la rangée.
+ * min-width: 0 + max-width borné = pas de clipping hors viewport.
  */
 .masthead-weather--docked .weather-chip,
-.masthead-weather--docked .masthead-weather__city {
-  flex: 0 0 calc(50% - 4px);
-  width: calc(50% - 4px);
-  max-width: calc(50% - 4px);
+.masthead-weather--docked .masthead-weather__city,
+.masthead-status--docked .weather-chip,
+.masthead-status--docked .masthead-weather__city,
+.masthead-status--docked .sports-chip,
+.masthead-weather--docked .sports-chip {
+  flex: 1 1 0;
+  width: auto;
+  max-width: 100%;
   min-width: 0; /* override 9.75rem du style mât */
   box-sizing: border-box;
   justify-content: flex-start;
+}
+.masthead-status--docked .masthead-weather,
+.masthead-status--docked .masthead-sports {
+  flex: 1 1 0;
+  min-width: 0;
+  max-width: 100%;
+  display: flex;
 }
 /*
  * Dock sous la radio (mobile) : même famille ardoise LE-RADAR
@@ -371,10 +403,11 @@ body.with-radio .nav {
  * L’ancien panneau --bg-soft + texte blanc était illisible.
  */
 .masthead-weather-dock .weather-chip,
-.masthead-weather-dock .masthead-weather__city {
+.masthead-weather-dock .masthead-weather__city,
+.masthead-weather-dock .sports-chip {
   border-color: rgba(255, 255, 255, 0.24);
   background:
-    linear-gradient(90deg, color-mix(in srgb, var(--weather-tone, #c8102e) 16%, transparent) 0%, transparent 55%),
+    linear-gradient(90deg, color-mix(in srgb, var(--weather-tone, var(--sports-tone, #c8102e)) 16%, transparent) 0%, transparent 55%),
     rgba(54, 59, 68, 0.72);
   color: rgba(245, 246, 248, 0.96);
   box-shadow:
@@ -387,18 +420,21 @@ body.with-radio .nav {
 .masthead-weather-dock .weather-chip__name,
 .masthead-weather-dock .masthead-weather__name,
 .masthead-weather-dock .weather-chip__temp,
-.masthead-weather-dock .masthead-weather__temp {
+.masthead-weather-dock .masthead-weather__temp,
+.masthead-weather-dock .sports-chip__line {
   color: rgba(245, 246, 248, 0.96);
 }
 .masthead-weather-dock .weather-chip__temp,
-.masthead-weather-dock .masthead-weather__temp {
+.masthead-weather-dock .masthead-weather__temp,
+.masthead-weather-dock .sports-chip__score {
   color: #fff;
 }
 :root[data-theme="dark"] .masthead-weather-dock .weather-chip,
-:root[data-theme="dark"] .masthead-weather-dock .masthead-weather__city {
+:root[data-theme="dark"] .masthead-weather-dock .masthead-weather__city,
+:root[data-theme="dark"] .masthead-weather-dock .sports-chip {
   border-color: rgba(255, 255, 255, 0.14);
   background:
-    linear-gradient(90deg, color-mix(in srgb, var(--weather-tone, #c8102e) 22%, transparent) 0%, transparent 55%),
+    linear-gradient(90deg, color-mix(in srgb, var(--weather-tone, var(--sports-tone, #c8102e)) 22%, transparent) 0%, transparent 55%),
     rgba(22, 24, 30, 0.92);
   color: rgba(245, 246, 248, 0.96);
 }
@@ -1331,6 +1367,96 @@ a.masthead-weather__city:focus-visible {
   -webkit-text-stroke: 0;
   text-shadow: none;
 }
+
+/* Puce sports — même famille ardoise que la météo, tone = issue W/L/D. */
+.masthead-sports {
+  display: flex;
+  align-items: stretch;
+  min-width: 0;
+  max-width: min(11.5rem, 38vw);
+  flex: 0 1 auto;
+}
+.sports-chip,
+.masthead-sports__chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  min-height: 32px;
+  min-width: 0;
+  max-width: 100%;
+  padding: 4px 10px 4px 7px;
+  border: 1px solid rgba(255, 255, 255, 0.24);
+  border-radius: 6px;
+  background:
+    linear-gradient(90deg, color-mix(in srgb, var(--sports-tone, var(--sports-brand, #6c2163)) 22%, transparent) 0%, transparent 55%),
+    rgba(54, 59, 68, 0.72);
+  color: rgba(245, 246, 248, 0.96);
+  font-size: 11px;
+  font-weight: 700;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  box-shadow:
+    0 1px 2px rgba(0, 0, 0, 0.24),
+    0 3px 10px rgba(0, 0, 0, 0.18),
+    inset 0 1px 0 rgba(255, 255, 255, 0.14);
+  backdrop-filter: blur(10px) saturate(1.06);
+  -webkit-backdrop-filter: blur(10px) saturate(1.06);
+  text-decoration: none;
+  box-sizing: border-box;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+}
+a.sports-chip:focus-visible,
+a.masthead-sports__chip:focus-visible {
+  outline: 2px solid color-mix(in srgb, var(--sports-tone, #6c2163) 70%, #fff);
+  outline-offset: 2px;
+}
+.masthead--illustrated .sports-chip,
+.masthead--illustrated .masthead-sports__chip {
+  border-color: rgba(255, 255, 255, 0.14);
+  background:
+    linear-gradient(90deg, color-mix(in srgb, var(--sports-tone, var(--sports-brand, #6c2163)) 28%, transparent) 0%, transparent 55%),
+    rgba(22, 24, 30, 0.82);
+}
+:root[data-theme="dark"] .sports-chip,
+:root[data-theme="dark"] .masthead-sports__chip {
+  border-color: rgba(255, 255, 255, 0.14);
+  background:
+    linear-gradient(90deg, color-mix(in srgb, var(--sports-tone, var(--sports-brand, #6c2163)) 26%, transparent) 0%, transparent 55%),
+    rgba(22, 24, 30, 0.88);
+}
+.sports-chip__glyph {
+  flex: 0 0 auto;
+  font-size: 13px;
+  line-height: 1;
+}
+.sports-chip__line {
+  flex: 1 1 auto;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  letter-spacing: 0.02em;
+  color: rgba(245, 246, 248, 0.96);
+}
+.sports-chip__code,
+.sports-chip__opp {
+  font-weight: 800;
+}
+.sports-chip__score {
+  font-variant-numeric: tabular-nums;
+  color: #fff;
+  font-weight: 800;
+}
+.sports-chip__vs {
+  opacity: 0.75;
+  font-weight: 650;
+}
+.sports-chip[data-fictional="true"]::after {
+  content: '';
+  /* marqueur visuel léger : pas de libellé « démo » dans la puce (trop large) */
+}
+
 .masthead-tools { display: flex; gap: 7px; align-items: center; }
 .masthead-tool {
   width: 32px;
@@ -1512,8 +1638,12 @@ a.masthead-weather__city:focus-visible {
   }
   .masthead-utility { grid-template-columns: 1fr auto; padding-bottom: 8px; }
   .masthead--illustrated .masthead-utility { padding-bottom: 4px; }
-  /* Météo dockée sous la radio : hors du mât pour libérer la place. */
-  .masthead-weather:not(.masthead-weather--docked) {
+  /* Météo + sports dockés sous la radio : hors du mât pour libérer la place. */
+  .masthead-status:not(.masthead-status--docked) {
+    display: none !important;
+  }
+  /* Repli si la météo n’est pas dans .masthead-status (template minimal). */
+  .masthead-utility > .masthead-weather:not(.masthead-weather--docked) {
     display: none !important;
   }
   .masthead-tools { grid-column: 2; grid-row: 1; gap: 4px; }
@@ -1577,6 +1707,8 @@ a.masthead-weather__city:focus-visible {
   .masthead-tools,
   .masthead-clock,
   .masthead-weather,
+  .masthead-sports,
+  .masthead-status,
   .masthead-weather-dock,
   .masthead-background,
   .masthead-background-shade,

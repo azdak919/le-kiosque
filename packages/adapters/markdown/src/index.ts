@@ -35,6 +35,11 @@ import {
   type SourceAttribution,
   type Tag,
   type Taxonomies,
+  type MastheadSports,
+  type SportsGame,
+  type SportsGameResult,
+  type SportsNextGame,
+  type SportsTeam,
   type WeatherLocality,
 } from '../../../core/src/model.ts';
 import type {
@@ -115,6 +120,103 @@ function list(v: unknown): string[] {
   if (Array.isArray(v)) return v.map(str).filter((x): x is string => Boolean(x));
   const one = str(v);
   return one ? [one] : [];
+}
+
+const SPORTS_RESULTS = new Set<SportsGameResult>(['W', 'L', 'D', 'T']);
+
+function sportsGameResult(v: unknown): SportsGameResult | undefined {
+  const raw = str(v)?.toUpperCase();
+  if (!raw) return undefined;
+  return SPORTS_RESULTS.has(raw as SportsGameResult) ? (raw as SportsGameResult) : undefined;
+}
+
+function sportsTeam(v: unknown): SportsTeam | undefined {
+  if (!v || typeof v !== 'object') return undefined;
+  const rec = v as Record<string, unknown>;
+  const id = str(rec.id);
+  const name = str(rec.name);
+  const code = str(rec.code);
+  const sport = str(rec.sport);
+  if (!id || !name || !code || !sport) return undefined;
+  const colorsRaw = rec.colors && typeof rec.colors === 'object'
+    ? rec.colors as Record<string, unknown>
+    : undefined;
+  return {
+    id,
+    name,
+    code: code.toUpperCase().slice(0, 4),
+    institution: str(rec.institution),
+    sport,
+    sportLabel: str(rec.sportLabel),
+    sex: str(rec.sex),
+    fictional: rec.fictional === undefined ? undefined : Boolean(rec.fictional),
+    note: str(rec.note),
+    colors: colorsRaw
+      ? {
+          primary: str(colorsRaw.primary),
+          secondary: str(colorsRaw.secondary),
+        }
+      : undefined,
+  };
+}
+
+function sportsGame(v: unknown): SportsGame | undefined {
+  if (!v || typeof v !== 'object') return undefined;
+  const rec = v as Record<string, unknown>;
+  const date = str(rec.date);
+  const opponent = str(rec.opponent);
+  const result = sportsGameResult(rec.result);
+  const scoreFor = finiteNumber(rec.scoreFor);
+  const scoreAgainst = finiteNumber(rec.scoreAgainst);
+  if (!date || !opponent || !result || scoreFor === undefined || scoreAgainst === undefined) {
+    return undefined;
+  }
+  return {
+    date,
+    opponent,
+    opponentCode: str(rec.opponentCode)?.toUpperCase().slice(0, 4),
+    opponentInstitution: str(rec.opponentInstitution),
+    home: rec.home === undefined ? undefined : Boolean(rec.home),
+    scoreFor,
+    scoreAgainst,
+    result,
+    sport: str(rec.sport),
+    competition: str(rec.competition),
+    note: str(rec.note),
+  };
+}
+
+function sportsNextGame(v: unknown): SportsNextGame | undefined {
+  if (!v || typeof v !== 'object') return undefined;
+  const rec = v as Record<string, unknown>;
+  const date = str(rec.date);
+  const opponent = str(rec.opponent);
+  if (!date || !opponent) return undefined;
+  return {
+    date,
+    time: str(rec.time),
+    opponent,
+    opponentCode: str(rec.opponentCode)?.toUpperCase().slice(0, 4),
+    home: rec.home === undefined ? undefined : Boolean(rec.home),
+    competition: str(rec.competition),
+  };
+}
+
+function mastheadSports(v: unknown): MastheadSports | undefined {
+  if (!v || typeof v !== 'object') return undefined;
+  const rec = v as Record<string, unknown>;
+  const team = sportsTeam(rec.team);
+  if (!team) return undefined;
+  const results = Array.isArray(rec.results)
+    ? rec.results.map(sportsGame).filter((g): g is SportsGame => Boolean(g))
+    : [];
+  return {
+    enabled: rec.enabled === undefined ? true : Boolean(rec.enabled),
+    team,
+    results,
+    nextGame: sportsNextGame(rec.nextGame),
+    href: str(rec.href),
+  };
 }
 
 /** Localités météo : string ou objet { name, latitude, longitude, … }. */
@@ -313,6 +415,7 @@ export class MarkdownSource implements ContentSource<MarkdownConfig> {
     const masthead = (raw.masthead ?? {}) as Record<string, unknown>;
     const backgrounds = (masthead.backgrounds ?? {}) as Record<string, unknown>;
     const weather = (masthead.weather ?? {}) as Record<string, unknown>;
+    const sports = mastheadSports(masthead.sports);
     const tools = (masthead.tools ?? {}) as Record<string, unknown>;
     const attribution = this.#attribution('publication.yml');
 
@@ -351,6 +454,7 @@ export class MarkdownSource implements ContentSource<MarkdownConfig> {
               enabled: weather.enabled === undefined ? false : Boolean(weather.enabled),
               localities: weatherLocalities(weather.localities),
             },
+            ...(sports ? { sports } : {}),
             tools: {
               pomodoro: tools.pomodoro === undefined ? true : Boolean(tools.pomodoro),
               solitaire: tools.solitaire === undefined ? true : Boolean(tools.solitaire),

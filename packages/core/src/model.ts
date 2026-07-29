@@ -253,6 +253,66 @@ export type WeatherLocality = string | {
   osmId?: string | number;
 };
 
+/** Issue d’un match (W/L/D ; T accepté comme synonyme de nul). */
+export type SportsGameResult = 'W' | 'L' | 'D' | 'T';
+
+/** Un match passé (scores figés dans le miroir pour la démo ou un bot). */
+export interface SportsGame {
+  /** Date calendaire AAAA-MM-JJ. */
+  date: string;
+  opponent: string;
+  opponentCode?: string;
+  opponentInstitution?: string;
+  home?: boolean;
+  scoreFor: number;
+  scoreAgainst: number;
+  result: SportsGameResult;
+  sport?: string;
+  competition?: string;
+  note?: string;
+}
+
+/** Identité d’une équipe affichée dans le mât (réelle RSEQ ou fictive démo). */
+export interface SportsTeam {
+  id: string;
+  name: string;
+  /** Code court 2–4 lettres (puce mât). */
+  code: string;
+  institution?: string;
+  sport: string;
+  sportLabel?: string;
+  sex?: string;
+  colors?: { primary?: string; secondary?: string };
+  /** true = hors RSEQ, données de démonstration uniquement. */
+  fictional?: boolean;
+  note?: string;
+}
+
+/** Prochain match planifié (sans score). */
+export interface SportsNextGame {
+  date: string;
+  time?: string;
+  opponent: string;
+  opponentCode?: string;
+  home?: boolean;
+  competition?: string;
+}
+
+/**
+ * Scoreboard du mât : une équipe « maison » + résultats embarqués.
+ * En production réelle, un bot RSEQ peut remplir `results` ; en démo
+ * Kiosque, l’équipe et les scores sont fictifs et versionnés.
+ */
+export interface MastheadSports {
+  enabled?: boolean;
+  team: SportsTeam;
+  /** Matchs joués, du plus récent au plus ancien de préférence. */
+  results?: SportsGame[];
+  nextGame?: SportsNextGame;
+  /** Lien optionnel (section sports, page équipe…). */
+  href?: string;
+}
+
 /** Le journal lui-même. */
 export interface Publication {
   id: ID;
@@ -290,6 +350,11 @@ export interface Publication {
        */
       localities: WeatherLocality[];
     };
+    /**
+     * Résultats sportifs (puce à droite de la météo).
+     * Démo : équipe fictive versionnée. Prod : bot RSEQ + sélecteur d’équipe.
+     */
+    sports?: MastheadSports;
     tools?: {
       pomodoro?: boolean;
       solitaire?: boolean;

@@ -85,9 +85,11 @@ test('demo et template reçoivent le même theme.css / kiosque.js (packages/them
   assert.match(demoJs, /function applyTheme/, 'bascule thème présente');
   // Mobile UX (7 points) : dock météo, nav peek, volume overlay.
   assert.match(demoJs, /setMastheadWeatherDocked/, 'dock météo mobile');
+  assert.match(demoJs, /initMastheadSports/, 'puce sports mât');
   assert.match(demoJs, /initNavCollapse/, 'nav collapse + peek');
   assert.match(demoJs, /is-vol-overlay/, 'volume popover sans poussée layout');
   assert.match(demoCss, /masthead-weather-dock/, 'styles dock météo');
+  assert.match(demoCss, /\.sports-chip/, 'styles puce sports');
   assert.match(demoCss, /\.nav-shell\.has-overflow/, 'styles nav peek');
   assert.match(demoCss, /--lead-title-size/, 'titre une ≤ wordmark (token)');
 
@@ -100,6 +102,9 @@ test('demo et template reçoivent le même theme.css / kiosque.js (packages/them
   assert.match(tplHome, /id="theme-toggle"/);
   assert.match(demoHome, /id="masthead-weather-dock"/, 'emplacement dock météo');
   assert.match(tplHome, /id="masthead-weather-dock"/);
+  assert.match(demoHome, /data-sports-payload/, 'équipe sports démo embarquée');
+  assert.match(demoHome, /Les Quorums/, 'équipe fictive Les Quorums');
+  assert.match(demoHome, /code&quot;:&quot;QUO&quot;|"code":"QUO"/, 'code équipe QUO');
   assert.match(demoHome, /data-nav-shell/, 'shell nav mobile');
   assert.match(tplHome, /data-nav-shell/);
   assert.match(demoHome, /data-nav-toggle/, 'bouton Toutes les rubriques');
@@ -117,7 +122,7 @@ test('demo et template reçoivent le même theme.css / kiosque.js (packages/them
     'intro équipe reformulée',
   );
   const seed = await readFile(path.join(demo.out, 'assets/editorial/seed.json'), 'utf8');
-  assert.match(seed, /"version":\s*4/, 'seed démo v4 (bios sans disclaimers fictifs)');
+  assert.match(seed, /"version":\s*5/, 'seed démo v5 (puce sports Les Quorums)');
   const demoBackend = await readFile(path.join(demo.out, 'assets/editorial/demo-backend.js'), 'utf8');
   assert.match(demoBackend, /#refreshUnmodifiedDemo|refreshUnmodifiedDemo/, 'upgrade seed local sans perdre les éditions');
 });

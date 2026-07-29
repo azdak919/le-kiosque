@@ -173,9 +173,9 @@ function radioTuner(ctx: RenderContext): string {
 </radar-tuner>`;
 }
 
-/** Emplacement sous le tuner pour dock météo mobile (rempli en JS). */
+/** Emplacement sous le tuner pour dock météo + sports mobile (rempli en JS). */
 function weatherDockHtml(): string {
-  return `<div class="masthead-weather-dock" id="masthead-weather-dock" hidden></div>`;
+  return `<div class="masthead-weather-dock" id="masthead-weather-dock" hidden aria-label="Météo et sports"></div>`;
 }
 
 /** Icônes du mât — mêmes tracés que LE-RADAR (index.html). */
@@ -220,6 +220,18 @@ function mastheadBackground(ctx: RenderContext, options: MastheadOptions): strin
   <script type="application/json" id="masthead-backgrounds">${JSON.stringify(manifest).replace(/</g, '\\u003c')}</script>`;
 }
 
+function sportsPayload(ctx: RenderContext): string {
+  const sports = ctx.publication.masthead?.sports;
+  if (!sports || sports.enabled === false || !sports.team) return '';
+  const payload = {
+    team: sports.team,
+    results: sports.results ?? [],
+    nextGame: sports.nextGame ?? null,
+    href: sports.href ? asset(sports.href, ctx) : '',
+  };
+  return `<div class="masthead-sports" data-sports-payload="${esc(JSON.stringify(payload))}" aria-label="Résultat sportif" aria-live="polite"></div>`;
+}
+
 function mastheadTools(ctx: RenderContext, current?: string): string {
   const masthead = ctx.publication.masthead;
   const weather = masthead?.weather;
@@ -228,11 +240,17 @@ function mastheadTools(ctx: RenderContext, current?: string): string {
   const localities = weather?.enabled === false ? [] : (weather?.localities ?? []);
   const assetsBase = asset('/assets/', ctx);
   const homeHref = asset('/', ctx);
+  const sportsHtml = sportsPayload(ctx);
   const button = (href: string, label: string, glyph: string, extraClass = '', currentPage = false) =>
     `<a class="masthead-tool${extraClass ? ` ${extraClass}` : ''}" href="${safeUrl(href)}" aria-label="${esc(label)}" title="${esc(label)}"${currentPage ? ' aria-current="page"' : ''}>${glyph}</a>`;
   return `<div class="masthead-utility">
     <p class="masthead-clock"><span data-masthead-date></span><time data-masthead-time></time></p>
+    ${localities.length || sportsHtml
+      ? `<div class="masthead-status" data-masthead-status>
     ${localities.length ? `<div class="masthead-weather" data-weather-localities="${esc(JSON.stringify(localities))}" data-meteocons-base="${esc(asset('/assets/meteocons/animated/', ctx))}" aria-label="Météo"></div>` : ''}
+    ${sportsHtml}
+  </div>`
+      : ''}
     <div class="masthead-tools">
       ${button(homeHref, 'Accueil', icon('home', assetsBase), 'masthead-home', current === homeHref)}
       ${button(asset('/feed.xml', ctx), 'Flux RSS', icon('rss', assetsBase), 'masthead-rss')}

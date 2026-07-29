@@ -219,11 +219,46 @@ export function applyBranding(bundle, base) {
     masthead.prepend(image, shade); masthead.append(credit, manifest);
   }
   const weather = publication.masthead?.weather;
+  const sports = publication.masthead?.sports;
+  let statusHost = document.querySelector('[data-masthead-status]');
   let weatherHost = document.querySelector('.masthead-weather');
-  if (weather?.enabled && weather.localities?.length) {
-    if (!weatherHost) { weatherHost = document.createElement('div'); weatherHost.className = 'masthead-weather'; document.querySelector('.masthead-tools')?.before(weatherHost); }
-    weatherHost.dataset.weatherLocalities = JSON.stringify(weather.localities.slice(0, 4));
-  } else weatherHost?.remove();
+  let sportsHost = document.querySelector('.masthead-sports');
+  const needWeather = Boolean(weather?.enabled && weather.localities?.length);
+  const needSports = Boolean(sports?.enabled !== false && sports?.team);
+  if (needWeather || needSports) {
+    if (!statusHost) {
+      statusHost = document.createElement('div');
+      statusHost.className = 'masthead-status';
+      statusHost.dataset.mastheadStatus = '';
+      document.querySelector('.masthead-tools')?.before(statusHost);
+    }
+    if (needWeather) {
+      if (!weatherHost || !statusHost.contains(weatherHost)) {
+        weatherHost = document.createElement('div');
+        weatherHost.className = 'masthead-weather';
+        statusHost.prepend(weatherHost);
+      }
+      weatherHost.dataset.weatherLocalities = JSON.stringify(weather.localities.slice(0, 4));
+    } else weatherHost?.remove();
+    if (needSports) {
+      if (!sportsHost || !statusHost.contains(sportsHost)) {
+        sportsHost = document.createElement('div');
+        sportsHost.className = 'masthead-sports';
+        statusHost.append(sportsHost);
+      }
+      sportsHost.dataset.sportsPayload = JSON.stringify({
+        team: sports.team,
+        results: sports.results || [],
+        nextGame: sports.nextGame || null,
+        href: sports.href || '',
+      });
+      sportsHost.setAttribute('aria-label', 'Résultat sportif');
+    } else sportsHost?.remove();
+  } else {
+    statusHost?.remove();
+    weatherHost?.remove();
+    sportsHost?.remove();
+  }
   document.querySelector('a[href="https://le-radar.ca/pomo/"]')?.toggleAttribute('hidden', publication.masthead?.tools?.pomodoro === false);
   document.querySelector('a[href="https://le-radar.ca/solitaire/"]')?.toggleAttribute('hidden', publication.masthead?.tools?.solitaire === false);
   const nav = document.querySelector('.nav');

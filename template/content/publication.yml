@@ -28,6 +28,12 @@ masthead:
   weather:
     enabled: false
     localities: [] # Un simple nom, ex. Québec; quatre maximum.
+  # Puce scoreboard (style météo ardoise) à côté de la météo.
+  # Démo Quorum : équipe fictive « Les Quorums ». Ici : désactivé par défaut.
+  # Pour activer : enabled true + team (id, name, code, sport) + results[]
+  # (matchs W/L/D) ou nextGame. Lien optionnel vers /sections/sports/.
+  sports:
+    enabled: false
   tools:
     pomodoro: true
     solitaire: true

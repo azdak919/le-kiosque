@@ -86,6 +86,10 @@ test('la vitrine expose le bandeau illustré, les outils et la composition magaz
   assert.equal(weatherName, 'Québec');
   assert.equal(content.publication.masthead?.tools?.pomodoro, true);
   assert.equal(content.publication.masthead?.tools?.solitaire, true);
+  assert.equal(content.publication.masthead?.sports?.team?.name, 'Les Quorums');
+  assert.equal(content.publication.masthead?.sports?.team?.code, 'QUO');
+  assert.equal(content.publication.masthead?.sports?.team?.fictional, true);
+  assert.ok((content.publication.masthead?.sports?.results?.length ?? 0) >= 1);
 
   const result = await build({ config: config({ editorial: { mode: 'demo-local' } }), bundle: content, outDir: out, logger: silent });
   assert.equal(result.articles, 40);
@@ -93,6 +97,8 @@ test('la vitrine expose le bandeau illustré, les outils et la composition magaz
   const feed = await readFile(path.join(out, 'feed.xml'), 'utf8');
   assert.match(home, /id="masthead-backgrounds"/);
   assert.match(home, /data-weather-localities="/);
+  assert.match(home, /data-sports-payload="/);
+  assert.match(home, /Les Quorums/);
   assert.match(home, /Qu&eacute;bec|Québec/);
   assert.match(home, /href="https:\/\/le-radar\.ca\/pomo\/"/);
   assert.match(home, /href="https:\/\/le-radar\.ca\/solitaire\/"/);

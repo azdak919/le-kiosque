@@ -159,6 +159,64 @@ masthead:
         latitude: 46.8139
         longitude: -71.2080
         meteomediaSlug: quebec
+  # Scoreboard mât — équipe et adversaires 100 % fictifs (démonstration).
+  # Hors RSEQ : le bot réel brancherait s1.rseq.ca ; ici tout est embarqué.
+  sports:
+    enabled: true
+    href: /sections/sports/
+    team:
+      id: demo-quorums-volley
+      name: Les Quorums
+      code: QUO
+      institution: Cégep du Quorum
+      sport: volleyball
+      sportLabel: Volleyball
+      sex: F
+      fictional: true
+      colors:
+        primary: '#6c2163'
+        secondary: '#f4e8f2'
+      note: >-
+        Équipe fictive du journal de démonstration Le Quorum.
+        Aucun lien avec une formation RSEQ réelle.
+    results:
+      - date: '2026-09-18'
+        opponent: Les Motions
+        opponentCode: MOT
+        opponentInstitution: Cégep de la Plénière
+        home: true
+        scoreFor: 3
+        scoreAgainst: 1
+        result: W
+        sport: volleyball
+        competition: Préparatoire intercégeps (démo)
+      - date: '2026-09-11'
+        opponent: Les Scrutins
+        opponentCode: SCR
+        opponentInstitution: Collège du Bulletin
+        home: false
+        scoreFor: 1
+        scoreAgainst: 3
+        result: L
+        sport: volleyball
+        competition: Préparatoire intercégeps (démo)
+      - date: '2026-09-04'
+        opponent: Les Urnes
+        opponentCode: URN
+        opponentInstitution: Cégep de l’Assemblée
+        home: true
+        scoreFor: 3
+        scoreAgainst: 2
+        result: W
+        sport: volleyball
+        competition: Match hors concours (démo)
+    nextGame:
+      date: '2026-10-02'
+      time: '19:00'
+      opponent: Les Majoritaires
+      opponentCode: MAJ
+      home: true
+      competition: Ouverture de saison fictive
   tools:
     pomodoro: true
     solitaire: true

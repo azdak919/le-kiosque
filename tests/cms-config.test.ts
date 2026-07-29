@@ -169,6 +169,8 @@ test('les options visuelles du masthead sont déclarées dans le CMS', async () 
   const names = new Set(masthead?.fields?.map((field) => field.name));
   assert.ok(names.has('overlayStrength'));
   assert.ok(names.has('textAlignment'));
+  assert.ok(names.has('sports'), 'scoreboard mât configurable pour les journaux clients');
+  assert.ok(names.has('weather'));
 });
 
 test('le champ body est en dernier — il représente tout ce qui suit le front-matter', async () => {
