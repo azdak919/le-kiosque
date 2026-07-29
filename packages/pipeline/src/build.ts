@@ -368,7 +368,7 @@ export async function build(options: BuildOptions): Promise<BuildResult> {
     pages++;
   }
 
-  // Résultats sportifs (puce mât) — page dédiée, lisible sans JS.
+  // Au tableau (puce mât) — page scores / prochains matchs, lisible sans JS.
   const sportsCfg = bundle.publication.masthead?.sports;
   const sportsTeams = sportsCfg?.teams?.length
     ? sportsCfg.teams
@@ -411,7 +411,7 @@ export async function build(options: BuildOptions): Promise<BuildResult> {
       <ul>
         <li><a href="${basePath}/archives/">Archives</a> — registre chronologique complet</li>
         ${sportsCfg && sportsCfg.enabled !== false && sportsTeams.length
-          ? `<li><a href="${basePath}/sports/">Résultats sportifs</a> — tableau de bord des formations</li>`
+          ? `<li><a href="${basePath}/sports/">Au tableau</a> — scores et prochains matchs</li>`
           : ''}
         ${listed.map((a) => `<li><a href="${basePath}/articles/${esc(a.slug)}/">${esc(a.title)}</a></li>`).join('\n        ')}
       </ul>

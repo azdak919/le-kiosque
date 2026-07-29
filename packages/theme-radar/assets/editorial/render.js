@@ -168,8 +168,8 @@ export function renderRoute(bundle, base, pathname, renderBody) {
         ? `<div class="sports-articles"><div class="wire-head"><h2 class="wire-title">Dans le journal</h2><span class="wire-status">${sportsArticles.length} article${sportsArticles.length > 1 ? 's' : ''}</span></div>${magazineFeedHtml(sportsArticles, bundle, base, 'Sports', 'Aucun article.')}</div>`
         : `<p class="section-intro"><a data-editorial-link href="${link(base, '/sections/sports/')}">Section Sports</a></p>`;
       return {
-        title: `Résultats sportifs — ${bundle.publication.name}`,
-        html: `<div class="wrap wire wire--sports"><div class="wire-head"><h1 class="wire-title">Résultats sportifs</h1><span class="wire-status">${teams.length} formation${teams.length > 1 ? 's' : ''}</span></div><p class="section-intro">Tableau de bord des formations — inspiré des grilles horaires LE-RADAR.</p><p class="sports-board-meta">Scores embarqués · adversaires RSEQ collégial · formations maison fictives (démo)</p><div class="sports-board-scroll"><div class="sports-board">${panels}</div></div><p class="sports-board-note">Résultats figés dans le dépôt ; mise à jour via la configuration du mât.</p>${feed}</div>`,
+        title: `Au tableau — ${bundle.publication.name}`,
+        html: `<div class="wrap wire wire--sports"><div class="wire-head"><h1 class="wire-title">Au tableau</h1><span class="wire-status">${teams.length} formation${teams.length > 1 ? 's' : ''}</span></div><p class="section-intro">Scores et prochains matchs — le tableau d’affichage du campus.</p><p class="sports-board-meta">Données embarquées · adversaires RSEQ collégial · formations maison fictives (démo)</p><div class="sports-board-scroll"><div class="sports-board">${panels}</div></div><p class="sports-board-note">Tableau figé dans le dépôt ; mise à jour via la configuration du mât.</p>${feed}</div>`,
       };
     }
   }
@@ -308,7 +308,7 @@ export function applyBranding(bundle, base) {
         nextGames: sports.nextGames || [],
         href: sports.href || '',
       });
-      sportsHost.setAttribute('aria-label', 'Résultats sportifs');
+      sportsHost.setAttribute('aria-label', 'Au tableau — scores et matchs');
     } else sportsHost?.remove();
   } else {
     statusHost?.remove();

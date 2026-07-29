@@ -248,7 +248,7 @@ function sportsPayload(ctx: RenderContext): string {
     nextGames: sports.nextGames ?? [],
     href: sportsPagePath(sports, ctx),
   };
-  return `<div class="masthead-sports" data-sports-payload="${esc(JSON.stringify(payload))}" aria-label="Résultats sportifs" aria-live="polite"></div>`;
+  return `<div class="masthead-sports" data-sports-payload="${esc(JSON.stringify(payload))}" aria-label="Au tableau — scores et matchs" aria-live="polite"></div>`;
 }
 
 function sportsGlyphHtml(sport: string): string {
@@ -336,12 +336,12 @@ export function sportsResultsPage(ctx: RenderContext, sportsArticles: Article[] 
   if (!sports || !teams.length) {
     return page(
       `<div class="wrap wire">
-      <div class="wire-head"><h1 class="wire-title">Résultats sportifs</h1></div>
-      <p class="section-intro">Aucun scoreboard n’est configuré pour ce journal.</p>
+      <div class="wire-head"><h1 class="wire-title">Au tableau</h1></div>
+      <p class="section-intro">Aucun score n’est encore affiché pour ce journal.</p>
       <p><a href="${asset('/sections/sports/', ctx)}">Voir la section Sports</a></p>
     </div>`,
       {
-        title: `Résultats sportifs — ${ctx.publication.name}`,
+        title: `Au tableau — ${ctx.publication.name}`,
         canonical: `${ctx.publication.siteUrl.replace(/\/+$/, '')}/sports/`,
         current: asset('/sports/', ctx),
       },
@@ -379,22 +379,22 @@ export function sportsResultsPage(ctx: RenderContext, sportsArticles: Article[] 
   return page(
     `<div class="wrap wire wire--sports">
       <div class="wire-head">
-        <h1 class="wire-title">Résultats sportifs</h1>
+        <h1 class="wire-title">Au tableau</h1>
         <span class="wire-status">${teams.length} formation${teams.length > 1 ? 's' : ''}</span>
       </div>
-      <p class="section-intro">Tableau de bord des formations du ${esc(ctx.publication.institution)} — inspiré des grilles horaires LE-RADAR, adapté au journal étudiant.</p>
-      <p class="sports-board-meta">Scores embarqués dans le site · adversaires nommés d’après des clubs RSEQ collégial · les formations maison de la démo sont fictives</p>
+      <p class="section-intro">Scores et prochains matchs des formations du ${esc(ctx.publication.institution)} — le tableau d’affichage du campus, en une page.</p>
+      <p class="sports-board-meta">Données embarquées · adversaires RSEQ collégial · formations maison fictives (démonstration)</p>
       <div class="sports-board-scroll">
         <div class="sports-board" role="list">
           ${panels}
         </div>
       </div>
-      <p class="sports-board-note">Les résultats affichés ici sont figés dans le dépôt (pas de fil en direct). Une équipe rédactionnelle peut les mettre à jour dans la configuration du mât, ou brancher plus tard un bot RSEQ.</p>
+      <p class="sports-board-note">Ce tableau est figé dans le dépôt (pas de fil en direct). La rédaction le met à jour dans la configuration du mât ; un bot RSEQ pourra s’y brancher plus tard.</p>
       ${feed}
     </div>`,
     {
-      title: `Résultats sportifs — ${ctx.publication.name}`,
-      description: `Résultats et prochains matchs des formations du ${ctx.publication.institution}.`,
+      title: `Au tableau — ${ctx.publication.name}`,
+      description: `Au tableau : scores et prochains matchs des formations du ${ctx.publication.institution}.`,
       canonical: `${ctx.publication.siteUrl.replace(/\/+$/, '')}/sports/`,
       current: asset('/sports/', ctx),
     },

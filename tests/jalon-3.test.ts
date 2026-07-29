@@ -106,7 +106,7 @@ test('la vitrine expose le bandeau illustré, les outils et la composition magaz
   assert.match(home, /Les Quorums/);
   assert.match(home, /\/sports\//, 'puce sports pointe vers la page résultats');
   const sportsPage = await readFile(path.join(out, 'sports/index.html'), 'utf8');
-  assert.match(sportsPage, /Résultats sportifs|Resultats sportifs/);
+  assert.match(sportsPage, /Au tableau/);
   assert.match(sportsPage, /sports-board/);
   assert.match(sportsPage, /sports-panel/);
   assert.match(sportsPage, /Boomerang|Titans|Cheetahs/);
