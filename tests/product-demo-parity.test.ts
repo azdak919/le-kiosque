@@ -122,10 +122,14 @@ test('demo et template reçoivent le même theme.css / kiosque.js (packages/them
     'intro équipe reformulée',
   );
   const seed = await readFile(path.join(demo.out, 'assets/editorial/seed.json'), 'utf8');
-  assert.match(seed, /"version":\s*6/, 'seed démo v6 (publication + sports re-sync)');
+  assert.match(seed, /"version":\s*7/, 'seed démo v7 (multi-sports + rotation)');
   assert.match(seed, /Les Quorums/, 'seed embarque l’équipe sports');
+  assert.match(seed, /Les Bulletins|Les Motions|Les Urnes/, 'plusieurs formations fictives');
   const demoBackend = await readFile(path.join(demo.out, 'assets/editorial/demo-backend.js'), 'utf8');
   assert.match(demoBackend, /#refreshUnmodifiedDemo|refreshUnmodifiedDemo/, 'upgrade seed local sans perdre les éditions');
   assert.match(demoBackend, /seed\.publication/, 'refresh seed met à jour publication (sports mât)');
   assert.match(demoJs, /KiosqueRefreshMasthead/, 're-paint sports après branding éditorial');
+  assert.match(demoJs, /SPORTS_ROTATE_MS|5200/, 'rotation sports ~5,2 s comme météo LE-RADAR');
+  assert.match(demoJs, /is-arriving/, 'animation gare sports');
+  assert.match(demoCss, /sports-tile-arrive/, 'keyframes arrivée scoreboard');
 });

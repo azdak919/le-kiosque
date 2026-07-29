@@ -623,6 +623,19 @@
     setMastheadWeatherDocked(shouldDock);
   }
 
+  /* Rotation scoreboard — mêmes repères que LE-RADAR météo (gare) :
+   * intervalle 5200 ms, deck brassé (Fisher–Yates), animation is-arriving. */
+  var SPORTS_ROTATE_MS = 5200;
+  var sportsPayloadCache = null;
+  var sportsSlides = [];
+  var sportsDeck = [];
+  var sportsTimer = null;
+  var sportsReducedMotion = false;
+  try {
+    sportsReducedMotion = !!(window.matchMedia
+      && window.matchMedia('(prefers-reduced-motion: reduce)').matches);
+  } catch (_) {}
+
   function sportsResultTone(result) {
     if (result === 'W') return '#3d9a6a';
     if (result === 'L') return '#c45c5c';
@@ -634,71 +647,108 @@
     var s = String(sport || '').toLowerCase();
     if (s.indexOf('basket') !== -1) return '🏀';
     if (s.indexOf('hockey') !== -1) return '🏒';
-    if (s.indexOf('soccer') !== -1 || s.indexOf('foot') !== -1 && s.indexOf('flag') === -1) return '⚽';
-    if (s.indexOf('flag') !== -1) return '🏈';
+    if (s.indexOf('soccer') !== -1 || (s.indexOf('foot') !== -1 && s.indexOf('flag') === -1)) return '⚽';
+    if (s.indexOf('flag') !== -1 || s.indexOf('football') !== -1) return '🏈';
     if (s.indexOf('volley') !== -1) return '🏐';
+    if (s.indexOf('cross') !== -1 || s.indexOf('athl') !== -1) return '🏃';
     return '🏅';
   }
 
-  function pickSportsDisplay(payload) {
-    var results = Array.isArray(payload.results) ? payload.results.slice() : [];
-    results.sort(function (a, b) {
-      return String(b.date || '').localeCompare(String(a.date || ''));
-    });
-    var last = results[0] || null;
-    if (last) {
-      return {
-        mode: 'result',
-        game: last,
-        tone: sportsResultTone(last.result),
-      };
+  function shuffleSportsDeck(items) {
+    var shuffled = items.slice();
+    for (var i = shuffled.length - 1; i > 0; i -= 1) {
+      var j = Math.floor(Math.random() * (i + 1));
+      var tmp = shuffled[i];
+      shuffled[i] = shuffled[j];
+      shuffled[j] = tmp;
     }
-    if (payload.nextGame) {
-      return {
-        mode: 'next',
-        game: payload.nextGame,
-        tone: (payload.team && payload.team.colors && payload.team.colors.primary) || '#6c2163',
-      };
-    }
-    return null;
+    return shuffled;
   }
 
-  function initMastheadSports() {
-    var host = document.querySelector('.masthead-sports[data-sports-payload]');
-    if (!host) return;
-    var payload;
-    try {
-      /* dataset décode les entités HTML (&quot; → ") du SSR. */
-      payload = JSON.parse(host.getAttribute('data-sports-payload') || host.dataset.sportsPayload || 'null');
-    } catch (_) {
-      payload = null;
-    }
-    if (!payload || !payload.team) {
-      host.remove();
-      return;
-    }
-    var display = pickSportsDisplay(payload);
-    if (!display) {
-      host.remove();
-      return;
-    }
+  function sportsTeamList(payload) {
+    if (Array.isArray(payload.teams) && payload.teams.length) return payload.teams;
+    if (payload.team) return [payload.team];
+    return [];
+  }
 
-    /* Idempotent : re-remplit après applyBranding / seed PGlite. */
+  function buildSportsSlides(payload) {
+    var teams = sportsTeamList(payload);
+    if (!teams.length) return [];
+    var byId = {};
+    teams.forEach(function (t) { byId[t.id] = t; });
+    var slides = [];
+    var globalResults = Array.isArray(payload.results) ? payload.results : [];
+
+    teams.forEach(function (team) {
+      var nested = Array.isArray(team.results) ? team.results : [];
+      var fromGlobal = globalResults.filter(function (g) {
+        return !g.teamId || g.teamId === team.id;
+      });
+      var merged = nested.concat(fromGlobal).slice().sort(function (a, b) {
+        return String(b.date || '').localeCompare(String(a.date || ''));
+      });
+      /* Jusqu’à 2 résultats récents par équipe pour la variance du deck. */
+      merged.slice(0, 2).forEach(function (game) {
+        slides.push({
+          mode: 'result',
+          team: team,
+          game: game,
+          tone: sportsResultTone(game.result),
+          key: 'r:' + team.id + ':' + game.date + ':' + (game.opponentCode || game.opponent),
+        });
+      });
+      var next = team.nextGame || null;
+      if (!next && payload.nextGame && (!payload.nextGame.teamId || payload.nextGame.teamId === team.id)) {
+        next = payload.nextGame;
+      }
+      if (!next && Array.isArray(payload.nextGames)) {
+        next = payload.nextGames.find(function (n) {
+          return !n.teamId || n.teamId === team.id;
+        }) || null;
+      }
+      if (next) {
+        slides.push({
+          mode: 'next',
+          team: team,
+          game: next,
+          tone: (team.colors && team.colors.primary) || '#6c2163',
+          key: 'n:' + team.id + ':' + next.date + ':' + (next.opponentCode || next.opponent),
+        });
+      }
+    });
+    return slides;
+  }
+
+  function refillSportsDeck(preferNotKey) {
+    var pool = sportsSlides.slice();
+    if (pool.length <= 1) {
+      sportsDeck = pool.slice();
+      return;
+    }
+    sportsDeck = shuffleSportsDeck(pool);
+    /* Évite de rejouer tout de suite la même carte après un cycle (variance). */
+    if (preferNotKey && sportsDeck.length > 1 && sportsDeck[0].key === preferNotKey) {
+      var swap = sportsDeck[1];
+      sportsDeck[1] = sportsDeck[0];
+      sportsDeck[0] = swap;
+    }
+  }
+
+  function paintSportsChip(host, display, animate) {
+    if (!host || !display) return;
     host.textContent = '';
-
-    var team = payload.team;
+    var team = display.team;
     var code = String(team.code || 'EQ').toUpperCase().slice(0, 4);
     var sport = display.game.sport || team.sport || '';
-    var href = payload.href || '';
+    var href = (sportsPayloadCache && sportsPayloadCache.href) || '';
     var chip = document.createElement(href ? 'a' : 'span');
     chip.className = 'sports-chip masthead-sports__chip';
+    if (animate && !sportsReducedMotion) chip.classList.add('is-arriving');
     chip.style.setProperty('--sports-tone', display.tone);
     if (team.colors && team.colors.primary) {
       chip.style.setProperty('--sports-brand', team.colors.primary);
     }
-    if (chip.tagName === 'A') {
-      chip.href = href;
-    }
+    if (chip.tagName === 'A') chip.href = href;
 
     var glyph = document.createElement('span');
     glyph.className = 'sports-chip__glyph';
@@ -718,33 +768,89 @@
         + ' <span class="sports-chip__score">' + score + '</span> '
         + '<span class="sports-chip__opp">' + oppCode + '</span>';
       var issue = g.result === 'W' ? 'Victoire' : g.result === 'L' ? 'Défaite' : 'Match nul';
-      aria = issue + ' des ' + team.name + ' : ' + g.scoreFor + ' à ' + g.scoreAgainst
-        + ' contre ' + g.opponent;
-      titleParts.push(issue + ' · ' + team.name + ' ' + score + ' ' + g.opponent);
+      aria = issue + ' des ' + team.name + ' (' + (team.sportLabel || sport) + ') : '
+        + g.scoreFor + ' à ' + g.scoreAgainst + ' contre ' + g.opponent;
+      titleParts.push(issue + ' · ' + team.name + ' · ' + (team.sportLabel || sport));
+      titleParts.push(score + ' ' + g.opponent);
       if (g.competition) titleParts.push(g.competition);
-      if (team.fictional) titleParts.push('Équipe fictive (démonstration)');
     } else {
       var n = display.game;
       var nextOpp = String(n.opponentCode || n.opponent || 'ADV').toUpperCase().slice(0, 4);
       line.innerHTML = '<span class="sports-chip__code">' + code + '</span>'
         + ' <span class="sports-chip__vs">vs</span> '
         + '<span class="sports-chip__opp">' + nextOpp + '</span>';
-      aria = 'Prochain match des ' + team.name + ' contre ' + n.opponent
-        + (n.date ? ' le ' + n.date : '');
-      titleParts.push('Prochain · ' + team.name + ' vs ' + n.opponent);
+      aria = 'Prochain match des ' + team.name + ' (' + (team.sportLabel || sport) + ') contre '
+        + n.opponent + (n.date ? ' le ' + n.date : '');
+      titleParts.push('Prochain · ' + team.name + ' · ' + (team.sportLabel || sport));
+      titleParts.push('vs ' + n.opponent);
       if (n.date) titleParts.push(n.date + (n.time ? ' ' + n.time : ''));
-      if (team.fictional) titleParts.push('Équipe fictive (démonstration)');
     }
+    if (team.fictional) titleParts.push('Équipe fictive (démonstration)');
 
     chip.title = titleParts.join(' · ');
     chip.setAttribute('aria-label', aria);
     if (team.fictional) chip.dataset.fictional = 'true';
+    chip.dataset.sportsKey = display.key || '';
 
     chip.appendChild(glyph);
     chip.appendChild(line);
     host.appendChild(chip);
     host.hidden = false;
+    if (animate && !sportsReducedMotion) {
+      window.setTimeout(function () {
+        chip.classList.remove('is-arriving');
+      }, 500);
+    }
+  }
+
+  function rotateSportsChip() {
+    var host = document.querySelector('.masthead-sports[data-sports-payload]');
+    if (!host || sportsSlides.length < 2) return;
+    if (!sportsDeck.length) {
+      var current = host.querySelector('.sports-chip');
+      refillSportsDeck(current && current.dataset.sportsKey);
+    }
+    var next = sportsDeck.shift();
+    if (!next) return;
+    paintSportsChip(host, next, true);
     syncMastheadWeatherDock();
+  }
+
+  function startSportsRotation() {
+    if (sportsTimer) {
+      window.clearInterval(sportsTimer);
+      sportsTimer = null;
+    }
+    if (sportsSlides.length < 2 || sportsReducedMotion) return;
+    sportsTimer = window.setInterval(rotateSportsChip, SPORTS_ROTATE_MS);
+  }
+
+  function initMastheadSports() {
+    var host = document.querySelector('.masthead-sports[data-sports-payload]');
+    if (!host) return;
+    var payload;
+    try {
+      payload = JSON.parse(host.getAttribute('data-sports-payload') || host.dataset.sportsPayload || 'null');
+    } catch (_) {
+      payload = null;
+    }
+    if (!payload) {
+      host.remove();
+      return;
+    }
+    sportsPayloadCache = payload;
+    sportsSlides = buildSportsSlides(payload);
+    if (!sportsSlides.length) {
+      host.remove();
+      sportsPayloadCache = null;
+      return;
+    }
+    /* Départ aléatoire (variance) — comme le brassage initial LE-RADAR. */
+    refillSportsDeck(null);
+    var first = sportsDeck.shift() || sportsSlides[0];
+    paintSportsChip(host, first, false);
+    syncMastheadWeatherDock();
+    startSportsRotation();
   }
 
   /** Appelé après applyBranding (front éditorial) pour peindre la puce sports. */

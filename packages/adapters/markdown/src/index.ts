@@ -130,36 +130,6 @@ function sportsGameResult(v: unknown): SportsGameResult | undefined {
   return SPORTS_RESULTS.has(raw as SportsGameResult) ? (raw as SportsGameResult) : undefined;
 }
 
-function sportsTeam(v: unknown): SportsTeam | undefined {
-  if (!v || typeof v !== 'object') return undefined;
-  const rec = v as Record<string, unknown>;
-  const id = str(rec.id);
-  const name = str(rec.name);
-  const code = str(rec.code);
-  const sport = str(rec.sport);
-  if (!id || !name || !code || !sport) return undefined;
-  const colorsRaw = rec.colors && typeof rec.colors === 'object'
-    ? rec.colors as Record<string, unknown>
-    : undefined;
-  return {
-    id,
-    name,
-    code: code.toUpperCase().slice(0, 4),
-    institution: str(rec.institution),
-    sport,
-    sportLabel: str(rec.sportLabel),
-    sex: str(rec.sex),
-    fictional: rec.fictional === undefined ? undefined : Boolean(rec.fictional),
-    note: str(rec.note),
-    colors: colorsRaw
-      ? {
-          primary: str(colorsRaw.primary),
-          secondary: str(colorsRaw.secondary),
-        }
-      : undefined,
-  };
-}
-
 function sportsGame(v: unknown): SportsGame | undefined {
   if (!v || typeof v !== 'object') return undefined;
   const rec = v as Record<string, unknown>;
@@ -183,6 +153,7 @@ function sportsGame(v: unknown): SportsGame | undefined {
     sport: str(rec.sport),
     competition: str(rec.competition),
     note: str(rec.note),
+    teamId: str(rec.teamId),
   };
 }
 
@@ -199,22 +170,68 @@ function sportsNextGame(v: unknown): SportsNextGame | undefined {
     opponentCode: str(rec.opponentCode)?.toUpperCase().slice(0, 4),
     home: rec.home === undefined ? undefined : Boolean(rec.home),
     competition: str(rec.competition),
+    teamId: str(rec.teamId),
+  };
+}
+
+function sportsTeam(v: unknown): SportsTeam | undefined {
+  if (!v || typeof v !== 'object') return undefined;
+  const rec = v as Record<string, unknown>;
+  const id = str(rec.id);
+  const name = str(rec.name);
+  const code = str(rec.code);
+  const sport = str(rec.sport);
+  if (!id || !name || !code || !sport) return undefined;
+  const colorsRaw = rec.colors && typeof rec.colors === 'object'
+    ? rec.colors as Record<string, unknown>
+    : undefined;
+  const nestedResults = Array.isArray(rec.results)
+    ? rec.results.map(sportsGame).filter((g): g is SportsGame => Boolean(g))
+    : undefined;
+  return {
+    id,
+    name,
+    code: code.toUpperCase().slice(0, 4),
+    institution: str(rec.institution),
+    sport,
+    sportLabel: str(rec.sportLabel),
+    sex: str(rec.sex),
+    fictional: rec.fictional === undefined ? undefined : Boolean(rec.fictional),
+    note: str(rec.note),
+    colors: colorsRaw
+      ? {
+          primary: str(colorsRaw.primary),
+          secondary: str(colorsRaw.secondary),
+        }
+      : undefined,
+    results: nestedResults?.length ? nestedResults : undefined,
+    nextGame: sportsNextGame(rec.nextGame),
   };
 }
 
 function mastheadSports(v: unknown): MastheadSports | undefined {
   if (!v || typeof v !== 'object') return undefined;
   const rec = v as Record<string, unknown>;
-  const team = sportsTeam(rec.team);
-  if (!team) return undefined;
+  const teamsFromList = Array.isArray(rec.teams)
+    ? rec.teams.map(sportsTeam).filter((t): t is SportsTeam => Boolean(t))
+    : [];
+  const single = sportsTeam(rec.team);
+  const teams = teamsFromList.length ? teamsFromList : (single ? [single] : []);
+  if (!teams.length) return undefined;
   const results = Array.isArray(rec.results)
     ? rec.results.map(sportsGame).filter((g): g is SportsGame => Boolean(g))
     : [];
+  const nextGames = Array.isArray(rec.nextGames)
+    ? rec.nextGames.map(sportsNextGame).filter((g): g is SportsNextGame => Boolean(g))
+    : [];
+  const nextGame = sportsNextGame(rec.nextGame);
   return {
     enabled: rec.enabled === undefined ? true : Boolean(rec.enabled),
-    team,
+    team: teams[0],
+    teams,
     results,
-    nextGame: sportsNextGame(rec.nextGame),
+    nextGame: nextGame ?? undefined,
+    nextGames: nextGames.length ? nextGames : undefined,
     href: str(rec.href),
   };
 }

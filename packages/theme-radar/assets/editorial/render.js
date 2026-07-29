@@ -224,7 +224,10 @@ export function applyBranding(bundle, base) {
   let weatherHost = document.querySelector('.masthead-weather');
   let sportsHost = document.querySelector('.masthead-sports');
   const needWeather = Boolean(weather?.enabled && weather.localities?.length);
-  const needSports = Boolean(sports?.enabled !== false && sports?.team);
+  const sportsTeams = Array.isArray(sports?.teams) && sports.teams.length
+    ? sports.teams
+    : (sports?.team ? [sports.team] : []);
+  const needSports = Boolean(sports?.enabled !== false && sportsTeams.length);
   if (needWeather || needSports) {
     if (!statusHost) {
       statusHost = document.createElement('div');
@@ -247,12 +250,14 @@ export function applyBranding(bundle, base) {
         statusHost.append(sportsHost);
       }
       sportsHost.dataset.sportsPayload = JSON.stringify({
-        team: sports.team,
+        teams: sportsTeams,
+        team: sportsTeams[0],
         results: sports.results || [],
         nextGame: sports.nextGame || null,
+        nextGames: sports.nextGames || [],
         href: sports.href || '',
       });
-      sportsHost.setAttribute('aria-label', 'Résultat sportif');
+      sportsHost.setAttribute('aria-label', 'Résultats sportifs');
     } else sportsHost?.remove();
   } else {
     statusHost?.remove();

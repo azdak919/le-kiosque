@@ -222,14 +222,22 @@ function mastheadBackground(ctx: RenderContext, options: MastheadOptions): strin
 
 function sportsPayload(ctx: RenderContext): string {
   const sports = ctx.publication.masthead?.sports;
-  if (!sports || sports.enabled === false || !sports.team) return '';
+  if (!sports || sports.enabled === false) return '';
+  const teams = sports.teams?.length
+    ? sports.teams
+    : sports.team
+      ? [sports.team]
+      : [];
+  if (!teams.length) return '';
   const payload = {
-    team: sports.team,
+    teams,
+    team: teams[0],
     results: sports.results ?? [],
     nextGame: sports.nextGame ?? null,
+    nextGames: sports.nextGames ?? [],
     href: sports.href ? asset(sports.href, ctx) : '',
   };
-  return `<div class="masthead-sports" data-sports-payload="${esc(JSON.stringify(payload))}" aria-label="Résultat sportif" aria-live="polite"></div>`;
+  return `<div class="masthead-sports" data-sports-payload="${esc(JSON.stringify(payload))}" aria-label="Résultats sportifs" aria-live="polite"></div>`;
 }
 
 function mastheadTools(ctx: RenderContext, current?: string): string {

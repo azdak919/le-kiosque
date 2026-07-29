@@ -86,10 +86,15 @@ test('la vitrine expose le bandeau illustré, les outils et la composition magaz
   assert.equal(weatherName, 'Québec');
   assert.equal(content.publication.masthead?.tools?.pomodoro, true);
   assert.equal(content.publication.masthead?.tools?.solitaire, true);
-  assert.equal(content.publication.masthead?.sports?.team?.name, 'Les Quorums');
-  assert.equal(content.publication.masthead?.sports?.team?.code, 'QUO');
-  assert.equal(content.publication.masthead?.sports?.team?.fictional, true);
-  assert.ok((content.publication.masthead?.sports?.results?.length ?? 0) >= 1);
+  const sportsTeams = content.publication.masthead?.sports?.teams?.length
+    ? content.publication.masthead.sports.teams
+    : content.publication.masthead?.sports?.team
+      ? [content.publication.masthead.sports.team]
+      : [];
+  assert.ok(sportsTeams.length >= 3, 'plusieurs sports / formations fictives');
+  assert.ok(sportsTeams.some((t) => t.code === 'QUO' && t.sport === 'volleyball'));
+  assert.ok(sportsTeams.some((t) => t.sport === 'basketball' || t.sport === 'soccer' || t.sport === 'hockey'));
+  assert.equal(sportsTeams[0]?.fictional, true);
 
   const result = await build({ config: config({ editorial: { mode: 'demo-local' } }), bundle: content, outDir: out, logger: silent });
   assert.equal(result.articles, 40);

@@ -270,6 +270,8 @@ export interface SportsGame {
   sport?: string;
   competition?: string;
   note?: string;
+  /** Rattache le match à une entrée de `teams[]` (sinon équipe unique / première). */
+  teamId?: string;
 }
 
 /** Identité d’une équipe affichée dans le mât (réelle RSEQ ou fictive démo). */
@@ -286,6 +288,9 @@ export interface SportsTeam {
   /** true = hors RSEQ, données de démonstration uniquement. */
   fictional?: boolean;
   note?: string;
+  /** Résultats propres à cette équipe (sinon liste globale `results`). */
+  results?: SportsGame[];
+  nextGame?: SportsNextGame;
 }
 
 /** Prochain match planifié (sans score). */
@@ -296,19 +301,24 @@ export interface SportsNextGame {
   opponentCode?: string;
   home?: boolean;
   competition?: string;
+  teamId?: string;
 }
 
 /**
- * Scoreboard du mât : une équipe « maison » + résultats embarqués.
- * En production réelle, un bot RSEQ peut remplir `results` ; en démo
- * Kiosque, l’équipe et les scores sont fictifs et versionnés.
+ * Scoreboard du mât : une ou plusieurs équipes + résultats embarqués.
+ * La puce alterne (rotation type gare LE-RADAR) entre sports / matchs.
+ * Prod : bot RSEQ ; démo : équipes fictives versionnées.
  */
 export interface MastheadSports {
   enabled?: boolean;
-  team: SportsTeam;
-  /** Matchs joués, du plus récent au plus ancien de préférence. */
+  /** Équipe unique (rétrocompat) — préférer `teams` pour multi-sports. */
+  team?: SportsTeam;
+  /** Plusieurs formations (volley, basket, soccer…) pour la rotation mât. */
+  teams?: SportsTeam[];
+  /** Matchs joués (optionnel si chaque `team.results` est rempli). */
   results?: SportsGame[];
   nextGame?: SportsNextGame;
+  nextGames?: SportsNextGame[];
   /** Lien optionnel (section sports, page équipe…). */
   href?: string;
 }

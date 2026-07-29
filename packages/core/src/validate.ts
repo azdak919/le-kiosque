@@ -287,13 +287,37 @@ export function validatePublication(pub: Publication, path = 'publication'): Iss
   }
   const sports = pub.masthead?.sports;
   if (sports) {
-    const team = sports.team;
-    if (!team?.id?.trim()) err(issues, `${path}.masthead.sports.team.id`, 'identifiant d’équipe requis');
-    if (!team?.name?.trim()) err(issues, `${path}.masthead.sports.team.name`, 'nom d’équipe requis');
-    if (!team?.code?.trim() || team.code.length > 4) {
-      err(issues, `${path}.masthead.sports.team.code`, 'code d’équipe requis (2–4 lettres)');
+    const roster = (sports.teams?.length ? sports.teams : sports.team ? [sports.team] : []);
+    if (!roster.length) {
+      err(issues, `${path}.masthead.sports`, 'au moins une équipe (team ou teams) est requise');
     }
-    if (!team?.sport?.trim()) err(issues, `${path}.masthead.sports.team.sport`, 'sport requis');
+    for (const [ti, team] of roster.entries()) {
+      const base = sports.teams?.length
+        ? `${path}.masthead.sports.teams[${ti}]`
+        : `${path}.masthead.sports.team`;
+      if (!team?.id?.trim()) err(issues, `${base}.id`, 'identifiant d’équipe requis');
+      if (!team?.name?.trim()) err(issues, `${base}.name`, 'nom d’équipe requis');
+      if (!team?.code?.trim() || team.code.length > 4) {
+        err(issues, `${base}.code`, 'code d’équipe requis (2–4 lettres)');
+      }
+      if (!team?.sport?.trim()) err(issues, `${base}.sport`, 'sport requis');
+      for (const [i, game] of (team.results ?? []).entries()) {
+        if (!game?.date?.trim()) err(issues, `${base}.results[${i}].date`, 'date requise');
+        if (!game?.opponent?.trim()) err(issues, `${base}.results[${i}].opponent`, 'adversaire requis');
+        if (!['W', 'L', 'D', 'T'].includes(game?.result)) {
+          err(issues, `${base}.results[${i}].result`, 'résultat W, L, D ou T requis');
+        }
+        if (!Number.isFinite(game?.scoreFor) || !Number.isFinite(game?.scoreAgainst)) {
+          err(issues, `${base}.results[${i}]`, 'scores numériques requis');
+        }
+      }
+      if (team.nextGame) {
+        if (!team.nextGame.date?.trim()) err(issues, `${base}.nextGame.date`, 'date du prochain match requise');
+        if (!team.nextGame.opponent?.trim()) {
+          err(issues, `${base}.nextGame.opponent`, 'adversaire du prochain match requis');
+        }
+      }
+    }
     for (const [i, game] of (sports.results ?? []).entries()) {
       if (!game?.date?.trim()) err(issues, `${path}.masthead.sports.results[${i}].date`, 'date requise');
       if (!game?.opponent?.trim()) err(issues, `${path}.masthead.sports.results[${i}].opponent`, 'adversaire requis');

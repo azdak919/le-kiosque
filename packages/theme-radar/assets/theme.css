@@ -1457,6 +1457,21 @@ a.masthead-sports__chip:focus-visible {
   content: '';
   /* marqueur visuel léger : pas de libellé « démo » dans la puce (trop large) */
 }
+/* Arrivée type gare LE-RADAR (weather-tile-arrive) à chaque rotation. */
+.sports-chip.is-arriving,
+.masthead-sports__chip.is-arriving {
+  animation: sports-tile-arrive 460ms cubic-bezier(.22, .8, .28, 1);
+}
+@keyframes sports-tile-arrive {
+  from { opacity: 0; transform: translateY(75%); }
+  to { opacity: 1; transform: translateY(0); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .sports-chip.is-arriving,
+  .masthead-sports__chip.is-arriving {
+    animation: none;
+  }
+}
 
 .masthead-tools { display: flex; gap: 7px; align-items: center; }
 .masthead-tool {
