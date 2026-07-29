@@ -439,8 +439,8 @@ export function homePage(articles: Article[], ctx: RenderContext): string {
   );
 }
 
-/** Nombre d’articles dans le rail « En bref » des pages article. */
-const ARTICLE_BRIEF_COUNT = 7;
+/** Nombre d’articles dans le rail « En bref » des pages article (sans scroll). */
+const ARTICLE_BRIEF_COUNT = 5;
 
 /**
  * Page d’un article.

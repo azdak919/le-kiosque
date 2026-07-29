@@ -246,19 +246,33 @@
    Les vedettes s’empilent sous la une (colonne unique) — pas côte à côte.
    Les pages article réutilisent la même grille (colonne + En bref). */
 .magazine-layout { display: grid; grid-template-columns: minmax(0, 1.15fr) minmax(300px, 370px); gap: 0; align-items: start; }
-.magazine-layout--article { align-items: start; }
+/*
+ * Page article : les deux colonnes s’étirent à la même hauteur (pas de
+ * scroll interne sur En bref). Le filet bas est aligné sous la plus haute.
+ */
+.magazine-layout--article {
+  align-items: stretch;
+}
 .magazine-layout--article .article-column {
   min-width: 0;
   padding-right: 32px;
   border-bottom: 1px solid var(--rule);
+  display: flex;
+  flex-direction: column;
+}
+.magazine-layout--article .article-column > .post {
+  flex: 1 1 auto;
 }
 .magazine-layout--article .brief-rail--article {
-  position: sticky;
-  top: 12px;
-  align-self: start;
-  max-height: calc(100vh - 24px);
-  overflow-y: auto;
-  overscroll-behavior: contain;
+  position: static;
+  max-height: none;
+  overflow: visible;
+  align-self: stretch;
+  display: flex;
+  flex-direction: column;
+  border-bottom: 1px solid var(--rule);
+  /* Remplit la hauteur de la grille pour coller le bas aux deux colonnes. */
+  min-height: 100%;
 }
 .news-hero { min-width: 0; padding-right: 32px; border-bottom: 1px solid var(--rule); }
 .news-features {
@@ -270,7 +284,16 @@
 }
 .news-features > .article { border-bottom: 1px solid var(--rule); }
 .news-features > .article:last-child { border-bottom: 0; }
-.brief-rail { min-width: 0; padding-left: 28px; border-bottom: 1px solid var(--rule); border-left: 1px solid var(--rule); }
+.brief-rail {
+  min-width: 0;
+  padding: 0 0 12px 28px;
+  border-bottom: 1px solid var(--rule);
+  border-left: 1px solid var(--rule);
+}
+/* Dernier item : pas de filet bas redondant avec le bas de colonne. */
+.magazine-layout--article .brief-rail--article > .article:last-child {
+  border-bottom: 0;
+}
 .brief-rail > h2, .news-tail > h2 {
   margin: 14px 0 6px;
   padding-bottom: 8px;
@@ -284,14 +307,20 @@
 @media (max-width: 1099px) {
   .magazine-layout { display: block; }
   .news-hero { padding-right: 0; border-bottom: 0; }
-  .magazine-layout--article .article-column { padding-right: 0; border-bottom: 0; }
+  .magazine-layout--article .article-column {
+    padding-right: 0;
+    border-bottom: 0;
+    display: block;
+  }
   .magazine-layout--article .brief-rail--article {
     position: static;
     max-height: none;
     overflow: visible;
+    min-height: 0;
     margin-top: 28px;
     padding-top: 8px;
     border-top: 2px solid var(--rule-strong);
+    border-bottom: 0;
   }
   .brief-rail { padding-left: 0; border-bottom: 0; border-left: 0; }
 }

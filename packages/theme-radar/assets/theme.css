@@ -234,9 +234,15 @@ body.with-radio .nav {
 
 .post { padding: 26px 0 80px; }
 /* Page article dans la grille magazine : pas de largeur artificielle
-   qui décale le texte par rapport au reste du site. */
-.post--in-magazine { padding: 14px 32px 56px 0; max-width: none; width: 100%; box-sizing: border-box; }
-.wire--article { padding-top: 8px; }
+   qui décale le texte par rapport au reste du site. Padding bas modéré
+   pour limiter le vide sous l’article face à En bref. */
+.post--in-magazine {
+  padding: 14px 32px 28px 0;
+  max-width: none;
+  width: 100%;
+  box-sizing: border-box;
+}
+.wire--article { padding-top: 8px; padding-bottom: 40px; }
 .article-column { min-width: 0; }
 
 /*
