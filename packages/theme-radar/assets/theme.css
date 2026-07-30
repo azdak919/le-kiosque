@@ -2190,7 +2190,7 @@ a.masthead-sports__chip:focus-visible {
   transition: border-color 140ms ease, color 140ms ease, background 140ms ease;
 }
 .sports-board-wrap.has-overflow .sports-board-toggle { display: inline-flex; }
-.sports-board-wrap.is-expanded .sports-board-toggle { display: none !important; }
+/* Toggle reste visible déplié (« Moins de matchs ») pour re-réduire. */
 @media (hover: hover) and (pointer: fine) {
   .sports-board-toggle:hover {
     border-color: var(--accent);

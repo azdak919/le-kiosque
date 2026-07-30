@@ -1775,9 +1775,13 @@
     if (!scroll || !board) return;
 
     var panels = board.querySelectorAll('.sports-panel');
+    /* Mesure fiabilité : forcer layout puis hauteur 1ʳᵉ rangée. */
+    scroll.style.maxHeight = 'none';
+    void board.offsetHeight;
     var rowH = measureSportsBoardRowHeight(board);
     var fullH = board.scrollHeight;
-    var overflow = panels.length > 1 && fullH > rowH + 48;
+    /* Overflow si >1 rangée OU >3 cartes (même rangée étroite). */
+    var overflow = panels.length > 3 || (panels.length > 1 && fullH > rowH + 24);
 
     if (!overflow) {
       wrap.classList.remove('has-overflow', 'is-expanded');
@@ -1805,23 +1809,26 @@
     toggle.hidden = false;
     toggle.removeAttribute('hidden');
 
+    var perRow = Math.max(1, Math.round(board.getBoundingClientRect().width / 280));
+    var extra = Math.max(0, panels.length - perRow);
+    var label = toggle.querySelector('.sports-board-toggle__label');
+
     if (sportsBoardExpanded) {
-      toggle.hidden = true;
-      toggle.setAttribute('hidden', '');
+      if (label) label.textContent = 'Moins de matchs';
+      toggle.setAttribute('aria-expanded', 'true');
+      toggle.setAttribute('aria-label', 'Moins de matchs — réduire le tableau');
       scroll.style.maxHeight = 'none';
       scroll.style.removeProperty('--sports-board-collapsed-h');
       return;
     }
 
-    var extra = Math.max(0, panels.length - Math.max(1, Math.round(board.getBoundingClientRect().width / 280)));
-    var label = toggle.querySelector('.sports-board-toggle__label');
     if (label) {
       label.textContent = extra > 0
-        ? 'Plus de matchs (' + extra + ' formations)'
+        ? 'Plus de matchs (' + extra + ' équipes)'
         : 'Plus de matchs';
     }
     toggle.setAttribute('aria-expanded', 'false');
-    toggle.setAttribute('aria-label', 'Plus de matchs — afficher toutes les formations');
+    toggle.setAttribute('aria-label', 'Plus de matchs — afficher toutes les équipes');
     wrap.style.setProperty('--sports-board-collapsed-h', rowH + 'px');
     scroll.style.setProperty('--sports-board-collapsed-h', rowH + 'px');
     scroll.style.maxHeight = rowH + 'px';
@@ -1836,9 +1843,8 @@
         : null;
       if (!btn) return;
       event.preventDefault();
-      if (sportsBoardExpanded) return;
       var yBefore = window.scrollY || window.pageYOffset || 0;
-      sportsBoardExpanded = true;
+      sportsBoardExpanded = !sportsBoardExpanded;
       syncSportsBoardCollapse();
       requestAnimationFrame(function () {
         window.scrollTo({ top: yBefore, left: 0, behavior: 'auto' });
@@ -1848,7 +1854,7 @@
     window.addEventListener('resize', function () {
       clearTimeout(resizeTimer);
       resizeTimer = setTimeout(function () {
-        if (!sportsBoardExpanded) syncSportsBoardCollapse();
+        syncSportsBoardCollapse();
       }, 120);
     }, { passive: true });
   }
