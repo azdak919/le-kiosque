@@ -203,309 +203,332 @@
     return Number.isFinite(y) ? Math.min(1, Math.max(0, y)) : null;
   }
 
-  function initMastheadBackgrounds() {
-    var image = document.querySelector('[data-masthead-background]');
+  /**
+   * Mât illustré — lit toujours le DOM courant.
+   * Important : applyBranding (PGlite) remplace img + #masthead-backgrounds ;
+   * on ne doit jamais garder de références mortes (sinon shuffle « mort »).
+   */
+  var mastheadBgState = {
+    index: 0,
+    hasShown: false,
+    shuffleBusy: false,
+    activeTransition: null,
+    bound: false,
+    resizeBound: false,
+  };
+
+  function resolveAssetUrl(src) {
+    if (!src) return '';
+    try { return new URL(src, window.location.href).href; }
+    catch (_) { return String(src); }
+  }
+
+  function sameSrc(a, b) {
+    if (!a || !b) return false;
+    try {
+      var ua = new URL(a, window.location.href);
+      var ub = new URL(b, window.location.href);
+      return ua.pathname === ub.pathname;
+    } catch (_) {
+      return String(a) === String(b);
+    }
+  }
+
+  function readMastheadImages() {
     var data = document.getElementById('masthead-backgrounds');
-    if (!image || !data) return;
+    if (!data) return [];
     var images = [];
-    try { images = JSON.parse(data.textContent || '[]'); } catch (_) {}
-    if (!Array.isArray(images) || !images.length) return;
-
-    function resolveAssetUrl(src) {
-      if (!src) return '';
-      try { return new URL(src, window.location.href).href; }
-      catch (_) { return String(src); }
-    }
-
-    function sameSrc(a, b) {
-      if (!a || !b) return false;
-      try {
-        var ua = new URL(a, window.location.href);
-        var ub = new URL(b, window.location.href);
-        return ua.pathname === ub.pathname;
-      } catch (_) {
-        return String(a) === String(b);
-      }
-    }
-
-    // Normaliser les src (basePath, /./, query) pour comparer et charger sans 404.
-    images = images.filter(function (item) { return item && item.src; }).map(function (item) {
+    try { images = JSON.parse(data.textContent || '[]'); } catch (_) { images = []; }
+    if (!Array.isArray(images)) return [];
+    return images.filter(function (item) { return item && item.src; }).map(function (item) {
       return Object.assign({}, item, { src: resolveAssetUrl(item.src) });
     });
-    if (!images.length) return;
+  }
+
+  function liveMastheadImage() {
+    return document.querySelector('[data-masthead-background]');
+  }
+
+  function liveMasthead() {
+    var image = liveMastheadImage();
+    return image ? image.closest('.masthead') : document.querySelector('.masthead');
+  }
+
+  function cancelMastheadTransition() {
+    if (mastheadBgState.activeTransition && typeof mastheadBgState.activeTransition.cancel === 'function') {
+      mastheadBgState.activeTransition.cancel();
+    }
+    mastheadBgState.activeTransition = null;
+    var masthead = liveMasthead();
+    masthead?.querySelectorAll('.masthead-background-transition').forEach(function (node) {
+      node.remove();
+    });
+  }
+
+  function computeObjectPosition(item, imgEl, masthead) {
+    var authored = parseAuthoredFocalY(item.backgroundPosition);
+    var ar = mastheadAspectRatio(masthead);
+    var focalY = 0.5;
+    try {
+      if (authored != null && (authored < 0.42 || authored > 0.58)) {
+        focalY = authored;
+      } else if (imgEl && imgEl.naturalWidth > 32) {
+        focalY = computeMastheadFocalY(imgEl, ar);
+        if (authored != null) focalY = authored * 0.25 + focalY * 0.75;
+      } else if (authored != null) {
+        focalY = authored;
+      }
+    } catch (_) {
+      focalY = authored != null ? authored : 0.5;
+    }
+    var pct = Math.round(focalY * 1000) / 10;
+    return '50% ' + pct + '%';
+  }
+
+  function updateMastheadCredit(item) {
     var credit = document.querySelector('[data-masthead-credit]');
-    var masthead = image.closest('.masthead');
-    /**
-     * Index = photo déjà peinte par le HTML (images[0] côté SSR).
-     * Un Math.random() ici provoquait un flash : image A charge, puis B
-     * (souvent en cache) remplace soudain — bug signalé sur la démo.
-     * La variété reste au bouton shuffle (et éventuellement une autre
-     * page/visite si l’éditeur change l’ordre du manifeste).
-     */
-    var paintedSrc = image.getAttribute('src') || image.currentSrc || '';
-    var index = 0;
-    for (var i = 0; i < images.length; i++) {
-      if (sameSrc(images[i].src, paintedSrc)) {
-        index = i;
-        break;
-      }
+    if (!credit) return;
+    credit.replaceChildren();
+    if (!item || !item.credit) return;
+    var label = 'Photo : ' + item.credit;
+    if (item.creditUrl && /^https:\/\//i.test(item.creditUrl)) {
+      var link = document.createElement('a');
+      link.href = item.creditUrl;
+      link.rel = 'noopener';
+      link.textContent = label;
+      credit.appendChild(link);
+    } else {
+      credit.textContent = label;
     }
-    /** Transition active (LE-RADAR _activePhotoTransition) — annule un shuffle rapide. */
-    var activeTransition = null;
-    var hasShown = false;
-    var shuffleBusy = false;
+  }
 
-    function computeObjectPosition(item, imgEl) {
-      var authored = parseAuthoredFocalY(item.backgroundPosition);
-      var ar = mastheadAspectRatio(masthead);
-      var focalY = 0.5;
-      try {
-        // Les points YAML ~50 % sont des défauts génériques : on affine.
-        // Un focal explicite hors [0.42, 0.58] est respecté (choix éditorial).
-        if (authored != null && (authored < 0.42 || authored > 0.58)) {
-          focalY = authored;
-        } else if (imgEl && imgEl.naturalWidth > 32) {
-          focalY = computeMastheadFocalY(imgEl, ar);
-          if (authored != null) focalY = authored * 0.25 + focalY * 0.75;
-        } else if (authored != null) {
-          focalY = authored;
-        }
-      } catch (_) {
-        focalY = authored != null ? authored : 0.5;
-      }
-      var pct = Math.round(focalY * 1000) / 10;
-      return '50% ' + pct + '%';
+  function commitMastheadImage(item, options) {
+    options = options || {};
+    var image = liveMastheadImage();
+    var masthead = liveMasthead();
+    if (!image || !item) return;
+    masthead?.classList.remove('masthead--image-error');
+    var nextSrc = resolveAssetUrl(item.src);
+    var current = image.currentSrc || image.getAttribute('src') || '';
+    if (!sameSrc(current, nextSrc)) image.src = nextSrc;
+    function place() {
+      masthead?.classList.remove('masthead--image-error');
+      image.style.objectPosition = computeObjectPosition(item, image, masthead);
     }
-
-    function applyPosition(item) {
-      function place() {
-        masthead?.classList.remove('masthead--image-error');
-        image.style.objectPosition = computeObjectPosition(item, image);
+    if (options.preservePosition) {
+      var existing = (image.style && image.style.objectPosition) || '';
+      if (!existing) {
+        if (image.complete && image.naturalWidth > 0) place();
+        else image.addEventListener('load', place, { once: true });
       }
+    } else {
       if (image.complete && image.naturalWidth > 0) place();
       else image.addEventListener('load', place, { once: true });
     }
+    updateMastheadCredit(item);
+    mastheadBgState.hasShown = true;
+  }
 
-    function updateCredit(item) {
-      if (!credit) return;
-      credit.replaceChildren();
-      if (!item.credit) return;
-      var label = 'Photo : ' + item.credit;
-      if (item.creditUrl && /^https:\/\//i.test(item.creditUrl)) {
-        var link = document.createElement('a');
-        link.href = item.creditUrl;
-        link.rel = 'noopener';
-        link.textContent = label;
-        credit.appendChild(link);
-      } else {
-        credit.textContent = label;
+  function showMastheadIndex(next, options) {
+    options = options || {};
+    var images = readMastheadImages();
+    var image = liveMastheadImage();
+    var masthead = liveMasthead();
+    if (!images.length || !image) {
+      mastheadBgState.shuffleBusy = false;
+      return;
+    }
+    mastheadBgState.index = ((next % images.length) + images.length) % images.length;
+    var item = images[mastheadBgState.index];
+    var reduceMotion = false;
+    try {
+      reduceMotion = !!window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    } catch (_) {}
+
+    var currentSrc = image.currentSrc || image.getAttribute('src') || '';
+    var nextSrc = resolveAssetUrl(item.src);
+    var shouldCrossfade =
+      options.animate !== false &&
+      mastheadBgState.hasShown &&
+      currentSrc &&
+      !sameSrc(currentSrc, nextSrc) &&
+      !reduceMotion &&
+      image.isConnected;
+
+    if (!shouldCrossfade) {
+      cancelMastheadTransition();
+      commitMastheadImage(item, { preservePosition: options.preservePosition === true });
+      mastheadBgState.shuffleBusy = false;
+      return;
+    }
+
+    cancelMastheadTransition();
+    var incoming = document.createElement('img');
+    incoming.className = 'masthead-background masthead-background-transition';
+    incoming.alt = '';
+    incoming.setAttribute('aria-hidden', 'true');
+    incoming.decoding = 'async';
+    if (image.parentNode) {
+      if (image.nextSibling) image.parentNode.insertBefore(incoming, image.nextSibling);
+      else image.parentNode.appendChild(incoming);
+    }
+
+    var settled = false;
+    var fadeStarted = false;
+    var timer = 0;
+
+    function settle() {
+      if (settled) return;
+      settled = true;
+      window.clearTimeout(timer);
+      commitMastheadImage(item);
+      mastheadBgState.shuffleBusy = false;
+      try { incoming.remove(); } catch (_) {}
+      if (mastheadBgState.activeTransition && mastheadBgState.activeTransition.incoming === incoming) {
+        mastheadBgState.activeTransition = null;
       }
     }
 
-    image.addEventListener('error', function () { masthead?.classList.add('masthead--image-error'); });
+    mastheadBgState.activeTransition = {
+      incoming: incoming,
+      cancel: function () {
+        if (settled) return;
+        settled = true;
+        window.clearTimeout(timer);
+        mastheadBgState.shuffleBusy = false;
+        try { incoming.remove(); } catch (_) {}
+        if (mastheadBgState.activeTransition && mastheadBgState.activeTransition.incoming === incoming) {
+          mastheadBgState.activeTransition = null;
+        }
+      },
+    };
 
-    function commit(item, options) {
-      options = options || {};
+    function startFade() {
+      if (settled || fadeStarted) return;
+      fadeStarted = true;
       masthead?.classList.remove('masthead--image-error');
-      var nextSrc = resolveAssetUrl(item.src);
-      var current = image.currentSrc || image.getAttribute('src') || '';
-      // Ne jamais réassigner le même fichier (évite un rechargement cache inutile).
-      if (!sameSrc(current, nextSrc)) {
+      var position;
+      try {
+        position = computeObjectPosition(item, incoming, masthead);
+      } catch (_) {
+        position = item.backgroundPosition || '50% 50%';
+      }
+      incoming.style.objectPosition = position;
+      if (!sameSrc(image.currentSrc || image.getAttribute('src') || '', nextSrc)) {
         image.src = nextSrc;
       }
-      // Premier paint SSR : garder object-position inline tant qu’on n’a pas
-      // besoin de recalculer (shuffle / resize) — le auto-focal au load
-      // faisait « sauter » le cadrage comme un second chargement.
-      if (options.preservePosition) {
-        var existing = (image.style && image.style.objectPosition) || '';
-        if (!existing) applyPosition(item);
-      } else {
-        applyPosition(item);
-      }
-      updateCredit(item);
-      hasShown = true;
+      image.style.objectPosition = position;
+      updateMastheadCredit(item);
+      mastheadBgState.hasShown = true;
+      incoming.addEventListener('transitionend', function (event) {
+        if (event.propertyName === 'opacity') settle();
+      }, { once: true });
+      requestAnimationFrame(function () {
+        requestAnimationFrame(function () {
+          if (!settled) incoming.classList.add('is-visible');
+        });
+      });
+      timer = window.setTimeout(settle, 560);
     }
 
-    function cancelActiveTransition() {
-      if (activeTransition && typeof activeTransition.cancel === 'function') {
-        activeTransition.cancel();
+    incoming.addEventListener('error', function () {
+      if (settled) return;
+      settled = true;
+      window.clearTimeout(timer);
+      try { incoming.remove(); } catch (_) {}
+      mastheadBgState.activeTransition = null;
+      commitMastheadImage(item);
+      mastheadBgState.shuffleBusy = false;
+    }, { once: true });
+    incoming.addEventListener('load', startFade, { once: true });
+    incoming.src = nextSrc;
+    if (incoming.complete && incoming.naturalWidth > 0) startFade();
+  }
+
+  function pickNextMastheadIndex() {
+    var images = readMastheadImages();
+    if (images.length < 2) return 0;
+    var image = liveMastheadImage();
+    var current = resolveAssetUrl(
+      (image && (image.currentSrc || image.getAttribute('src'))) ||
+      (images[mastheadBgState.index] && images[mastheadBgState.index].src) ||
+      '',
+    );
+    var candidates = [];
+    for (var i = 0; i < images.length; i++) {
+      if (!sameSrc(images[i].src, current)) candidates.push(i);
+    }
+    if (!candidates.length) return (mastheadBgState.index + 1) % images.length;
+    return candidates[Math.floor(Math.random() * candidates.length)];
+  }
+
+  function rebindMastheadBackgrounds() {
+    var images = readMastheadImages();
+    var image = liveMastheadImage();
+    if (!images.length || !image) return;
+    // Resync l’index sur la photo actuellement peinte (après applyBranding).
+    var paintedSrc = image.getAttribute('src') || image.currentSrc || '';
+    mastheadBgState.index = 0;
+    for (var i = 0; i < images.length; i++) {
+      if (sameSrc(images[i].src, paintedSrc)) {
+        mastheadBgState.index = i;
+        break;
       }
-      activeTransition = null;
-      masthead?.querySelectorAll('.masthead-background-transition').forEach(function (node) {
-        node.remove();
+    }
+    // Ne pas recharger si c’est déjà la bonne photo ; marquer hasShown pour le prochain shuffle.
+    mastheadBgState.hasShown = true;
+    cancelMastheadTransition();
+    if (!image.dataset.errorBound) {
+      image.dataset.errorBound = '1';
+      image.addEventListener('error', function () {
+        liveMasthead()?.classList.add('masthead--image-error');
       });
     }
-
-    /**
-     * Affiche l’image d’index `next`. Au premier affichage : pose directe.
-     * Ensuite : crossfade façon LE-RADAR (calque temporaire sous le voile).
-     */
-    function show(next, options) {
-      options = options || {};
-      index = (next + images.length) % images.length;
-      var item = images[index];
-      var reduceMotion = false;
-      try {
-        reduceMotion = !!window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-      } catch (_) {}
-
-      var currentSrc = image.currentSrc || image.getAttribute('src') || '';
-      var nextSrc = resolveAssetUrl(item.src);
-      var shouldCrossfade =
-        options.animate !== false &&
-        hasShown &&
-        currentSrc &&
-        !sameSrc(currentSrc, nextSrc) &&
-        !reduceMotion;
-
-      if (!shouldCrossfade) {
-        cancelActiveTransition();
-        commit(item, { preservePosition: options.preservePosition === true });
-        shuffleBusy = false;
-        return;
-      }
-
-      cancelActiveTransition();
-
-      var incoming = document.createElement('img');
-      incoming.className = 'masthead-background masthead-background-transition';
-      incoming.alt = '';
-      incoming.setAttribute('aria-hidden', 'true');
-      incoming.decoding = 'async';
-      // Insérer juste après la photo de base, avant le voile (z-order correct).
-      if (image.parentNode) {
-        if (image.nextSibling) image.parentNode.insertBefore(incoming, image.nextSibling);
-        else image.parentNode.appendChild(incoming);
-      }
-
-      var settled = false;
-      var fadeStarted = false;
-      var timer = 0;
-
-      function settle() {
-        if (settled) return;
-        settled = true;
-        window.clearTimeout(timer);
-        // Base déjà à jour pendant le fondu ; finaliser crédit/cadrage au besoin.
-        applyPosition(item);
-        updateCredit(item);
-        hasShown = true;
-        shuffleBusy = false;
-        try { incoming.remove(); } catch (_) {}
-        if (activeTransition && activeTransition.incoming === incoming) {
-          activeTransition = null;
-        }
-      }
-
-      activeTransition = {
-        incoming: incoming,
-        cancel: function () {
-          if (settled) return;
-          settled = true;
-          window.clearTimeout(timer);
-          shuffleBusy = false;
-          try { incoming.remove(); } catch (_) {}
-          if (activeTransition && activeTransition.incoming === incoming) {
-            activeTransition = null;
-          }
-        },
-      };
-
-      function startFade() {
-        if (settled || fadeStarted) return;
-        fadeStarted = true;
-        masthead?.classList.remove('masthead--image-error');
-        var position;
-        try {
-          position = computeObjectPosition(item, incoming);
-        } catch (_) {
-          position = item.backgroundPosition || '50% 50%';
-        }
-        incoming.style.objectPosition = position;
-        // Préparer la couche persistante sous le fondu (évite un flash au settle).
-        if (!sameSrc(image.currentSrc || image.getAttribute('src') || '', nextSrc)) {
-          image.src = nextSrc;
-        }
-        image.style.objectPosition = position;
-        updateCredit(item);
-        hasShown = true;
-
-        incoming.addEventListener('transitionend', function (event) {
-          if (event.propertyName === 'opacity') settle();
-        }, { once: true });
-        // Double rAF : laisse le navigateur peindre opacity:0 avant d’animer.
-        requestAnimationFrame(function () {
-          requestAnimationFrame(function () {
-            if (!settled) incoming.classList.add('is-visible');
-          });
-        });
-        timer = window.setTimeout(settle, 560);
-      }
-
-      incoming.addEventListener('error', function () {
-        // Échec du preload : bascule sans fondu.
-        if (settled) return;
-        settled = true;
-        window.clearTimeout(timer);
-        try { incoming.remove(); } catch (_) {}
-        activeTransition = null;
-        commit(item);
-        shuffleBusy = false;
-      }, { once: true });
-
-      incoming.addEventListener('load', startFade, { once: true });
-      incoming.src = nextSrc;
-      // Cache navigateur : load peut ne pas se re-déclencher si déjà complete.
-      if (incoming.complete && incoming.naturalWidth > 0) startFade();
+    var shuffleBtn = document.getElementById('masthead-shuffle');
+    if (shuffleBtn) {
+      shuffleBtn.type = 'button';
+      shuffleBtn.removeAttribute('disabled');
+      shuffleBtn.hidden = images.length < 2;
     }
+  }
 
-    // Sync index/crédit avec la photo déjà visible — sans recharger ni recadrer.
-    show(index, { animate: false, preservePosition: true });
+  function initMastheadBackgrounds() {
+    rebindMastheadBackgrounds();
+    if (mastheadBgState.bound) return;
+    mastheadBgState.bound = true;
 
-    function pickNextIndex() {
-      if (images.length < 2) return 0;
-      // Évite de retomber sur la même photo (src normalisée).
-      var current = resolveAssetUrl(images[index] && images[index].src);
-      var candidates = [];
-      for (var i = 0; i < images.length; i++) {
-        if (!sameSrc(images[i].src, current)) candidates.push(i);
-      }
-      if (!candidates.length) return (index + 1) % images.length;
-      return candidates[Math.floor(Math.random() * candidates.length)];
-    }
-
-    function onShuffle(event) {
+    document.addEventListener('click', function (event) {
       var btn = event.target && event.target.closest
         ? event.target.closest('#masthead-shuffle, .masthead-shuffle')
         : null;
       if (!btn) return;
       event.preventDefault();
-      if (shuffleBusy) return;
-      shuffleBusy = true;
-      show(pickNextIndex(), { animate: true });
+      if (mastheadBgState.shuffleBusy) return;
+      if (readMastheadImages().length < 2) return;
+      mastheadBgState.shuffleBusy = true;
+      showMastheadIndex(pickNextMastheadIndex(), { animate: true });
       releaseToolButton(btn);
-      // Filet de sécurité si la transition ne se termine pas.
-      window.setTimeout(function () { shuffleBusy = false; }, 900);
-    }
+      window.setTimeout(function () { mastheadBgState.shuffleBusy = false; }, 900);
+    });
 
-    // Délégation (comme LE-RADAR #masthead-bg-shuffle) : robuste si le bouton
-    // est re-rendu par l’admin éditorial, et ne dépend pas d’un nœud figé.
-    document.addEventListener('click', onShuffle);
-    var shuffleBtn = document.getElementById('masthead-shuffle');
-    if (shuffleBtn) {
-      shuffleBtn.type = 'button';
-      shuffleBtn.removeAttribute('disabled');
+    if (!mastheadBgState.resizeBound) {
+      mastheadBgState.resizeBound = true;
+      var resizeTimer;
+      window.addEventListener('resize', function () {
+        clearTimeout(resizeTimer);
+        resizeTimer = setTimeout(function () {
+          var images = readMastheadImages();
+          var image = liveMastheadImage();
+          var item = images[mastheadBgState.index];
+          if (item && image) {
+            image.style.objectPosition = computeObjectPosition(item, image, liveMasthead());
+          }
+        }, 160);
+      }, { passive: true });
     }
-
-    // Recadrer si le bandeau change de taille (rotation, redimensionnement).
-    var resizeTimer;
-    window.addEventListener('resize', function () {
-      clearTimeout(resizeTimer);
-      resizeTimer = setTimeout(function () {
-        if (images[index]) applyPosition(images[index]);
-      }, 160);
-    }, { passive: true });
   }
+
+  window.KiosqueRefreshMastheadBackgrounds = rebindMastheadBackgrounds;
 
   /** Mêmes libellés de fichier que LE-RADAR (assets/meteocons/animated). */
   function weatherIconName(code, isDay) {
@@ -631,6 +654,17 @@
   var SPORTS_MARQUEE_PX_PER_S = 20;
   var SPORTS_MARQUEE_MIN_SEC = 7;
   var SPORTS_ARRIVE_MS = 500;
+  /* Palette par sport (import LE-RADAR) — évite le tout-rouge des prochains matchs. */
+  var SPORTS_SPORT_TONES = {
+    football: '#c45c2a',
+    basketball: '#d88a0a',
+    soccer: '#3d9a6a',
+    volleyball: '#3b82c4',
+    hockey: '#5498bb',
+    default: '#66839e',
+  };
+  /** Bureau mât : noms d’équipes + institutions (carte plus large). */
+  var SPORTS_DESKTOP_MQ = '(min-width: 721px)';
   var sportsPayloadCache = null;
   var sportsSlides = [];
   var sportsDeck = [];
@@ -662,7 +696,50 @@
     if (result === 'W') return '#3d9a6a';
     if (result === 'L') return '#c45c5c';
     if (result === 'D' || result === 'T') return '#8fa3b0';
-    return '#6c2163';
+    return SPORTS_SPORT_TONES.default;
+  }
+
+  function sportsSportTone(sport) {
+    var s = String(sport || '').toLowerCase();
+    if (s.indexOf('basket') !== -1) return SPORTS_SPORT_TONES.basketball;
+    if (s.indexOf('hockey') !== -1) return SPORTS_SPORT_TONES.hockey;
+    if (s.indexOf('soccer') !== -1) return SPORTS_SPORT_TONES.soccer;
+    if (s.indexOf('volley') !== -1) return SPORTS_SPORT_TONES.volleyball;
+    if (s.indexOf('football') !== -1 || s.indexOf('flag') !== -1) return SPORTS_SPORT_TONES.football;
+    return SPORTS_SPORT_TONES.default;
+  }
+
+  function sportsSlideTone(display) {
+    if (!display) return SPORTS_SPORT_TONES.default;
+    if (display.mode === 'result' && display.game && display.game.result) {
+      return sportsResultTone(display.game.result);
+    }
+    return sportsSportTone((display.game && display.game.sport) || (display.team && display.team.sport));
+  }
+
+  /** Mobile : codes institution. Bureau (≥721 px) : noms + institutions. */
+  function sportsIsDesktopLabel() {
+    try {
+      return !!(window.matchMedia && window.matchMedia(SPORTS_DESKTOP_MQ).matches);
+    } catch (_) {
+      return false;
+    }
+  }
+
+  /** « Les Corbeaux » → « Corbeaux » pour la puce (place limitée). */
+  function sportsShortTeamName(name) {
+    var n = String(name || '').trim();
+    return n.replace(/^(Les|Le|La|L’|L')\s+/i, '') || n;
+  }
+
+  function sportsShortInstitution(inst) {
+    var s = String(inst || '').trim();
+    if (!s) return '';
+    return s
+      .replace(/^Cégep\s+(de\s+|du\s+|d’|d')?/i, '')
+      .replace(/^Collège\s+/i, '')
+      .replace(/^Champlain\s+College\s+/i, 'Champlain ')
+      .replace(/^Université\s+(de\s+|du\s+|d’|d')?/i, '');
   }
 
   function sportsGlyph(sport) {
@@ -711,13 +788,14 @@
       });
       /* Jusqu’à 2 résultats récents par équipe pour la variance du deck. */
       merged.slice(0, 2).forEach(function (game) {
-        slides.push({
+        var slide = {
           mode: 'result',
           team: team,
           game: game,
-          tone: sportsResultTone(game.result),
           key: 'r:' + team.id + ':' + game.date + ':' + (game.opponentCode || game.opponent),
-        });
+        };
+        slide.tone = sportsSlideTone(slide);
+        slides.push(slide);
       });
       var next = team.nextGame || null;
       if (!next && payload.nextGame && (!payload.nextGame.teamId || payload.nextGame.teamId === team.id)) {
@@ -729,13 +807,14 @@
         }) || null;
       }
       if (next) {
-        slides.push({
+        var nextSlide = {
           mode: 'next',
           team: team,
           game: next,
-          tone: (team.colors && team.colors.primary) || '#6c2163',
           key: 'n:' + team.id + ':' + next.date + ':' + (next.opponentCode || next.opponent),
-        });
+        };
+        nextSlide.tone = sportsSlideTone(nextSlide);
+        slides.push(nextSlide);
       }
     });
     return slides;
@@ -824,10 +903,10 @@
   }
 
   /**
-   * Format scoreboard québécois (RDS / TVA Sports) en puce compacte :
-   *   résultat :  🏐  V  QUO  3–1  MOT
-   *   à venir  :  🏐  QUO  vs  MAJ  ·  2 oct.
-   * Codes + score d’abord ; détail long (noms, compétition) dans title/aria.
+   * Format scoreboard (parité LE-RADAR / RDS) :
+   *   mobile  — codes institution :  🏐 V  QUO  3–1  GAR
+   *   bureau  — noms + institutions :  🏐 V  Quorums (Quorum)  3–1  Boomerang (Garneau)
+   * Détail long toujours dans title/aria.
    */
   function paintSportsChip(host, display, animate) {
     if (!host || !display) return;
@@ -836,11 +915,14 @@
     var code = String(team.code || 'EQ').toUpperCase().slice(0, 4);
     var sport = display.game.sport || team.sport || '';
     var sportLabel = team.sportLabel || sport || '';
+    var tone = display.tone || sportsSlideTone(display);
+    var desktop = sportsIsDesktopLabel();
     var href = (sportsPayloadCache && sportsPayloadCache.href) || '';
     var chip = document.createElement(href ? 'a' : 'span');
     chip.className = 'sports-chip masthead-sports__chip';
+    if (desktop) chip.classList.add('sports-chip--rich');
     if (animate && !sportsReducedMotion) chip.classList.add('is-arriving');
-    chip.style.setProperty('--sports-tone', display.tone);
+    chip.style.setProperty('--sports-tone', tone);
     if (team.colors && team.colors.primary) {
       chip.style.setProperty('--sports-brand', team.colors.primary);
     }
@@ -851,6 +933,12 @@
 
     var viewport = sportsEl('span', 'sports-chip__line');
     var inner = sportsEl('span', 'sports-chip__line-inner');
+
+    var homeCode = code;
+    var homeName = sportsShortTeamName(team.name) || code;
+    var homeInst = sportsShortInstitution(team.institution);
+    var homeRich = homeName + (homeInst ? ' (' + homeInst + ')' : '');
+    var homeLabel = desktop ? homeRich : homeCode;
 
     var titleParts = [];
     var aria = '';
@@ -863,28 +951,30 @@
       var issue = g.result === 'W' ? 'Victoire' : g.result === 'L' ? 'Défaite' : 'Match nul';
       var oppCode = String(g.opponentCode || '').toUpperCase().slice(0, 4);
       var oppName = g.opponent || oppCode || 'Adversaire';
-      var oppShort = oppCode || String(oppName).slice(0, 8);
+      var oppInst = sportsShortInstitution(g.opponentInstitution);
+      var oppCompact = oppCode || String(oppName).slice(0, 8);
+      var oppRich = sportsShortTeamName(oppName) + (oppInst ? ' (' + oppInst + ')' : '');
+      var oppLabel = desktop ? oppRich : oppCompact;
 
-      /* Pastille V/D hors marquee — lue d’un coup d’œil (RDS-style). */
       var badgeEl = sportsEl('span', 'sports-chip__badge sports-chip__badge--' + badgeMod, badge);
       badgeEl.setAttribute('aria-hidden', 'true');
       chip.appendChild(glyph);
       chip.appendChild(badgeEl);
 
-      /* Ligne : QUO 3–1 MOT (codes + score tabular). */
-      inner.appendChild(sportsEl('span', 'sports-chip__code', code));
+      inner.appendChild(sportsEl('span', desktop ? 'sports-chip__name' : 'sports-chip__code', homeLabel));
       inner.appendChild(document.createTextNode(' '));
       inner.appendChild(sportsEl('span', 'sports-chip__score', score));
       inner.appendChild(document.createTextNode(' '));
-      inner.appendChild(sportsEl('span', 'sports-chip__code sports-chip__opp', oppShort));
+      inner.appendChild(sportsEl('span', (desktop ? 'sports-chip__name' : 'sports-chip__code') + ' sports-chip__opp', oppLabel));
 
       aria = issue + ' des ' + team.name
         + (sportLabel ? ' (' + sportLabel + ')' : '')
-        + ' : ' + g.scoreFor + ' à ' + g.scoreAgainst + ' contre ' + oppName;
+        + ' : ' + g.scoreFor + ' à ' + g.scoreAgainst + ' contre ' + oppName
+        + (g.opponentInstitution ? ' (' + g.opponentInstitution + ')' : '');
       titleParts.push(issue + ' · ' + team.name);
       if (sportLabel) titleParts.push(sportLabel);
-      titleParts.push(code + ' ' + score + ' ' + oppShort);
-      if (oppName !== oppShort) titleParts.push(oppName);
+      titleParts.push(homeCode + ' ' + score + ' ' + oppCompact);
+      if (oppName) titleParts.push(oppName);
       if (g.opponentInstitution) titleParts.push(g.opponentInstitution);
       if (g.competition) titleParts.push(g.competition);
       if (g.date) titleParts.push(formatSportsChipWhen(g.date));
@@ -892,17 +982,19 @@
       var n = display.game;
       var nextCode = String(n.opponentCode || '').toUpperCase().slice(0, 4);
       var nextName = n.opponent || nextCode || 'Adversaire';
-      var nextShort = nextCode || String(nextName).slice(0, 8);
+      var nextInst = sportsShortInstitution(n.opponentInstitution);
+      var nextCompact = nextCode || String(nextName).slice(0, 8);
+      var nextRich = sportsShortTeamName(nextName) + (nextInst ? ' (' + nextInst + ')' : '');
+      var nextLabel = desktop ? nextRich : nextCompact;
       var when = formatSportsChipWhen(n.date, n.time);
 
       chip.appendChild(glyph);
 
-      /* Ligne : QUO vs MAJ · 2 oct. */
-      inner.appendChild(sportsEl('span', 'sports-chip__code', code));
+      inner.appendChild(sportsEl('span', desktop ? 'sports-chip__name' : 'sports-chip__code', homeLabel));
       inner.appendChild(document.createTextNode(' '));
       inner.appendChild(sportsEl('span', 'sports-chip__vs', 'vs'));
       inner.appendChild(document.createTextNode(' '));
-      inner.appendChild(sportsEl('span', 'sports-chip__code sports-chip__opp', nextShort));
+      inner.appendChild(sportsEl('span', (desktop ? 'sports-chip__name' : 'sports-chip__code') + ' sports-chip__opp', nextLabel));
       if (when) {
         inner.appendChild(document.createTextNode(' · '));
         inner.appendChild(sportsEl('span', 'sports-chip__when', when));
@@ -910,24 +1002,26 @@
 
       aria = 'Prochain match des ' + team.name
         + (sportLabel ? ' (' + sportLabel + ')' : '')
-        + ' contre ' + nextName + (when ? ' le ' + when : '');
+        + ' contre ' + nextName
+        + (n.opponentInstitution ? ' (' + n.opponentInstitution + ')' : '')
+        + (when ? ' le ' + when : '');
       titleParts.push('Prochain · ' + team.name);
       if (sportLabel) titleParts.push(sportLabel);
-      titleParts.push(code + ' vs ' + nextShort);
-      if (nextName !== nextShort) titleParts.push(nextName);
+      titleParts.push(homeCode + ' vs ' + nextCompact);
+      if (nextName) titleParts.push(nextName);
+      if (n.opponentInstitution) titleParts.push(n.opponentInstitution);
       if (when) titleParts.push(when);
       if (n.home === true) titleParts.push('Domicile');
       else if (n.home === false) titleParts.push('Extérieur');
       if (n.competition) titleParts.push(n.competition);
     }
-    if (team.fictional) titleParts.push('Formation fictive (démonstration)');
-
     viewport.appendChild(inner);
     chip.title = titleParts.join(' · ');
     chip.setAttribute('aria-label', aria);
-    if (team.fictional) chip.dataset.fictional = 'true';
     chip.dataset.sportsKey = display.key || '';
     chip.dataset.sportsMode = display.mode || '';
+    chip.dataset.sportsSport = sport || '';
+    chip.dataset.sportsDensity = desktop ? 'rich' : 'codes';
 
     chip.appendChild(viewport);
     host.appendChild(chip);
@@ -987,6 +1081,25 @@
     var first = sportsDeck.shift() || sportsSlides[0];
     paintSportsChip(host, first, false);
     syncMastheadWeatherDock();
+    /* Re-peindre codes ↔ noms+institutions au passage mobile/bureau. */
+    if (!initMastheadSports._densityBound) {
+      initMastheadSports._densityBound = true;
+      var mq;
+      try { mq = window.matchMedia(SPORTS_DESKTOP_MQ); } catch (_) { mq = null; }
+      function onDensityChange() {
+        var h = document.querySelector('.masthead-sports[data-sports-payload]');
+        if (!h || !sportsSlides.length) return;
+        var cur = h.querySelector('.sports-chip');
+        var key = cur && cur.dataset.sportsKey;
+        var slide = sportsSlides.find(function (s) { return s.key === key; }) || sportsSlides[0];
+        paintSportsChip(h, slide, false);
+        syncMastheadWeatherDock();
+      }
+      if (mq) {
+        if (typeof mq.addEventListener === 'function') mq.addEventListener('change', onDensityChange);
+        else if (typeof mq.addListener === 'function') mq.addListener(onDensityChange);
+      }
+    }
   }
 
   /** Appelé après applyBranding (front éditorial) pour peindre la puce sports. */
@@ -1254,6 +1367,138 @@
     }, { passive: true });
   }
 
+  // ── Équité magazine (parité LE-RADAR balanceMagazineColumns — TRIM) ──
+  // ≥1100 px : En bref ne doit pas dépasser la colonne une + vedettes.
+  // Tolérance < ½ carte compacte pour éviter « 1 article de trop ».
+  var MAGAZINE_BALANCE_MQ = '(min-width: 1100px)';
+  var MAGAZINE_HEIGHT_TOL = 40;
+  var MAGAZINE_BRIEF_HARD_MIN = 2;
+  var magazineBalanceTimer = 0;
+
+  function canBalanceMagazineColumns() {
+    try {
+      return !!(window.matchMedia && window.matchMedia(MAGAZINE_BALANCE_MQ).matches);
+    } catch (_) {
+      return false;
+    }
+  }
+
+  function magazineColumnContentHeight(col) {
+    if (!col) return 0;
+    var h = 0;
+    var children = col.children;
+    for (var i = 0; i < children.length; i += 1) {
+      var child = children[i];
+      if (child.classList && (
+        child.classList.contains('news-hero-spacer')
+        || child.classList.contains('brief-rail-spacer')
+      )) continue;
+      var style = window.getComputedStyle(child);
+      var mt = parseFloat(style.marginTop) || 0;
+      var mb = parseFloat(style.marginBottom) || 0;
+      h += child.offsetHeight + mt + mb;
+    }
+    var cs = window.getComputedStyle(col);
+    h += (parseFloat(cs.paddingTop) || 0) + (parseFloat(cs.paddingBottom) || 0);
+    return h;
+  }
+
+  function ensureNewsTailSection(layout) {
+    var tail = layout.querySelector('.news-tail');
+    if (tail) return tail;
+    tail = document.createElement('section');
+    tail.className = 'news-tail';
+    tail.setAttribute('data-tail-visible', '10');
+    tail.innerHTML = '<h2 class="news-tail-title">Suite du fil</h2><div class="news-tail-body news-tail-grid"></div>';
+    layout.appendChild(tail);
+    return tail;
+  }
+
+  /**
+   * Déplace la dernière carte En bref vers la suite du fil (équité).
+   * Rôle compact → tail (classes + structure déjà en DOM).
+   */
+  function demoteLastBriefToTail(layout, brief) {
+    var cards = brief.querySelectorAll(':scope > .article');
+    if (!cards.length) return false;
+    var card = cards[cards.length - 1];
+    if (!card) return false;
+    card.remove();
+    /* Gabarit suite : plus compact / vignette optionnelle retirée du rail. */
+    card.classList.remove('article--compact', 'article--brief', 'article--thumb');
+    card.classList.add('article--tail');
+    var tail = ensureNewsTailSection(layout);
+    var body = tail.querySelector('.news-tail-body') || tail;
+    /* En tête de suite (plus frais que le bas du fil historique). */
+    if (body.firstChild) body.insertBefore(card, body.firstChild);
+    else body.appendChild(card);
+    if (!brief.querySelector(':scope > .article')) {
+      brief.remove();
+    }
+    return true;
+  }
+
+  function balanceMagazineColumns() {
+    if (!canBalanceMagazineColumns()) return;
+    var layout = document.querySelector('.magazine-layout:not(.magazine-layout--article):not(.magazine-layout--team)');
+    if (!layout) return;
+    var hero = layout.querySelector('.news-hero');
+    var brief = layout.querySelector('.brief-rail');
+    if (!hero || !brief) return;
+
+    var guard = 0;
+    while (guard < 20) {
+      guard += 1;
+      var hH = magazineColumnContentHeight(hero);
+      var bH = magazineColumnContentHeight(brief);
+      if (bH <= hH + MAGAZINE_HEIGHT_TOL) break;
+      var n = brief.querySelectorAll(':scope > .article').length;
+      if (n <= MAGAZINE_BRIEF_HARD_MIN) break;
+      if (!demoteLastBriefToTail(layout, brief)) break;
+      brief = layout.querySelector('.brief-rail');
+      if (!brief) break;
+    }
+    /* Replier la suite après un trim (peut avoir créé / enrichi .news-tail). */
+    if (typeof syncNewsTailCollapse === 'function') {
+      try { syncNewsTailCollapse(); } catch (_) { /* init order */ }
+    }
+  }
+
+  function scheduleMagazineColumnBalance() {
+    window.clearTimeout(magazineBalanceTimer);
+    magazineBalanceTimer = window.setTimeout(function () {
+      balanceMagazineColumns();
+      /* 2e / 3e passes : images une/vedettes/En bref souvent plus lentes. */
+      window.setTimeout(balanceMagazineColumns, 450);
+      window.setTimeout(balanceMagazineColumns, 1200);
+      /* Après trim éventuel : le bouton « Plus d'articles » doit réapparaître. */
+      window.setTimeout(function () {
+        try { syncNewsTailCollapse(); } catch (_) { /* init order */ }
+      }, 1300);
+    }, 80);
+  }
+
+  function initMagazineColumnBalance() {
+    scheduleMagazineColumnBalance();
+    try {
+      var mq = window.matchMedia(MAGAZINE_BALANCE_MQ);
+      var onChange = function () { scheduleMagazineColumnBalance(); };
+      if (typeof mq.addEventListener === 'function') mq.addEventListener('change', onChange);
+      else if (typeof mq.addListener === 'function') mq.addListener(onChange);
+    } catch (_) { /* ignore */ }
+    document.querySelectorAll('.magazine-layout .news-hero img, .magazine-layout .brief-rail img').forEach(function (img) {
+      if (img.dataset.magazineBalanceBound) return;
+      img.dataset.magazineBalanceBound = '1';
+      if (!img.complete) {
+        img.addEventListener('load', scheduleMagazineColumnBalance, { once: true });
+        img.addEventListener('error', scheduleMagazineColumnBalance, { once: true });
+      }
+    });
+    if (document.fonts && document.fonts.ready) {
+      document.fonts.ready.then(scheduleMagazineColumnBalance).catch(function () {});
+    }
+  }
+
   // ── Suite du fil : « Plus d'articles » (repli initial, dépliage manuel) ──
   // 10 cartes = 5 rangées en 2 colonnes ; peek 6e rangée = titre + auteurs floutés.
   // Une fois déplié : tout le fil reste ouvert, sans bouton « Réduire ».
@@ -1404,46 +1649,47 @@
     });
   }
 
-  function initNewsTailCollapse() {
-    var tail = document.querySelector('.news-tail');
-    if (!tail) return;
+  function bindNewsTailCollapseOnce() {
+    if (newsTailBound) return;
+    newsTailBound = true;
+    // Délégation document : survit aux re-renders et à une suite créée plus tard
+    // (ex. demote En bref → ensureNewsTailSection).
+    document.addEventListener('click', function (event) {
+      var btn = event.target && event.target.closest
+        ? event.target.closest('.news-tail-toggle')
+        : null;
+      if (!btn) return;
+      event.preventDefault();
+      event.stopPropagation();
+      var section = btn.closest('.news-tail');
+      if (!section) return;
+      /* Une seule action : déplier. Pas de repli / pas de « Réduire ». */
+      if (newsTailExpanded) return;
 
-    // Délégation : un seul handler, survivant aux re-renders.
-    if (!newsTailBound) {
-      newsTailBound = true;
-      document.addEventListener('click', function (event) {
-        var btn = event.target && event.target.closest
-          ? event.target.closest('.news-tail-toggle')
-          : null;
-        if (!btn) return;
-        event.preventDefault();
-        event.stopPropagation();
-        var section = btn.closest('.news-tail');
-        if (!section) return;
-        /* Une seule action : déplier. Pas de repli / pas de « Réduire ». */
-        if (newsTailExpanded) return;
+      var yBefore = window.scrollY || window.pageYOffset || 0;
+      newsTailExpanded = true;
+      syncNewsTailCollapse();
+      releaseToolButton(btn);
 
-        var yBefore = window.scrollY || window.pageYOffset || 0;
-        newsTailExpanded = true;
-        syncNewsTailCollapse();
-        releaseToolButton(btn);
-
+      requestAnimationFrame(function () {
         requestAnimationFrame(function () {
-          requestAnimationFrame(function () {
-            // Contenu s’ouvre vers le bas : ne pas suivre le bouton.
-            window.scrollTo({ top: yBefore, left: 0, behavior: 'auto' });
-          });
+          // Contenu s’ouvre vers le bas : ne pas suivre le bouton.
+          window.scrollTo({ top: yBefore, left: 0, behavior: 'auto' });
         });
       });
+    });
 
-      var resizeTimer;
-      window.addEventListener('resize', function () {
-        clearTimeout(resizeTimer);
-        resizeTimer = setTimeout(function () {
-          if (!newsTailExpanded) syncNewsTailCollapse();
-        }, 120);
-      }, { passive: true });
-    }
+    var resizeTimer;
+    window.addEventListener('resize', function () {
+      clearTimeout(resizeTimer);
+      resizeTimer = setTimeout(function () {
+        if (!newsTailExpanded) syncNewsTailCollapse();
+      }, 120);
+    }, { passive: true });
+  }
+
+  function initNewsTailCollapse() {
+    bindNewsTailCollapseOnce();
 
     /* Toujours replié au chargement — jamais de dépliage automatique. */
     newsTailExpanded = false;
@@ -1461,9 +1707,9 @@
   }
 
   // ── Barre radio LE-RADAR ───────────────────────────────────────────────
-  // Le composant reste invisible jusqu'à ce que LE-RADAR confirme explicitement
-  // le protocole kiosque-v1. En cas de panne, il disparaît et laisse la simple
-  // ligne de séparation du thème à sa place.
+  // Coque sombre réservée dès le HTML (data-state=loading, min-height 68).
+  // L’iframe charge en eager ; à ready on passe data-state=ready (opacity 1).
+  // En cas de panne / unavailable → data-state=gone (collapse), pas de pop.
   function initRadarTuner() {
     if (!('customElements' in window) || customElements.get('radar-tuner')) return;
 
@@ -1474,30 +1720,47 @@
 
     RadarTuner.prototype.connectedCallback = function () {
       var host = this;
+      if (host.dataset.tunerBound === '1') return;
+      host.dataset.tunerBound = '1';
       var loaded = false;
       var timeout;
+      function markGone() {
+        host.dataset.state = 'gone';
+        host.setAttribute('aria-busy', 'false');
+        host.hidden = true;
+        /* Retrait différé : laisse le CSS collapser sans flash intermédiaire. */
+        window.setTimeout(function () {
+          if (host.isConnected && host.dataset.state === 'gone') host.remove();
+        }, 50);
+      }
       function load() {
         if (loaded) return;
         loaded = true;
-        var src = host.getAttribute('data-src');
-        if (!src) return;
-        var frame = document.createElement('iframe');
-        frame.src = src;
-        frame.title = 'Barre d’écoute de LE-RADAR';
-        // Le parent est volontairement masqué jusqu'au message de disponibilité.
-        // Un iframe lazy sous [hidden] peut ne jamais être chargé par le navigateur,
-        // ce qui empêcherait précisément ce message d'arriver.
-        frame.loading = 'eager';
-        frame.allow = 'autoplay';
-        host.appendChild(frame);
-        timeout = setTimeout(function () { host.remove(); }, 6500);
+        var src = host.getAttribute('data-src') || host.dataset.src;
+        if (!src) {
+          markGone();
+          return;
+        }
+        if (!host.dataset.state) host.dataset.state = 'loading';
+        host.setAttribute('aria-busy', 'true');
+        host.hidden = false;
+        var frame = host.querySelector('iframe');
+        if (!frame) {
+          frame = document.createElement('iframe');
+          frame.title = 'Barre d’écoute de LE-RADAR';
+          frame.loading = 'eager';
+          frame.allow = 'autoplay';
+          frame.src = src;
+          host.appendChild(frame);
+        }
+        timeout = setTimeout(function () { markGone(); }, 6500);
         window.addEventListener('message', function (event) {
           if (event.source !== frame.contentWindow || event.origin !== 'https://le-radar.ca') return;
           var message = event.data;
           if (!message || message.type !== 'radar-embed' || message.protocol !== 1 || message.surface !== 'kiosque-v1') return;
           if (message.ready && message.available === false) {
             clearTimeout(timeout);
-            host.remove();
+            markGone();
             return;
           }
           var height = Number(message.height);
@@ -1513,10 +1776,9 @@
              */
             if (h > baseH + 4) {
               host.style.height = baseH + 'px';
-              host.style.zIndex = '60';
+              host.style.zIndex = '105';
               host.style.overflow = 'visible';
               host.style.background = 'transparent';
-              /* Garder l’ombre de barre (ne pas la virer avec le popover). */
               host.style.boxShadow = '0 8px 24px -14px rgba(0, 0, 0, 0.78)';
               frame.classList.add('is-vol-overlay');
               frame.style.background = 'transparent';
@@ -1536,9 +1798,11 @@
           }
           if (message.ready && message.available === true) {
             clearTimeout(timeout);
-            host.querySelector('a')?.remove();
+            var fallback = host.querySelector('a');
+            if (fallback) fallback.remove();
             host.hidden = false;
             host.dataset.state = 'ready';
+            host.setAttribute('aria-busy', 'false');
             if (!frame.dataset.baseH) {
               frame.dataset.baseH = String(frame.offsetHeight || 68);
             }
@@ -1562,6 +1826,255 @@
     }
   }
 
+  // ── Haut de page + loupe (recherche locale dans le DOM) ────────────────
+  function normalizeSearchText(str) {
+    return String(str || '')
+      .normalize('NFD')
+      .replace(/\p{M}/gu, '')
+      .toLowerCase()
+      .replace(/['’`]/g, '')
+      .replace(/[^\p{L}\p{N}\s-]+/gu, ' ')
+      .replace(/\s+/g, ' ')
+      .trim();
+  }
+
+  function searchTokens(query) {
+    var q = normalizeSearchText(query);
+    if (!q) return [];
+    return q.split(' ').filter(function (t) { return t.length >= 1; });
+  }
+
+  function initPageScrollTop() {
+    var btn = document.getElementById('page-scroll-top');
+    if (!btn || btn.dataset.bound === '1') return;
+    btn.dataset.bound = '1';
+    var SHOW_PX = 360;
+    function sync() {
+      var y = window.scrollY || document.documentElement.scrollTop || 0;
+      var show = y > SHOW_PX;
+      btn.hidden = !show;
+      btn.setAttribute('aria-hidden', show ? 'false' : 'true');
+    }
+    btn.addEventListener('click', function (e) {
+      e.preventDefault();
+      try {
+        window.scrollTo({ top: 0, left: 0, behavior: 'smooth' });
+      } catch (_) {
+        window.scrollTo(0, 0);
+      }
+    });
+    window.addEventListener('scroll', sync, { passive: true });
+    sync();
+  }
+
+  var newsSearchState = {
+    bound: false,
+    open: false,
+    timer: 0,
+    cards: [],
+  };
+
+  function collectSearchCards() {
+    var list = Array.prototype.slice.call(
+      document.querySelectorAll(
+        'main .article, main .post, .magazine-layout .article, .news-tail .article, .brief-rail .article',
+      ),
+    );
+    var seen = new Set();
+    return list.filter(function (el) {
+      if (seen.has(el)) return false;
+      seen.add(el);
+      return true;
+    });
+  }
+
+  function refreshNewsSearchCards() {
+    newsSearchState.cards = collectSearchCards();
+    var input = document.getElementById('news-search-input');
+    if (input && (input.value || '').trim()) {
+      applyNewsSearchQuery(input.value);
+    } else {
+      // Nettoyer d’éventuels masques d’un rendu précédent.
+      document.querySelectorAll('.is-search-hidden').forEach(function (el) {
+        el.classList.remove('is-search-hidden');
+      });
+      document.querySelectorAll('.news-features, .brief-rail, .news-tail').forEach(function (block) {
+        block.style.display = '';
+      });
+    }
+  }
+
+  function applyNewsSearchQuery(raw) {
+    var root = document.getElementById('news-search');
+    var toggle = document.getElementById('news-search-toggle');
+    var clear = document.getElementById('news-search-clear');
+    var hint = document.getElementById('news-search-hint');
+    var tokens = searchTokens(raw);
+    var hasQuery = tokens.length > 0;
+    if (root) root.classList.toggle('has-query', hasQuery);
+    if (toggle) toggle.classList.toggle('is-active', hasQuery);
+    if (clear) clear.classList.toggle('hidden', !hasQuery);
+    if (!newsSearchState.cards.length) newsSearchState.cards = collectSearchCards();
+    var visible = 0;
+    newsSearchState.cards.forEach(function (card) {
+      if (!card.isConnected) return;
+      if (!tokens.length) {
+        card.classList.remove('is-search-hidden');
+        visible += 1;
+        return;
+      }
+      var hay = normalizeSearchText(card.textContent || '');
+      var ok = tokens.every(function (t) { return hay.indexOf(t) !== -1; });
+      card.classList.toggle('is-search-hidden', !ok);
+      if (ok) visible += 1;
+    });
+    document.querySelectorAll('.news-features, .brief-rail').forEach(function (block) {
+      var any = block.querySelector('.article:not(.is-search-hidden)');
+      block.style.display = (!hasQuery || any) ? '' : 'none';
+    });
+    var tail = document.querySelector('.news-tail');
+    if (tail) {
+      if (hasQuery) {
+        var anyTail = tail.querySelector('.article:not(.is-search-hidden)');
+        tail.style.display = anyTail ? '' : 'none';
+      } else {
+        tail.style.display = '';
+      }
+    }
+    if (hint) {
+      hint.textContent = hasQuery
+        ? (visible === 0
+          ? 'Aucun article ne correspond à « ' + String(raw).trim() + ' ».'
+          : visible + ' article' + (visible > 1 ? 's' : '') + ' pour « ' + String(raw).trim() + ' ».')
+        : 'Recherche locale : titres, auteurs, rubriques et extraits déjà sur la page.';
+    }
+  }
+
+  function initNewsSearch() {
+    var root = document.getElementById('news-search');
+    var toggle = document.getElementById('news-search-toggle');
+    var panel = document.getElementById('news-search-panel');
+    var input = document.getElementById('news-search-input');
+    var clear = document.getElementById('news-search-clear');
+    var tools = document.getElementById('page-tools');
+    if (!root || !toggle || !panel || !input) return;
+
+    newsSearchState.cards = collectSearchCards();
+    if (newsSearchState.bound) return;
+    newsSearchState.bound = true;
+
+    function setOpen(next) {
+      newsSearchState.open = !!next;
+      root.classList.toggle('is-open', newsSearchState.open);
+      toggle.setAttribute('aria-expanded', newsSearchState.open ? 'true' : 'false');
+      panel.hidden = !newsSearchState.open;
+      panel.setAttribute('aria-hidden', newsSearchState.open ? 'false' : 'true');
+      var loupe = toggle.querySelector('.news-search__fab-loupe');
+      var closeIco = toggle.querySelector('.news-search__fab-close');
+      if (loupe) loupe.classList.toggle('hidden', newsSearchState.open);
+      if (closeIco) closeIco.classList.toggle('hidden', !newsSearchState.open);
+      if (newsSearchState.open) {
+        window.requestAnimationFrame(function () {
+          try { input.focus({ preventScroll: true }); } catch (_) { input.focus(); }
+        });
+      }
+      updateVkInset();
+    }
+
+    function scheduleApply() {
+      window.clearTimeout(newsSearchState.timer);
+      newsSearchState.timer = window.setTimeout(function () {
+        applyNewsSearchQuery(input.value || '');
+      }, 120);
+    }
+
+    function updateVkInset() {
+      if (!tools) return;
+      var vv = window.visualViewport;
+      if (!vv || !newsSearchState.open) {
+        tools.style.removeProperty('--vk-inset');
+        return;
+      }
+      var occluded = Math.max(0, window.innerHeight - vv.height - vv.offsetTop);
+      if (occluded > 1) tools.style.setProperty('--vk-inset', Math.round(occluded) + 'px');
+      else tools.style.removeProperty('--vk-inset');
+    }
+
+    toggle.addEventListener('click', function (e) {
+      e.preventDefault();
+      e.stopPropagation();
+      if (!newsSearchState.open && (input.value || '').trim()) {
+        input.value = '';
+        applyNewsSearchQuery('');
+        setOpen(false);
+        return;
+      }
+      setOpen(!newsSearchState.open);
+    });
+    input.addEventListener('input', scheduleApply);
+    input.addEventListener('keydown', function (e) {
+      if (e.key === 'Escape') {
+        e.preventDefault();
+        if (input.value) {
+          input.value = '';
+          applyNewsSearchQuery('');
+        } else {
+          setOpen(false);
+        }
+      }
+    });
+    if (clear) {
+      clear.addEventListener('click', function (e) {
+        e.preventDefault();
+        input.value = '';
+        applyNewsSearchQuery('');
+        try { input.focus({ preventScroll: true }); } catch (_) { input.focus(); }
+      });
+    }
+    document.addEventListener('click', function (e) {
+      if (!newsSearchState.open) return;
+      if (root.contains(e.target)) return;
+      setOpen(false);
+    });
+    if (window.visualViewport) {
+      window.visualViewport.addEventListener('resize', updateVkInset);
+      window.visualViewport.addEventListener('scroll', updateVkInset);
+    }
+  }
+
+  /**
+   * Re-applique collaps suite du fil + équité magazine + index recherche
+   * après un re-render éditorial (PGlite remplace main.innerHTML).
+   */
+  function refreshFeedChrome() {
+    newsTailExpanded = false;
+    try {
+      var tail = document.querySelector('.news-tail');
+      if (tail) {
+        tail.classList.remove('is-expanded');
+        // Remettre le corps en état repliable avant sync.
+        var body = newsTailBody(tail);
+        if (body) {
+          body.style.removeProperty('max-height');
+          body.style.removeProperty('--news-tail-collapsed-h');
+        }
+      }
+      syncNewsTailCollapse();
+    } catch (_) { /* ignore */ }
+    try {
+      if (typeof scheduleMagazineColumnBalance === 'function') {
+        scheduleMagazineColumnBalance();
+      } else if (typeof balanceMagazineColumns === 'function') {
+        balanceMagazineColumns();
+      }
+    } catch (_) { /* ignore */ }
+    try { refreshNewsSearchCards(); } catch (_) { /* ignore */ }
+    try { initMarquees(); } catch (_) { /* ignore */ }
+    try { rebindMastheadBackgrounds(); } catch (_) { /* ignore */ }
+  }
+
+  window.KiosqueRefreshFeed = refreshFeedChrome;
+
   function init() {
     initTheme();
     initMastheadClock();
@@ -1572,8 +2085,11 @@
     initMastheadToolRelease();
     initNavCollapse();
     initNewsTailCollapse();
+    initMagazineColumnBalance();
     initMarquees();
     initRadarTuner();
+    initPageScrollTop();
+    initNewsSearch();
   }
 
   if (document.readyState === 'loading') {

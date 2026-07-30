@@ -159,15 +159,21 @@ masthead:
         latitude: 46.8139
         longitude: -71.2080
         meteomediaSlug: quebec
-  # Scoreboard mât — formations maison fictives ; adversaires = vrais clubs RSEQ collégial.
-  # Scores et calendrier restent de démonstration (pas un fil s1.rseq.ca).
+  # Scoreboard mât — formations maison fictives (surnoms) ; code institution = QUO
+  # (comme LE-RADAR : GAR, LIM, CSF…). Adversaires = vrais clubs RSEQ collégial
+  # avec codes institution réels ; scores et dates restent de démonstration.
+  # Mobile : codes (QUO vs SLA). Bureau : noms d’équipes + institutions.
   # Rotation type gare LE-RADAR (deck brassé, ~5,2 s, animation is-arriving).
   sports:
     enabled: true
     href: /sports/
+    # Snapshot éditorial (focus-group B) : prune sessions contre cette date,
+    # pas contre le jour du build — sinon les fixtures sept–oct disparaissent en été.
+    # Après les derniers scores (sept.) et avant le prochain match (oct.).
+    demoAsOf: '2026-09-20'
     teams:
       - id: demo-quorums-volley
-        name: Les Quorums
+        name: Les Braises
         code: QUO
         institution: Cégep du Quorum
         sport: volleyball
@@ -178,7 +184,7 @@ masthead:
         results:
           - date: '2026-09-18'
             opponent: Boomerang
-            opponentCode: BOO
+            opponentCode: GAR
             opponentInstitution: Cégep François-Xavier-Garneau
             home: true
             scoreFor: 3
@@ -188,7 +194,7 @@ masthead:
             competition: RSEQ collégial (démo)
           - date: '2026-09-11'
             opponent: Titans
-            opponentCode: TIT
+            opponentCode: LIM
             opponentInstitution: Cégep Limoilou
             home: false
             scoreFor: 1
@@ -200,13 +206,13 @@ masthead:
           date: '2026-10-02'
           time: '19:00'
           opponent: Géants
-          opponentCode: GEA
+          opponentCode: CSF
           opponentInstitution: Cégep de Sainte-Foy
           home: true
           competition: RSEQ collégial (démo)
       - id: demo-quorums-basket
-        name: Les Bulletins
-        code: BUL
+        name: Les Orbites
+        code: QUO
         institution: Cégep du Quorum
         sport: basketball
         sportLabel: Basketball
@@ -216,7 +222,7 @@ masthead:
         results:
           - date: '2026-09-20'
             opponent: Cheetahs
-            opponentCode: CHE
+            opponentCode: CAL
             opponentInstitution: Cégep André-Laurendeau
             home: true
             scoreFor: 72
@@ -226,7 +232,7 @@ masthead:
             competition: RSEQ collégial (démo)
           - date: '2026-09-13'
             opponent: Cavaliers
-            opponentCode: CAV
+            opponentCode: CSL
             opponentInstitution: Cégep de Saint-Laurent
             home: false
             scoreFor: 61
@@ -238,13 +244,13 @@ masthead:
           date: '2026-10-05'
           time: '18:30'
           opponent: Gaulois
-          opponentCode: GAU
+          opponentCode: VAL
           opponentInstitution: Cégep de Valleyfield
           home: true
           competition: RSEQ collégial (démo)
       - id: demo-quorums-soccer
-        name: Les Motions
-        code: MOT
+        name: Les Corbeaux
+        code: QUO
         institution: Cégep du Quorum
         sport: soccer
         sportLabel: Soccer
@@ -254,7 +260,7 @@ masthead:
         results:
           - date: '2026-09-17'
             opponent: Cougars
-            opponentCode: COU
+            opponentCode: CEM
             opponentInstitution: Cégep Édouard-Montpetit
             home: true
             scoreFor: 2
@@ -264,7 +270,7 @@ masthead:
             competition: RSEQ collégial (démo)
           - date: '2026-09-10'
             opponent: Dragons
-            opponentCode: DRA
+            opponentCode: SJR
             opponentInstitution: Cégep Saint-Jean-sur-Richelieu
             home: false
             scoreFor: 0
@@ -276,13 +282,13 @@ masthead:
           date: '2026-10-03'
           time: '16:00'
           opponent: Barons
-          opponentCode: BAR
+          opponentCode: SLA
           opponentInstitution: Champlain College Saint-Lambert
           home: false
           competition: RSEQ collégial (démo)
       - id: demo-quorums-hockey
-        name: Les Urnes
-        code: URN
+        name: Les Verglas
+        code: QUO
         institution: Cégep du Quorum
         sport: hockey
         sportLabel: Hockey
@@ -292,7 +298,7 @@ masthead:
         results:
           - date: '2026-09-19'
             opponent: Titans
-            opponentCode: TIT
+            opponentCode: LIM
             opponentInstitution: Cégep Limoilou
             home: true
             scoreFor: 4
@@ -302,7 +308,7 @@ masthead:
             competition: RSEQ collégial (démo)
           - date: '2026-09-12'
             opponent: Boomerang
-            opponentCode: BOO
+            opponentCode: GAR
             opponentInstitution: Cégep François-Xavier-Garneau
             home: false
             scoreFor: 1
@@ -314,7 +320,7 @@ masthead:
           date: '2026-10-04'
           time: '20:00'
           opponent: Géants
-          opponentCode: GEA
+          opponentCode: CSF
           opponentInstitution: Cégep de Sainte-Foy
           home: true
           competition: RSEQ collégial (démo)

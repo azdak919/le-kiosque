@@ -103,7 +103,7 @@ test('demo et template reçoivent le même theme.css / kiosque.js (packages/them
   assert.match(demoHome, /id="masthead-weather-dock"/, 'emplacement dock météo');
   assert.match(tplHome, /id="masthead-weather-dock"/);
   assert.match(demoHome, /data-sports-payload/, 'équipe sports démo embarquée');
-  assert.match(demoHome, /Les Quorums/, 'équipe fictive Les Quorums');
+  assert.match(demoHome, /Les Braises|Les Orbites|Les Corbeaux|Les Verglas/, 'équipes fictives maison');
   assert.match(demoHome, /code&quot;:&quot;QUO&quot;|"code":"QUO"/, 'code équipe QUO');
   assert.match(demoHome, /data-nav-shell/, 'shell nav mobile');
   assert.match(tplHome, /data-nav-shell/);
@@ -122,10 +122,13 @@ test('demo et template reçoivent le même theme.css / kiosque.js (packages/them
     'intro équipe reformulée',
   );
   const seed = await readFile(path.join(demo.out, 'assets/editorial/seed.json'), 'utf8');
-  assert.match(seed, /"version":\s*9/, 'seed démo v9 (page /sports/ + adversaires RSEQ)');
-  assert.match(seed, /Les Quorums/, 'seed embarque l’équipe sports maison');
-  assert.match(seed, /Les Bulletins|Les Motions|Les Urnes/, 'plusieurs formations fictives maison');
+  assert.match(seed, /"version":\s*11/, 'seed démo v11 (surnoms Braises/Orbites/Corbeaux/Verglas)');
+  assert.match(seed, /Les Braises/, 'seed embarque l’équipe sports maison');
+  assert.match(seed, /Les Orbites|Les Corbeaux|Les Verglas/, 'plusieurs formations fictives maison');
   assert.match(seed, /Titans|Boomerang|Géants|Cheetahs/, 'adversaires = clubs RSEQ collégial réels');
+  assert.match(seed, /"code":"QUO"/, 'code institution Cégep du Quorum = QUO');
+  assert.match(seed, /"opponentCode":"(GAR|LIM|CSF|CAL|SLA|CEM|SJR)"/, 'codes adversaires = institutions RSEQ');
+  assert.match(demoJs, /sportsIsDesktopLabel|sports-chip--rich|SPORTS_SPORT_TONES/, 'densité mobile codes / bureau noms');
   const demoBackend = await readFile(path.join(demo.out, 'assets/editorial/demo-backend.js'), 'utf8');
   assert.match(demoBackend, /#refreshUnmodifiedDemo|refreshUnmodifiedDemo/, 'upgrade seed local sans perdre les éditions');
   assert.match(demoBackend, /seed\.publication/, 'refresh seed met à jour publication (sports mât)');

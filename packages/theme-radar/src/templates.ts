@@ -23,6 +23,7 @@ import {
   type Taxonomies,
 } from '../../core/src/model.ts';
 import { renderSourceArticle } from './source-view.js';
+import { pruneSportsPayload } from './sports-freshness.js';
 
 export interface RenderContext {
   publication: Publication;
@@ -171,7 +172,9 @@ function radioTuner(ctx: RenderContext): string {
   if (radio.station) params.set('station', radio.station);
   params.set('surface', 'kiosque-v1');
   const src = `https://le-radar.ca/tuner-embed.html?${params.toString()}`;
-  return `<radar-tuner class="radar-tuner" data-src="${esc(src)}" data-surface="kiosque-v1" hidden>
+  /* data-state=loading : coque peinte dès le 1er paint (pas de [hidden] → pas de
+   * saut de layout ni de « pop » à l’arrivée du postMessage ready). */
+  return `<radar-tuner class="radar-tuner" data-src="${esc(src)}" data-surface="kiosque-v1" data-state="loading" aria-busy="true">
   <a href="https://le-radar.ca/" rel="noopener">Écouter LE-RADAR</a>
 </radar-tuner>`;
 }
@@ -240,13 +243,27 @@ function sportsPayload(ctx: RenderContext): string {
   if (!sports || sports.enabled === false) return '';
   const teams = sportsTeamRoster(sports);
   if (!teams.length) return '';
+  /* Focus-group B : prune sessions (demoAsOf en démo, sinon now). */
+  const pruned = pruneSportsPayload(
+    {
+      teams,
+      results: sports.results ?? [],
+      nextGame: sports.nextGame ?? null,
+      nextGames: sports.nextGames ?? [],
+      demoAsOf: sports.demoAsOf,
+    },
+    { demoAsOf: sports.demoAsOf },
+  );
+  const prunedTeams = pruned.teams ?? [];
+  if (!prunedTeams.length) return '';
   const payload = {
-    teams,
-    team: teams[0],
-    results: sports.results ?? [],
-    nextGame: sports.nextGame ?? null,
-    nextGames: sports.nextGames ?? [],
+    teams: prunedTeams,
+    team: prunedTeams[0],
+    results: pruned.results ?? [],
+    nextGame: pruned.nextGame ?? null,
+    nextGames: pruned.nextGames ?? [],
     href: sportsPagePath(sports, ctx),
+    demoAsOf: sports.demoAsOf,
   };
   return `<div class="masthead-sports" data-sports-payload="${esc(JSON.stringify(payload))}" aria-label="Au tableau — scores et matchs" aria-live="polite"></div>`;
 }
@@ -300,22 +317,28 @@ function sportsResultRows(
     const opp = g.opponentInstitution
       ? `${esc(g.opponent)} <span class="sports-result__inst">(${esc(g.opponentInstitution)})</span>`
       : esc(g.opponent);
-    rows.push(`<li class="sports-result sports-result--${esc(g.result)}" data-result="${esc(g.result)}">
+    const prior = !!g.priorSeason;
+    const priorClass = prior ? ' sports-result--prior-season' : '';
+    const priorMeta = prior
+      ? `\n  <span class="sports-result__season-meta">Saison précédente</span>`
+      : '';
+    rows.push(`<li class="sports-result sports-result--${esc(g.result)}${priorClass}" data-result="${esc(g.result)}"${prior ? ' data-prior-season="1"' : ''}>
   <time class="sports-result__time" datetime="${esc(g.date)}">${esc(formatSportsDate(g.date, timeZone))}</time>
   <span class="sports-result__score" aria-label="${esc(label)}">${g.scoreFor}–${g.scoreAgainst}</span>
   <span class="sports-result__title"><span class="sports-result__vs">vs</span> ${opp}</span>
-  <span class="sports-result__badge" title="${esc(label)}">${badge}</span>
+  <span class="sports-result__badge" title="${esc(label)}">${badge}</span>${priorMeta}
 </li>`);
   }
   if (next) {
-    const when = [
-      formatSportsDate(next.date, timeZone),
-      next.time ? next.time.replace(':', ' h ') : '',
-    ].filter(Boolean).join(' · ');
+    const day = formatSportsDate(next.date, timeZone) || next.date;
+    const clock = next.time ? next.time.replace(':', ' h ') : '';
+    const timeInner = clock
+      ? `<span class="sports-result__day">${esc(day)}</span><span class="sports-result__clock">${esc(clock)}</span>`
+      : esc(day);
     const opp = esc(next.opponent);
     rows.push(`<li class="sports-result sports-result--next">
-  <time class="sports-result__time" datetime="${esc(next.date)}">${esc(when || next.date)}</time>
-  <span class="sports-result__score sports-result__score--next">À venir</span>
+  <time class="sports-result__time" datetime="${esc(next.date)}">${timeInner}</time>
+  <span class="sports-result__score sports-result__score--next" aria-label="Prochain match">À venir</span>
   <span class="sports-result__title"><span class="sports-result__vs">vs</span> ${opp}${next.home === false ? ' <span class="sports-result__venue">(extérieur)</span>' : next.home ? ' <span class="sports-result__venue">(domicile)</span>' : ''}</span>
   <span class="sports-result__badge sports-result__badge--next" title="Prochain match">→</span>
 </li>`);
@@ -332,7 +355,29 @@ function sportsResultRows(
  */
 export function sportsResultsPage(ctx: RenderContext, sportsArticles: Article[] = []): string {
   const sports = ctx.publication.masthead?.sports;
-  const teams = sports && sports.enabled !== false ? sportsTeamRoster(sports) : [];
+  const rawTeams = sports && sports.enabled !== false ? sportsTeamRoster(sports) : [];
+  const prunedSports = sports
+    ? pruneSportsPayload(
+        {
+          teams: rawTeams,
+          results: sports.results ?? [],
+          nextGame: sports.nextGame ?? null,
+          nextGames: sports.nextGames ?? [],
+          demoAsOf: sports.demoAsOf,
+        },
+        { demoAsOf: sports.demoAsOf },
+      )
+    : null;
+  const teams = (prunedSports?.teams ?? []) as SportsTeam[];
+  const sportsForRows: MastheadSports = sports
+    ? {
+        ...sports,
+        teams,
+        results: (prunedSports?.results ?? []) as MastheadSports['results'],
+        nextGame: (prunedSports?.nextGame ?? undefined) as MastheadSports['nextGame'],
+        nextGames: (prunedSports?.nextGames ?? undefined) as MastheadSports['nextGames'],
+      }
+    : { enabled: false };
   if (!sports || !teams.length) {
     return page(
       `<div class="wrap wire">
@@ -357,10 +402,10 @@ export function sportsResultsPage(ctx: RenderContext, sportsArticles: Article[] 
     <span class="sports-panel__glyph" aria-hidden="true">${sportsGlyphHtml(team.sport)}</span>
     <div class="sports-panel__identity">
       <h2 class="sports-panel__name">${esc(team.name)} <span class="sports-panel__code">${esc(team.code)}</span></h2>
-      <p class="sports-panel__meta">${esc(team.sportLabel || team.sport)}${team.sex ? ` · ${esc(team.sex)}` : ''}${team.institution ? ` · ${esc(team.institution)}` : ''}${team.fictional ? ' · formation fictive' : ''}</p>
+      <p class="sports-panel__meta">${esc(team.sportLabel || team.sport)}${team.sex ? ` · ${esc(team.sex)}` : ''}${team.institution ? ` · ${esc(team.institution)}` : ''}</p>
     </div>
   </header>
-  ${sportsResultRows(team, sports, tz)}
+  ${sportsResultRows(team, sportsForRows, tz)}
 </section>`;
   }).join('\n');
 
@@ -383,13 +428,11 @@ export function sportsResultsPage(ctx: RenderContext, sportsArticles: Article[] 
         <span class="wire-status">${teams.length} formation${teams.length > 1 ? 's' : ''}</span>
       </div>
       <p class="section-intro">Scores et prochains matchs des formations du ${esc(ctx.publication.institution)} — le tableau d’affichage du campus, en une page.</p>
-      <p class="sports-board-meta">Données embarquées · adversaires RSEQ collégial · formations maison fictives (démonstration)</p>
       <div class="sports-board-scroll">
         <div class="sports-board" role="list">
           ${panels}
         </div>
       </div>
-      <p class="sports-board-note">Ce tableau est figé dans le dépôt (pas de fil en direct). La rédaction le met à jour dans la configuration du mât ; un bot RSEQ pourra s’y brancher plus tard.</p>
       ${feed}
     </div>`,
     {
@@ -450,6 +493,8 @@ export function articleCard(article: Article, ctx: RenderContext, variant: boole
     section: section?.name,
     color: section?.color || categoryColor,
     href: safeUrl(href),
+    /* SPA démo PGlite : ne pas recharger le bandeau ni l’iframe radio. */
+    linkAttributes: ctx.editorial ? 'data-editorial-link' : '',
     title: article.title,
     excerpt: article.excerpt,
     readMore: true,
@@ -490,18 +535,59 @@ export interface PageOptions {
   bodyClass?: string;
 }
 
-export function page(content: string, options: PageOptions, ctx: RenderContext): string {
+/** Liens de navigation principale (en-tête + pied de page). */
+function mainNavItems(ctx: RenderContext): { href: string; label: string; color?: string }[] {
   const pub = ctx.publication;
-  const masthead = mastheadOptions(pub);
-  const nav = [
-    { href: asset('/', ctx), label: 'Accueil', color: undefined as string | undefined },
+  return [
+    { href: asset('/', ctx), label: 'Accueil' },
     ...ctx.taxonomies.sections.map((s) => ({
       href: relative(sectionUrl(pub, s.slug), ctx),
       label: s.name,
       color: s.color,
     })),
-    { href: asset('/auteurs/', ctx), label: 'Équipe', color: undefined as string | undefined },
+    { href: asset('/auteurs/', ctx), label: 'Équipe' },
   ];
+}
+
+function navLinksHtml(
+  items: { href: string; label: string; color?: string }[],
+  options: { current?: string; editorial?: boolean } = {},
+): string {
+  return items
+    .map((n) => {
+      const current = options.current === n.href ? ' aria-current="page"' : '';
+      const color = n.color && /^#[0-9a-fA-F]{3,8}$/.test(n.color)
+        ? ` class="nav-section" style="--nav-c:${esc(n.color)}"`
+        : '';
+      const dataEd = options.editorial ? ' data-editorial-link' : '';
+      return `<a href="${safeUrl(n.href)}"${current}${color}${dataEd}>${esc(n.label)}</a>`;
+    })
+    .join('\n      ');
+}
+
+/** Menu principal en pied de page (séparateurs ·, comme LE-RADAR). */
+function footerNavHtml(
+  items: { href: string; label: string; color?: string }[],
+  options: { current?: string; editorial?: boolean } = {},
+): string {
+  const sep = `<span class="site-foot__sep" aria-hidden="true">·</span>`;
+  return items
+    .map((n) => {
+      const current = options.current === n.href ? ' aria-current="page"' : '';
+      const color = n.color && /^#[0-9a-fA-F]{3,8}$/.test(n.color)
+        ? ` class="nav-section" style="--nav-c:${esc(n.color)}"`
+        : '';
+      const dataEd = options.editorial ? ' data-editorial-link' : '';
+      return `<a href="${safeUrl(n.href)}"${current}${color}${dataEd}>${esc(n.label)}</a>`;
+    })
+    .join(`\n      ${sep}\n      `);
+}
+
+export function page(content: string, options: PageOptions, ctx: RenderContext): string {
+  const pub = ctx.publication;
+  const masthead = mastheadOptions(pub);
+  const nav = mainNavItems(ctx);
+  const editorial = Boolean(ctx.editorial);
 
   const description = options.description ?? pub.tagline ?? pub.name;
   const radio = radioTuner(ctx);
@@ -560,15 +646,7 @@ ${weatherDockHtml()}
   <div class="wrap">
     <div class="nav-shell" data-nav-shell>
       <div class="nav">
-      ${nav
-        .map((n) => {
-          const current = options.current === n.href ? ' aria-current="page"' : '';
-          const color = n.color && /^#[0-9a-fA-F]{3,8}$/.test(n.color)
-            ? ` class="nav-section" style="--nav-c:${esc(n.color)}"`
-            : '';
-          return `<a href="${safeUrl(n.href)}"${current}${color}>${esc(n.label)}</a>`;
-        })
-        .join('\n      ')}
+      ${navLinksHtml(nav, { current: options.current, editorial })}
       </div>
       <button type="button" class="nav-toggle" data-nav-toggle hidden aria-expanded="false">Toutes les rubriques</button>
     </div>
@@ -583,14 +661,15 @@ ${content}
       <p class="site-foot__wordmark">${esc(pub.name)}</p>
       <p class="site-foot__signature">${esc(pub.institution)}${pub.founded ? ` · depuis ${esc(pub.founded)}` : ''}${pub.tagline ? ` — ${esc(pub.tagline)}` : ''}</p>
     </div>
+    <nav class="site-foot__nav" aria-label="Sections">
+      ${footerNavHtml(nav, { current: options.current, editorial })}
+    </nav>
     <nav class="site-foot__links" aria-label="Liens de pied de page">
       <a href="${asset('/feed.xml', ctx)}">Flux RSS</a>
       <span class="site-foot__sep" aria-hidden="true">·</span>
-      <a href="${asset('/archives/', ctx)}">Archives</a>
+      <a href="${asset('/archives/', ctx)}"${editorial ? ' data-editorial-link' : ''}>Archives</a>
       <span class="site-foot__sep" aria-hidden="true">·</span>
-      <a href="${asset('/plan-du-site/', ctx)}">Plan du site</a>
-      <span class="site-foot__sep" aria-hidden="true">·</span>
-      <a href="${asset('/auteurs/', ctx)}">L’équipe</a>
+      <a href="${asset('/plan-du-site/', ctx)}"${editorial ? ' data-editorial-link' : ''}>Plan du site</a>
     </nav>
     <div class="site-foot__credit">
       ${
@@ -607,6 +686,60 @@ ${content}
     </div>
   </div>
 </footer>
+<!-- Outils bas de page : haut (gauche) + loupe (droite) — parité LE-RADAR. -->
+<div class="page-tools" id="page-tools" data-page-tools>
+  <button
+    type="button"
+    class="page-tools__fab page-tools__top"
+    id="page-scroll-top"
+    aria-label="Haut de page"
+    title="Haut de page"
+    hidden
+  >
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+      <path d="M12 19V5"/><path d="M5 12l7-7 7 7"/>
+    </svg>
+  </button>
+  <div id="news-search" class="news-search">
+    <div id="news-search-panel" class="news-search__panel" role="search" hidden aria-hidden="true">
+      <label class="sr-only" for="news-search-input">Rechercher dans le journal</label>
+      <div class="news-search__field">
+        <svg class="news-search__field-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5"/>
+        </svg>
+        <input
+          id="news-search-input"
+          class="news-search__input"
+          type="search"
+          enterkeyhint="search"
+          autocomplete="off"
+          autocorrect="off"
+          autocapitalize="off"
+          spellcheck="false"
+          placeholder="Titre, auteur, rubrique…"
+        />
+        <button type="button" id="news-search-clear" class="news-search__clear hidden" aria-label="Effacer la recherche" title="Effacer">×</button>
+      </div>
+      <p id="news-search-hint" class="news-search__hint">Recherche locale : titres, auteurs, rubriques et extraits déjà sur la page.</p>
+    </div>
+    <button
+      type="button"
+      id="news-search-toggle"
+      class="news-search__fab"
+      aria-label="Rechercher dans le journal"
+      aria-expanded="false"
+      aria-controls="news-search-panel"
+      title="Rechercher"
+    >
+      <svg class="news-search__fab-loupe" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+        <circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5"/>
+      </svg>
+      <svg class="news-search__fab-close hidden" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true">
+        <path d="M6 6l12 12M18 6L6 18"/>
+      </svg>
+    </button>
+  </div>
+</div>
 <script src="${asset('/assets/kiosque.js', ctx)}" defer></script>
 ${ctx.editorial ? `<script>window.KIOSQUE_EDITORIAL=${JSON.stringify({ mode: 'demo-local', publicBasePath: ctx.basePath, adminBasePath: `${ctx.basePath}/admin`, assetsBase: ctx.editorial.assetsBase, seedUrl: ctx.editorial.seedUrl, publicationSlug: pub.slug, databaseKey: ctx.editorial.databaseKey }).replace(/</g, '\\u003c')};</script>
 <script type="module" src="${ctx.editorial.assetsBase}/front.js"></script>` : ''}
@@ -630,10 +763,11 @@ export function magazineFeedHtml(
 ): string {
   if (!articles.length) return `<p class="empty">${esc(opts.empty)}</p>`;
   const [first, ...rest] = articles;
-  // 3 vedettes + jusqu’à 7 en bref : équilibre colonne droite / hauteur une.
+  // 3 vedettes + jusqu’à 6 en bref (graine). Le JS peut encore trimmer
+  // la dernière carte si En bref dépasse le hero (règle d’équité LE-RADAR).
   const features = rest.slice(0, 3);
-  const briefs = rest.slice(3, 10);
-  const tail = rest.slice(10);
+  const briefs = rest.slice(3, 9);
+  const tail = rest.slice(9);
   return `<div class="magazine-layout">
       <section class="news-hero" aria-label="${esc(opts.heroLabel)}">
         ${articleCard(first, ctx, 'lead')}

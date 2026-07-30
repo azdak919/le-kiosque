@@ -14,22 +14,69 @@ const ESCAPES = { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&
 
 export const escapeSourceViewHtml = (value) => String(value ?? '').replace(/[&<>"']/g, (character) => ESCAPES[character]);
 
-/* Extraits assez longs pour qu’en float mobile le texte remplisse
- * l’espace sous la vignette (pas une seule ligne orpheline). */
-/* Feature ≥ ~320 car. utiles pour que le texte épouse le bas de la vignette
- * (float mobile) ; 1100 laisse de la marge pour 3–4 lignes sous la photo. */
-const EXCERPT_LIMITS = Object.freeze({ lead: 960, feature: 1100, brief: 360, tail: 280 });
+/*
+ * Budgets d’extrait : assez longs pour remplir le float (vignette) sans
+ * laisser une seule ligne orpheline à côté de la photo — surtout En bref.
+ */
+const EXCERPT_LIMITS = Object.freeze({ lead: 960, feature: 960, brief: 360, tail: 280 });
+/**
+ * Seuil de misère pour En bref : on masque seulement les bribes (1–2 mots /
+ * un libellé). Un vrai chapô d’une phrase courte reste affiché.
+ */
+const BRIEF_MIN_WORDS = 6;
+const BRIEF_MIN_CHARS = 40;
 
 function normalizeRole(value) {
   return ['lead', 'feature', 'brief', 'tail'].includes(value) ? value : 'tail';
 }
 
+/** Retire crédits photo collés au chapô (le crédit vit sous la vignette). */
+function sanitizeExcerptText(value = '') {
+  let s = String(value ?? '');
+  s = s.replace(/\s*\(\s*(?:Photo(?:\s*credit)?|Crédit(?:\s*photo)?|Credit|Image|Illustration)\s*:\s*[^)]+\)\.?\s*/gi, ' ');
+  s = s.replace(/(?:^|[.\s])(?:Photo(?:\s*credit)?|Crédit(?:\s*photo)?|Credit|Image|Illustration)\s*:\s*[^.!?\n(]{2,80}\.?\s*/gi, ' ');
+  /* Résidu type « . Doe » après un crédit coupé — pas un mot de phrase normal. */
+  s = s.replace(/([.!?»"')\]])\s+[\p{L}'’]{1,18}\s*$/u, '$1');
+  s = s.replace(/\.\s*\./g, '.');
+  return s.replace(/\s+/g, ' ').trim();
+}
+
+function wordCount(text) {
+  return String(text || '').split(/\s+/).filter(Boolean).length;
+}
+
+/**
+ * Coupe à la limite en privilégiant une fin de phrase, sinon un espace.
+ * Évite les extraits d’un seul mot ou d’une demi-ligne mutilée.
+ */
 function truncateExcerpt(value, role) {
-  const text = String(value ?? '').replace(/\s+/g, ' ').trim();
+  const text = sanitizeExcerptText(value);
   const limit = EXCERPT_LIMITS[role];
-  if (!text || text.length <= limit) return { text, truncated: false };
-  const boundary = text.lastIndexOf(' ', limit - 1);
-  return { text: `${text.slice(0, boundary > 80 ? boundary : limit).trim()}…`, truncated: true };
+  if (!text) return { text: '', truncated: false };
+  /* En bref : masquer un chapô trop maigre (mot isolé / libellé), pas une phrase. */
+  if (role === 'brief' && wordCount(text) < BRIEF_MIN_WORDS && text.length < BRIEF_MIN_CHARS) {
+    return { text: '', truncated: false };
+  }
+  if (text.length <= limit) return { text, truncated: false };
+
+  const window = text.slice(0, limit);
+  /* Préférer une fin de phrase dans le dernier tiers de la fenêtre. */
+  const minSentence = Math.floor(limit * 0.55);
+  let cut = -1;
+  for (const re of [/[.!?]["»')\]]?\s/g, /[!?]\s/g]) {
+    let match;
+    while ((match = re.exec(window)) !== null) {
+      const at = match.index + match[0].length;
+      if (at >= minSentence && at <= limit) cut = at;
+    }
+    if (cut > 0) break;
+  }
+  if (cut < 0) {
+    const boundary = window.lastIndexOf(' ');
+    cut = boundary > 80 ? boundary : limit;
+  }
+  const sliced = text.slice(0, cut).trim().replace(/[,;:–—-]\s*$/, '').trim();
+  return { text: `${sliced}…`, truncated: true };
 }
 
 function imageMarkup(image, role) {

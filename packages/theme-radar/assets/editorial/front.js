@@ -40,6 +40,24 @@ async function render(push = false) {
   document.title = result.title;
   document.querySelector('main').innerHTML = result.html;
   document.documentElement.dataset.editorialReady = 'true';
+  /*
+   * kiosque.js s’attache au HTML statique au load ; le rendu PGlite remplace
+   * main.innerHTML. Rejouer collaps suite du fil, équité magazine et index
+   * de recherche — sinon : fil tout ouvert, vide sous vedettes, loupe morte.
+   */
+  const refreshFeed = () => {
+    try {
+      if (typeof window.KiosqueRefreshFeed === 'function') window.KiosqueRefreshFeed();
+    } catch (_) { /* ignore */ }
+  };
+  refreshFeed();
+  // 2e / 3e passes : images + polices (comme l’init magazine balance).
+  window.setTimeout(refreshFeed, 120);
+  window.setTimeout(refreshFeed, 500);
+  window.setTimeout(refreshFeed, 1400);
+  if (document.fonts && document.fonts.ready) {
+    document.fonts.ready.then(refreshFeed).catch(() => {});
+  }
 }
 
 document.addEventListener('click', (event) => {
@@ -49,10 +67,15 @@ document.addEventListener('click', (event) => {
   if (!url.pathname.startsWith(config.publicBasePath)) return;
   event.preventDefault();
   history.pushState({}, '', url.pathname);
+  /* Remonter en tête : le bandeau démo + la radio sticky restent montés. */
+  window.scrollTo(0, 0);
   render().catch(showFailure);
 });
 
-window.addEventListener('popstate', () => render().catch(showFailure));
+window.addEventListener('popstate', () => {
+  window.scrollTo(0, 0);
+  render().catch(showFailure);
+});
 
 function showFailure(error) {
   console.error(error);

@@ -233,6 +233,7 @@ function mastheadSports(v: unknown): MastheadSports | undefined {
     nextGame: nextGame ?? undefined,
     nextGames: nextGames.length ? nextGames : undefined,
     href: str(rec.href),
+    demoAsOf: str(rec.demoAsOf),
   };
 }
 

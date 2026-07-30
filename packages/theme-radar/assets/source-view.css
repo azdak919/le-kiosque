@@ -91,9 +91,12 @@
   font-weight: 600;
   letter-spacing: -.012em;
   line-height: 1.2;
-  overflow-wrap: anywhere;
-  word-break: break-word;
+  overflow-wrap: break-word;
+  word-break: normal;
   hyphens: auto;
+  -webkit-hyphens: auto;
+  /* Évite les orphelins d’un seul mot (« de » / « compost ») en bas de titre. */
+  text-wrap: pretty;
   transition: color 140ms ease;
 }
 .article-title a { color: inherit; text-decoration: none; }
@@ -191,7 +194,8 @@
 .article--lead {
   display: flex;
   flex-direction: column;
-  padding: 12px 0 16px;
+  gap: 0;
+  padding: 10px 0 12px;
   border-bottom: 2px solid var(--rule-strong);
 }
 .article--lead > .article-eyebrow { order: 1; }
@@ -200,20 +204,28 @@
 .article--lead > .article-byline { order: 4; }
 .article--lead > .article-media { order: 5; }
 .article--lead > .article-brief { order: 6; }
-.article--lead::before { top: 48px; }
+.article--lead::before { top: 40px; }
+/* Eyebrow → rubrique : 8 px (identique titre « En bref » → première méta). */
 .article-eyebrow {
   display: inline-block;
-  margin-bottom: 8px;
+  margin: 0 0 8px;
   color: var(--accent);
   font-size: 11px;
   font-weight: 800;
   letter-spacing: .18em;
   text-transform: uppercase;
 }
-.article--lead .article-title {
+.article--lead .article-eyebrow {
+  margin: 0 0 8px;
+}
+.article--lead .article-eyebrow + .article-meta {
+  margin-top: 0;
   margin-bottom: 4px;
+}
+.article--lead .article-title {
+  margin: 0 0 2px;
   font-size: var(--lead-title-size);
-  line-height: 1.1;
+  line-height: 1.08;
 }
 .article--lead.has-image .article-title { margin-bottom: 4px; }
 /*
@@ -249,13 +261,41 @@
   border-radius: 8px;
   background: var(--bg-soft);
 }
-.article--lead .article-byline { margin-bottom: 8px; font-size: .95rem; }
-.article--lead .article-brief { max-width: none; font-size: 1.08rem; line-height: 1.6; }
-.article--feature .article-brief { max-width: none; font-size: .98rem; line-height: 1.52; }
+.article--lead .article-byline { margin-bottom: 6px; font-size: .92rem; }
+.article--lead .article-brief {
+  max-width: none;
+  font-size: 1.05rem;
+  line-height: 1.55;
+  text-align: justify;
+  hyphens: auto;
+  -webkit-hyphens: auto;
+}
+.article--feature .article-brief {
+  max-width: none;
+  font-size: .98rem;
+  line-height: 1.52;
+  text-align: justify;
+  hyphens: auto;
+  -webkit-hyphens: auto;
+}
+.article-brief,
+.article-brief-text {
+  text-align: justify;
+  hyphens: auto;
+  -webkit-hyphens: auto;
+}
 
 .article--compact { padding: 11px 0; }
 .article--compact .article-meta { margin-bottom: 3px; }
-.article--compact .article-title { margin-top: 0; margin-bottom: 2px; font-size: 1.28rem; line-height: 1.18; hyphens: manual; }
+.article--compact .article-title {
+  margin-top: 0;
+  margin-bottom: 2px;
+  font-size: 1.28rem;
+  line-height: 1.18;
+  hyphens: auto;
+  -webkit-hyphens: auto;
+  text-wrap: pretty;
+}
 .article--compact .article-byline { margin: 0 0 6px; font-size: .78rem; }
 .article--compact .article-brief { margin-top: 0; color: var(--ink-soft); font-size: .88rem; line-height: 1.45; }
 /*
@@ -279,9 +319,24 @@
   display: block;
   grid-template-columns: none;
 }
+/* Garder la grille méta (rubrique | date) — display:block cassait l’alignement droite. */
 .brief-rail .article--compact.article--thumb.has-image > .article-meta {
-  display: block;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: start;
+  column-gap: 8px;
   margin-bottom: 3px;
+}
+.brief-rail .article--compact.article--thumb.has-image > .article-meta .article-time {
+  grid-row: 1;
+  grid-column: 2;
+  justify-self: end;
+  text-align: right;
+  align-self: start;
+  white-space: nowrap;
+}
+.brief-rail .article--compact.article--thumb.has-image > .article-meta .article-time::before {
+  display: none;
 }
 .brief-rail .article--compact.article--thumb.has-image > .article-title {
   display: block;
@@ -313,12 +368,18 @@
   margin-top: 0;
   min-height: clamp(64px, 22%, 96px);
 }
+/*
+ * En bref + photo : garder display:inline pour le float wrap (texte à droite
+ * puis sous la vignette). Pas de -webkit-box ici : ça cassait le contournement.
+ * Budget JS (~360 car. / ≥12 mots) + text-wrap:pretty évitent la demi-ligne.
+ */
 .brief-rail .article--compact.article--thumb.has-image .article-brief-text,
 .brief-rail .article--compact.article--thumb.has-image .article-brief.is-truncated .article-brief-text {
   display: inline;
   -webkit-line-clamp: unset;
   -webkit-box-orient: initial;
   overflow: visible;
+  text-wrap: pretty;
 }
 .brief-rail .article--compact.article--thumb.has-image::after {
   content: "";
@@ -389,16 +450,104 @@
   -webkit-box-orient: vertical;
   -webkit-line-clamp: 2;
 }
-.news-hero .article--feature.article--thumb.has-image { grid-template-columns: clamp(96px, 30vw, 128px) minmax(0, 1fr); column-gap: 14px; }
-.news-hero .article--feature.article--thumb.has-image .article-media img { border-radius: 7px; }
+/*
+ * Vedettes : float wrap toutes largeurs (comme En bref) — plus d’espace perdu
+ * à côté de la vignette. Tailles progressives mobile → bureau.
+ */
+.news-hero .article--feature.article--thumb.has-image {
+  display: block;
+  grid-template-columns: none;
+  padding-top: 12px;
+  padding-bottom: 12px;
+}
+/* Garder la grille méta (rubrique | date) — display:block collait date à la rubrique. */
+.news-hero .article--feature.article--thumb.has-image > .article-meta {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: start;
+  column-gap: 8px;
+  margin-bottom: 4px;
+}
+.news-hero .article--feature.article--thumb.has-image > .article-meta .article-time {
+  grid-row: 1;
+  grid-column: 2;
+  justify-self: end;
+  text-align: right;
+  align-self: start;
+  white-space: nowrap;
+}
+.news-hero .article--feature.article--thumb.has-image > .article-meta .article-time::before {
+  display: none;
+}
+.news-hero .article--feature.article--thumb.has-image > .article-title {
+  display: block;
+  margin-bottom: 4px;
+}
+.news-hero .article--feature.article--thumb.has-image > .article-byline {
+  display: block;
+  margin: 0 0 6px;
+}
+.news-hero .article--feature.article--thumb.has-image > .article-media {
+  float: left;
+  width: clamp(96px, 30vw, 128px);
+  margin: 2px 14px 4px 0;
+  shape-outside: margin-box;
+  grid-column: auto;
+  grid-row: auto;
+  aspect-ratio: auto;
+  overflow: visible;
+  background: transparent;
+}
+.news-hero .article--feature.article--thumb.has-image > .article-title,
+.news-hero .article--feature.article--thumb.has-image > .article-byline,
+.news-hero .article--feature.article--thumb.has-image > .article-brief {
+  grid-column: auto;
+}
+.news-hero .article--feature.article--thumb.has-image > .article-brief {
+  display: block;
+  overflow: visible;
+  margin-top: 0;
+  min-height: clamp(96px, 30vw, 128px);
+  max-width: none;
+}
+.news-hero .article--feature.article--thumb.has-image .article-brief-text,
+.news-hero .article--feature.article--thumb.has-image .article-brief.is-truncated .article-brief-text {
+  display: inline;
+  -webkit-line-clamp: unset;
+  overflow: visible;
+  -webkit-box-orient: initial;
+}
+.news-hero .article--feature.article--thumb.has-image::after {
+  content: "";
+  display: table;
+  clear: both;
+}
+.news-hero .article--feature.article--thumb.has-image .article-media img {
+  width: 100%;
+  height: auto;
+  aspect-ratio: 1 / 1;
+  object-fit: cover;
+  border-radius: 7px;
+}
 @media (min-width: 601px) {
   .article--thumb.has-image { grid-template-columns: clamp(72px, 22%, 110px) minmax(0, 1fr); column-gap: 14px; }
   .article--thumb.has-image > .article-media { margin-top: 3px; }
   .article--thumb.has-image .article-media-credit { font-size: .6rem; line-height: 1.3; -webkit-line-clamp: 3; }
-  .news-hero .article--feature.article--thumb.has-image { grid-template-columns: clamp(128px, 34%, 168px) minmax(0, 1fr); column-gap: 16px; }
+  .news-hero .article--feature.article--thumb.has-image > .article-media {
+    width: clamp(128px, 34%, 168px);
+  }
+  .news-hero .article--feature.article--thumb.has-image > .article-brief {
+    min-height: clamp(128px, 34%, 168px);
+  }
 }
 @media (min-width: 1100px) {
-  .news-hero .article--feature.article--thumb.has-image { grid-template-columns: clamp(140px, 36%, 184px) minmax(0, 1fr); column-gap: 18px; }
+  .news-hero .article--feature.article--thumb.has-image > .article-media {
+    width: clamp(140px, 36%, 184px);
+    margin: 2px 16px 4px 0;
+  }
+  .news-hero .article--feature.article--thumb.has-image > .article-brief {
+    min-height: clamp(140px, 36%, 184px);
+  }
 }
 
 /*
@@ -465,15 +614,27 @@
 .magazine-layout--article .brief-rail--article > .article:last-child {
   border-bottom: 0;
 }
+/*
+ * Titres de colonne (« En bref », « Suite du fil ») :
+ * même rythme que .article-eyebrow → méta (8 px) — pas de double gap
+ * (padding-bottom h2 + padding-top article).
+ */
 .brief-rail > h2,
 .news-tail > h2,
 .news-tail-title {
-  margin: 14px 0 6px;
-  padding-bottom: 8px;
+  margin: 0;
+  padding: 10px 0 8px; /* top = padding une ; bas = gap eyebrow→méta */
   color: var(--muted);
   font: 800 10px/1.2 var(--sans);
   letter-spacing: .16em;
   text-transform: uppercase;
+}
+/* Premier article sous le titre : le 8 px du titre suffit (parité À la une). */
+.brief-rail > h2 + .article,
+.news-tail > h2 + .article,
+.news-tail-title + .article,
+.news-tail-title + .news-tail-body .article:first-child {
+  padding-top: 0;
 }
 /* Suite du fil : gabarit compact (LE-RADAR .article--standard en grille). */
 .article--tail {
@@ -484,9 +645,10 @@
   margin: 0 0 4px;
   font-size: 1.22rem;
   line-height: 1.2;
-  hyphens: manual;
-  -webkit-hyphens: manual;
+  hyphens: auto;
+  -webkit-hyphens: auto;
   word-break: normal;
+  text-wrap: pretty;
 }
 .article--tail .article-byline {
   margin: 2px 0 4px;
@@ -731,53 +893,12 @@
   .article-meta { grid-template-columns: 1fr; }
   .article-time { justify-self: start; text-align: left; }
 
-  /*
-   * Vedettes (feature) : image flottante à gauche, l’extrait enroule
-   * sous la photo (plusieurs lignes, pas une orpheline).
-   */
-  .news-hero .article--feature.article--thumb.has-image {
-    display: block;
-  }
-  .news-hero .article--feature.article--thumb.has-image > .article-meta {
-    display: block;
-    margin-bottom: 6px;
-  }
-  .news-hero .article--feature.article--thumb.has-image > .article-title {
-    display: block;
-    margin-bottom: 6px;
-  }
-  .news-hero .article--feature.article--thumb.has-image > .article-byline {
-    display: block;
-    margin-bottom: 8px;
-  }
+  /* Vedettes mobile : vignette un cran plus petite (float déjà global). */
   .news-hero .article--feature.article--thumb.has-image > .article-media {
-    float: left;
     width: clamp(92px, 28vw, 118px);
-    margin: 2px 14px 4px 0;
-    shape-outside: margin-box;
-    grid-column: auto;
-    grid-row: auto;
-  }
-  .news-hero .article--feature.article--thumb.has-image > .article-title,
-  .news-hero .article--feature.article--thumb.has-image > .article-byline,
-  .news-hero .article--feature.article--thumb.has-image > .article-brief {
-    grid-column: auto;
   }
   .news-hero .article--feature.article--thumb.has-image > .article-brief {
-    display: block;
-    overflow: visible;
-    /* L’extrait remplit l’espace à droite puis sous la photo. */
-    margin-top: 0;
-    /* ≈ hauteur vignette : évite un trou bas quand l’extrait est encore court. */
     min-height: clamp(92px, 28vw, 118px);
-  }
-  .news-hero .article--feature.article--thumb.has-image::after {
-    content: "";
-    display: table;
-    clear: both;
-  }
-  .news-hero .article--feature.article--thumb.has-image .article-media img {
-    aspect-ratio: 1 / 1;
   }
 
   /*

@@ -68,11 +68,12 @@ test('la barre radio suit le contrat sombre et reste masquée avant la confirmat
   const theme = await readFile(path.join(out, 'assets/theme.css'), 'utf8');
   assert.match(home, /<radar-tuner/);
   assert.match(home, /data-src="https:\/\/le-radar\.ca\/tuner-embed\.html\?station=chyz&amp;surface=kiosque-v1"/);
-  assert.match(home, /<radar-tuner[^>]+hidden/);
+  assert.match(home, /data-state="loading"/, 'coque radio peinte dès le 1er paint (pas de [hidden])');
   assert.ok(!home.includes('<iframe'), 'l’iframe doit être créée par le composant client');
   assert.match(client, /message\.protocol !== 1 \|\| message\.surface !== 'kiosque-v1'/);
-  assert.match(client, /frame\.loading = 'eager'/, 'un iframe masqué ne doit pas attendre le lazy loading pour confirmer sa disponibilité');
-  assert.match(theme, /\.radar-tuner\[hidden\]\s*\{\s*display:\s*none/);
+  assert.match(client, /frame\.loading = 'eager'/, 'chargement eager pour recevoir le postMessage ready');
+  assert.match(theme, /min-height:\s*68px/, 'hauteur coque radio réservée');
+  assert.match(theme, /\[data-state="loading"\] iframe/, 'iframe invisible pendant le chargement');
   assert.match(home, /href="\/depot-renomme\/assets\/theme\.css"/);
 });
 
@@ -103,7 +104,7 @@ test('la vitrine expose le bandeau illustré, les outils et la composition magaz
   assert.match(home, /id="masthead-backgrounds"/);
   assert.match(home, /data-weather-localities="/);
   assert.match(home, /data-sports-payload="/);
-  assert.match(home, /Les Quorums/);
+  assert.match(home, /Les Braises|Les Orbites|Les Corbeaux|Les Verglas/);
   assert.match(home, /\/sports\//, 'puce sports pointe vers la page résultats');
   const sportsPage = await readFile(path.join(out, 'sports/index.html'), 'utf8');
   assert.match(sportsPage, /Au tableau/);

@@ -13,6 +13,13 @@
 html {
   -webkit-text-size-adjust: 100%;
   scroll-behavior: smooth;
+  /*
+   * Couper le débordement horizontal ici (html + body, comme LE-RADAR).
+   * overflow-x:clip seul sur body peut casser position:sticky (bandeau
+   * démo + barre radio) sur certains moteurs (Safari / pairing overflow-y).
+   */
+  overflow-x: hidden;
+  overflow-x: clip;
 }
 @media (prefers-reduced-motion: reduce) {
   html { scroll-behavior: auto; }
@@ -33,6 +40,7 @@ body {
   -webkit-font-smoothing: antialiased;
   /* Le débordement horizontal est coupé, jamais scrollable : sur iPad, un
      dépassement de 3 px suffit à rendre toute la page baladeuse. */
+  overflow-x: hidden;
   overflow-x: clip;
 }
 
@@ -245,9 +253,25 @@ a { color: inherit; }
   }
 }
 
-/* ─────────────── BANDEAU DE DÉMONSTRATION ─────────────── */
+/* ─────────────── BANDEAU DE DÉMONSTRATION ───────────────
+ * Sticky au scroll (démo) : reste au-dessus de la barre radio.
+ * Hauteur utilisée comme offset sticky de .radar-tuner. */
+:root {
+  --demo-banner-sticky-h: 0px;
+}
+body:has(.demo-banner) {
+  /* 7+7 padding + ~14 px de ligne (12 px × 1,2) ≈ 28–32 px. */
+  --demo-banner-sticky-h: 2rem;
+}
 
 .demo-banner {
+  position: sticky;
+  top: 0;
+  z-index: 110;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: var(--demo-banner-sticky-h, 2rem);
   background: var(--live);
   color: #fff;
   font-size: 12px;
@@ -256,23 +280,39 @@ a { color: inherit; }
   text-transform: uppercase;
   text-align: center;
   padding: 7px var(--pad);
+  box-sizing: border-box;
 }
 .demo-banner a { color: #fff; }
 
-/* ─────────────── BARRE RADIO LE-RADAR ─────────────── */
+/* ─────────────── BARRE RADIO LE-RADAR (sticky, parité LE-RADAR .tuner) ─────────────── */
 
 .radar-tuner {
   display: block;
   width: 100%;
   margin: 0;
+  /* Sticky sous le bandeau démo s’il est présent, sinon top: 0. */
+  position: sticky;
+  top: var(--demo-banner-sticky-h, 0px);
+  /* Au-dessus du fil ; sous le bandeau démo (110). */
+  z-index: 100;
+  isolation: isolate;
   /* Même chrome que .tuner LE-RADAR : fond session, ombre, pas de filet. */
   background: var(--tuner-session-base, var(--tuner-bg, #121820));
   border: 0;
   box-shadow: 0 8px 24px -14px rgba(0, 0, 0, 0.78);
   overflow: hidden;
-  position: relative;
-  z-index: 40;
-  /* Pas de min-height : tant que la barre est masquée, zéro espace réservé. */
+  /*
+   * Coque réservée dès le premier paint (parité hauteur embed kiosque-v1).
+   * Évite le « pop » quand l’iframe répond ready — plus de [hidden] display:none.
+   */
+  min-height: 68px;
+  box-sizing: border-box;
+}
+/* Indisponible / retiré : collapser sans laisser de trou. */
+.radar-tuner[data-state="gone"],
+.radar-tuner[hidden] {
+  display: none !important;
+  min-height: 0;
 }
 /* Petit air entre la barre radio et la rangée de rubriques (comme après le synthé LE-RADAR). */
 body.with-radio .nav-wrap {
@@ -282,15 +322,17 @@ body.with-radio .nav-wrap {
 body.with-radio .nav {
   border-top: none;
 }
-.radar-tuner[hidden] { display: none !important; }
 .radar-tuner > a {
-  display: block;
-  max-width: var(--maxw);
-  margin: 0 auto;
-  padding: 9px var(--pad);
-  color: var(--accent);
-  font-size: 0.84rem;
-  font-weight: 700;
+  /* Fallback texte tant que l’iframe n’est pas prête — hors flux visuel. */
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
 }
 .radar-tuner iframe {
   display: block;
@@ -306,9 +348,16 @@ body.with-radio .nav {
   /* Pas de fond iframe : l’embed peint la barre ; le surplus volume reste transparent. */
   background: transparent;
   color-scheme: normal;
-  transition: height 120ms ease, margin-bottom 120ms ease;
+  transition: height 120ms ease, margin-bottom 120ms ease, opacity 160ms ease;
   position: relative;
   z-index: 1;
+}
+/* Chargement : coque sombre déjà peinte ; iframe invisible jusqu’au ready. */
+.radar-tuner[data-state="loading"] iframe {
+  opacity: 0;
+}
+.radar-tuner[data-state="ready"] iframe {
+  opacity: 1;
 }
 /*
  * Volume popover mobile : l’iframe grandit pour peindre la bulle ;
@@ -317,7 +366,8 @@ body.with-radio .nav {
  */
 .radar-tuner:has(iframe.is-vol-overlay) {
   overflow: visible;
-  z-index: 60;
+  /* Au-dessus du fil ; le bandeau démo sticky reste lisible (110). */
+  z-index: 105;
   /* Hauteur fixée en JS (= baseH) ; fond transparent sous la bulle. */
   background: transparent;
   /* Ombre de barre conservée (hôte = hauteur barre uniquement). */
@@ -397,7 +447,8 @@ body.with-radio .nav {
   .masthead-status .masthead-sports {
     flex: 0 1 auto;
     margin-left: 0; /* collé après la météo */
-    max-width: min(22rem, 42vw); /* plus large sur ordi : texte enrichi + marquee */
+    /* Bureau : noms d’équipes + institutions (densité riche). */
+    max-width: min(34rem, 52vw);
   }
   .masthead-status .weather-chip,
   .masthead-status .masthead-weather__city {
@@ -408,8 +459,11 @@ body.with-radio .nav {
   .masthead-status .sports-chip,
   .masthead-status .masthead-sports__chip {
     width: auto;
-    min-width: 11rem;
-    max-width: min(22rem, 42vw);
+    min-width: 12rem;
+    max-width: min(34rem, 52vw);
+  }
+  .masthead-status .sports-chip--rich {
+    min-width: 14rem;
   }
 }
 /*
@@ -491,8 +545,9 @@ body.with-radio .nav {
   justify-content: space-between;
   gap: 12px;
   flex-wrap: wrap;
-  margin-top: 22px;
-  padding-bottom: 8px;
+  /* Densité type LE-RADAR après bandeau météo/sports. */
+  margin-top: 8px;
+  padding-bottom: 6px;
   border-bottom: 2px solid var(--rule-strong);
 }
 .wire-title {
@@ -560,7 +615,7 @@ body.with-radio .nav {
   font-size: var(--lead-title-size);
   line-height: 1.12;
   letter-spacing: -0.02em;
-  margin: 8px 0 8px;
+  margin: 4px 0 2px;
   overflow-wrap: anywhere;
   hyphens: auto;
 }
@@ -577,15 +632,19 @@ body.with-radio .nav {
   line-height: 1.55;
   color: var(--ink-soft);
   margin: 0 0 16px;
+  text-align: justify;
+  hyphens: auto;
+  -webkit-hyphens: auto;
 }
 .post-meta {
   display: flex;
   flex-wrap: wrap;
   align-items: baseline;
-  gap: 8px 14px;
+  gap: 6px 12px;
   font-size: 0.86rem;
   color: var(--muted);
-  padding-bottom: 14px;
+  padding-bottom: 10px;
+  margin-bottom: 0;
   border-bottom: 1px solid var(--rule);
 }
 .post-meta a { color: var(--ink); font-weight: 600; text-decoration: none; }
@@ -594,7 +653,7 @@ body.with-radio .nav {
 /* Lead article : place réservée + fond tant que l’image charge. */
 .post-lead {
   display: block;
-  margin: 18px 0 10px;
+  margin: 10px 0 8px;
   max-width: 100%;
 }
 .post-lead img,
@@ -621,7 +680,24 @@ body.with-radio .nav {
 .post-body {
   font-size: 1.06rem;
   line-height: 1.72;
-  margin-top: 22px;
+  margin-top: 14px;
+  text-align: justify;
+  hyphens: auto;
+  -webkit-hyphens: auto;
+}
+/* Justifié sur le prose ; titres / code / listes gardent l’alignement naturel. */
+.post-body p,
+.post-body li {
+  text-align: justify;
+  hyphens: auto;
+  -webkit-hyphens: auto;
+}
+.post-body h2,
+.post-body h3,
+.post-body h4,
+.post-body pre,
+.post-body table {
+  text-align: start;
 }
 .post-body > * + * { margin-top: 1.15em; }
 .post-body h2 {
@@ -908,6 +984,30 @@ body.with-radio .nav {
   font-size: 0.9rem;
   line-height: 1.45;
   color: var(--ink-soft);
+}
+/* Menu principal (même structure que .nav en haut). */
+.site-foot__nav {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 4px 8px;
+  margin: 0 0 12px;
+  font-size: 0.9rem;
+}
+.site-foot__nav a {
+  color: var(--ink);
+  font-weight: 650;
+}
+.site-foot__nav a[aria-current="page"] {
+  color: var(--accent);
+}
+.site-foot__nav a.nav-section:hover,
+.site-foot__nav a.nav-section[aria-current="page"] {
+  color: var(--nav-c, var(--accent));
+}
+:root[data-theme="dark"] .site-foot__nav a.nav-section:hover,
+:root[data-theme="dark"] .site-foot__nav a.nav-section[aria-current="page"] {
+  color: color-mix(in srgb, var(--nav-c, var(--accent)) 72%, #fff);
 }
 .site-foot__links {
   display: flex;
@@ -1536,6 +1636,15 @@ a.masthead-sports__chip:focus-visible {
   font-weight: 800;
   letter-spacing: 0.04em;
 }
+/* Bureau : noms d’équipes (pas codes) — graisse un peu plus légère pour la lecture. */
+.sports-chip__name {
+  font-weight: 700;
+  letter-spacing: 0.01em;
+}
+.sports-chip__name.sports-chip__opp {
+  font-weight: 650;
+  opacity: 0.96;
+}
 .sports-chip__score {
   font-variant-numeric: tabular-nums;
   color: #fff;
@@ -1642,6 +1751,10 @@ a.masthead-sports__chip:focus-visible {
   list-style: none;
   margin: 0;
   padding: 0;
+  /* Grille partagée : toutes les lignes (score + À venir) alignent les colonnes. */
+  display: grid;
+  grid-template-columns: 4.75rem 4.5rem minmax(0, 1fr) 1.35rem;
+  column-gap: 8px;
 }
 .sports-panel__empty {
   margin: 0;
@@ -1651,10 +1764,11 @@ a.masthead-sports__chip:focus-visible {
   color: var(--muted);
 }
 .sports-result {
+  /* subgrid = même pistes que la liste (repli : mêmes largeurs fixes). */
   display: grid;
-  grid-template-columns: 4.5rem 3.25rem minmax(0, 1fr) 1.4rem;
+  grid-template-columns: subgrid;
+  grid-column: 1 / -1;
   align-items: start;
-  column-gap: 8px;
   font-family: var(--sans);
   font-size: 13px;
   line-height: 1.4;
@@ -1662,16 +1776,42 @@ a.masthead-sports__chip:focus-visible {
   padding: 8px 0;
   border-top: 1px solid color-mix(in srgb, var(--rule) 78%, transparent);
 }
+@supports not (grid-template-columns: subgrid) {
+  .sports-panel__list { display: block; }
+  .sports-result {
+    display: grid;
+    grid-template-columns: 4.75rem 4.5rem minmax(0, 1fr) 1.35rem;
+    column-gap: 8px;
+    grid-column: auto;
+  }
+}
+/* Prochain match : même grille ; seul le bandeau change (pas de décalage vs). */
+.sports-result--next {
+  border-left: 3px solid var(--status-upcoming-mid, #bd8a18);
+  margin-inline: -6px;
+  padding-inline: 6px;
+  border-radius: 4px;
+  background: color-mix(in srgb, var(--status-upcoming-soft, #e8c07a) 16%, transparent);
+}
 .sports-result:first-child {
   border-top: 0;
   padding-top: 0;
 }
 .sports-result__time {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
   font-weight: 700;
   font-variant-numeric: tabular-nums;
   color: var(--ink);
-  white-space: nowrap;
   font-size: 12px;
+  line-height: 1.3;
+  min-width: 0;
+}
+.sports-result__clock {
+  font-weight: 600;
+  font-size: 11px;
+  color: var(--muted);
 }
 .sports-result__score {
   font-weight: 800;
@@ -1680,11 +1820,13 @@ a.masthead-sports__chip:focus-visible {
   white-space: nowrap;
 }
 .sports-result__score--next {
-  font-size: 11px;
+  font-size: 11.5px;
   font-weight: 700;
-  letter-spacing: 0.02em;
-  text-transform: uppercase;
+  letter-spacing: 0;
+  text-transform: none;
   color: var(--status-upcoming, #9a6900);
+  white-space: normal;
+  line-height: 1.25;
 }
 .sports-result__title {
   min-width: 0;
@@ -1735,16 +1877,20 @@ a.masthead-sports__chip:focus-visible {
   border-radius: 4px;
   background: color-mix(in srgb, #8fa3b0 10%, transparent);
 }
-.sports-result--next {
-  border-left: 3px solid var(--status-upcoming-mid, #bd8a18);
-  margin-inline: -6px;
-  padding-inline: 6px;
-  border-radius: 4px;
-  background: color-mix(in srgb, var(--status-upcoming-soft, #e8c07a) 16%, transparent);
-}
 .sports-result--next .sports-result__badge--next {
   color: var(--status-upcoming, #9a6900);
 }
+/* Hors saison (focus-group B) — méta sous le score. */
+.sports-result__season-meta {
+  grid-column: 1 / -1;
+  margin: -2px 0 2px;
+  font: 500 0.7rem/1.3 var(--sans);
+  color: var(--muted);
+}
+.sports-result--prior-season .sports-result__score {
+  opacity: 0.92;
+}
+
 .sports-board-note {
   margin: 0 0 28px;
   font-family: var(--sans);
@@ -1757,10 +1903,16 @@ a.masthead-sports__chip:focus-visible {
   margin-top: 8px;
 }
 @media (max-width: 560px) {
-  .sports-result {
-    grid-template-columns: 3.6rem 2.75rem minmax(0, 1fr) 1.2rem;
+  .sports-panel__list {
+    grid-template-columns: 4.25rem 4rem minmax(0, 1fr) 1.2rem;
     column-gap: 6px;
-    font-size: 12.5px;
+  }
+  .sports-result { font-size: 12.5px; }
+  @supports not (grid-template-columns: subgrid) {
+    .sports-result {
+      grid-template-columns: 4.25rem 4rem minmax(0, 1fr) 1.2rem;
+      column-gap: 6px;
+    }
   }
   .sports-panel { padding: 12px 12px 10px; }
 }
@@ -2180,4 +2332,168 @@ a.masthead-sports__chip:focus-visible {
   body.is-article-page::after {
     content: none;
   }
+}
+
+/* ── Outils bas de page (haut gauche + loupe droite) — parité LE-RADAR ── */
+.page-tools {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: calc(max(16px, env(safe-area-inset-bottom, 0px)) + var(--vk-inset, 0px));
+  z-index: 180;
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  gap: 12px;
+  padding-left: max(14px, env(safe-area-inset-left, 0px));
+  padding-right: max(14px, env(safe-area-inset-right, 0px));
+  pointer-events: none;
+}
+.page-tools > * { pointer-events: auto; }
+
+.page-tools__fab,
+.news-search__fab {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  border: 1px solid var(--rule);
+  background: var(--bg);
+  color: var(--ink);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  box-shadow:
+    0 2px 8px -2px rgba(0, 0, 0, 0.12),
+    0 8px 24px -10px rgba(0, 0, 0, 0.18);
+  transition:
+    background 160ms ease,
+    color 160ms ease,
+    border-color 160ms ease,
+    box-shadow 160ms ease,
+    transform 160ms cubic-bezier(0.22, 1, 0.36, 1),
+    opacity 160ms ease;
+}
+.page-tools__fab svg,
+.news-search__fab svg {
+  width: 22px;
+  height: 22px;
+  display: block;
+}
+.page-tools__fab[hidden] { display: none !important; }
+.news-search__fab .hidden { display: none !important; }
+@media (hover: hover) and (pointer: fine) {
+  .page-tools__fab:hover,
+  .news-search__fab:hover {
+    border-color: color-mix(in srgb, var(--accent) 40%, var(--rule));
+    color: var(--accent);
+  }
+}
+.page-tools__fab:active,
+.news-search__fab:active { transform: scale(0.96); }
+.page-tools__fab:focus,
+.news-search__fab:focus { outline: none; }
+.page-tools__fab:focus-visible,
+.news-search__fab:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 3px;
+}
+.news-search__fab.is-active,
+.news-search.has-query .news-search__fab {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: #fff;
+}
+[data-theme="dark"] .page-tools__fab,
+[data-theme="dark"] .news-search__fab {
+  background: var(--bg-soft);
+  border-color: var(--rule);
+}
+
+.news-search {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 10px;
+  max-width: min(360px, calc(100vw - 28px));
+  pointer-events: none;
+}
+.news-search > * { pointer-events: auto; }
+
+.news-search__panel {
+  width: min(320px, calc(100vw - 28px));
+  padding: 12px 12px 10px;
+  border-radius: 14px;
+  border: 1px solid var(--rule);
+  background: var(--bg);
+  box-shadow:
+    0 4px 16px -6px rgba(0, 0, 0, 0.14),
+    0 16px 40px -16px rgba(0, 0, 0, 0.22);
+}
+.news-search__panel[hidden] { display: none !important; }
+[data-theme="dark"] .news-search__panel { background: var(--bg-soft); }
+
+.news-search__field {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 0 4px 0 10px;
+  border: 1px solid var(--rule);
+  border-radius: 10px;
+  background: var(--bg-soft, var(--bg));
+}
+.news-search__field:focus-within {
+  border-color: color-mix(in srgb, var(--accent) 45%, var(--rule));
+}
+.news-search__field-ico {
+  width: 16px;
+  height: 16px;
+  flex: 0 0 auto;
+  color: var(--muted);
+}
+.news-search__input {
+  flex: 1 1 auto;
+  min-width: 0;
+  border: 0;
+  background: transparent;
+  color: var(--ink);
+  font: 500 14px/1.3 var(--sans);
+  padding: 10px 0;
+  outline: none;
+}
+.news-search__input::placeholder { color: var(--muted); opacity: 0.9; }
+.news-search__input::-webkit-search-decoration,
+.news-search__input::-webkit-search-cancel-button { -webkit-appearance: none; }
+
+.news-search__clear {
+  flex: 0 0 auto;
+  width: 28px;
+  height: 28px;
+  margin: 0 4px 0 0;
+  border: 0;
+  border-radius: 50%;
+  background: transparent;
+  color: var(--muted);
+  font-size: 18px;
+  line-height: 1;
+  cursor: pointer;
+}
+.news-search__clear.hidden { display: none !important; }
+
+.news-search__hint {
+  margin: 8px 2px 0;
+  font: 400 11.5px/1.4 var(--sans);
+  color: var(--muted);
+}
+
+/* Cartes masquées par la recherche locale */
+.article.is-search-hidden,
+.news-features .article.is-search-hidden,
+.brief-rail .article.is-search-hidden,
+.news-tail .article.is-search-hidden {
+  display: none !important;
+}
+
+@media print {
+  .page-tools { display: none !important; }
 }

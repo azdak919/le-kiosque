@@ -1,4 +1,5 @@
 import { renderSourceArticle } from './source-view.js';
+import { pruneSportsPayload } from './sports-freshness.js';
 
 const ESCAPES = { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' };
 export const esc = (value) => String(value ?? '').replace(/[&<>"']/g, (character) => ESCAPES[character]);
@@ -79,8 +80,9 @@ function magazineFeedHtml(articles, bundle, base, heroLabel, empty) {
   if (!articles.length) return `<p class="empty">${esc(empty)}</p>`;
   const [first, ...rest] = articles;
   const features = rest.slice(0, 3);
-  const briefs = rest.slice(3, 10);
-  const tail = rest.slice(10);
+  // Parité templates.ts : 3 vedettes + 6 en bref, suite dès l’index 9 (ne pas sauter d’article).
+  const briefs = rest.slice(3, 9);
+  const tail = rest.slice(9);
   return `<div class="magazine-layout"><section class="news-hero" aria-label="${esc(heroLabel)}">${articleCard(first, bundle, base, 'lead')}<div class="news-features">${features.map((item) => articleCard(item, bundle, base, 'feature')).join('')}</div></section>${briefs.length ? `<aside class="brief-rail" aria-label="En bref"><h2>En bref</h2>${briefs.map((item) => articleCard(item, bundle, base, 'brief')).join('')}</aside>` : ''}${tail.length ? `<section class="news-tail" data-tail-visible="10"><h2 class="news-tail-title">Suite du fil</h2><div class="news-tail-body news-tail-grid">${tail.map((item) => articleCard(item, bundle, base, 'tail')).join('')}</div></section>` : ''}</div>`;
 }
 
@@ -124,11 +126,21 @@ export function renderRoute(bundle, base, pathname, renderBody) {
   }
   /* Page résultats sportifs (puce mât → /sports/). */
   if (parts[0] === 'sports' && !parts[1]) {
-    const sports = bundle.publication.masthead?.sports;
-    const teams = Array.isArray(sports?.teams) && sports.teams.length
-      ? sports.teams
-      : (sports?.team ? [sports.team] : []);
-    if (sports && sports.enabled !== false && teams.length) {
+    const sportsRaw = bundle.publication.masthead?.sports;
+    const rawTeams = Array.isArray(sportsRaw?.teams) && sportsRaw.teams.length
+      ? sportsRaw.teams
+      : (sportsRaw?.team ? [sportsRaw.team] : []);
+    const sports = sportsRaw && sportsRaw.enabled !== false
+      ? pruneSportsPayload({
+          teams: rawTeams,
+          results: sportsRaw.results || [],
+          nextGame: sportsRaw.nextGame || null,
+          nextGames: sportsRaw.nextGames || [],
+          demoAsOf: sportsRaw.demoAsOf,
+        }, { demoAsOf: sportsRaw.demoAsOf })
+      : null;
+    const teams = sports?.teams || [];
+    if (sports && teams.length) {
       const sportsArticles = published.filter((a) => a.section === 'sports');
       const glyph = (sport) => {
         const s = String(sport || '').toLowerCase();
@@ -154,7 +166,10 @@ export function renderRoute(bundle, base, pathname, renderBody) {
           const opp = g.opponentInstitution
             ? `${esc(g.opponent)} <span class="sports-result__inst">(${esc(g.opponentInstitution)})</span>`
             : esc(g.opponent);
-          return `<li class="sports-result sports-result--${esc(g.result)}"><time class="sports-result__time" datetime="${esc(g.date)}">${esc(fmt(g.date))}</time><span class="sports-result__score">${g.scoreFor}–${g.scoreAgainst}</span><span class="sports-result__title"><span class="sports-result__vs">vs</span> ${opp}</span><span class="sports-result__badge">${badge}</span></li>`;
+          const prior = g.priorSeason
+            ? '<span class="sports-result__season-meta">Saison précédente</span>'
+            : '';
+          return `<li class="sports-result sports-result--${esc(g.result)}${g.priorSeason ? ' sports-result--prior-season' : ''}"><time class="sports-result__time" datetime="${esc(g.date)}">${esc(fmt(g.date))}</time><span class="sports-result__score">${g.scoreFor}–${g.scoreAgainst}</span><span class="sports-result__title"><span class="sports-result__vs">vs</span> ${opp}</span><span class="sports-result__badge">${badge}</span>${prior}</li>`;
         });
         if (next) {
           const when = [fmt(next.date), next.time ? String(next.time).replace(':', ' h ') : ''].filter(Boolean).join(' · ');
@@ -162,14 +177,14 @@ export function renderRoute(bundle, base, pathname, renderBody) {
         }
         const list = rows.length ? `<ul class="sports-panel__list">${rows.join('')}</ul>` : '<p class="sports-panel__empty">Aucun résultat.</p>';
         const color = team.colors?.primary || 'var(--accent)';
-        return `<section class="sports-panel" style="--sports-panel-c:${esc(color)}"><header class="sports-panel__head"><span class="sports-panel__glyph" aria-hidden="true">${glyph(team.sport)}</span><div class="sports-panel__identity"><h2 class="sports-panel__name">${esc(team.name)} <span class="sports-panel__code">${esc(team.code)}</span></h2><p class="sports-panel__meta">${esc(team.sportLabel || team.sport)}${team.institution ? ` · ${esc(team.institution)}` : ''}${team.fictional ? ' · formation fictive' : ''}</p></div></header>${list}</section>`;
+        return `<section class="sports-panel" style="--sports-panel-c:${esc(color)}"><header class="sports-panel__head"><span class="sports-panel__glyph" aria-hidden="true">${glyph(team.sport)}</span><div class="sports-panel__identity"><h2 class="sports-panel__name">${esc(team.name)} <span class="sports-panel__code">${esc(team.code)}</span></h2><p class="sports-panel__meta">${esc(team.sportLabel || team.sport)}${team.institution ? ` · ${esc(team.institution)}` : ''}</p></div></header>${list}</section>`;
       }).join('');
       const feed = sportsArticles.length
         ? `<div class="sports-articles"><div class="wire-head"><h2 class="wire-title">Dans le journal</h2><span class="wire-status">${sportsArticles.length} article${sportsArticles.length > 1 ? 's' : ''}</span></div>${magazineFeedHtml(sportsArticles, bundle, base, 'Sports', 'Aucun article.')}</div>`
         : `<p class="section-intro"><a data-editorial-link href="${link(base, '/sections/sports/')}">Section Sports</a></p>`;
       return {
         title: `Au tableau — ${bundle.publication.name}`,
-        html: `<div class="wrap wire wire--sports"><div class="wire-head"><h1 class="wire-title">Au tableau</h1><span class="wire-status">${teams.length} formation${teams.length > 1 ? 's' : ''}</span></div><p class="section-intro">Scores et prochains matchs — le tableau d’affichage du campus.</p><p class="sports-board-meta">Données embarquées · adversaires RSEQ collégial · formations maison fictives (démo)</p><div class="sports-board-scroll"><div class="sports-board">${panels}</div></div><p class="sports-board-note">Tableau figé dans le dépôt ; mise à jour via la configuration du mât.</p>${feed}</div>`,
+        html: `<div class="wrap wire wire--sports"><div class="wire-head"><h1 class="wire-title">Au tableau</h1><span class="wire-status">${teams.length} formation${teams.length > 1 ? 's' : ''}</span></div><p class="section-intro">Scores et prochains matchs — le tableau d’affichage du campus.</p><div class="sports-board-scroll"><div class="sports-board">${panels}</div></div>${feed}</div>`,
       };
     }
   }
@@ -268,6 +283,12 @@ export function applyBranding(bundle, base) {
     const credit = document.createElement('span'); credit.className = 'masthead-photo-credit'; credit.dataset.mastheadCredit = ''; if (images[0].credit) { const anchor = document.createElement('a'); anchor.href = images[0].creditUrl || images[0].sourceUrl || '#'; anchor.rel = 'noopener'; anchor.textContent = `Photo : ${images[0].credit}`; credit.append(anchor); }
     const manifest = document.createElement('script'); manifest.type = 'application/json'; manifest.id = 'masthead-backgrounds'; manifest.textContent = JSON.stringify(images.map((item) => ({ ...item, src: item.src.startsWith('/') ? link(base, item.src) : item.src, backgroundPosition: `${item.focalPoint?.x ?? 50}% ${item.focalPoint?.y ?? 50}%` })));
     masthead.prepend(image, shade); masthead.append(credit, manifest);
+    /* Rebrancher le shuffle sur le nouvel <img> + manifeste (sinon nœud mort). */
+    try {
+      if (typeof window.KiosqueRefreshMastheadBackgrounds === 'function') {
+        window.KiosqueRefreshMastheadBackgrounds();
+      }
+    } catch (_) { /* kiosque.js pas encore chargé */ }
   }
   const weather = publication.masthead?.weather;
   const sports = publication.masthead?.sports;
@@ -321,33 +342,89 @@ export function applyBranding(bundle, base) {
   } catch (_) { /* kiosque.js pas encore chargé */ }
   document.querySelector('a[href="https://le-radar.ca/pomo/"]')?.toggleAttribute('hidden', publication.masthead?.tools?.pomodoro === false);
   document.querySelector('a[href="https://le-radar.ca/solitaire/"]')?.toggleAttribute('hidden', publication.masthead?.tools?.solitaire === false);
+  const navItems = [
+    { href: `${base}/`, label: 'Accueil' },
+    ...bundle.taxonomies.sections.map((section) => ({
+      href: link(base, `/sections/${encodeURIComponent(section.slug)}/`),
+      label: section.name,
+      color: section.color,
+    })),
+    { href: link(base, '/auteurs/'), label: 'Équipe' },
+  ];
+  const navLink = (item) => {
+    const color = item.color && /^#[0-9a-fA-F]{3,8}$/.test(item.color)
+      ? ` class="nav-section" style="--nav-c:${esc(item.color)}"`
+      : '';
+    return `<a data-editorial-link href="${esc(item.href)}"${color}>${esc(item.label)}</a>`;
+  };
   const nav = document.querySelector('.nav');
   if (nav) {
-    nav.innerHTML = [
-      `<a data-editorial-link href="${base}/">Accueil</a>`,
-      ...bundle.taxonomies.sections.map((section) => {
-        const color = section.color && /^#[0-9a-fA-F]{3,8}$/.test(section.color)
-          ? ` class="nav-section" style="--nav-c:${esc(section.color)}"`
-          : '';
-        return `<a data-editorial-link href="${link(base, `/sections/${encodeURIComponent(section.slug)}/`)}"${color}>${esc(section.name)}</a>`;
-      }),
-      `<a data-editorial-link href="${link(base, '/auteurs/')}">Équipe</a>`,
-    ].join('');
+    nav.innerHTML = navItems.map(navLink).join('');
+  }
+  /* Même menu en pied de page (parité en-tête). */
+  const footNav = document.querySelector('.site-foot__nav');
+  if (footNav) {
+    const sep = '<span class="site-foot__sep" aria-hidden="true">·</span>';
+    footNav.innerHTML = navItems.map(navLink).join(sep);
   }
   document.body.classList.toggle('with-radio', Boolean(publication.radio && publication.radio.enabled !== false));
-  let currentRadio = document.querySelector('radar-tuner');
-  if (publication.radio?.enabled === false) currentRadio?.remove();
-  else if (publication.radio) {
-    const params = new URLSearchParams({ surface: 'kiosque-v1' });
-    if (publication.radio.station) params.set('station', publication.radio.station);
-    const src = `https://le-radar.ca/tuner-embed.html?${params}`;
-    if (currentRadio?.dataset.src !== src) { currentRadio?.remove(); currentRadio = null; }
-    if (currentRadio) return;
-    const tuner = document.createElement('radar-tuner');
-    tuner.className = 'radar-tuner';
-    tuner.dataset.src = src;
-    tuner.hidden = true;
-    tuner.innerHTML = '<a href="https://le-radar.ca/" rel="noopener">Écouter LE-RADAR</a>';
-    document.querySelector('header')?.after(tuner);
+  syncRadarTuner(publication.radio);
+}
+
+/**
+ * URL d’embed radio — même ordre de paramètres que templates.ts
+ * (station puis surface) pour ne pas détruire l’iframe au branding PGlite.
+ */
+function radioEmbedSrc(radio) {
+  const params = new URLSearchParams();
+  if (radio?.station) params.set('station', radio.station);
+  params.set('surface', 'kiosque-v1');
+  return `https://le-radar.ca/tuner-embed.html?${params}`;
+}
+
+/** Compare deux URLs d’embed en ignorant l’ordre des query params. */
+function sameRadioEmbedSrc(a, b) {
+  if (!a || !b) return false;
+  if (a === b) return true;
+  try {
+    const ua = new URL(a, 'https://le-radar.ca');
+    const ub = new URL(b, 'https://le-radar.ca');
+    if (ua.origin !== ub.origin || ua.pathname !== ub.pathname) return false;
+    const keys = new Set([...ua.searchParams.keys(), ...ub.searchParams.keys()]);
+    for (const key of keys) {
+      if (ua.searchParams.get(key) !== ub.searchParams.get(key)) return false;
+    }
+    return true;
+  } catch {
+    return false;
   }
+}
+
+/**
+ * Préserve l’élément <radar-tuner> et son iframe (écoute en cours, volume)
+ * tant que la station / surface est équivalente. Un simple écart d’ordre
+ * de query (?station&surface vs ?surface&station) ne doit pas remonter.
+ */
+function syncRadarTuner(radio) {
+  let current = document.querySelector('radar-tuner');
+  if (!radio || radio.enabled === false) {
+    current?.remove();
+    return;
+  }
+  const src = radioEmbedSrc(radio);
+  const currentSrc = current?.getAttribute('data-src') || current?.dataset?.src || '';
+  if (current && sameRadioEmbedSrc(currentSrc, src)) {
+    /* Garder l’iframe vivante ; normaliser data-src sans recharger. */
+    if (currentSrc !== src) current.setAttribute('data-src', src);
+    return;
+  }
+  current?.remove();
+  const tuner = document.createElement('radar-tuner');
+  tuner.className = 'radar-tuner';
+  tuner.setAttribute('data-src', src);
+  tuner.dataset.surface = 'kiosque-v1';
+  tuner.dataset.state = 'loading';
+  tuner.setAttribute('aria-busy', 'true');
+  tuner.innerHTML = '<a href="https://le-radar.ca/" rel="noopener">Écouter LE-RADAR</a>';
+  document.querySelector('header')?.after(tuner);
 }

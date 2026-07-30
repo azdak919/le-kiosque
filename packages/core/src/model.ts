@@ -272,6 +272,8 @@ export interface SportsGame {
   note?: string;
   /** Rattache le match à une entrée de `teams[]` (sinon équipe unique / première). */
   teamId?: string;
+  /** Résultat hors fenêtre de sessions (affiché avec méta « Saison précédente »). */
+  priorSeason?: boolean;
 }
 
 /** Identité d’une équipe affichée dans le mât (réelle RSEQ ou fictive démo). */
@@ -321,6 +323,13 @@ export interface MastheadSports {
   nextGames?: SportsNextGame[];
   /** Lien optionnel (section sports, page équipe…). */
   href?: string;
+  /**
+   * Snapshot éditorial (focus-group B) : date AAAA-MM-JJ contre laquelle
+   * appliquer la fenêtre de fraîcheur. En démo, figer une date « en saison »
+   * pour que les fixtures inventées restent visibles hors calendrier réel.
+   * Absent → prune sur la date du build (prod).
+   */
+  demoAsOf?: string;
 }
 
 /** Le journal lui-même. */
