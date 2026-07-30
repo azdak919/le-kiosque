@@ -173,6 +173,14 @@ const ARTICLE_THEMES = {
     license: 'voir source',
     licenseUrl: 'https://commons.wikimedia.org/wiki/File:Shot_on_goal_during_youth_hockey_tournament_at_West_Edmonton_Mall_Ice_Palace.jpg',
   },
+  // Corps d’article seulement — distinct du lead hockey.jpg (glace / aréna).
+  'hockey-interieur': {
+    file: 'Championship floor hockey game 150303-N-GT589-067.jpg',
+    alt: 'Match de hockey intérieur (floor hockey) en gymnase',
+    credit: 'U.S. Navy photo by Mass Communication Specialist 2nd Class Joshua Scott',
+    license: 'Public domain',
+    licenseUrl: 'https://creativecommons.org/publicdomain/mark/1.0/',
+  },
   volleyball: {
     file: 'Volleyball match - shakehands before the match.jpg',
     alt: 'Match de volleyball en gymnase',

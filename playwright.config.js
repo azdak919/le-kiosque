@@ -15,12 +15,17 @@ export default defineConfig({
   fullyParallel: false,
   timeout: 90_000,
   expect: { timeout: 15_000 },
+  // CI : retries anti-flaky (contention runner) ; local = 0 pour feedback net.
+  retries: process.env.CI ? 2 : 0,
+  forbidOnly: Boolean(process.env.CI),
   reporter: process.env.CI ? [['line'], ['html', { open: 'never' }]] : 'line',
   use: {
     baseURL: e2eOrigin,
     trace: 'retain-on-failure',
     screenshot: 'only-on-failure',
     video: 'off',
+    actionTimeout: 20_000,
+    navigationTimeout: 45_000,
   },
   webServer: {
     command: 'node tools/serve-e2e.mjs',
