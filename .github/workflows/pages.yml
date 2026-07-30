@@ -15,8 +15,12 @@ concurrency:
   group: pages
   cancel-in-progress: true
 
+# Check requis pour merger dans main (branch protection / ruleset) :
+# le job s’appelle « construire » — ne pas renommer sans mettre à jour
+# VisualCode/GIT-AND-TEST-SAFETY.md §9 et la protection GitHub.
 jobs:
   construire:
+    name: construire
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
