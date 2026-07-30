@@ -167,14 +167,15 @@ export function renderRoute(bundle, base, pathname, renderBody) {
           demoAsOf: sportsRaw.demoAsOf,
         }, { demoAsOf: sportsRaw.demoAsOf })
       : null;
-    const teams = sports?.teams || [];
-    if (sports && teams.length) {
+    const teamsRaw = sports?.teams || [];
+    if (sports && teamsRaw.length) {
       const sportsArticles = published.filter((a) => a.section === 'sports');
       const glyph = (sport) => {
         const s = String(sport || '').toLowerCase();
         if (s.includes('basket')) return '🏀';
         if (s.includes('hockey')) return '🏒';
         if (s.includes('soccer') || (s.includes('foot') && !s.includes('flag'))) return '⚽';
+        if (s.includes('flag') || s.includes('football')) return '🏈';
         if (s.includes('volley')) return '🏐';
         return '🏅';
       };
@@ -183,22 +184,37 @@ export function renderRoute(bundle, base, pathname, renderBody) {
           return new Intl.DateTimeFormat('fr-CA', { day: 'numeric', month: 'short', timeZone: bundle.publication.timeZone || 'America/Toronto' }).format(new Date(`${iso}T12:00:00`));
         } catch { return iso; }
       };
-      const shortInst = (inst) => String(inst || '')
-        .replace(/^Cégep\s+(de\s+|du\s+|d’|d')?/i, '')
-        .replace(/^Collège\s+/i, '')
-        .replace(/^Champlain\s+College\s+/i, 'Champlain ')
-        .replace(/^Université\s+(de\s+|du\s+|d’|d')?/i, '')
-        .trim();
+      const shortInst = (inst) => {
+        let s = String(inst || '')
+          .replace(/^Cégep\s+(de\s+|du\s+|d’|d')?/i, '')
+          .replace(/^Collège\s+/i, '')
+          .replace(/^Champlain\s+College\s+/i, 'Champlain ')
+          .replace(/^Université\s+(de\s+|du\s+|d’|d')?/i, '')
+          .trim();
+        const aliases = [
+          [/^François-Xavier-Garneau$/i, 'Garneau'],
+          [/^André-Laurendeau$/i, 'Laurendeau'],
+          [/^Édouard-Montpetit$/i, 'É.-Montpetit'],
+          [/^Saint-Jean-sur-Richelieu$/i, 'St-Jean'],
+          [/^Saint-Laurent$/i, 'St-Laurent'],
+          [/^Sainte-Foy$/i, 'Ste-Foy'],
+          [/^Champlain\s+Saint-Lambert$/i, 'Champlain St-L.'],
+          [/^Valleyfield$/i, 'Valleyfield'],
+          [/^Limoilou$/i, 'Limoilou'],
+        ];
+        for (const [re, short] of aliases) if (re.test(s)) return short;
+        return s;
+      };
       const venueHtml = (home) => {
-        if (home === true) return ' <span class="sports-result__venue sports-result__venue--home" title="Match à domicile">Domicile</span>';
-        if (home === false) return ' <span class="sports-result__venue sports-result__venue--away" title="Match à l’extérieur">Extérieur</span>';
+        if (home === true) return '<span class="sports-result__venue sports-result__venue--home" title="Match à domicile">Domicile</span>';
+        if (home === false) return '<span class="sports-result__venue sports-result__venue--away" title="Match à l’extérieur">Extérieur</span>';
         return '';
       };
       const oppHtml = (opponent, institution) => {
         const nick = `<span class="sports-result__opp">${esc(opponent)}</span>`;
         const short = shortInst(institution);
         if (!short || short === opponent) return nick;
-        return `${nick} <span class="sports-result__opp-school">${esc(short)}</span>`;
+        return `${nick}<span class="sports-result__opp-school">${esc(short)}</span>`;
       };
       const sexBadge = (sex) => {
         if (!sex) return '';
@@ -208,20 +224,32 @@ export function renderRoute(bundle, base, pathname, renderBody) {
         if (s.includes('mix')) return '<span class="sports-panel__sex sports-panel__sex--x" title="Mixte">Mixte</span>';
         return `<span class="sports-panel__sex sports-panel__sex--x">${esc(sex)}</span>`;
       };
+      const activityDate = (team) => {
+        let next = team.nextGame || null;
+        if (!next && sports.nextGame && (!sports.nextGame.teamId || sports.nextGame.teamId === team.id)) next = sports.nextGame;
+        if (next?.date) return next.date;
+        const nested = Array.isArray(team.results) ? team.results : [];
+        const global = (sports.results || []).filter((g) => !g.teamId || g.teamId === team.id);
+        const dates = nested.concat(global).map((g) => g.date).filter(Boolean).sort((a, b) => String(b).localeCompare(String(a)));
+        return dates[0] || '';
+      };
+      const teams = teamsRaw.slice().sort((a, b) => {
+        const aNext = Boolean(a.nextGame || (sports.nextGame && (!sports.nextGame.teamId || sports.nextGame.teamId === a.id)));
+        const bNext = Boolean(b.nextGame || (sports.nextGame && (!sports.nextGame.teamId || sports.nextGame.teamId === b.id)));
+        if (aNext !== bNext) return aNext ? -1 : 1;
+        const da = activityDate(a);
+        const db = activityDate(b);
+        if (aNext && bNext) return String(da).localeCompare(String(db));
+        return String(db).localeCompare(String(da));
+      });
       const panels = teams.map((team) => {
         const nested = Array.isArray(team.results) ? team.results : [];
         const global = (sports.results || []).filter((g) => !g.teamId || g.teamId === team.id);
         const results = nested.concat(global).slice().sort((a, b) => String(b.date).localeCompare(String(a.date))).slice(0, 6);
         let next = team.nextGame || null;
         if (!next && sports.nextGame && (!sports.nextGame.teamId || sports.nextGame.teamId === team.id)) next = sports.nextGame;
-        const rows = results.map((g) => {
-          const badge = g.result === 'W' ? 'V' : g.result === 'L' ? 'D' : 'N';
-          const prior = g.priorSeason
-            ? '<span class="sports-result__season-meta">Saison précédente</span>'
-            : '';
-          const homeAttr = g.home === true ? ' data-home="1"' : g.home === false ? ' data-home="0"' : '';
-          return `<li class="sports-result sports-result--${esc(g.result)}${g.priorSeason ? ' sports-result--prior-season' : ''}"${homeAttr}><time class="sports-result__time" datetime="${esc(g.date)}">${esc(fmt(g.date))}</time><span class="sports-result__score">${g.scoreFor}–${g.scoreAgainst}</span><span class="sports-result__title"><span class="sports-result__vs">vs</span> ${oppHtml(g.opponent, g.opponentInstitution)}${venueHtml(g.home)}</span><span class="sports-result__badge">${badge}</span>${prior}</li>`;
-        });
+        // 1) À venir 2) passés récents → anciens
+        const rows = [];
         if (next) {
           const day = fmt(next.date);
           const clock = next.time ? String(next.time).replace(':', ' h ') : '';
@@ -231,6 +259,14 @@ export function renderRoute(bundle, base, pathname, renderBody) {
           const homeAttr = next.home === true ? ' data-home="1"' : next.home === false ? ' data-home="0"' : '';
           rows.push(`<li class="sports-result sports-result--next"${homeAttr}><time class="sports-result__time" datetime="${esc(next.date)}">${timeInner}</time><span class="sports-result__score sports-result__score--next">À venir</span><span class="sports-result__title"><span class="sports-result__vs">vs</span> ${oppHtml(next.opponent, next.opponentInstitution)}${venueHtml(next.home)}</span><span class="sports-result__badge sports-result__badge--next">→</span></li>`);
         }
+        results.forEach((g) => {
+          const badge = g.result === 'W' ? 'V' : g.result === 'L' ? 'D' : 'N';
+          const prior = g.priorSeason
+            ? '<span class="sports-result__season-meta">Saison précédente</span>'
+            : '';
+          const homeAttr = g.home === true ? ' data-home="1"' : g.home === false ? ' data-home="0"' : '';
+          rows.push(`<li class="sports-result sports-result--${esc(g.result)}${g.priorSeason ? ' sports-result--prior-season' : ''}"${homeAttr}><time class="sports-result__time" datetime="${esc(g.date)}">${esc(fmt(g.date))}</time><span class="sports-result__score">${g.scoreFor}–${g.scoreAgainst}</span><span class="sports-result__title"><span class="sports-result__vs">vs</span> ${oppHtml(g.opponent, g.opponentInstitution)}${venueHtml(g.home)}</span><span class="sports-result__badge">${badge}</span>${prior}</li>`);
+        });
         const list = rows.length ? `<ul class="sports-panel__list">${rows.join('')}</ul>` : '<p class="sports-panel__empty">Aucun résultat.</p>';
         const color = team.colors?.primary || 'var(--accent)';
         const code = team.code ? ` <span class="sports-panel__code">${esc(team.code)}</span>` : '';
@@ -241,7 +277,7 @@ export function renderRoute(bundle, base, pathname, renderBody) {
         : `<p class="section-intro"><a data-editorial-link href="${link(base, '/sections/sports/')}">Section Sports</a></p>`;
       return {
         title: `Au tableau — ${bundle.publication.name}`,
-        html: `<div class="wrap wire wire--sports"><div class="wire-head"><h1 class="wire-title">Au tableau</h1><span class="wire-status">${teams.length} formation${teams.length > 1 ? 's' : ''}</span></div><p class="section-intro">Scores et prochains matchs — le tableau d’affichage du campus.</p><div class="sports-board-scroll"><div class="sports-board">${panels}</div></div>${feed}</div>`,
+        html: `<div class="wrap wire wire--sports"><div class="wire-head"><h1 class="wire-title">Au tableau</h1><span class="wire-status">${teams.length} formation${teams.length > 1 ? 's' : ''}</span></div><p class="section-intro">Scores et prochains matchs — le tableau d’affichage du campus.</p><div class="sports-board-wrap" data-sports-board-wrap><div class="sports-board-scroll"><div class="sports-board">${panels}</div></div><button type="button" class="sports-board-toggle" data-sports-board-toggle hidden aria-expanded="false"><span class="sports-board-toggle__label">Plus de matchs</span></button></div>${feed}</div>`,
       };
     }
   }

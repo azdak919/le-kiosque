@@ -135,7 +135,7 @@ test('demo et template reçoivent le même theme.css / kiosque.js (packages/them
     'intro équipe reformulée',
   );
   const seed = await readFile(path.join(demo.out, 'assets/editorial/seed.json'), 'utf8');
-  assert.match(seed, /"version":\s*19/, 'seed démo v19 (ville Saint-Louis-du-Ha! Ha!)');
+  assert.match(seed, /"version":\s*20/, 'seed démo v20 (multi formations + repli Plus de matchs)');
   assert.match(seed, /Les Élans/, 'seed embarque le surnom maison Élans');
   assert.doesNotMatch(seed, /Les Quorums/, 'plus de surnom redondant Quorums');
   assert.match(seed, /hockey-interieur\.jpg/, 'photo corps hockey intérieur distincte du lead');
@@ -144,9 +144,13 @@ test('demo et template reçoivent le même theme.css / kiosque.js (packages/them
   assert.match(seed, /Saint-Louis-du-Ha! Ha!/, 'météo démo = ville du cégep fictif');
   assert.match(seed, /47\.6709/, 'latitude Saint-Louis-du-Ha! Ha!');
   assert.match(seed, /"sport":"volleyball"/, 'plusieurs formations (sports) sous le même surnom');
-  assert.match(seed, /"sport":"basketball"|"sport":"soccer"|"sport":"hockey"/, 'au moins un autre sport');
+  assert.match(seed, /"sport":"basketball"/, 'basketball');
+  assert.match(seed, /"sport":"soccer"|"sport":"hockey"|"sport":"flag-football"/, 'autres sports');
+  assert.match(seed, /"sex":"(F|M|mixte)"/, 'formations F / M / mixte');
   assert.match(seed, /Titans|Boomerang|Géants|Cheetahs/, 'adversaires = clubs RSEQ collégial réels');
   assert.match(seed, /"code":"QUO"/, 'code institution Cégep du Quorum = QUO');
+  assert.match(demoJs, /initSportsBoardCollapse|Plus de matchs|KiosqueRefreshSportsBoard/, 'repli Au tableau + Plus de matchs');
+  assert.match(demoCss, /sports-board-wrap|sports-board-toggle/, 'CSS repli tableau sports');
   assert.match(demoJs, /sportsHomeRichLabel|sportsOppRichLabel/, 'puce : maison sans (institution)');
   assert.match(seed, /"opponentCode":"(GAR|LIM|CSF|CAL|SLA|CEM|SJR)"/, 'codes adversaires = institutions RSEQ');
   // Prochains matchs : institution adverse (puce bureau + page Au tableau).

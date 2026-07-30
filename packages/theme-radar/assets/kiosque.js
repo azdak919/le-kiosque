@@ -1724,6 +1724,133 @@
     window.setTimeout(remeasure, 900);
   }
 
+  // ── Au tableau : « Plus de matchs » (1 rangée de cartes, puis tout) ──
+  var sportsBoardExpanded = false;
+  var sportsBoardBound = false;
+
+  function measureSportsBoardRowHeight(board) {
+    if (!board) return 0;
+    var panels = board.querySelectorAll('.sports-panel');
+    if (!panels.length) return 0;
+    void board.offsetHeight;
+    var boardTop = board.getBoundingClientRect().top;
+    var firstBottom = panels[0].getBoundingClientRect().bottom;
+    var rowBottom = firstBottom;
+    var firstTop = panels[0].getBoundingClientRect().top;
+    for (var i = 1; i < panels.length; i++) {
+      var r = panels[i].getBoundingClientRect();
+      /* Même rangée ≈ même top (tolérance 12 px). */
+      if (Math.abs(r.top - firstTop) < 12) {
+        rowBottom = Math.max(rowBottom, r.bottom);
+      } else {
+        break;
+      }
+    }
+    return Math.max(160, Math.ceil(rowBottom - boardTop + 8));
+  }
+
+  function syncSportsBoardCollapse() {
+    var wrap = document.querySelector('[data-sports-board-wrap]');
+    if (!wrap) return;
+    var scroll = wrap.querySelector('.sports-board-scroll');
+    var board = wrap.querySelector('.sports-board');
+    var toggle = wrap.querySelector('[data-sports-board-toggle]') || wrap.querySelector('.sports-board-toggle');
+    if (!scroll || !board) return;
+
+    var panels = board.querySelectorAll('.sports-panel');
+    var rowH = measureSportsBoardRowHeight(board);
+    var fullH = board.scrollHeight;
+    var overflow = panels.length > 1 && fullH > rowH + 48;
+
+    if (!overflow) {
+      wrap.classList.remove('has-overflow', 'is-expanded');
+      scroll.style.removeProperty('max-height');
+      scroll.style.removeProperty('--sports-board-collapsed-h');
+      if (toggle) {
+        toggle.hidden = true;
+        toggle.setAttribute('hidden', '');
+      }
+      sportsBoardExpanded = false;
+      return;
+    }
+
+    wrap.classList.add('has-overflow');
+    wrap.classList.toggle('is-expanded', sportsBoardExpanded);
+
+    if (!toggle) {
+      toggle = document.createElement('button');
+      toggle.type = 'button';
+      toggle.className = 'sports-board-toggle';
+      toggle.setAttribute('data-sports-board-toggle', '');
+      toggle.innerHTML = '<span class="sports-board-toggle__label">Plus de matchs</span>';
+      wrap.appendChild(toggle);
+    }
+    toggle.hidden = false;
+    toggle.removeAttribute('hidden');
+
+    if (sportsBoardExpanded) {
+      toggle.hidden = true;
+      toggle.setAttribute('hidden', '');
+      scroll.style.maxHeight = 'none';
+      scroll.style.removeProperty('--sports-board-collapsed-h');
+      return;
+    }
+
+    var extra = Math.max(0, panels.length - Math.max(1, Math.round(board.getBoundingClientRect().width / 280)));
+    var label = toggle.querySelector('.sports-board-toggle__label');
+    if (label) {
+      label.textContent = extra > 0
+        ? 'Plus de matchs (' + extra + ' formations)'
+        : 'Plus de matchs';
+    }
+    toggle.setAttribute('aria-expanded', 'false');
+    toggle.setAttribute('aria-label', 'Plus de matchs — afficher toutes les formations');
+    wrap.style.setProperty('--sports-board-collapsed-h', rowH + 'px');
+    scroll.style.setProperty('--sports-board-collapsed-h', rowH + 'px');
+    scroll.style.maxHeight = rowH + 'px';
+  }
+
+  function bindSportsBoardCollapseOnce() {
+    if (sportsBoardBound) return;
+    sportsBoardBound = true;
+    document.addEventListener('click', function (event) {
+      var btn = event.target && event.target.closest
+        ? event.target.closest('[data-sports-board-toggle], .sports-board-toggle')
+        : null;
+      if (!btn) return;
+      event.preventDefault();
+      if (sportsBoardExpanded) return;
+      var yBefore = window.scrollY || window.pageYOffset || 0;
+      sportsBoardExpanded = true;
+      syncSportsBoardCollapse();
+      requestAnimationFrame(function () {
+        window.scrollTo({ top: yBefore, left: 0, behavior: 'auto' });
+      });
+    });
+    var resizeTimer;
+    window.addEventListener('resize', function () {
+      clearTimeout(resizeTimer);
+      resizeTimer = setTimeout(function () {
+        if (!sportsBoardExpanded) syncSportsBoardCollapse();
+      }, 120);
+    }, { passive: true });
+  }
+
+  function initSportsBoardCollapse() {
+    bindSportsBoardCollapseOnce();
+    sportsBoardExpanded = false;
+    requestAnimationFrame(function () {
+      requestAnimationFrame(syncSportsBoardCollapse);
+    });
+    window.setTimeout(syncSportsBoardCollapse, 200);
+    window.setTimeout(syncSportsBoardCollapse, 700);
+  }
+
+  window.KiosqueRefreshSportsBoard = function () {
+    sportsBoardExpanded = false;
+    syncSportsBoardCollapse();
+  };
+
   // ── Barre radio LE-RADAR ───────────────────────────────────────────────
   // Coque sombre réservée dès le HTML (data-state=loading, min-height 68).
   // L’iframe charge en eager ; à ready on passe data-state=ready (opacity 1).
@@ -2089,6 +2216,10 @@
     try { refreshNewsSearchCards(); } catch (_) { /* ignore */ }
     try { initMarquees(); } catch (_) { /* ignore */ }
     try { rebindMastheadBackgrounds(); } catch (_) { /* ignore */ }
+    try {
+      sportsBoardExpanded = false;
+      syncSportsBoardCollapse();
+    } catch (_) { /* ignore */ }
   }
 
   window.KiosqueRefreshFeed = refreshFeedChrome;
@@ -2103,6 +2234,7 @@
     initMastheadToolRelease();
     initNavCollapse();
     initNewsTailCollapse();
+    initSportsBoardCollapse();
     initMagazineColumnBalance();
     initMarquees();
     initRadarTuner();

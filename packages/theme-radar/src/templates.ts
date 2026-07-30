@@ -238,6 +238,48 @@ function sportsTeamRoster(sports: MastheadSports): SportsTeam[] {
   return [];
 }
 
+/** Date d’activité d’une formation (prochain match, sinon dernier score). */
+function sportsTeamActivityDate(team: SportsTeam, sports: MastheadSports): string {
+  let next = team.nextGame;
+  if (!next && sports.nextGame && (!sports.nextGame.teamId || sports.nextGame.teamId === team.id)) {
+    next = sports.nextGame;
+  }
+  if (!next && sports.nextGames?.length) {
+    next = sports.nextGames.find((n) => !n.teamId || n.teamId === team.id);
+  }
+  if (next?.date) return next.date;
+  const nested = team.results ?? [];
+  const global = (sports.results ?? []).filter((g) => !g.teamId || g.teamId === team.id);
+  const dates = [...nested, ...global].map((g) => g.date).filter(Boolean);
+  if (!dates.length) return '';
+  return dates.slice().sort((a, b) => String(b).localeCompare(String(a)))[0] ?? '';
+}
+
+/**
+ * Ordre des cartes : formations avec match à venir (date croissante),
+ * puis les autres par dernier score (plus récent d’abord).
+ * La 1ʳᵉ rangée CSS affiche donc l’actualité la plus chaude.
+ */
+function sortSportsTeamsForBoard(teams: SportsTeam[], sports: MastheadSports): SportsTeam[] {
+  return teams.slice().sort((a, b) => {
+    const aNext = Boolean(
+      a.nextGame
+      || (sports.nextGame && (!sports.nextGame.teamId || sports.nextGame.teamId === a.id))
+      || sports.nextGames?.some((n) => !n.teamId || n.teamId === a.id),
+    );
+    const bNext = Boolean(
+      b.nextGame
+      || (sports.nextGame && (!sports.nextGame.teamId || sports.nextGame.teamId === b.id))
+      || sports.nextGames?.some((n) => !n.teamId || n.teamId === b.id),
+    );
+    if (aNext !== bNext) return aNext ? -1 : 1;
+    const da = sportsTeamActivityDate(a, sports);
+    const db = sportsTeamActivityDate(b, sports);
+    if (aNext && bNext) return String(da).localeCompare(String(db));
+    return String(db).localeCompare(String(da));
+  });
+}
+
 function sportsPayload(ctx: RenderContext): string {
   const sports = ctx.publication.masthead?.sports;
   if (!sports || sports.enabled === false) return '';
@@ -291,34 +333,50 @@ function formatSportsDate(iso: string, timeZone: string): string {
   }
 }
 
-/** Raccourci établissement (puce / carte) — parité LE-RADAR. */
+/** Raccourci établissement pour cartes (évite les coupures verticales). */
 function sportsShortInstitutionLabel(inst: string): string {
-  return String(inst || '')
+  let s = String(inst || '')
     .replace(/^Cégep\s+(de\s+|du\s+|d’|d')?/i, '')
     .replace(/^Collège\s+/i, '')
     .replace(/^Champlain\s+College\s+/i, 'Champlain ')
     .replace(/^Université\s+(de\s+|du\s+|d’|d')?/i, '')
     .trim();
+  // Formes courtes RSEQ collégial (cartes étroites).
+  const aliases: Array<[RegExp, string]> = [
+    [/^François-Xavier-Garneau$/i, 'Garneau'],
+    [/^André-Laurendeau$/i, 'Laurendeau'],
+    [/^Édouard-Montpetit$/i, 'É.-Montpetit'],
+    [/^Saint-Jean-sur-Richelieu$/i, 'St-Jean'],
+    [/^Saint-Laurent$/i, 'St-Laurent'],
+    [/^Sainte-Foy$/i, 'Ste-Foy'],
+    [/^Champlain\s+Saint-Lambert$/i, 'Champlain St-L.'],
+    [/^Valleyfield$/i, 'Valleyfield'],
+    [/^Limoilou$/i, 'Limoilou'],
+  ];
+  for (const [re, short] of aliases) {
+    if (re.test(s)) return short;
+  }
+  return s;
 }
 
-/** Pastille domicile / extérieur (scores + prochains matchs). */
+/** Pastille domicile / extérieur — bloc sous l’adversaire (lisible). */
 function sportsVenueHtml(home?: boolean): string {
   if (home === true) {
-    return ` <span class="sports-result__venue sports-result__venue--home" title="Match à domicile">Domicile</span>`;
+    return `<span class="sports-result__venue sports-result__venue--home" title="Match à domicile">Domicile</span>`;
   }
   if (home === false) {
-    return ` <span class="sports-result__venue sports-result__venue--away" title="Match à l’extérieur">Extérieur</span>`;
+    return `<span class="sports-result__venue sports-result__venue--away" title="Match à l’extérieur">Extérieur</span>`;
   }
   return '';
 }
 
-/** Adversaire : surnom gras + établissement court (parité LE-RADAR). */
+/** Adversaire : surnom gras + école courte sur ligne suivante. */
 function sportsOppHtml(opponent: string, institution?: string): string {
   const nick = `<span class="sports-result__opp">${esc(opponent)}</span>`;
   if (!institution) return nick;
   const short = sportsShortInstitutionLabel(institution);
   if (!short || short === opponent) return nick;
-  return `${nick} <span class="sports-result__opp-school">${esc(short)}</span>`;
+  return `${nick}<span class="sports-result__opp-school">${esc(short)}</span>`;
 }
 
 function sportsSexBadgeHtml(sex?: string): string {
@@ -355,7 +413,24 @@ function sportsResultRows(
     next = sports.nextGames.find((n) => !n.teamId || n.teamId === team.id);
   }
 
+  // Ordre carte : 1) prochain match (à venir) 2) passés du plus récent au plus ancien.
   const rows: string[] = [];
+  if (next) {
+    const day = formatSportsDate(next.date, timeZone) || next.date;
+    const clock = next.time ? next.time.replace(':', ' h ') : '';
+    const timeInner = clock
+      ? `<span class="sports-result__day">${esc(day)}</span><span class="sports-result__clock">${esc(clock)}</span>`
+      : esc(day);
+    const opp = sportsOppHtml(next.opponent, next.opponentInstitution);
+    const venue = sportsVenueHtml(next.home);
+    const homeAttr = next.home === true ? ' data-home="1"' : next.home === false ? ' data-home="0"' : '';
+    rows.push(`<li class="sports-result sports-result--next"${homeAttr}>
+  <time class="sports-result__time" datetime="${esc(next.date)}">${timeInner}</time>
+  <span class="sports-result__score sports-result__score--next" aria-label="Prochain match">À venir</span>
+  <span class="sports-result__title"><span class="sports-result__vs">vs</span> ${opp}${venue}</span>
+  <span class="sports-result__badge sports-result__badge--next" title="Prochain match">→</span>
+</li>`);
+  }
   for (const g of results) {
     const badge = g.result === 'W' ? 'V' : g.result === 'L' ? 'D' : 'N';
     const label = g.result === 'W' ? 'Victoire' : g.result === 'L' ? 'Défaite' : 'Nul';
@@ -373,22 +448,6 @@ function sportsResultRows(
   <span class="sports-result__score" aria-label="${esc(label)}${homeAria}">${g.scoreFor}–${g.scoreAgainst}</span>
   <span class="sports-result__title"><span class="sports-result__vs">vs</span> ${opp}${venue}</span>
   <span class="sports-result__badge" title="${esc(label)}">${badge}</span>${priorMeta}
-</li>`);
-  }
-  if (next) {
-    const day = formatSportsDate(next.date, timeZone) || next.date;
-    const clock = next.time ? next.time.replace(':', ' h ') : '';
-    const timeInner = clock
-      ? `<span class="sports-result__day">${esc(day)}</span><span class="sports-result__clock">${esc(clock)}</span>`
-      : esc(day);
-    const opp = sportsOppHtml(next.opponent, next.opponentInstitution);
-    const venue = sportsVenueHtml(next.home);
-    const homeAttr = next.home === true ? ' data-home="1"' : next.home === false ? ' data-home="0"' : '';
-    rows.push(`<li class="sports-result sports-result--next"${homeAttr}>
-  <time class="sports-result__time" datetime="${esc(next.date)}">${timeInner}</time>
-  <span class="sports-result__score sports-result__score--next" aria-label="Prochain match">À venir</span>
-  <span class="sports-result__title"><span class="sports-result__vs">vs</span> ${opp}${venue}</span>
-  <span class="sports-result__badge sports-result__badge--next" title="Prochain match">→</span>
 </li>`);
   }
   if (!rows.length) {
@@ -416,16 +475,19 @@ export function sportsResultsPage(ctx: RenderContext, sportsArticles: Article[] 
         { demoAsOf: sports.demoAsOf },
       )
     : null;
-  const teams = (prunedSports?.teams ?? []) as SportsTeam[];
+  const rawPrunedTeams = (prunedSports?.teams ?? []) as SportsTeam[];
   const sportsForRows: MastheadSports = sports
     ? {
         ...sports,
-        teams,
+        teams: rawPrunedTeams,
         results: (prunedSports?.results ?? []) as MastheadSports['results'],
         nextGame: (prunedSports?.nextGame ?? undefined) as MastheadSports['nextGame'],
         nextGames: (prunedSports?.nextGames ?? undefined) as MastheadSports['nextGames'],
       }
     : { enabled: false };
+  const teams = sports
+    ? sortSportsTeamsForBoard(rawPrunedTeams, sportsForRows)
+    : [];
   if (!sports || !teams.length) {
     return page(
       `<div class="wrap wire">
@@ -479,11 +541,16 @@ export function sportsResultsPage(ctx: RenderContext, sportsArticles: Article[] 
         <h1 class="wire-title">Au tableau</h1>
         <span class="wire-status">${teams.length} formation${teams.length > 1 ? 's' : ''}</span>
       </div>
-      <p class="section-intro">Scores et prochains matchs des formations du ${esc(ctx.publication.institution)} — le tableau d’affichage du campus, en une page.</p>
-      <div class="sports-board-scroll">
-        <div class="sports-board" role="list">
-          ${panels}
+      <p class="section-intro">Scores et prochains matchs des formations du ${esc(ctx.publication.institution)} — le tableau d’affichage du campus.</p>
+      <div class="sports-board-wrap" data-sports-board-wrap>
+        <div class="sports-board-scroll">
+          <div class="sports-board" role="list">
+            ${panels}
+          </div>
         </div>
+        <button type="button" class="sports-board-toggle" data-sports-board-toggle hidden aria-expanded="false">
+          <span class="sports-board-toggle__label">Plus de matchs</span>
+        </button>
       </div>
       ${feed}
     </div>`,

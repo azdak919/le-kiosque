@@ -92,9 +92,13 @@ test('la vitrine expose le bandeau illustré, les outils et la composition magaz
     : content.publication.masthead?.sports?.team
       ? [content.publication.masthead.sports.team]
       : [];
-  assert.ok(sportsTeams.length >= 3, 'plusieurs sports / formations fictives');
+  assert.ok(sportsTeams.length >= 6, 'plusieurs formations H/F/mixte (démo multi-cartes)');
   assert.ok(sportsTeams.some((t) => t.code === 'QUO' && t.sport === 'volleyball'));
-  assert.ok(sportsTeams.some((t) => t.sport === 'basketball' || t.sport === 'soccer' || t.sport === 'hockey'));
+  assert.ok(sportsTeams.some((t) => t.sport === 'basketball'));
+  assert.ok(sportsTeams.some((t) => t.sport === 'soccer' || t.sport === 'hockey' || t.sport === 'flag-football'));
+  assert.ok(sportsTeams.some((t) => t.sex === 'F' || t.sex === 'f'));
+  assert.ok(sportsTeams.some((t) => t.sex === 'M' || t.sex === 'm'));
+  assert.ok(sportsTeams.some((t) => String(t.sex || '').toLowerCase().includes('mix')));
   assert.equal(sportsTeams[0]?.fictional, true);
 
   const result = await build({ config: config({ editorial: { mode: 'demo-local' } }), bundle: content, outDir: out, logger: silent });
@@ -109,15 +113,23 @@ test('la vitrine expose le bandeau illustré, les outils et la composition magaz
   const sportsPage = await readFile(path.join(out, 'sports/index.html'), 'utf8');
   assert.match(sportsPage, /Au tableau/);
   assert.match(sportsPage, /sports-board/);
+  assert.match(sportsPage, /sports-board-wrap|data-sports-board-wrap/, 'repli tableau pour articles en bas');
+  assert.match(sportsPage, /Plus de matchs/, 'bouton Plus de matchs (parité Plus d’articles)');
   assert.match(sportsPage, /sports-panel/);
   assert.match(sportsPage, /Boomerang|Titans|Cheetahs/);
   assert.match(sportsPage, /sports-result__venue--home|Domicile/, 'domicile visible sur les cartes');
   assert.match(sportsPage, /sports-result__venue--away|Extérieur/, 'extérieur visible sur les cartes');
   assert.match(sportsPage, /sports-panel__sex/, 'pastille F/M/Mixte (parité LE-RADAR)');
+  assert.match(sportsPage, /sports-result--next/, 'prochain match en tête de carte');
+  // Première ligne d’un panneau : À venir (ou score récent), pas un vieux résultat en bas.
+  const firstPanel = sportsPage.match(/<section class="sports-panel"[\s\S]*?<\/section>/);
+  assert.ok(firstPanel, 'au moins un panneau formation');
+  assert.match(firstPanel![0], /sports-result--next|À venir/, '1ʳᵉ rangée carte = à venir / récent');
   // Nav section Sports = même contenu Au tableau (pas le fil seul).
   const sportsSection = await readFile(path.join(out, 'sections/sports/index.html'), 'utf8');
   assert.match(sportsSection, /Au tableau/, 'section Sports affiche Au tableau');
   assert.match(sportsSection, /sports-board/);
+  assert.match(sportsSection, /Plus de matchs/);
   assert.match(home, /Saint-Louis-du-Ha|Ha! Ha!|Ha!/, 'météo mât = ville du cégep fictif');
   assert.match(home, /47\.6709|-68\.9797|saint-louis-du-ha-ha/, 'coords / slug météo Ha! Ha!');
   assert.match(home, /href="https:\/\/le-radar\.ca\/pomo\/"/);

@@ -1962,44 +1962,94 @@ a.masthead-sports__chip:focus-visible {
   margin-right: 3px;
   font-weight: 600;
 }
-/* Adversaire : surnom en gras ; établissement court à côté (LE-RADAR). */
+/* Adversaire : surnom en gras ; école courte sur sa ligne (pas de coupe verticale). */
 .sports-result__opp {
   font-weight: 700;
   color: var(--ink);
 }
 .sports-result__opp-school,
 .sports-result__inst {
+  display: block;
+  margin-top: 1px;
   font-size: 11px;
   font-weight: 600;
   color: var(--muted);
+  line-height: 1.3;
+  overflow-wrap: normal;
+  word-break: normal;
+  hyphens: manual;
 }
-.sports-result__inst {
-  display: block;
-  margin-top: 1px;
-}
-/* Domicile / extérieur — pastille lisible (tous les matchs). */
+/* Domicile / extérieur — pastille claire, toujours visible. */
 .sports-result__venue {
-  display: inline-block;
-  margin-top: 3px;
-  margin-left: 0;
+  display: block;
+  width: fit-content;
+  max-width: 100%;
+  margin-top: 4px;
   font-size: 10px;
   font-weight: 800;
-  letter-spacing: 0.03em;
+  letter-spacing: 0.04em;
   text-transform: uppercase;
   line-height: 1.2;
   border-radius: 999px;
-  padding: 2px 7px;
-  vertical-align: middle;
+  padding: 3px 8px;
 }
 .sports-result__venue--home {
   color: #1b5e3b;
-  background: color-mix(in srgb, #3d9a6a 16%, transparent);
-  border: 1px solid color-mix(in srgb, #3d9a6a 38%, transparent);
+  background: color-mix(in srgb, #3d9a6a 18%, transparent);
+  border: 1px solid color-mix(in srgb, #3d9a6a 42%, transparent);
 }
 .sports-result__venue--away {
   color: #5b3a12;
-  background: color-mix(in srgb, #c4922a 16%, transparent);
-  border: 1px solid color-mix(in srgb, #c4922a 36%, transparent);
+  background: color-mix(in srgb, #c4922a 18%, transparent);
+  border: 1px solid color-mix(in srgb, #c4922a 40%, transparent);
+}
+/* Repli tableau : 1 rangée de cartes + « Plus de matchs » (parité suite du fil). */
+.sports-board-wrap {
+  margin: 0 0 18px;
+}
+.sports-board-wrap .sports-board-scroll {
+  margin-bottom: 0;
+}
+.sports-board-wrap.has-overflow:not(.is-expanded) .sports-board-scroll {
+  overflow: hidden;
+  max-height: var(--sports-board-collapsed-h, 22rem);
+}
+.sports-board-wrap.is-expanded .sports-board-scroll {
+  max-height: none !important;
+  overflow: visible;
+}
+.sports-board-toggle {
+  display: none;
+  font-family: var(--sans);
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  margin: 12px 0 4px;
+  padding: 10px 14px;
+  border: 1px solid var(--rule);
+  border-radius: 999px;
+  background: var(--bg-soft);
+  color: var(--ink-soft);
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  cursor: pointer;
+  appearance: none;
+  transition: border-color 140ms ease, color 140ms ease, background 140ms ease;
+}
+.sports-board-wrap.has-overflow .sports-board-toggle { display: inline-flex; }
+.sports-board-wrap.is-expanded .sports-board-toggle { display: none !important; }
+@media (hover: hover) and (pointer: fine) {
+  .sports-board-toggle:hover {
+    border-color: var(--accent);
+    color: var(--accent);
+    background: color-mix(in srgb, var(--accent) 6%, var(--bg));
+  }
+}
+.sports-board-toggle:focus { outline: none; }
+.sports-board-toggle:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
 }
 .sports-result__badge {
   justify-self: end;
