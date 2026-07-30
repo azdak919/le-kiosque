@@ -726,7 +726,7 @@
     }
   }
 
-  /** « Les Quorums » → « Quorums » pour la puce (place limitée). */
+  /** « Les Élans » → « Élans » pour la puce (place limitée). */
   function sportsShortTeamName(name) {
     var n = String(name || '').trim();
     return n.replace(/^(Les|Le|La|L’|L')\s+/i, '') || n;
@@ -740,6 +740,20 @@
       .replace(/^Collège\s+/i, '')
       .replace(/^Champlain\s+College\s+/i, 'Champlain ')
       .replace(/^Université\s+(de\s+|du\s+|d’|d')?/i, '');
+  }
+
+  /**
+   * Bureau : équipe maison = surnom seul (le journal est déjà celui du campus).
+   * Adversaire = surnom (institution) — focus-group le-kiosque-team-nickname.
+   */
+  function sportsHomeRichLabel(team) {
+    return sportsShortTeamName(team && team.name) || String((team && team.code) || 'EQ').toUpperCase().slice(0, 4);
+  }
+
+  function sportsOppRichLabel(name, institution) {
+    var short = sportsShortTeamName(name) || String(name || '').trim();
+    var inst = sportsShortInstitution(institution);
+    return short + (inst ? ' (' + inst + ')' : '');
   }
 
   function sportsGlyph(sport) {
@@ -905,7 +919,8 @@
   /**
    * Format scoreboard (parité LE-RADAR / RDS) :
    *   mobile  — codes institution :  🏐 V  QUO  3–1  GAR
-   *   bureau  — noms + institutions :  🏐 V  Quorums (Quorum)  3–1  Boomerang (Garneau)
+   *   bureau  —  🏐 V  Élans  3–1  Boomerang (Garneau)
+   *             (maison = surnom seul ; adversaire = surnom + institution)
    * Détail long toujours dans title/aria.
    */
   function paintSportsChip(host, display, animate) {
@@ -939,9 +954,7 @@
     var inner = sportsEl('span', 'sports-chip__line-inner');
 
     var homeCode = code;
-    var homeName = sportsShortTeamName(team.name) || code;
-    var homeInst = sportsShortInstitution(team.institution);
-    var homeRich = homeName + (homeInst ? ' (' + homeInst + ')' : '');
+    var homeRich = sportsHomeRichLabel(team);
     var homeLabel = desktop ? homeRich : homeCode;
 
     var titleParts = [];
@@ -955,9 +968,8 @@
       var issue = g.result === 'W' ? 'Victoire' : g.result === 'L' ? 'Défaite' : 'Match nul';
       var oppCode = String(g.opponentCode || '').toUpperCase().slice(0, 4);
       var oppName = g.opponent || oppCode || 'Adversaire';
-      var oppInst = sportsShortInstitution(g.opponentInstitution);
       var oppCompact = oppCode || String(oppName).slice(0, 8);
-      var oppRich = sportsShortTeamName(oppName) + (oppInst ? ' (' + oppInst + ')' : '');
+      var oppRich = sportsOppRichLabel(oppName, g.opponentInstitution);
       var oppLabel = desktop ? oppRich : oppCompact;
 
       var badgeEl = sportsEl('span', 'sports-chip__badge sports-chip__badge--' + badgeMod, badge);
@@ -986,9 +998,8 @@
       var n = display.game;
       var nextCode = String(n.opponentCode || '').toUpperCase().slice(0, 4);
       var nextName = n.opponent || nextCode || 'Adversaire';
-      var nextInst = sportsShortInstitution(n.opponentInstitution);
       var nextCompact = nextCode || String(nextName).slice(0, 8);
-      var nextRich = sportsShortTeamName(nextName) + (nextInst ? ' (' + nextInst + ')' : '');
+      var nextRich = sportsOppRichLabel(nextName, n.opponentInstitution);
       var nextLabel = desktop ? nextRich : nextCompact;
       var when = formatSportsChipWhen(n.date, n.time);
 

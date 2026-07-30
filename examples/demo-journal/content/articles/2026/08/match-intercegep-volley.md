@@ -28,7 +28,7 @@ lead:
   focalPoint: { x: 50, y: 48 }
 ---
 
-Les Quorums, formation de volleyball fictive du Cégep du Quorum, ont entamé leurs matchs préparatoires contre deux formations tout aussi imaginaires de la région. Résultat mitigé, énergie intacte : les recrues apprennent vite ce que signifie « lire le filet » sous les encouragements (et les conseils non sollicités) des tribunes.
+Les Élans, formation de volleyball fictive du Cégep du Quorum, ont entamé leurs matchs préparatoires contre deux formations tout aussi imaginaires de la région. Résultat mitigé, énergie intacte : les recrues apprennent vite ce que signifie « lire le filet » sous les encouragements (et les conseils non sollicités) des tribunes.
 
 Les entraînements ont lieu les mardis et jeudis à 18 h. Public bienvenu aux matchs à domicile ; le gymnase sonne mieux quand il n’est pas vide.
 
@@ -36,4 +36,4 @@ Les entraînements ont lieu les mardis et jeudis à 18 h. Public bienvenu aux ma
 
 Le calendrier officiel (fictif) sera publié d’ici deux semaines. D’ici là, l’équipe cherche aussi des bénévoles pour le chronométrage et la table de marque — formation fournie, stress inclus.
 
-« On n’est pas là pour devenir virales, lance une capitaine des Quorums. On est là pour améliorer notre réception et peut-être, un jour, gagner un set qu’on n’aurait pas imaginé gagner en août. »
+« On n’est pas là pour devenir virales, lance une capitaine des Élans. On est là pour améliorer notre réception et peut-être, un jour, gagner un set qu’on n’aurait pas imaginé gagner en août. »

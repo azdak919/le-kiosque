@@ -160,10 +160,11 @@ masthead:
         longitude: -71.2080
         meteomediaSlug: quebec
   # Scoreboard mât — un seul surnom maison pour tous les sports (comme le RSEQ :
-  # une institution = un club, plusieurs formations). Code institution = QUO
-  # (comme LE-RADAR : GAR, LIM, CSF…). Adversaires = vrais clubs RSEQ collégial
-  # avec codes institution réels ; scores et dates restent de démonstration.
-  # Mobile : codes (QUO vs SLA). Bureau : noms d’équipes + institutions.
+  # une institution = un club, plusieurs formations). Code institution = QUO.
+  # Surnom : « Les Élans » (focus-group le-kiosque-team-nickname) — pas « Quorums ».
+  # Adversaires = vrais clubs RSEQ collégial ; scores/dates = démonstration.
+  # Mobile : codes (QUO vs SLA). Bureau : Élans vs Barons (Champlain Saint-Lambert)
+  # (maison sans parenthèse institution — évidente dans le journal du campus).
   # Rotation type gare LE-RADAR (deck brassé, ~5,2 s, animation is-arriving).
   sports:
     enabled: true
@@ -174,7 +175,7 @@ masthead:
     demoAsOf: '2026-09-20'
     teams:
       - id: demo-quorums-volley
-        name: Les Quorums
+        name: Les Élans
         code: QUO
         institution: Cégep du Quorum
         sport: volleyball
@@ -212,7 +213,7 @@ masthead:
           home: true
           competition: RSEQ collégial (démo)
       - id: demo-quorums-basket
-        name: Les Quorums
+        name: Les Élans
         code: QUO
         institution: Cégep du Quorum
         sport: basketball
@@ -250,7 +251,7 @@ masthead:
           home: true
           competition: RSEQ collégial (démo)
       - id: demo-quorums-soccer
-        name: Les Quorums
+        name: Les Élans
         code: QUO
         institution: Cégep du Quorum
         sport: soccer
@@ -288,7 +289,7 @@ masthead:
           home: false
           competition: RSEQ collégial (démo)
       - id: demo-quorums-hockey
-        name: Les Quorums
+        name: Les Élans
         code: QUO
         institution: Cégep du Quorum
         sport: hockey
