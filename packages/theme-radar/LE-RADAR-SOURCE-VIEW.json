@@ -26,7 +26,8 @@
     "Les médias LE-KIOSQUE sont des fichiers locaux validés par le pipeline; aucun proxy d’image externe n’est ajouté.",
     "Le noyau reste JavaScript sans dépendance afin que le HTML soit identique pendant la génération statique et dans la démonstration PGlite.",
     "LE-RADAR plafonne la photo d’une (max-height) pour l’équilibre magazine multi-colonnes ; LE-KIOSQUE n’applique pas ce plafond (journal unique, pas de colonne En bref concurrente).",
-    "Ordre titre→byline→media pour feature/compact déjà dans source-view.js ; le port ne recrée pas ensureLeadTitleAboveMedia (HTML généré d’un coup)."
+    "Ordre titre→byline→media pour feature/compact déjà dans source-view.js ; le port ne recrée pas ensureLeadTitleAboveMedia (HTML généré d’un coup).",
+    "Focus-group 2026-07-30 exportés : brief-more A (grille vignette|texte, more bas-droite feature/En bref), suite-more B (more inline suite du fil), midwidth-fil C (densify ≤899, magazine mid 900–1099, bureau ≥1100). Pas d’exclusion multi-institutions En bref (journal unique)."
   ],
   "syncRule": "Toute modification du modèle de source individuelle dans LE-RADAR exige l’exécution de npm run radar:reference:check puis une revue explicite de ce port avant sa publication."
 }
