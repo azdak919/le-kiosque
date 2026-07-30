@@ -904,14 +904,15 @@ export function articlePage(article: Article, ctx: RenderContext, relatedArticle
             : ''
         }
       </div>
+      <div class="post-flow">
       ${
         lead
           ? (() => {
               const pos = `object-position:${clampPercent(lead.focalPoint?.x)}% ${clampPercent(lead.focalPoint?.y)}%`;
-              const ratio =
-                lead.width && lead.height ? `;aspect-ratio:${lead.width}/${lead.height}` : '';
+              /* Pas d’aspect-ratio forcé en HTML : l’impression doit pouvoir
+                 compresser la lead sans min-height / ratio écran. */
               return `<figure class="post-lead">
-        <img class="post-lead__img" src="${safeUrl(asset(lead.src, ctx))}" alt="${esc(lead.alt || '')}" decoding="async" fetchpriority="high"${lead.width ? ` width="${lead.width}"` : ''}${lead.height ? ` height="${lead.height}"` : ''} style="${pos}${ratio}">
+        <img class="post-lead__img" src="${safeUrl(asset(lead.src, ctx))}" alt="${esc(lead.alt || '')}" decoding="async" fetchpriority="high"${lead.width ? ` width="${lead.width}"` : ''}${lead.height ? ` height="${lead.height}"` : ''} style="${pos}">
         ${caption ? `<figcaption class="post-lead__credit">${caption}</figcaption>` : ''}
       </figure>`;
             })()
@@ -919,6 +920,7 @@ export function articlePage(article: Article, ctx: RenderContext, relatedArticle
       }
       <div class="post-body">
 ${article.body.html ?? ''}
+      </div>
       </div>
       ${categories || tags ? `<div class="post-tags">\n      ${categories}\n      ${tags}\n      </div>` : ''}
     </article>`;

@@ -31,15 +31,15 @@ lead:
 
 Le laboratoire des sciences ouvrira ses portes au public pour une après-midi de démonstrations. Les projets de recherche étudiants — biologie, physique appliquée, chimie environnementale — seront présentés sous forme de postes interactifs et de courtes visites guidées.
 
-<figure class="post-figure post-figure--right">
-<img src="/media/demo-library/articles/labo.jpg" alt="Paillasse de laboratoire de chimie avec verrerie" width="960" height="660" loading="lazy" decoding="async">
-<figcaption>Photo : Horia Varlan — poste de démonstration (illustration démo).</figcaption>
-</figure>
-
 L'événement vise à rendre visibles des travaux qui restent souvent confinés aux salles de travaux pratiques. Chaque équipe disposera de quinze minutes pour expliquer sa question de recherche, sa méthode et ce qu'elle espère mesurer d'ici la fin de la session. Des affiches bilingues résumeront les protocoles sans jargon inutile.
 
 ## Programme de l'après-midi
 
 Les visites commenceront à 13 h et se termineront à 16 h 30. Un atelier de trente minutes sur la sécurité en laboratoire s'adressera aux personnes curieuses qui n'ont jamais mis les pieds dans un local technique. Les familles et les collégiens des programmes d'accueil sont explicitement invités.
 
-Aucune inscription n'est requise pour la visite libre; l'atelier de sécurité demandera toutefois une réservation en ligne pour limiter le nombre de participantes et participants. Un plan du pavillon sera affiché à l'entrée principale.
+<figure class="post-figure post-figure--right">
+<img src="/media/demo-library/articles/nursing.jpg" alt="Démonstration de soins en clinique-école" width="800" height="600" loading="lazy" decoding="async">
+<figcaption>Atelier sécurité et gestes de base — illustration démo (clinique-école).</figcaption>
+</figure>
+
+Aucune inscription n'est requise pour la visite libre; l'atelier de sécurité demandera toutefois une réservation en ligne pour limiter le nombre de participantes et participants. Un plan du pavillon sera affiché à l'entrée principale. Les équipes de biologie et de chimie environnementale se partagent le hall d’accueil pour orienter le public vers les bons locaux.

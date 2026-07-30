@@ -83,15 +83,16 @@ test('demo et template reçoivent le même theme.css / kiosque.js (packages/them
   );
   // Impression : photos modestes + texte qui flotte autour (lead + corps).
   assert.match(demoCss, /\.post-body\s+figure\.post-figure/, 'figures flottantes dans le corps');
+  assert.match(demoCss, /\.post-flow/, 'conteneur lead+corps pour float print');
   assert.match(
     demoCss,
-    /@media\s+print\s*\{[\s\S]*?\.post-lead\s*\{[\s\S]*?float:\s*right[\s\S]*?max-width:\s*8\.2cm/,
-    'impression : lead flottant, largeur bornée',
+    /@media\s+print\s*\{[\s\S]*?\.post-lead\s*\{[\s\S]*?float:\s*right[\s\S]*?6\.8cm/,
+    'impression : lead flottant, largeur en cm',
   );
   assert.match(
     demoCss,
-    /@media\s+print\s*\{[\s\S]*?\.post-body\s+figure\.post-figure[\s\S]*?max-width:\s*7\.2cm/,
-    'impression : photos du corps bornées',
+    /@media\s+print\s*\{[\s\S]*?\.post-body\s+figure\.post-figure[\s\S]*?5\.8cm/,
+    'impression : photos du corps en cm',
   );
   assert.match(demoJs, /computeMastheadFocalY/, 'cadrage auto mât présent');
   assert.match(demoJs, /function applyTheme/, 'bascule thème présente');
@@ -134,7 +135,7 @@ test('demo et template reçoivent le même theme.css / kiosque.js (packages/them
     'intro équipe reformulée',
   );
   const seed = await readFile(path.join(demo.out, 'assets/editorial/seed.json'), 'utf8');
-  assert.match(seed, /"version":\s*14/, 'seed démo v14 (photos corps + impression + Les Quorums)');
+  assert.match(seed, /"version":\s*15/, 'seed démo v15 (print cm + figures sans doublon lead)');
   assert.match(seed, /Les Quorums/, 'seed embarque le surnom maison');
   assert.match(seed, /"sport":"volleyball"/, 'plusieurs formations (sports) sous le même surnom');
   assert.match(seed, /"sport":"basketball"|"sport":"soccer"|"sport":"hockey"/, 'au moins un autre sport');

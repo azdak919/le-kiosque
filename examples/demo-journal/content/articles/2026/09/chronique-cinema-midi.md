@@ -27,15 +27,15 @@ lead:
 
 La séance de cinéma du midi propose trois courts métrages contrastés sur le passage à l'âge adulte. La programmation, entièrement inventée pour cette démonstration, mêle humour sec, documentaire intime et fiction spéculative.
 
-<figure class="post-figure post-figure--right">
-<img src="/media/demo-library/articles/cinema.jpg" alt="Petite salle de projection avec sièges rouges" width="960" height="720" loading="lazy" decoding="async">
-<figcaption>Photo : Mr N — la petite salle du pavillon des arts (illustration démo).</figcaption>
-</figure>
-
 La discussion qui suit la projection se révèle souvent aussi intéressante que les films. Les personnes présentes sont invitées à parler d'une scène qui les a marquées, sans obligation de « bien comprendre » l'œuvre. Une feuille de notes, distribuée à l'entrée, rappelle les questions de départ sans imposer de grille critique.
 
 ## Horaires et accès
 
 Les projections ont lieu le mercredi de 12 h 15 à 13 h 10 dans la petite salle du pavillon des arts. L'entrée est libre pour la communauté collégiale; une contribution volontaire finance les sous-titres et la location occasionnelle de copies. Les prochaines séances annonceront leurs titres une semaine à l'avance sur le site du journal.
 
-La chronique recommande d'arriver quelques minutes tôt : la salle se remplit rapidement lorsque le sujet touche à la santé mentale ou au travail étudiant.
+<figure class="post-figure post-figure--right">
+<img src="/media/demo-library/articles/stage.jpg" alt="Public lors d’un spectacle étudiant au cégep" width="800" height="600" loading="lazy" decoding="async">
+<figcaption>Après le générique, la discussion prend le relais — illustration démo.</figcaption>
+</figure>
+
+La chronique recommande d'arriver quelques minutes tôt : la salle se remplit rapidement lorsque le sujet touche à la santé mentale ou au travail étudiant. Un bénévole à l’entrée peut redistribuer les places si la jauge est atteinte.
