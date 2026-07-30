@@ -18,13 +18,13 @@ tags:
 lang: fr-CA
 lead:
   src: /media/demo-library/articles/photo-club.jpg
-  alt: "Exposition photographique et artistique en galerie"
-  credit: "Geoff Charles"
-  license: CC BY-SA 4.0
-  licenseUrl: https://creativecommons.org/licenses/by-sa/4.0
-  sourceUrl: https://commons.wikimedia.org/wiki/File:Welsh_Schools_art_exhibition_at_Bangor_(1569389).jpg
-  width: 1200
-  height: 1822
+  alt: "Murale et art urbain à Montréal"
+  credit: "Coastal Elite from Halifax, Canada"
+  license: CC BY-SA 2.0
+  licenseUrl: https://creativecommons.org/licenses/by-sa/2.0
+  sourceUrl: https://commons.wikimedia.org/wiki/File:Montreal_Street_Art_Graffiti_(29241125286).jpg
+  width: 1920
+  height: 1209
   focalPoint: { x: 50, y: 48 }
 ---
 

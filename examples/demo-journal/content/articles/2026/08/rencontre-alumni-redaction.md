@@ -19,13 +19,13 @@ tags:
 lang: fr-CA
 lead:
   src: /media/demo-library/articles/graduation.jpg
-  alt: "Cérémonie de diplomation"
-  credit: "U.S. Navy Photographer's Mate 2nd Class Daniel J. McLain"
-  license: Public domain
-  licenseUrl: https://commons.wikimedia.org/wiki/File:AnnapolisGraduation.jpg
-  sourceUrl: https://commons.wikimedia.org/wiki/File:AnnapolisGraduation.jpg
+  alt: "Finissantes et finissants en toge lors d’une cérémonie de diplomation"
+  credit: "Stewart Oak, Imperial College London"
+  license: CC BY 4.0
+  licenseUrl: https://commons.wikimedia.org/wiki/File:Imperial_College_London_graduation_gowns.jpg
+  sourceUrl: https://commons.wikimedia.org/wiki/File:Imperial_College_London_graduation_gowns.jpg
   width: 1920
-  height: 1277
+  height: 1334
   focalPoint: { x: 50, y: 48 }
 ---
 

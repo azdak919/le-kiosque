@@ -17,13 +17,13 @@ tags: []
 lang: fr-CA
 lead:
   src: /media/demo-library/articles/blood.jpg
-  alt: "Collecte de sang — donneur et personnel soignant"
-  credit: "Indian Navy"
-  license: CC BY-SA 4.0
-  licenseUrl: https://data.gov.in/sites/default/files/Gazette_Notification_OGDL.pdf
-  sourceUrl: https://commons.wikimedia.org/wiki/File:Blood_Donation_Camp_on_Navy_Day_2015_(01).jpg
-  width: 1000
-  height: 665
+  alt: "Prélèvement sanguin lors d’une collecte de sang"
+  credit: "Staff Sgt. Stephanie Rubi, U.S. Air Force"
+  license: Public domain
+  licenseUrl: https://commons.wikimedia.org/wiki/File:Patient_gets_blood_drawn_to_be_screened_as_a_blood_donor.jpg
+  sourceUrl: https://commons.wikimedia.org/wiki/File:Patient_gets_blood_drawn_to_be_screened_as_a_blood_donor.jpg
+  width: 1920
+  height: 1275
   focalPoint: { x: 50, y: 48 }
 ---
 

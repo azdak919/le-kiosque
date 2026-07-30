@@ -2,8 +2,9 @@
 /**
  * Télécharge des photos libres (Wikimedia Commons) pour la démo Le Quorum.
  * - Pas d'API de recherche (évite les 429) : titres de fichiers connus.
- * - Priorité Québec / campus collégial-universitaire (cégep, UdeM, Laval, McGill,
- *   RTC/STM, Grande Bibliothèque…) — pas d’écoliers, pas de scènes hors QC.
+ * - Pertinence éditoriale d’abord (sujet de l’article, adultes cégep/uni, contemporain).
+ * - Préférer le Québec quand l’image est bonne (RTC, cégep, campus, BAnQ…).
+ * - Éviter : écoliers, archives historiques hors sujet, cérémonies militaires.
  * - Stockage local versionné sous examples/demo-journal/media/demo-library/
  * - Met à jour manifest.json + article-photo-map.json
  *
@@ -75,12 +76,13 @@ const ARTICLE_THEMES = {
     licenseUrl: 'https://creativecommons.org/licenses/by-sa/2.0/',
   },
   'campus-vie': {
-    // Début de session — Université de Montréal (adultes, campus QC).
-    file: 'News. Opening of Classes - University of Montreal -Début de session - Université de Montréal- (50597330003).jpg',
-    alt: 'Étudiantes et étudiants au début de session sur un campus montréalais',
-    credit: 'Wikimedia Commons',
-    license: 'Public domain',
-    licenseUrl: 'https://commons.wikimedia.org/wiki/File:News._Opening_of_Classes_-_University_of_Montreal_-D%C3%A9but_de_session_-_Universit%C3%A9_de_Montr%C3%A9al-_(50597330003).jpg',
+    // Portrait étudiant contemporain (adultes sur campus). Pas d’archives historiques.
+    // Mieux qu’un cliché d’ouverture de session UdeM d’époque (B&W, hors sujet santé mentale).
+    file: 'Students enjoy springtime weather. (5554288570).jpg',
+    alt: 'Étudiantes et étudiants sur un campus au printemps',
+    credit: 'Tulane Public Relations',
+    license: 'CC BY 2.0',
+    licenseUrl: 'https://creativecommons.org/licenses/by/2.0/',
   },
   velo: {
     file: 'Bike repair station.jpg',
@@ -184,11 +186,12 @@ const ARTICLE_THEMES = {
     licenseUrl: 'https://commons.wikimedia.org/wiki/File:Chess_game_Staunton_No._6_perfil_view_8.jpg',
   },
   blood: {
-    file: 'Blood Donation Camp on Navy Day 2015 (01).jpg',
-    alt: 'Collecte de sang — donneur et personnel soignant',
+    // Don de sang clinique (pas une cérémonie militaire).
+    file: 'Patient gets blood drawn to be screened as a blood donor.jpg',
+    alt: 'Prélèvement sanguin lors d’une collecte de sang',
     credit: 'Wikimedia Commons',
-    license: 'voir source',
-    licenseUrl: 'https://commons.wikimedia.org/wiki/File:Blood_Donation_Camp_on_Navy_Day_2015_(01).jpg',
+    license: 'Public domain',
+    licenseUrl: 'https://commons.wikimedia.org/wiki/File:Patient_gets_blood_drawn_to_be_screened_as_a_blood_donor.jpg',
   },
   mural: {
     file: 'Montreal Street Art Graffiti (29241125286).jpg',
@@ -243,12 +246,12 @@ const ARTICLE_THEMES = {
     licenseUrl: 'https://commons.wikimedia.org/wiki/File:Parc_du_Mont-Royal_015.jpg',
   },
   graduation: {
-    // Remise de diplômes / finissants — cadre collégial-universitaire QC si dispo.
-    file: 'Étudiants près du pavillon Charles-De Koninck 266-1-005.jpg',
-    alt: 'Étudiantes et étudiants sur le campus de l’Université Laval',
-    credit: 'Yves Tessier',
-    license: 'CC BY-SA 4.0',
-    licenseUrl: 'https://commons.wikimedia.org/wiki/File:%C3%89tudiants_pr%C3%A8s_du_pavillon_Charles-De_Koninck_266-1-005.jpg',
+    // Finissants contemporains en toge (pas d’archives B&W des années 70).
+    file: 'Imperial College London graduation gowns.jpg',
+    alt: 'Finissantes et finissants en toge lors d’une cérémonie de diplomation',
+    credit: 'Wikimedia Commons',
+    license: 'CC BY 4.0',
+    licenseUrl: 'https://commons.wikimedia.org/wiki/File:Imperial_College_London_graduation_gowns.jpg',
   },
   participatory: {
     // Amphithéâtre / assemblée — Cégep Sainte-Foy (intérieur campus collégial).

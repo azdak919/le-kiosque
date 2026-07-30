@@ -19,13 +19,13 @@ tags: []
 lang: fr-CA
 lead:
   src: /media/demo-library/articles/stage.jpg
-  alt: "Scène ouverte avec micro pour spectacle étudiant"
-  credit: "Artaxerxes"
-  license: CC BY-SA 4.0
-  licenseUrl: https://creativecommons.org/licenses/by-sa/4.0
-  sourceUrl: https://commons.wikimedia.org/wiki/File:Open_mic_The_Local_824_Hinton_Avenue_in_Belmont_Charlottesville_VA_April_2023_1.jpg
+  alt: "Scène et public lors d’un spectacle étudiant au cégep"
+  credit: "art_inthecity from Montréal, CA"
+  license: CC BY 2.0
+  licenseUrl: https://creativecommons.org/licenses/by/2.0
+  sourceUrl: https://commons.wikimedia.org/wiki/File:Le_chant_des_cageux%2C_C%C3%A9g%C3%A9p_du_Vieux_Montr%C3%A9al%2C_2020._(49623021442).jpg
   width: 1920
-  height: 2560
+  height: 1440
   focalPoint: { x: 50, y: 48 }
 ---
 

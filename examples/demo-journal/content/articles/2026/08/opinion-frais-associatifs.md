@@ -18,13 +18,13 @@ tags: []
 lang: fr-CA
 lead:
   src: /media/demo-library/articles/participatory.jpg
-  alt: "Assemblée en amphithéâtre"
-  credit: "Kannan5645"
+  alt: "Hall et espaces communs d’un campus collégial québécois"
+  credit: "Khayman"
   license: CC BY-SA 3.0
   licenseUrl: https://creativecommons.org/licenses/by-sa/3.0
-  sourceUrl: https://commons.wikimedia.org/wiki/File:Lecture_hall.jpg
-  width: 1600
-  height: 1200
+  sourceUrl: https://commons.wikimedia.org/wiki/File:C%C3%A9gep_de_Sainte-Foy_(int%C3%A9rieur).JPG
+  width: 1920
+  height: 1285
   focalPoint: { x: 50, y: 48 }
 ---
 

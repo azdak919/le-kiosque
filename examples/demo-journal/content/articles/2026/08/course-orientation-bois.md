@@ -19,13 +19,13 @@ tags:
 lang: fr-CA
 lead:
   src: /media/demo-library/articles/trail.jpg
-  alt: "Sentier forestier pour course d’orientation"
-  credit: "Sanzzu"
-  license: CC BY-SA 4.0
-  licenseUrl: https://creativecommons.org/licenses/by-sa/4.0
-  sourceUrl: https://commons.wikimedia.org/wiki/File:Forest_path_through_a_deciduous_forest_in_spring%2C_Finland.jpg
+  alt: "Sentier et sous-bois du parc du Mont-Royal à Montréal"
+  credit: "Jean Gagnon"
+  license: CC BY-SA 3.0
+  licenseUrl: https://creativecommons.org/licenses/by-sa/3.0
+  sourceUrl: https://commons.wikimedia.org/wiki/File:Parc_du_Mont-Royal_015.jpg
   width: 1920
-  height: 1280
+  height: 1440
   focalPoint: { x: 50, y: 48 }
 ---
 
