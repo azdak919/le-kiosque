@@ -27,7 +27,7 @@ lead:
   focalPoint: { x: 50, y: 48 }
 ---
 
-Les Élans accueillent six recrues avant l'ouverture de leur camp automnal de basketball. Le personnel d'entraînement insiste sur deux axes : la profondeur du banc et la rapidité en transition, afin d'absorber un calendrier plus dense en début de saison. Comme le volleyball, cette formation du Cégep du Quorum est entièrement fictive — réservée à la démonstration du journal.
+Les Élans accueillent six recrues avant l'ouverture de leur camp automnal de basketball. Le personnel d'entraînement insiste sur deux axes : la profondeur du banc et la rapidité en transition, afin d'absorber un calendrier plus dense en début de saison.
 
 Le camp préparatoire commencera lundi avec deux séances ouvertes au public. Les athlètes enchaîneront ensuite une série de matchs hors concours destinés à évaluer les combinaisons de cinq et la gestion des minutes. La composition finale devrait être annoncée avant le premier match local.
 

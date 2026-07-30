@@ -117,7 +117,7 @@ test('demo et template reçoivent le même theme.css / kiosque.js (packages/them
   assert.match(tplHome, /id="masthead-weather-dock"/);
   assert.match(demoHome, /data-sports-payload/, 'équipe sports démo embarquée');
   assert.match(demoHome, /Les Élans|Les &Eacute;lans/, 'surnom maison unique (focus-group Élans)');
-  assert.match(demoHome, /code&quot;:&quot;QUO&quot;|"code":"QUO"/, 'code équipe QUO');
+  assert.match(demoHome, /code&quot;:&quot;SLHH&quot;|"code":"SLHH"/, 'code équipe SLHH (override mainteneur)');
   assert.match(demoHome, /data-nav-shell/, 'shell nav mobile');
   assert.match(tplHome, /data-nav-shell/);
   assert.match(demoHome, /data-nav-toggle/, 'bouton Toutes les rubriques');
@@ -135,7 +135,7 @@ test('demo et template reçoivent le même theme.css / kiosque.js (packages/them
     'intro équipe reformulée',
   );
   const seed = await readFile(path.join(demo.out, 'assets/editorial/seed.json'), 'utf8');
-  assert.match(seed, /"version":\s*19/, 'seed démo v19 (ville Saint-Louis-du-Ha! Ha!)');
+  assert.match(seed, /"version":\s*25/, 'seed démo v25 (pastilles sombre + sans « démo » sports)');
   assert.match(seed, /Les Élans/, 'seed embarque le surnom maison Élans');
   assert.doesNotMatch(seed, /Les Quorums/, 'plus de surnom redondant Quorums');
   assert.match(seed, /hockey-interieur\.jpg/, 'photo corps hockey intérieur distincte du lead');
@@ -144,9 +144,19 @@ test('demo et template reçoivent le même theme.css / kiosque.js (packages/them
   assert.match(seed, /Saint-Louis-du-Ha! Ha!/, 'météo démo = ville du cégep fictif');
   assert.match(seed, /47\.6709/, 'latitude Saint-Louis-du-Ha! Ha!');
   assert.match(seed, /"sport":"volleyball"/, 'plusieurs formations (sports) sous le même surnom');
-  assert.match(seed, /"sport":"basketball"|"sport":"soccer"|"sport":"hockey"/, 'au moins un autre sport');
+  assert.match(seed, /"sport":"basketball"/, 'basketball');
+  assert.match(seed, /"sport":"soccer"|"sport":"hockey"|"sport":"flag-football"/, 'autres sports');
+  assert.match(seed, /"sex":"(F|M|mixte)"/, 'formations F / M / mixte');
   assert.match(seed, /Titans|Boomerang|Géants|Cheetahs/, 'adversaires = clubs RSEQ collégial réels');
-  assert.match(seed, /"code":"QUO"/, 'code institution Cégep du Quorum = QUO');
+  assert.match(seed, /"code":"SLHH"/, 'code institution = SLHH (override mainteneur sports-code)');
+  assert.doesNotMatch(seed, /"code":"HAH"/, 'HAH non retenu (override → SLHH)');
+  assert.doesNotMatch(seed, /"code":"QUO"/, 'QUO retiré (plus de Cégep du Quorum)');
+  assert.match(seed, /Cégep de Saint-Louis-du-Ha! Ha!/, 'institution = ville / cégep Ha! Ha!');
+  assert.doesNotMatch(seed, /Cégep du Quorum/, 'plus de Cégep du Quorum (nom redondant journal)');
+  assert.match(demoJs, /initSportsBoardCollapse|Plus de matchs|KiosqueRefreshSportsBoard/, 'repli Au tableau + Plus de matchs');
+  assert.match(demoCss, /sports-board-wrap|sports-board-toggle/, 'CSS repli tableau sports');
+  assert.match(demoJs, /sportsBoardHref|focusSportsTeam|KiosqueFocusSportsTeam/, 'deep-link puce → carte formation');
+  assert.match(demoCss, /is-spotlight|sports-panel-spotlight-pulse/, 'pulse contour carte ciblée (parité LE-RADAR)');
   assert.match(demoJs, /sportsHomeRichLabel|sportsOppRichLabel/, 'puce : maison sans (institution)');
   assert.match(seed, /"opponentCode":"(GAR|LIM|CSF|CAL|SLA|CEM|SJR)"/, 'codes adversaires = institutions RSEQ');
   // Prochains matchs : institution adverse (puce bureau + page Au tableau).

@@ -889,9 +889,11 @@
     }
     requestAnimationFrame(function () {
       requestAnimationFrame(function () {
-        var overflow = inner.scrollWidth - viewport.clientWidth;
+        /* +2 px : fin de course = dernier glyphe entièrement dans le viewport
+         * (évite une carte qui semble encore coupée à droite en fin de défilement). */
+        var overflow = Math.ceil(inner.scrollWidth - viewport.clientWidth) + 2;
         var dwellMs = SPORTS_ROTATE_MIN_MS;
-        if (overflow > 2) {
+        if (overflow > 4) {
           /* Une direction = pauses (keyframes ~20 %+20 %) + déplacement.
            * durationSec = un sens ; ×2 = aller + retour (animation alternate). */
           var durationSec = Math.max(
@@ -918,11 +920,33 @@
 
   /**
    * Format scoreboard (parité LE-RADAR / RDS) :
-   *   mobile  — codes institution :  🏐 V  QUO  3–1  GAR
+   *   mobile  — codes institution :  🏐 V  SLHH  3–1  GAR
    *   bureau  —  🏐 V  Élans  3–1  Boomerang (Garneau)
    *             (maison = surnom seul ; adversaire = surnom + institution)
    * Détail long toujours dans title/aria.
    */
+  /**
+   * Deep-link Au tableau — parité LE-RADAR sportsBoardHref :
+   * /sports/?team=<id>&sport=<sport> → scroll + pulse de la carte formation.
+   */
+  function sportsBoardHref(display) {
+    var base = (sportsPayloadCache && sportsPayloadCache.href) || '/sports/';
+    try {
+      var u = new URL(base, window.location.href);
+      var teamId = display && display.team && display.team.id
+        ? String(display.team.id).trim()
+        : '';
+      var sport = '';
+      if (display && display.game && display.game.sport) sport = String(display.game.sport).toLowerCase();
+      else if (display && display.team && display.team.sport) sport = String(display.team.sport).toLowerCase();
+      if (sport) u.searchParams.set('sport', sport);
+      if (teamId) u.searchParams.set('team', teamId);
+      return u.pathname + u.search;
+    } catch (_) {
+      return base;
+    }
+  }
+
   function paintSportsChip(host, display, animate) {
     if (!host || !display) return;
     host.textContent = '';
@@ -932,7 +956,7 @@
     var sportLabel = team.sportLabel || sport || '';
     var tone = display.tone || sportsSlideTone(display);
     var desktop = sportsIsDesktopLabel();
-    var href = (sportsPayloadCache && sportsPayloadCache.href) || '';
+    var href = sportsBoardHref(display);
     var chip = document.createElement(href ? 'a' : 'span');
     chip.className = 'sports-chip masthead-sports__chip';
     if (desktop) chip.classList.add('sports-chip--rich');
@@ -946,6 +970,7 @@
       /* SPA démo : même routeur que le menu (évite un full reload hors basePath). */
       chip.setAttribute('data-editorial-link', '');
     }
+    if (team && team.id) chip.dataset.sportsTeam = String(team.id);
 
     var glyph = sportsEl('span', 'sports-chip__glyph', sportsGlyph(sport));
     glyph.setAttribute('aria-hidden', 'true');
@@ -957,6 +982,7 @@
     var homeRich = sportsHomeRichLabel(team);
     var homeLabel = desktop ? homeRich : homeCode;
 
+    /* Tooltip scannable (parité LE-RADAR sportsChipTitle) — sans « démo ». */
     var titleParts = [];
     var aria = '';
 
@@ -983,17 +1009,9 @@
       inner.appendChild(document.createTextNode(' '));
       inner.appendChild(sportsEl('span', (desktop ? 'sports-chip__name' : 'sports-chip__code') + ' sports-chip__opp', oppLabel));
 
-      aria = issue + ' des ' + team.name
-        + (sportLabel ? ' (' + sportLabel + ')' : '')
-        + ' : ' + g.scoreFor + ' à ' + g.scoreAgainst + ' contre ' + oppName
-        + (g.opponentInstitution ? ' (' + g.opponentInstitution + ')' : '');
-      titleParts.push(issue + ' · ' + team.name);
-      if (sportLabel) titleParts.push(sportLabel);
-      titleParts.push(homeCode + ' ' + score + ' ' + oppCompact);
-      if (oppName) titleParts.push(oppName);
-      if (g.opponentInstitution) titleParts.push(g.opponentInstitution);
-      if (g.competition) titleParts.push(g.competition);
+      titleParts = [issue, sportLabel, homeCode + ' ' + score + ' ' + oppCompact];
       if (g.date) titleParts.push(formatSportsChipWhen(g.date));
+      aria = titleParts.join(' · ') + '. Ouvrir le tableau des scores.';
     } else {
       var n = display.game;
       var nextCode = String(n.opponentCode || '').toUpperCase().slice(0, 4);
@@ -1015,23 +1033,14 @@
         inner.appendChild(sportsEl('span', 'sports-chip__when', when));
       }
 
-      aria = 'Prochain match des ' + team.name
-        + (sportLabel ? ' (' + sportLabel + ')' : '')
-        + ' contre ' + nextName
-        + (n.opponentInstitution ? ' (' + n.opponentInstitution + ')' : '')
-        + (when ? ' le ' + when : '');
-      titleParts.push('Prochain · ' + team.name);
-      if (sportLabel) titleParts.push(sportLabel);
-      titleParts.push(homeCode + ' vs ' + nextCompact);
-      if (nextName) titleParts.push(nextName);
-      if (n.opponentInstitution) titleParts.push(n.opponentInstitution);
+      titleParts = ['Prochain match', sportLabel, homeCode + ' vs ' + nextCompact];
       if (when) titleParts.push(when);
       if (n.home === true) titleParts.push('Domicile');
       else if (n.home === false) titleParts.push('Extérieur');
-      if (n.competition) titleParts.push(n.competition);
+      aria = titleParts.filter(Boolean).join(' · ') + '. Ouvrir le tableau des scores.';
     }
     viewport.appendChild(inner);
-    chip.title = titleParts.join(' · ');
+    chip.title = titleParts.filter(Boolean).join(' · ');
     chip.setAttribute('aria-label', aria);
     chip.dataset.sportsKey = display.key || '';
     chip.dataset.sportsMode = display.mode || '';
@@ -1724,6 +1733,203 @@
     window.setTimeout(remeasure, 900);
   }
 
+  // ── Au tableau : « Plus de matchs » (1 rangée de cartes, puis tout) ──
+  var sportsBoardExpanded = false;
+  var sportsBoardBound = false;
+
+  function measureSportsBoardRowHeight(board) {
+    if (!board) return 0;
+    var panels = board.querySelectorAll('.sports-panel');
+    if (!panels.length) return 0;
+    void board.offsetHeight;
+    var boardTop = board.getBoundingClientRect().top;
+    var firstBottom = panels[0].getBoundingClientRect().bottom;
+    var rowBottom = firstBottom;
+    var firstTop = panels[0].getBoundingClientRect().top;
+    for (var i = 1; i < panels.length; i++) {
+      var r = panels[i].getBoundingClientRect();
+      /* Même rangée ≈ même top (tolérance 12 px). */
+      if (Math.abs(r.top - firstTop) < 12) {
+        rowBottom = Math.max(rowBottom, r.bottom);
+      } else {
+        break;
+      }
+    }
+    return Math.max(160, Math.ceil(rowBottom - boardTop + 8));
+  }
+
+  function syncSportsBoardCollapse() {
+    var wrap = document.querySelector('[data-sports-board-wrap]');
+    if (!wrap) return;
+    var scroll = wrap.querySelector('.sports-board-scroll');
+    var board = wrap.querySelector('.sports-board');
+    var toggle = wrap.querySelector('[data-sports-board-toggle]') || wrap.querySelector('.sports-board-toggle');
+    if (!scroll || !board) return;
+
+    var panels = board.querySelectorAll('.sports-panel');
+    var rowH = measureSportsBoardRowHeight(board);
+    var fullH = board.scrollHeight;
+    var overflow = panels.length > 1 && fullH > rowH + 48;
+
+    if (!overflow) {
+      wrap.classList.remove('has-overflow', 'is-expanded');
+      scroll.style.removeProperty('max-height');
+      scroll.style.removeProperty('--sports-board-collapsed-h');
+      if (toggle) {
+        toggle.hidden = true;
+        toggle.setAttribute('hidden', '');
+      }
+      sportsBoardExpanded = false;
+      return;
+    }
+
+    wrap.classList.add('has-overflow');
+    wrap.classList.toggle('is-expanded', sportsBoardExpanded);
+
+    if (!toggle) {
+      toggle = document.createElement('button');
+      toggle.type = 'button';
+      toggle.className = 'sports-board-toggle';
+      toggle.setAttribute('data-sports-board-toggle', '');
+      toggle.innerHTML = '<span class="sports-board-toggle__label">Plus de matchs</span>';
+      wrap.appendChild(toggle);
+    }
+    toggle.hidden = false;
+    toggle.removeAttribute('hidden');
+
+    if (sportsBoardExpanded) {
+      toggle.hidden = true;
+      toggle.setAttribute('hidden', '');
+      scroll.style.maxHeight = 'none';
+      scroll.style.removeProperty('--sports-board-collapsed-h');
+      return;
+    }
+
+    var extra = Math.max(0, panels.length - Math.max(1, Math.round(board.getBoundingClientRect().width / 280)));
+    var label = toggle.querySelector('.sports-board-toggle__label');
+    if (label) {
+      label.textContent = extra > 0
+        ? 'Plus de matchs (' + extra + ' formations)'
+        : 'Plus de matchs';
+    }
+    toggle.setAttribute('aria-expanded', 'false');
+    toggle.setAttribute('aria-label', 'Plus de matchs — afficher toutes les formations');
+    wrap.style.setProperty('--sports-board-collapsed-h', rowH + 'px');
+    scroll.style.setProperty('--sports-board-collapsed-h', rowH + 'px');
+    scroll.style.maxHeight = rowH + 'px';
+  }
+
+  function bindSportsBoardCollapseOnce() {
+    if (sportsBoardBound) return;
+    sportsBoardBound = true;
+    document.addEventListener('click', function (event) {
+      var btn = event.target && event.target.closest
+        ? event.target.closest('[data-sports-board-toggle], .sports-board-toggle')
+        : null;
+      if (!btn) return;
+      event.preventDefault();
+      if (sportsBoardExpanded) return;
+      var yBefore = window.scrollY || window.pageYOffset || 0;
+      sportsBoardExpanded = true;
+      syncSportsBoardCollapse();
+      requestAnimationFrame(function () {
+        window.scrollTo({ top: yBefore, left: 0, behavior: 'auto' });
+      });
+    });
+    var resizeTimer;
+    window.addEventListener('resize', function () {
+      clearTimeout(resizeTimer);
+      resizeTimer = setTimeout(function () {
+        if (!sportsBoardExpanded) syncSportsBoardCollapse();
+      }, 120);
+    }, { passive: true });
+  }
+
+  function initSportsBoardCollapse() {
+    bindSportsBoardCollapseOnce();
+    sportsBoardExpanded = false;
+    requestAnimationFrame(function () {
+      requestAnimationFrame(syncSportsBoardCollapse);
+    });
+    window.setTimeout(syncSportsBoardCollapse, 200);
+    window.setTimeout(syncSportsBoardCollapse, 700);
+  }
+
+  window.KiosqueRefreshSportsBoard = function () {
+    sportsBoardExpanded = false;
+    syncSportsBoardCollapse();
+    focusSportsTeamFromUrl();
+  };
+
+  /**
+   * Deep-link ?team=… (puce mât) : ouvrir le tableau si replié, scroller
+   * jusqu’à la carte formation et pulser le contour (parité LE-RADAR).
+   */
+  function clearSportsTeamSpotlight() {
+    document.querySelectorAll('.sports-panel.is-spotlight').forEach(function (p) {
+      p.classList.remove('is-spotlight');
+    });
+  }
+
+  function focusSportsTeam(teamId) {
+    clearSportsTeamSpotlight();
+    if (!teamId) return null;
+    var panel = null;
+    try {
+      if (typeof CSS !== 'undefined' && typeof CSS.escape === 'function') {
+        panel = document.querySelector('.sports-panel[data-team="' + CSS.escape(teamId) + '"]');
+      }
+    } catch (_) { panel = null; }
+    if (!panel) {
+      var all = document.querySelectorAll('.sports-panel[data-team]');
+      for (var i = 0; i < all.length; i++) {
+        if (all[i].getAttribute('data-team') === teamId) {
+          panel = all[i];
+          break;
+        }
+      }
+    }
+    if (!panel) return null;
+
+    /* Déplier « Plus de matchs » pour que la carte ne soit pas hors vue. */
+    sportsBoardExpanded = true;
+    try { syncSportsBoardCollapse(); } catch (_) { /* ignore */ }
+
+    panel.classList.add('is-spotlight');
+    window.requestAnimationFrame(function () {
+      window.requestAnimationFrame(function () {
+        try {
+          panel.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        } catch (_) {
+          try { panel.scrollIntoView(true); } catch (__) { /* ignore */ }
+        }
+      });
+    });
+    return panel;
+  }
+
+  function focusSportsTeamFromUrl() {
+    var teamId = '';
+    try {
+      teamId = new URLSearchParams(window.location.search).get('team') || '';
+    } catch (_) {
+      teamId = '';
+    }
+    teamId = String(teamId || '').trim();
+    if (!teamId) {
+      clearSportsTeamSpotlight();
+      return;
+    }
+    /* Laisser le layout (repli board) se mesurer avant le scroll. */
+    window.requestAnimationFrame(function () {
+      focusSportsTeam(teamId);
+    });
+    window.setTimeout(function () { focusSportsTeam(teamId); }, 200);
+    window.setTimeout(function () { focusSportsTeam(teamId); }, 700);
+  }
+
+  window.KiosqueFocusSportsTeam = focusSportsTeamFromUrl;
+
   // ── Barre radio LE-RADAR ───────────────────────────────────────────────
   // Coque sombre réservée dès le HTML (data-state=loading, min-height 68).
   // L’iframe charge en eager ; à ready on passe data-state=ready (opacity 1).
@@ -2089,6 +2295,11 @@
     try { refreshNewsSearchCards(); } catch (_) { /* ignore */ }
     try { initMarquees(); } catch (_) { /* ignore */ }
     try { rebindMastheadBackgrounds(); } catch (_) { /* ignore */ }
+    try {
+      sportsBoardExpanded = false;
+      syncSportsBoardCollapse();
+    } catch (_) { /* ignore */ }
+    try { focusSportsTeamFromUrl(); } catch (_) { /* ignore */ }
   }
 
   window.KiosqueRefreshFeed = refreshFeedChrome;
@@ -2103,11 +2314,13 @@
     initMastheadToolRelease();
     initNavCollapse();
     initNewsTailCollapse();
+    initSportsBoardCollapse();
     initMagazineColumnBalance();
     initMarquees();
     initRadarTuner();
     initPageScrollTop();
     initNewsSearch();
+    focusSportsTeamFromUrl();
   }
 
   if (document.readyState === 'loading') {

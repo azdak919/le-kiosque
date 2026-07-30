@@ -4,7 +4,7 @@
 slug: le-quorum
 name: Le Quorum
 tagline: On vote, on débat, on imprime
-institution: Cégep du Quorum
+institution: Cégep de Saint-Louis-du-Ha! Ha!
 institutionType: cegep
 # Province (QC). La ville de la démo = Saint-Louis-du-Ha! Ha! (Bas-Saint-Laurent) — météo mât.
 region: Québec
@@ -153,19 +153,18 @@ masthead:
         focalPoint: { x: 50, y: 46 }
   weather:
     enabled: true
-    # Ville fictive du Cégep du Quorum : Saint-Louis-du-Ha! Ha! (Bas-Saint-Laurent).
-    # Coords OSM (WGS84) + slug MétéoMédia ; clic → Environnement Canada (coords)
-    # et MétéoMédia (data- / title).
+    # Localité du cégep fictif (Bas-Saint-Laurent). Coords OSM (WGS84) + slug
+    # MétéoMédia ; clic → Environnement Canada (coords) et MétéoMédia (data- / title).
     localities:
       - name: Saint-Louis-du-Ha! Ha!
         latitude: 47.6709
         longitude: -68.9797
         meteomediaSlug: saint-louis-du-ha-ha
   # Scoreboard mât — un seul surnom maison pour tous les sports (comme le RSEQ :
-  # une institution = un club, plusieurs formations). Code institution = QUO.
+  # une institution = un club, plusieurs formations). Code institution = SLHH.
   # Surnom : « Les Élans » (focus-group le-kiosque-team-nickname) — pas « Quorums ».
-  # Adversaires = vrais clubs RSEQ collégial ; scores/dates = démonstration.
-  # Mobile : codes (QUO vs SLA). Bureau : Élans vs Barons (Champlain Saint-Lambert)
+  # Adversaires = clubs RSEQ collégial ; scores/dates de calendrier.
+  # Mobile : codes (SLHH vs SLA). Bureau : Élans vs Barons (Champlain Saint-Lambert)
   # (maison sans parenthèse institution — évidente dans le journal du campus).
   # Rotation type gare LE-RADAR (deck brassé, ~5,2 s, animation is-arriving).
   sports:
@@ -175,11 +174,12 @@ masthead:
     # pas contre le jour du build — sinon les fixtures sept–oct disparaissent en été.
     # Après les derniers scores (sept.) et avant le prochain match (oct.).
     demoAsOf: '2026-09-20'
+    # Formations Élans : H / F / mixte + plusieurs sports (parité RSEQ multi-cartes).
     teams:
-      - id: demo-quorums-volley
+      - id: demo-elans-volley-f
         name: Les Élans
-        code: QUO
-        institution: Cégep du Quorum
+        code: SLHH
+        institution: Cégep de Saint-Louis-du-Ha! Ha!
         sport: volleyball
         sportLabel: Volleyball
         sex: F
@@ -195,7 +195,7 @@ masthead:
             scoreAgainst: 1
             result: W
             sport: volleyball
-            competition: RSEQ collégial (démo)
+            competition: RSEQ collégial
           - date: '2026-09-11'
             opponent: Titans
             opponentCode: LIM
@@ -205,7 +205,7 @@ masthead:
             scoreAgainst: 3
             result: L
             sport: volleyball
-            competition: RSEQ collégial (démo)
+            competition: RSEQ collégial
         nextGame:
           date: '2026-10-02'
           time: '19:00'
@@ -213,11 +213,49 @@ masthead:
           opponentCode: CSF
           opponentInstitution: Cégep de Sainte-Foy
           home: true
-          competition: RSEQ collégial (démo)
-      - id: demo-quorums-basket
+          competition: RSEQ collégial
+      - id: demo-elans-volley-m
         name: Les Élans
-        code: QUO
-        institution: Cégep du Quorum
+        code: SLHH
+        institution: Cégep de Saint-Louis-du-Ha! Ha!
+        sport: volleyball
+        sportLabel: Volleyball
+        sex: M
+        fictional: true
+        colors: { primary: '#5a1a54', secondary: '#f0e0ed' }
+        results:
+          - date: '2026-09-19'
+            opponent: Cavaliers
+            opponentCode: CSL
+            opponentInstitution: Cégep de Saint-Laurent
+            home: true
+            scoreFor: 3
+            scoreAgainst: 0
+            result: W
+            sport: volleyball
+            competition: RSEQ collégial
+          - date: '2026-09-12'
+            opponent: Cheetahs
+            opponentCode: CAL
+            opponentInstitution: Cégep André-Laurendeau
+            home: false
+            scoreFor: 1
+            scoreAgainst: 3
+            result: L
+            sport: volleyball
+            competition: RSEQ collégial
+        nextGame:
+          date: '2026-10-06'
+          time: '19:30'
+          opponent: Barons
+          opponentCode: SLA
+          opponentInstitution: Champlain College Saint-Lambert
+          home: false
+          competition: RSEQ collégial
+      - id: demo-elans-basket-m
+        name: Les Élans
+        code: SLHH
+        institution: Cégep de Saint-Louis-du-Ha! Ha!
         sport: basketball
         sportLabel: Basketball
         sex: M
@@ -233,7 +271,7 @@ masthead:
             scoreAgainst: 68
             result: W
             sport: basketball
-            competition: RSEQ collégial (démo)
+            competition: RSEQ collégial
           - date: '2026-09-13'
             opponent: Cavaliers
             opponentCode: CSL
@@ -243,7 +281,7 @@ masthead:
             scoreAgainst: 74
             result: L
             sport: basketball
-            competition: RSEQ collégial (démo)
+            competition: RSEQ collégial
         nextGame:
           date: '2026-10-05'
           time: '18:30'
@@ -251,11 +289,49 @@ masthead:
           opponentCode: VAL
           opponentInstitution: Cégep de Valleyfield
           home: true
-          competition: RSEQ collégial (démo)
-      - id: demo-quorums-soccer
+          competition: RSEQ collégial
+      - id: demo-elans-basket-f
         name: Les Élans
-        code: QUO
-        institution: Cégep du Quorum
+        code: SLHH
+        institution: Cégep de Saint-Louis-du-Ha! Ha!
+        sport: basketball
+        sportLabel: Basketball
+        sex: F
+        fictional: true
+        colors: { primary: '#1a4fbf', secondary: '#eef3ff' }
+        results:
+          - date: '2026-09-16'
+            opponent: Titans
+            opponentCode: LIM
+            opponentInstitution: Cégep Limoilou
+            home: false
+            scoreFor: 58
+            scoreAgainst: 63
+            result: L
+            sport: basketball
+            competition: RSEQ collégial
+          - date: '2026-09-09'
+            opponent: Cougars
+            opponentCode: CEM
+            opponentInstitution: Cégep Édouard-Montpetit
+            home: true
+            scoreFor: 67
+            scoreAgainst: 55
+            result: W
+            sport: basketball
+            competition: RSEQ collégial
+        nextGame:
+          date: '2026-10-07'
+          time: '18:00'
+          opponent: Géants
+          opponentCode: CSF
+          opponentInstitution: Cégep de Sainte-Foy
+          home: true
+          competition: RSEQ collégial
+      - id: demo-elans-soccer-x
+        name: Les Élans
+        code: SLHH
+        institution: Cégep de Saint-Louis-du-Ha! Ha!
         sport: soccer
         sportLabel: Soccer
         sex: mixte
@@ -271,7 +347,7 @@ masthead:
             scoreAgainst: 2
             result: D
             sport: soccer
-            competition: RSEQ collégial (démo)
+            competition: RSEQ collégial
           - date: '2026-09-10'
             opponent: Dragons
             opponentCode: SJR
@@ -281,7 +357,7 @@ masthead:
             scoreAgainst: 1
             result: L
             sport: soccer
-            competition: RSEQ collégial (démo)
+            competition: RSEQ collégial
         nextGame:
           date: '2026-10-03'
           time: '16:00'
@@ -289,11 +365,49 @@ masthead:
           opponentCode: SLA
           opponentInstitution: Champlain College Saint-Lambert
           home: false
-          competition: RSEQ collégial (démo)
-      - id: demo-quorums-hockey
+          competition: RSEQ collégial
+      - id: demo-elans-soccer-f
         name: Les Élans
-        code: QUO
-        institution: Cégep du Quorum
+        code: SLHH
+        institution: Cégep de Saint-Louis-du-Ha! Ha!
+        sport: soccer
+        sportLabel: Soccer
+        sex: F
+        fictional: true
+        colors: { primary: '#156b42', secondary: '#e9f7ef' }
+        results:
+          - date: '2026-09-15'
+            opponent: Boomerang
+            opponentCode: GAR
+            opponentInstitution: Cégep François-Xavier-Garneau
+            home: true
+            scoreFor: 3
+            scoreAgainst: 1
+            result: W
+            sport: soccer
+            competition: RSEQ collégial
+          - date: '2026-09-08'
+            opponent: Gaulois
+            opponentCode: VAL
+            opponentInstitution: Cégep de Valleyfield
+            home: false
+            scoreFor: 0
+            scoreAgainst: 2
+            result: L
+            sport: soccer
+            competition: RSEQ collégial
+        nextGame:
+          date: '2026-10-08'
+          time: '15:30'
+          opponent: Titans
+          opponentCode: LIM
+          opponentInstitution: Cégep Limoilou
+          home: true
+          competition: RSEQ collégial
+      - id: demo-elans-hockey-m
+        name: Les Élans
+        code: SLHH
+        institution: Cégep de Saint-Louis-du-Ha! Ha!
         sport: hockey
         sportLabel: Hockey
         sex: M
@@ -309,7 +423,7 @@ masthead:
             scoreAgainst: 3
             result: W
             sport: hockey
-            competition: RSEQ collégial (démo)
+            competition: RSEQ collégial
           - date: '2026-09-12'
             opponent: Boomerang
             opponentCode: GAR
@@ -319,7 +433,7 @@ masthead:
             scoreAgainst: 5
             result: L
             sport: hockey
-            competition: RSEQ collégial (démo)
+            competition: RSEQ collégial
         nextGame:
           date: '2026-10-04'
           time: '20:00'
@@ -327,7 +441,121 @@ masthead:
           opponentCode: CSF
           opponentInstitution: Cégep de Sainte-Foy
           home: true
-          competition: RSEQ collégial (démo)
+          competition: RSEQ collégial
+      - id: demo-elans-hockey-f
+        name: Les Élans
+        code: SLHH
+        institution: Cégep de Saint-Louis-du-Ha! Ha!
+        sport: hockey
+        sportLabel: Hockey
+        sex: F
+        fictional: true
+        colors: { primary: '#0a4aad', secondary: '#e8f0fb' }
+        results:
+          - date: '2026-09-14'
+            opponent: Cheetahs
+            opponentCode: CAL
+            opponentInstitution: Cégep André-Laurendeau
+            home: false
+            scoreFor: 2
+            scoreAgainst: 3
+            result: L
+            sport: hockey
+            competition: RSEQ collégial
+          - date: '2026-09-07'
+            opponent: Cavaliers
+            opponentCode: CSL
+            opponentInstitution: Cégep de Saint-Laurent
+            home: true
+            scoreFor: 5
+            scoreAgainst: 2
+            result: W
+            sport: hockey
+            competition: RSEQ collégial
+        nextGame:
+          date: '2026-10-09'
+          time: '19:00'
+          opponent: Cougars
+          opponentCode: CEM
+          opponentInstitution: Cégep Édouard-Montpetit
+          home: true
+          competition: RSEQ collégial
+      - id: demo-elans-flag-x
+        name: Les Élans
+        code: SLHH
+        institution: Cégep de Saint-Louis-du-Ha! Ha!
+        sport: flag-football
+        sportLabel: Flag football
+        sex: mixte
+        fictional: true
+        colors: { primary: '#b45309', secondary: '#fef3e6' }
+        results:
+          - date: '2026-09-13'
+            opponent: Dragons
+            opponentCode: SJR
+            opponentInstitution: Cégep Saint-Jean-sur-Richelieu
+            home: true
+            scoreFor: 28
+            scoreAgainst: 21
+            result: W
+            sport: flag-football
+            competition: RSEQ collégial
+          - date: '2026-09-06'
+            opponent: Barons
+            opponentCode: SLA
+            opponentInstitution: Champlain College Saint-Lambert
+            home: false
+            scoreFor: 14
+            scoreAgainst: 24
+            result: L
+            sport: flag-football
+            competition: RSEQ collégial
+        nextGame:
+          date: '2026-10-01'
+          time: '17:00'
+          opponent: Gaulois
+          opponentCode: VAL
+          opponentInstitution: Cégep de Valleyfield
+          home: false
+          competition: RSEQ collégial
+      - id: demo-elans-flag-f
+        name: Les Élans
+        code: SLHH
+        institution: Cégep de Saint-Louis-du-Ha! Ha!
+        sport: flag-football
+        sportLabel: Flag football
+        sex: F
+        fictional: true
+        colors: { primary: '#c2410c', secondary: '#fff7ed' }
+        results:
+          - date: '2026-09-18'
+            opponent: Titans
+            opponentCode: LIM
+            opponentInstitution: Cégep Limoilou
+            home: true
+            scoreFor: 21
+            scoreAgainst: 14
+            result: W
+            sport: flag-football
+            competition: RSEQ collégial
+          - date: '2026-09-11'
+            opponent: Cheetahs
+            opponentCode: CAL
+            opponentInstitution: Cégep André-Laurendeau
+            home: false
+            scoreFor: 7
+            scoreAgainst: 28
+            result: L
+            sport: flag-football
+            competition: RSEQ collégial
+        nextGame:
+          date: '2026-10-10'
+          time: '16:30'
+          opponent: Boomerang
+          opponentCode: GAR
+          opponentInstitution: Cégep François-Xavier-Garneau
+          home: true
+          competition: RSEQ collégial
   tools:
     pomodoro: true
     solitaire: true
@@ -357,7 +585,7 @@ governance:
   # Une ORGANISATION, jamais un compte personnel.
   owner: kiosque-demo
   # L'entité permanente qui survit aux cohortes.
-  stewardEntity: Association étudiante du Cégep du Quorum
+  stewardEntity: Association étudiante du Cégep de Saint-Louis-du-Ha! Ha!
   # Une adresse institutionnelle, pas celle d'une personne.
   contact: redaction@lequorum.ca
   repo: https://github.com/kiosque-demo/le-quorum
@@ -366,4 +594,4 @@ governance:
   # Deux personnes minimum, toujours.
   recoveryContacts:
     - redaction@lequorum.ca
-    - vie-etudiante@cegep-du-quorum.qc.ca
+    - vie-etudiante@cegep-ha-ha.qc.ca

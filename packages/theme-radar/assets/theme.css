@@ -414,17 +414,22 @@ body.with-radio .nav {
   max-width: 100%;
   flex: 1 1 auto;
   width: 100%;
-  overflow: hidden; /* jamais de clipping hors de la cellule mât */
+  /* visible : ne jamais trancher la pilule sports à droite (clip = line only). */
+  overflow: visible;
 }
-/* À côté du score : la météo cède de la place (pas de min-width rigide). */
+/* Météo : largeur au contenu pour le nom de ville complet. */
 .masthead-status .masthead-weather {
   flex: 0 1 auto;
   min-width: 0;
+  max-width: 100%;
+  overflow-x: auto;
+  scrollbar-width: none;
 }
 .masthead-status .weather-chip,
 .masthead-status .masthead-weather__city {
   min-width: 0;
-  max-width: 100%;
+  width: max-content;
+  max-width: none;
 }
 /*
  * Bureau : météo puis sports collés (sports immédiatement à droite de la
@@ -439,49 +444,62 @@ body.with-radio .nav {
     flex: 0 1 auto;
     width: auto;
     max-width: 100%;
+    overflow: visible;
   }
   .masthead-status .masthead-weather {
     flex: 0 0 auto;
-    max-width: 12rem;
+    max-width: none;
+    overflow: visible;
   }
   .masthead-status .masthead-sports {
     flex: 0 1 auto;
     margin-left: 0; /* collé après la météo */
     /* Bureau : noms d’équipes + institutions (densité riche). */
-    max-width: min(34rem, 52vw);
+    min-width: 12rem;
+    max-width: min(28rem, 42vw);
+    overflow: visible;
   }
   .masthead-status .weather-chip,
   .masthead-status .masthead-weather__city {
-    width: auto;
-    min-width: 8.25rem;
-    max-width: 12rem;
+    width: max-content;
+    min-width: 0;
+    max-width: none;
   }
   .masthead-status .sports-chip,
   .masthead-status .masthead-sports__chip {
     width: auto;
     min-width: 12rem;
-    max-width: min(34rem, 52vw);
+    max-width: 100%;
   }
   .masthead-status .sports-chip--rich {
-    min-width: 14rem;
+    min-width: 13rem;
   }
 }
 /*
  * Sous la radio (mobile) : météo et sports se partagent la rangée.
- * min-width: 0 + max-width borné = pas de clipping hors viewport.
+ * Météo : largeur au contenu (nom entier) ; sports prend le reste.
  */
 .masthead-weather--docked .weather-chip,
 .masthead-weather--docked .masthead-weather__city,
 .masthead-status--docked .weather-chip,
-.masthead-status--docked .masthead-weather__city,
+.masthead-status--docked .masthead-weather__city {
+  flex: 0 1 auto;
+  width: max-content;
+  max-width: 100%;
+  min-width: 0;
+  box-sizing: border-box;
+  justify-content: flex-start;
+}
 .masthead-status--docked .sports-chip,
 .masthead-weather--docked .sports-chip {
   flex: 1 1 0;
   width: auto;
   max-width: 100%;
-  min-width: 0; /* override 9.75rem du style mât */
+  /* Mini-largeur pour garder la pilule entière (pas un moignon coupé). */
+  min-width: min(10rem, 100%);
   box-sizing: border-box;
   justify-content: flex-start;
+  overflow: hidden; /* clip interne line ; chrome de carte intact dans le dock */
 }
 .masthead-status--docked .masthead-weather,
 .masthead-status--docked .masthead-sports {
@@ -489,6 +507,10 @@ body.with-radio .nav {
   min-width: 0;
   max-width: 100%;
   display: flex;
+  overflow: visible; /* pilule entière ; clip seulement dans .sports-chip__line */
+}
+.masthead-status--docked .masthead-sports {
+  min-width: min(10.5rem, 48%);
 }
 /*
  * Dock sous la radio (mobile) : même famille ardoise LE-RADAR
@@ -1457,10 +1479,9 @@ body.with-radio .masthead--illustrated {
 
 /*
  * Puces météo — style « villes secondaires » LE-RADAR (ardoise, pas panneau pâle).
- * Largeur calée sur le pool météo LE-RADAR (47 villes campus / cégeps /
- * universités / nations) : p90 ≈ « Rivière-du-Loup » / « Trois-Rivières »
- * (~14–15 car.), max ≈ « Saint-Ignace-de-Loyola » (22 car.).
- * min-width ≈ icône + nom p90 + temp ; max-width évite d’écraser le mât.
+ * Le nom de localité est TOUJOURS entier (multi-cégeps : « Saint-Louis-du-Ha! Ha! »,
+ * « Rivière-du-Loup », « Trois-Rivières », etc.) — pas d’ellipsis / clipping.
+ * La puce s’adapte au contenu ; le mât reste scrollable si plusieurs villes.
  */
 .weather-chip,
 .masthead-weather__city {
@@ -1468,8 +1489,9 @@ body.with-radio .masthead--illustrated {
   align-items: center;
   gap: 7px;
   min-height: 32px;
-  min-width: 9.75rem; /* ~156 px : Trois-Rivières + icône + ° */
-  max-width: min(15.5rem, 42vw); /* ~248 px : Saint-Ignace-de-Loyola */
+  min-width: 0;
+  width: max-content;
+  max-width: 100%;
   padding: 4px 12px 4px 7px;
   border: 1px solid rgba(255, 255, 255, 0.24);
   border-radius: 6px;
@@ -1554,13 +1576,14 @@ a.masthead-weather__city:focus-visible {
   flex: 0 0 auto;
   filter: brightness(1.12) saturate(1.05);
 }
-/* Texte toujours clair sur ardoise — ne jamais hériter d’un --ink de page. */
+/* Texte toujours clair sur ardoise — nom de ville entier (pas d’ellipsis). */
 .weather-chip__name,
 .masthead-weather__name {
-  flex: 1 1 auto;
+  flex: 0 1 auto;
   min-width: 0;
-  overflow: hidden;
-  text-overflow: ellipsis;
+  overflow: visible;
+  text-overflow: clip;
+  white-space: nowrap;
   font-weight: 700;
   letter-spacing: 0.02em;
   color: rgba(245, 246, 248, 0.96);
@@ -1577,13 +1600,20 @@ a.masthead-weather__city:focus-visible {
   text-shadow: none;
 }
 
-/* Puce sports — même famille ardoise que la météo, tone = issue W/L/D. */
+/*
+ * Puce sports — même famille ardoise que la météo, tone = issue W/L/D.
+ * Cadre de la carte TOUJOURS entier (bords arrondis visibles).
+ * Seul le viewport .sports-chip__line clippe + défile (marquee).
+ */
 .masthead-sports {
   display: flex;
   align-items: stretch;
-  min-width: 0;
-  max-width: min(16rem, 48vw);
+  /* Ne pas écraser la pilule sous la météo élargie : largeur mini lisible. */
+  min-width: min(11.5rem, 100%);
+  max-width: min(20rem, 52vw);
   flex: 0 1 auto;
+  /* Parent ne doit jamais trancher le chrome de la carte. */
+  overflow: visible;
 }
 .sports-chip,
 .masthead-sports__chip {
@@ -1604,6 +1634,7 @@ a.masthead-weather__city:focus-visible {
   font-size: 11px;
   font-weight: 700;
   white-space: nowrap;
+  /* Clip interne pour le radius — le contenu long vit dans .sports-chip__line. */
   overflow: hidden;
   box-shadow:
     0 1px 2px rgba(0, 0, 0, 0.24),
@@ -1615,6 +1646,8 @@ a.masthead-weather__city:focus-visible {
   box-sizing: border-box;
   cursor: pointer;
   -webkit-tap-highlight-color: transparent;
+  /* Évite qu’un ancêtre overflow:hidden tranche la pilule à droite. */
+  flex-shrink: 1;
 }
 a.sports-chip:focus-visible,
 a.masthead-sports__chip:focus-visible {
@@ -1660,13 +1693,20 @@ a.masthead-sports__chip:focus-visible {
 .sports-chip__badge--w { background: #2f8f5b; }
 .sports-chip__badge--l { background: #b84848; }
 .sports-chip__badge--d { background: #6b7c8c; }
-/* Viewport : scoreboard compact ; marquee seulement si overflow. */
+/*
+ * Viewport texte : seul endroit où le scoreboard peut « clipper ».
+ * Glyph + badge restent hors viewport → carte entière à gauche.
+ * Marquee + masque en fondu : pas de coupure nette en milieu de lettre
+ * sur le bord droit de la pilule.
+ */
 .sports-chip__line {
   flex: 1 1 auto;
   min-width: 0;
   overflow: hidden;
   letter-spacing: 0.02em;
   color: rgba(245, 246, 248, 0.96);
+  /* Garde un peu d’air avant le bord droit du chrome de la carte. */
+  margin-right: 1px;
 }
 .sports-chip__line-inner {
   display: inline-block;
@@ -1680,6 +1720,23 @@ a.masthead-sports__chip:focus-visible {
  * pauses en début et fin de course pour lire le score avant de bouger,
  * et avant le retour. Sans hold, le texte part trop vite.
  */
+.sports-chip__line.is-sports-marquee {
+  /* Fondu gauche/droite : le défilement ne « tranche » pas la carte. */
+  -webkit-mask-image: linear-gradient(
+    to right,
+    transparent 0,
+    #000 0.65rem,
+    #000 calc(100% - 0.65rem),
+    transparent 100%
+  );
+  mask-image: linear-gradient(
+    to right,
+    transparent 0,
+    #000 0.65rem,
+    #000 calc(100% - 0.65rem),
+    transparent 100%
+  );
+}
 .sports-chip__line.is-sports-marquee .sports-chip__line-inner {
   animation: sports-marquee-slide var(--sports-marquee-duration, 10s) ease-in-out infinite alternate;
   will-change: transform;
@@ -1689,6 +1746,10 @@ a.masthead-sports__chip:focus-visible {
   82%, 100% { transform: translateX(var(--sports-marquee-shift, 0px)); }
 }
 @media (prefers-reduced-motion: reduce) {
+  .sports-chip__line.is-sports-marquee {
+    -webkit-mask-image: none;
+    mask-image: none;
+  }
   .sports-chip__line.is-sports-marquee .sports-chip__line-inner {
     animation: none;
   }
@@ -1782,7 +1843,43 @@ a.masthead-sports__chip:focus-visible {
   border-top: 3px solid var(--sports-panel-c, var(--accent));
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
   min-width: 0;
-  transition: box-shadow 180ms ease, border-color 180ms ease;
+  scroll-margin-top: 5.5rem; /* sous barre radio sticky */
+  transition: box-shadow 180ms ease, border-color 180ms ease, background 180ms ease;
+}
+/*
+ * Deep-link puce mât (?team=) — carte formation ciblée (parité LE-RADAR).
+ * Seule la bordure / le halo pulse ; le fond reste lisible.
+ */
+.sports-panel.is-spotlight {
+  background: var(--bg-soft);
+  border-color: var(--sports-panel-c, var(--accent));
+  box-shadow:
+    0 0 0 2px color-mix(in srgb, var(--sports-panel-c, var(--accent)) 42%, transparent),
+    0 8px 22px -12px color-mix(in srgb, var(--sports-panel-c, var(--accent)) 38%, transparent);
+  animation: sports-panel-spotlight-pulse 2.4s ease-in-out infinite;
+}
+@keyframes sports-panel-spotlight-pulse {
+  0%, 100% {
+    border-color: color-mix(in srgb, var(--sports-panel-c, var(--accent)) 72%, var(--rule));
+    box-shadow:
+      0 0 0 2px color-mix(in srgb, var(--sports-panel-c, var(--accent)) 28%, transparent),
+      0 6px 18px -12px color-mix(in srgb, var(--sports-panel-c, var(--accent)) 30%, transparent);
+  }
+  50% {
+    border-color: var(--sports-panel-c, var(--accent));
+    box-shadow:
+      0 0 0 3px color-mix(in srgb, var(--sports-panel-c, var(--accent)) 48%, transparent),
+      0 10px 26px -10px color-mix(in srgb, var(--sports-panel-c, var(--accent)) 42%, transparent);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .sports-panel.is-spotlight {
+    animation: none;
+    border-color: var(--sports-panel-c, var(--accent));
+    box-shadow:
+      0 0 0 2px color-mix(in srgb, var(--sports-panel-c, var(--accent)) 40%, transparent),
+      0 6px 18px -12px color-mix(in srgb, var(--sports-panel-c, var(--accent)) 32%, transparent);
+  }
 }
 .sports-panel__head {
   display: flex;
@@ -1962,44 +2059,117 @@ a.masthead-sports__chip:focus-visible {
   margin-right: 3px;
   font-weight: 600;
 }
-/* Adversaire : surnom en gras ; établissement court à côté (LE-RADAR). */
+/* Adversaire : surnom en gras ; école courte sur sa ligne (pas de coupe verticale). */
 .sports-result__opp {
   font-weight: 700;
   color: var(--ink);
 }
 .sports-result__opp-school,
 .sports-result__inst {
+  display: block;
+  margin-top: 1px;
   font-size: 11px;
   font-weight: 600;
   color: var(--muted);
+  line-height: 1.3;
+  overflow-wrap: normal;
+  word-break: normal;
+  hyphens: manual;
 }
-.sports-result__inst {
-  display: block;
-  margin-top: 1px;
-}
-/* Domicile / extérieur — pastille lisible (tous les matchs). */
+/* Domicile / extérieur — pastille lisible clair + sombre. */
 .sports-result__venue {
-  display: inline-block;
-  margin-top: 3px;
-  margin-left: 0;
+  display: block;
+  width: fit-content;
+  max-width: 100%;
+  margin-top: 4px;
   font-size: 10px;
   font-weight: 800;
-  letter-spacing: 0.03em;
+  letter-spacing: 0.04em;
   text-transform: uppercase;
   line-height: 1.2;
   border-radius: 999px;
-  padding: 2px 7px;
-  vertical-align: middle;
+  padding: 3px 8px;
 }
 .sports-result__venue--home {
-  color: #1b5e3b;
-  background: color-mix(in srgb, #3d9a6a 16%, transparent);
-  border: 1px solid color-mix(in srgb, #3d9a6a 38%, transparent);
+  color: #145c38;
+  background: color-mix(in srgb, #3d9a6a 22%, #fff);
+  border: 1px solid color-mix(in srgb, #3d9a6a 48%, transparent);
 }
 .sports-result__venue--away {
-  color: #5b3a12;
-  background: color-mix(in srgb, #c4922a 16%, transparent);
-  border: 1px solid color-mix(in srgb, #c4922a 36%, transparent);
+  color: #6b3f0e;
+  background: color-mix(in srgb, #c4922a 24%, #fff);
+  border: 1px solid color-mix(in srgb, #c4922a 48%, transparent);
+}
+/* Mode sombre : texte clair sur pastille teintée (AA sur fond carte). */
+:root[data-theme="dark"] .sports-result__venue--home {
+  color: #b8f0d0;
+  background: color-mix(in srgb, #3d9a6a 32%, #1a1d22);
+  border-color: color-mix(in srgb, #6bcf98 55%, transparent);
+}
+:root[data-theme="dark"] .sports-result__venue--away {
+  color: #f5d89a;
+  background: color-mix(in srgb, #c4922a 30%, #1a1d22);
+  border-color: color-mix(in srgb, #e0b45a 55%, transparent);
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) .sports-result__venue--home {
+    color: #b8f0d0;
+    background: color-mix(in srgb, #3d9a6a 32%, #1a1d22);
+    border-color: color-mix(in srgb, #6bcf98 55%, transparent);
+  }
+  :root:not([data-theme="light"]) .sports-result__venue--away {
+    color: #f5d89a;
+    background: color-mix(in srgb, #c4922a 30%, #1a1d22);
+    border-color: color-mix(in srgb, #e0b45a 55%, transparent);
+  }
+}
+/* Repli tableau : 1 rangée de cartes + « Plus de matchs » (parité suite du fil). */
+.sports-board-wrap {
+  margin: 0 0 18px;
+}
+.sports-board-wrap .sports-board-scroll {
+  margin-bottom: 0;
+}
+.sports-board-wrap.has-overflow:not(.is-expanded) .sports-board-scroll {
+  overflow: hidden;
+  max-height: var(--sports-board-collapsed-h, 22rem);
+}
+.sports-board-wrap.is-expanded .sports-board-scroll {
+  max-height: none !important;
+  overflow: visible;
+}
+.sports-board-toggle {
+  display: none;
+  font-family: var(--sans);
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  margin: 12px 0 4px;
+  padding: 10px 14px;
+  border: 1px solid var(--rule);
+  border-radius: 999px;
+  background: var(--bg-soft);
+  color: var(--ink-soft);
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  cursor: pointer;
+  appearance: none;
+  transition: border-color 140ms ease, color 140ms ease, background 140ms ease;
+}
+.sports-board-wrap.has-overflow .sports-board-toggle { display: inline-flex; }
+.sports-board-wrap.is-expanded .sports-board-toggle { display: none !important; }
+@media (hover: hover) and (pointer: fine) {
+  .sports-board-toggle:hover {
+    border-color: var(--accent);
+    color: var(--accent);
+    background: color-mix(in srgb, var(--accent) 6%, var(--bg));
+  }
+}
+.sports-board-toggle:focus { outline: none; }
+.sports-board-toggle:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
 }
 .sports-result__badge {
   justify-self: end;

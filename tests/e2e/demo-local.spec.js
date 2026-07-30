@@ -1,10 +1,33 @@
+import { readFileSync } from 'node:fs';
+import path from 'node:path';
+import { fileURLToPath } from 'node:url';
+
 import { expect, test } from '@playwright/test';
+
+const ROOT = path.resolve(fileURLToPath(new URL('../..', import.meta.url)));
+
+/**
+ * Nombre de médias de la banque démo embarquée dans le seed du site servi
+ * par Playwright (`npm run site` avec BASE=/autre-nom → dist/demo/…/seed.json).
+ * Ne JAMAIS figer ce chiffre dans le test : chaque photo ajoutée cassait la CI
+ * (ex. 50 vs 51). Source de vérité = seed généré au build.
+ */
+function demoSeedMediaCount() {
+  const seedPath = path.join(ROOT, 'dist/demo/assets/editorial/seed.json');
+  const seed = JSON.parse(readFileSync(seedPath, 'utf8'));
+  const n = Array.isArray(seed.media) ? seed.media.length : 0;
+  if (n < 40) {
+    throw new Error(`seed démo trop court (${n} médias) — rebuild site avant e2e`);
+  }
+  return n;
+}
 
 test('configurer, rédiger, prévisualiser, publier, persister et exporter sans serveur', async ({ page, context }) => {
   // Ce parcours exerce PGlite, deux téléchargements et une réimportation ; il
-  // reste volontairement intégral. La banque élargie (~50 médias) allonge
-  // reset/import — 4 min sur un CI saturé.
+  // reste volontairement intégral. La banque élargie allonge reset/import —
+  // 4 min sur un CI saturé.
   test.setTimeout(240_000);
+  const expectedMediaCount = demoSeedMediaCount();
   await page.goto('/autre-nom/configurer/');
   await page.getByRole('button', { name: 'Commencer' }).click();
   await page.getByLabel('Nom du journal').fill('La Relève locale');
@@ -23,8 +46,8 @@ test('configurer, rédiger, prévisualiser, publier, persister et exporter sans 
   await expect(page.locator('#publication-name')).toHaveText('La Relève locale');
 
   await page.getByRole('button', { name: 'Photos' }).click();
-  // Banque démo : fonds mât campus QC + photos thématiques d’articles.
-  await expect(page.locator('.media-card')).toHaveCount(50);
+  // Banque démo = seed (pas un entier magique 50/51).
+  await expect(page.locator('.media-card')).toHaveCount(expectedMediaCount);
   await page.getByLabel('Rechercher un établissement, un campus ou un mot-clé').fill('Jonquière');
   await expect(page.locator('.media-card:visible')).toHaveCount(2);
   await page.getByRole('button', { name: 'Tableau de bord' }).click();
@@ -130,7 +153,7 @@ test('configurer, rédiger, prévisualiser, publier, persister et exporter sans 
 
   page.once('dialog', (dialog) => dialog.accept());
   await page.getByRole('button', { name: 'Réinitialiser Le Quorum' }).click();
-  // Reset complet + rechargement PGlite de la banque (~50 médias) : long sur CI.
+  // Reset complet + rechargement PGlite de la banque démo : long sur CI.
   await expect(page.getByRole('heading', { name: 'Tableau de bord' })).toBeVisible({ timeout: 60_000 });
   await page.getByRole('button', { name: 'Exporter et poursuivre' }).click();
   const chooser = page.waitForEvent('filechooser');
