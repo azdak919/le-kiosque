@@ -301,6 +301,8 @@ export interface SportsNextGame {
   time?: string;
   opponent: string;
   opponentCode?: string;
+  /** Établissement adverse (parité résultats + puce mât bureau). */
+  opponentInstitution?: string;
   home?: boolean;
   competition?: string;
   teamId?: string;

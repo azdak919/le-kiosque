@@ -335,7 +335,9 @@ function sportsResultRows(
     const timeInner = clock
       ? `<span class="sports-result__day">${esc(day)}</span><span class="sports-result__clock">${esc(clock)}</span>`
       : esc(day);
-    const opp = esc(next.opponent);
+    const opp = next.opponentInstitution
+      ? `${esc(next.opponent)} <span class="sports-result__inst">(${esc(next.opponentInstitution)})</span>`
+      : esc(next.opponent);
     rows.push(`<li class="sports-result sports-result--next">
   <time class="sports-result__time" datetime="${esc(next.date)}">${timeInner}</time>
   <span class="sports-result__score sports-result__score--next" aria-label="Prochain match">À venir</span>

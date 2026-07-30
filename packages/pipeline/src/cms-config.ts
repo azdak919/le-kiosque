@@ -189,6 +189,7 @@ export function buildCmsConfig(options: CmsConfigOptions): Record<string, unknow
                     { name: 'time', label: 'Heure (HH:MM)', widget: 'string', required: false },
                     { name: 'opponent', label: 'Adversaire', widget: 'string', required: true },
                     { name: 'opponentCode', label: 'Code adversaire', widget: 'string', required: false },
+                    { name: 'opponentInstitution', label: 'Établissement adverse', widget: 'string', required: false },
                     { name: 'home', label: 'À domicile', widget: 'boolean', required: false },
                     { name: 'competition', label: 'Compétition', widget: 'string', required: false },
                   ] },

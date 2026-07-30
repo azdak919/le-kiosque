@@ -168,6 +168,7 @@ function sportsNextGame(v: unknown): SportsNextGame | undefined {
     time: str(rec.time),
     opponent,
     opponentCode: str(rec.opponentCode)?.toUpperCase().slice(0, 4),
+    opponentInstitution: str(rec.opponentInstitution),
     home: rec.home === undefined ? undefined : Boolean(rec.home),
     competition: str(rec.competition),
     teamId: str(rec.teamId),

@@ -173,7 +173,10 @@ export function renderRoute(bundle, base, pathname, renderBody) {
         });
         if (next) {
           const when = [fmt(next.date), next.time ? String(next.time).replace(':', ' h ') : ''].filter(Boolean).join(' · ');
-          rows.push(`<li class="sports-result sports-result--next"><time class="sports-result__time" datetime="${esc(next.date)}">${esc(when)}</time><span class="sports-result__score sports-result__score--next">À venir</span><span class="sports-result__title"><span class="sports-result__vs">vs</span> ${esc(next.opponent)}</span><span class="sports-result__badge sports-result__badge--next">→</span></li>`);
+          const nextOpp = next.opponentInstitution
+            ? `${esc(next.opponent)} <span class="sports-result__inst">(${esc(next.opponentInstitution)})</span>`
+            : esc(next.opponent);
+          rows.push(`<li class="sports-result sports-result--next"><time class="sports-result__time" datetime="${esc(next.date)}">${esc(when)}</time><span class="sports-result__score sports-result__score--next">À venir</span><span class="sports-result__title"><span class="sports-result__vs">vs</span> ${nextOpp}</span><span class="sports-result__badge sports-result__badge--next">→</span></li>`);
         }
         const list = rows.length ? `<ul class="sports-panel__list">${rows.join('')}</ul>` : '<p class="sports-panel__empty">Aucun résultat.</p>';
         const color = team.colors?.primary || 'var(--accent)';
