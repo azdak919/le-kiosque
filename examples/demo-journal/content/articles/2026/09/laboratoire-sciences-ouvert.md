@@ -39,7 +39,7 @@ Les visites commenceront à 13 h et se termineront à 16 h 30. Un atelier de tre
 
 <figure class="post-figure post-figure--right">
 <img src="/media/demo-library/articles/nursing.jpg" alt="Démonstration de soins en clinique-école" width="800" height="600" loading="lazy" decoding="async">
-<figcaption>Atelier sécurité et gestes de base — illustration démo (clinique-école).</figcaption>
+<figcaption>Photo : Pambelle12 — atelier sécurité et gestes de base (clinique-école, démo).</figcaption>
 </figure>
 
 Aucune inscription n'est requise pour la visite libre; l'atelier de sécurité demandera toutefois une réservation en ligne pour limiter le nombre de participantes et participants. Un plan du pavillon sera affiché à l'entrée principale. Les équipes de biologie et de chimie environnementale se partagent le hall d’accueil pour orienter le public vers les bons locaux.

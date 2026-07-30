@@ -35,7 +35,7 @@ Les projections ont lieu le mercredi de 12 h 15 à 13 h 10 dans la petite salle 
 
 <figure class="post-figure post-figure--right">
 <img src="/media/demo-library/articles/stage.jpg" alt="Public lors d’un spectacle étudiant au cégep" width="800" height="600" loading="lazy" decoding="async">
-<figcaption>Après le générique, la discussion prend le relais — illustration démo.</figcaption>
+<figcaption>Photo : art_inthecity (Montréal) — après le générique, la discussion (démo).</figcaption>
 </figure>
 
 La chronique recommande d'arriver quelques minutes tôt : la salle se remplit rapidement lorsque le sujet touche à la santé mentale ou au travail étudiant. Un bénévole à l’entrée peut redistribuer les places si la jauge est atteinte.
