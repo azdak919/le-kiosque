@@ -128,8 +128,20 @@ git add -A && git commit -m "Article : le titre" && git push
 | `section` | **si publié** | doit correspondre à un fichier de `content/sections/` |
 | `excerpt` | non | déduit du premier paragraphe si absent |
 | `lead.alt` | **oui si image** | voir ci-dessous |
-| `lead.credit` | recommandé | le ou la photographe |
+| `lead.credit` | **recommandé** (fortement) | le ou la photographe — affiché `Photo : …` |
 | `previousUrls` | non | anciennes adresses, pour ne pas casser les liens |
+
+**Photos dans le corps** (Markdown HTML ou `![]()` ) : **même règle que le lead**.
+Chaque image doit créditer qui l’a prise, ex. :
+
+```html
+<figure class="post-figure post-figure--right">
+<img src="/media/…/photo.jpg" alt="Description de la scène" width="960" height="640" loading="lazy">
+<figcaption>Photo : Prénom Nom — légende optionnelle.</figcaption>
+</figure>
+```
+
+Sans crédit, l’archive devient un problème juridique et de passation.
 
 **`id` :** ne l'écrivez pas à la main. `sync` en génère un et le fige. Une fois
 écrit, **ne le changez jamais** — c'est lui qui identifie l'article à travers
@@ -159,8 +171,8 @@ Pour le texte alternatif :
 fichier fautif.
 
 Il émet aussi des **avertissements non bloquants** : extrait absent, photo sans
-crédit, catégorie non déclarée, gouvernance incomplète. Ils ne vous empêchent
-pas de publier — mais une archive sans crédits photo devient un problème
+crédit (lead ou corps), catégorie non déclarée, gouvernance incomplète. Ils ne
+vous empêchent pas de publier — mais une archive sans crédits photo devient un problème
 juridique dans cinq ans, et une gouvernance incomplète tue le journal à la
 prochaine graduation.
 

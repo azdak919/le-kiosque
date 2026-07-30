@@ -43,7 +43,7 @@ partagé avant l’hiver.
 
 <figure class="post-figure post-figure--right">
 <img src="/media/demo-library/articles/compost.jpg" alt="Bac de compost et matières organiques sur le campus" width="800" height="567" loading="lazy" decoding="async">
-<figcaption>Le cycle des semis se prolonge côté compost du comité environnemental.</figcaption>
+<figcaption>Photo : fir0002 — compost du comité environnemental (cycle des semis, démo).</figcaption>
 </figure>
 
 ## Un projet né dans trois départements

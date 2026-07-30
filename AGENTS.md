@@ -24,6 +24,16 @@ checks CI verts (`construire`) → **merge + delete branch**.
 `gh pr merge <N> --merge --delete-branch` si la clôture n’est pas encore faite.  
 **LE-RADAR UI/CSS** : `npm run check` + Playwright (au minimum mât/smoke) avant push.
 
+### Photos = crédit photographe (comme les articles ont des signatures)
+
+- **Lead** : `lead.credit` (recommandé, et affiché `Photo : …` sous l’image).
+- **Corps** (`<figure class="post-figure">` ou `![…](…)` ) : la **légende doit
+  nommer qui a pris la photo** — ex.  
+  `<figcaption>Photo : Prénom Nom — contexte optionnel.</figcaption>`  
+  Même règle pour la banque démo (`manifest.json` / `seed-demo-photos.mjs`) :
+  ne jamais ajouter une image sans `credit`.
+- Alt descriptif ≠ crédit : l’un dit *ce qu’on voit*, l’autre *qui a capté*.
+
 ## Le projet en trois phrases
 
 **LE KIOSQUE** est un socle libre pour les journaux étudiants. Il existe parce

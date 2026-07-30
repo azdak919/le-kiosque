@@ -41,7 +41,7 @@ Passez au local des sports avant vendredi pour confirmer votre présence. Les ab
 
 <figure class="post-figure post-figure--right">
 <img src="/media/demo-library/articles/hockey-interieur.jpg" alt="Match de hockey intérieur (floor hockey) en gymnase" width="960" height="638" loading="lazy" decoding="async">
-<figcaption>Hockey intérieur en gymnase — illustration distincte du lead (démo, domaine public).</figcaption>
+<figcaption>Photo : Joshua Scott (U.S. Navy) — hockey intérieur en gymnase (démo, domaine public).</figcaption>
 </figure>
 
 Le local des sports ouvre en semaine de 10 h à 16 h. Apportez votre carte étudiante : l’inscription est gratuite pour les membres du club, et une caution symbolique (équipement prêté) peut être demandée. Les essayages de début de session se font sur les deux premières semaines de septembre seulement. Le calendrier affiché à l’entrée du gymnase prime sur toute annonce de corridor.
