@@ -111,6 +111,9 @@ test('la vitrine expose le bandeau illustré, les outils et la composition magaz
   assert.match(sportsPage, /sports-board/);
   assert.match(sportsPage, /sports-panel/);
   assert.match(sportsPage, /Boomerang|Titans|Cheetahs/);
+  assert.match(sportsPage, /sports-result__venue--home|Domicile/, 'domicile visible sur les cartes');
+  assert.match(sportsPage, /sports-result__venue--away|Extérieur/, 'extérieur visible sur les cartes');
+  assert.match(sportsPage, /sports-panel__sex/, 'pastille F/M/Mixte (parité LE-RADAR)');
   // Nav section Sports = même contenu Au tableau (pas le fil seul).
   const sportsSection = await readFile(path.join(out, 'sections/sports/index.html'), 'utf8');
   assert.match(sportsSection, /Au tableau/, 'section Sports affiche Au tableau');

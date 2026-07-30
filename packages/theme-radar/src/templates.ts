@@ -291,6 +291,51 @@ function formatSportsDate(iso: string, timeZone: string): string {
   }
 }
 
+/** Raccourci établissement (puce / carte) — parité LE-RADAR. */
+function sportsShortInstitutionLabel(inst: string): string {
+  return String(inst || '')
+    .replace(/^Cégep\s+(de\s+|du\s+|d’|d')?/i, '')
+    .replace(/^Collège\s+/i, '')
+    .replace(/^Champlain\s+College\s+/i, 'Champlain ')
+    .replace(/^Université\s+(de\s+|du\s+|d’|d')?/i, '')
+    .trim();
+}
+
+/** Pastille domicile / extérieur (scores + prochains matchs). */
+function sportsVenueHtml(home?: boolean): string {
+  if (home === true) {
+    return ` <span class="sports-result__venue sports-result__venue--home" title="Match à domicile">Domicile</span>`;
+  }
+  if (home === false) {
+    return ` <span class="sports-result__venue sports-result__venue--away" title="Match à l’extérieur">Extérieur</span>`;
+  }
+  return '';
+}
+
+/** Adversaire : surnom gras + établissement court (parité LE-RADAR). */
+function sportsOppHtml(opponent: string, institution?: string): string {
+  const nick = `<span class="sports-result__opp">${esc(opponent)}</span>`;
+  if (!institution) return nick;
+  const short = sportsShortInstitutionLabel(institution);
+  if (!short || short === opponent) return nick;
+  return `${nick} <span class="sports-result__opp-school">${esc(short)}</span>`;
+}
+
+function sportsSexBadgeHtml(sex?: string): string {
+  if (!sex) return '';
+  const s = sex.toLowerCase();
+  if (s === 'f' || s.startsWith('fémin') || s.startsWith('femin')) {
+    return `<span class="sports-panel__sex sports-panel__sex--f" title="Féminin">F</span>`;
+  }
+  if (s === 'm' || s.startsWith('mascul')) {
+    return `<span class="sports-panel__sex sports-panel__sex--m" title="Masculin">M</span>`;
+  }
+  if (s.includes('mix')) {
+    return `<span class="sports-panel__sex sports-panel__sex--x" title="Mixte">Mixte</span>`;
+  }
+  return `<span class="sports-panel__sex sports-panel__sex--x">${esc(sex)}</span>`;
+}
+
 function sportsResultRows(
   team: SportsTeam,
   sports: MastheadSports,
@@ -314,18 +359,19 @@ function sportsResultRows(
   for (const g of results) {
     const badge = g.result === 'W' ? 'V' : g.result === 'L' ? 'D' : 'N';
     const label = g.result === 'W' ? 'Victoire' : g.result === 'L' ? 'Défaite' : 'Nul';
-    const opp = g.opponentInstitution
-      ? `${esc(g.opponent)} <span class="sports-result__inst">(${esc(g.opponentInstitution)})</span>`
-      : esc(g.opponent);
+    const venue = sportsVenueHtml(g.home);
+    const homeAria = g.home === true ? ' · domicile' : g.home === false ? ' · extérieur' : '';
+    const opp = sportsOppHtml(g.opponent, g.opponentInstitution);
     const prior = !!g.priorSeason;
     const priorClass = prior ? ' sports-result--prior-season' : '';
     const priorMeta = prior
       ? `\n  <span class="sports-result__season-meta">Saison précédente</span>`
       : '';
-    rows.push(`<li class="sports-result sports-result--${esc(g.result)}${priorClass}" data-result="${esc(g.result)}"${prior ? ' data-prior-season="1"' : ''}>
+    const homeAttr = g.home === true ? ' data-home="1"' : g.home === false ? ' data-home="0"' : '';
+    rows.push(`<li class="sports-result sports-result--${esc(g.result)}${priorClass}" data-result="${esc(g.result)}"${prior ? ' data-prior-season="1"' : ''}${homeAttr}>
   <time class="sports-result__time" datetime="${esc(g.date)}">${esc(formatSportsDate(g.date, timeZone))}</time>
-  <span class="sports-result__score" aria-label="${esc(label)}">${g.scoreFor}–${g.scoreAgainst}</span>
-  <span class="sports-result__title"><span class="sports-result__vs">vs</span> ${opp}</span>
+  <span class="sports-result__score" aria-label="${esc(label)}${homeAria}">${g.scoreFor}–${g.scoreAgainst}</span>
+  <span class="sports-result__title"><span class="sports-result__vs">vs</span> ${opp}${venue}</span>
   <span class="sports-result__badge" title="${esc(label)}">${badge}</span>${priorMeta}
 </li>`);
   }
@@ -335,13 +381,13 @@ function sportsResultRows(
     const timeInner = clock
       ? `<span class="sports-result__day">${esc(day)}</span><span class="sports-result__clock">${esc(clock)}</span>`
       : esc(day);
-    const opp = next.opponentInstitution
-      ? `${esc(next.opponent)} <span class="sports-result__inst">(${esc(next.opponentInstitution)})</span>`
-      : esc(next.opponent);
-    rows.push(`<li class="sports-result sports-result--next">
+    const opp = sportsOppHtml(next.opponent, next.opponentInstitution);
+    const venue = sportsVenueHtml(next.home);
+    const homeAttr = next.home === true ? ' data-home="1"' : next.home === false ? ' data-home="0"' : '';
+    rows.push(`<li class="sports-result sports-result--next"${homeAttr}>
   <time class="sports-result__time" datetime="${esc(next.date)}">${timeInner}</time>
   <span class="sports-result__score sports-result__score--next" aria-label="Prochain match">À venir</span>
-  <span class="sports-result__title"><span class="sports-result__vs">vs</span> ${opp}${next.home === false ? ' <span class="sports-result__venue">(extérieur)</span>' : next.home ? ' <span class="sports-result__venue">(domicile)</span>' : ''}</span>
+  <span class="sports-result__title"><span class="sports-result__vs">vs</span> ${opp}${venue}</span>
   <span class="sports-result__badge sports-result__badge--next" title="Prochain match">→</span>
 </li>`);
   }
@@ -399,12 +445,16 @@ export function sportsResultsPage(ctx: RenderContext, sportsArticles: Article[] 
   const tz = ctx.publication.timeZone || 'America/Toronto';
   const panels = teams.map((team) => {
     const color = team.colors?.primary || 'var(--accent)';
+    const sexBadge = sportsSexBadgeHtml(team.sex);
+    const codeHtml = team.code
+      ? ` <span class="sports-panel__code">${esc(team.code)}</span>`
+      : '';
     return `<section class="sports-panel" data-sport="${esc(team.sport)}" data-team="${esc(team.id)}" style="--sports-panel-c:${esc(color)}">
   <header class="sports-panel__head">
     <span class="sports-panel__glyph" aria-hidden="true">${sportsGlyphHtml(team.sport)}</span>
     <div class="sports-panel__identity">
-      <h2 class="sports-panel__name">${esc(team.name)} <span class="sports-panel__code">${esc(team.code)}</span></h2>
-      <p class="sports-panel__meta">${esc(team.sportLabel || team.sport)}${team.sex ? ` · ${esc(team.sex)}` : ''}${team.institution ? ` · ${esc(team.institution)}` : ''}</p>
+      <h2 class="sports-panel__name sports-panel__name--branded"><span class="sports-panel__brand">${esc(team.name)}</span>${codeHtml}${sexBadge}</h2>
+      <p class="sports-panel__meta">${esc(team.sportLabel || team.sport)}${team.institution ? ` · ${esc(team.institution)}` : ''}</p>
     </div>
   </header>
   ${sportsResultRows(team, sportsForRows, tz)}

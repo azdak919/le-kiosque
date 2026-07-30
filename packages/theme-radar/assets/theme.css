@@ -1769,7 +1769,8 @@ a.masthead-sports__chip:focus-visible {
 }
 .sports-board {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(min(100%, 260px), 1fr));
+  /* Parité LE-RADAR : min ~288px pour nom + ligne de match lisibles. */
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 288px), 1fr));
   gap: 14px;
   align-items: start;
 }
@@ -1780,6 +1781,8 @@ a.masthead-sports__chip:focus-visible {
   padding: 14px 14px 12px;
   border-top: 3px solid var(--sports-panel-c, var(--accent));
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+  min-width: 0;
+  transition: box-shadow 180ms ease, border-color 180ms ease;
 }
 .sports-panel__head {
   display: flex;
@@ -1793,22 +1796,69 @@ a.masthead-sports__chip:focus-visible {
   font-size: 1.35rem;
   line-height: 1;
   flex: 0 0 auto;
+  margin-top: 2px;
 }
+.sports-panel__identity {
+  min-width: 0;
+  flex: 1 1 auto;
+}
+/* Identité : surnom / marque en tête (parité LE-RADAR). */
 .sports-panel__name {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 5px 8px;
   margin: 0 0 3px;
   font-family: var(--serif);
-  font-size: 1.15rem;
+  font-size: 1.22rem;
   font-weight: 700;
   line-height: 1.2;
   color: var(--ink);
+  letter-spacing: -0.01em;
+}
+.sports-panel__name--branded .sports-panel__brand {
+  color: color-mix(in srgb, var(--sports-panel-c, var(--accent)) 42%, var(--ink));
+}
+.sports-panel__brand {
+  min-width: 0;
+  overflow-wrap: anywhere;
 }
 .sports-panel__code {
   font-family: var(--sans);
   font-size: 0.72em;
   font-weight: 800;
-  letter-spacing: 0.06em;
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
   color: var(--muted);
-  margin-left: 4px;
+  flex: 0 0 auto;
+  opacity: 0.85;
+}
+.sports-panel__sex {
+  display: inline-block;
+  font-family: var(--sans);
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  line-height: 1.2;
+  border-radius: 999px;
+  padding: 2px 7px;
+  flex: 0 0 auto;
+}
+.sports-panel__sex--f {
+  color: #9d174d;
+  background: color-mix(in srgb, #db2777 16%, transparent);
+  border: 1px solid color-mix(in srgb, #db2777 36%, transparent);
+}
+.sports-panel__sex--m {
+  color: #1e3a8a;
+  background: color-mix(in srgb, #3b82f6 14%, transparent);
+  border: 1px solid color-mix(in srgb, #3b82f6 32%, transparent);
+}
+.sports-panel__sex--x {
+  color: var(--muted);
+  background: color-mix(in srgb, var(--rule) 35%, transparent);
+  border: 1px solid var(--rule);
 }
 .sports-panel__meta {
   margin: 0;
@@ -1878,6 +1928,9 @@ a.masthead-sports__chip:focus-visible {
   line-height: 1.3;
   min-width: 0;
 }
+.sports-result__day {
+  display: block;
+}
 .sports-result__clock {
   font-weight: 600;
   font-size: 11px;
@@ -1900,21 +1953,53 @@ a.masthead-sports__chip:focus-visible {
 }
 .sports-result__title {
   min-width: 0;
+  overflow-wrap: break-word;
+  word-break: normal;
+  hyphens: manual;
 }
 .sports-result__vs {
   opacity: 0.65;
   margin-right: 3px;
   font-weight: 600;
 }
+/* Adversaire : surnom en gras ; établissement court à côté (LE-RADAR). */
+.sports-result__opp {
+  font-weight: 700;
+  color: var(--ink);
+}
+.sports-result__opp-school,
+.sports-result__inst {
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--muted);
+}
 .sports-result__inst {
   display: block;
-  font-size: 11px;
-  color: var(--muted);
   margin-top: 1px;
 }
+/* Domicile / extérieur — pastille lisible (tous les matchs). */
 .sports-result__venue {
-  font-size: 11px;
-  color: var(--muted);
+  display: inline-block;
+  margin-top: 3px;
+  margin-left: 0;
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+  line-height: 1.2;
+  border-radius: 999px;
+  padding: 2px 7px;
+  vertical-align: middle;
+}
+.sports-result__venue--home {
+  color: #1b5e3b;
+  background: color-mix(in srgb, #3d9a6a 16%, transparent);
+  border: 1px solid color-mix(in srgb, #3d9a6a 38%, transparent);
+}
+.sports-result__venue--away {
+  color: #5b3a12;
+  background: color-mix(in srgb, #c4922a 16%, transparent);
+  border: 1px solid color-mix(in srgb, #c4922a 36%, transparent);
 }
 .sports-result__badge {
   justify-self: end;
@@ -1954,7 +2039,9 @@ a.masthead-sports__chip:focus-visible {
 .sports-result__season-meta {
   grid-column: 1 / -1;
   margin: -2px 0 2px;
+  padding: 0 0 0 0.15rem;
   font: 500 0.7rem/1.3 var(--sans);
+  letter-spacing: 0.01em;
   color: var(--muted);
 }
 .sports-result--prior-season .sports-result__score {
