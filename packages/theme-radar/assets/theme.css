@@ -340,8 +340,9 @@ body.with-radio .nav {
 }
 .masthead-weather-dock:not(:empty) {
   display: block;
+  /* Même rythme haut/bas que LE-RADAR sports strip. */
   padding-top: 8px;
-  padding-bottom: 2px;
+  padding-bottom: 8px;
 }
 .masthead-weather--docked,
 .masthead-status--docked {

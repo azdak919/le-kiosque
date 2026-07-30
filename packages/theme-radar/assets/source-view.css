@@ -11,7 +11,7 @@
   display: block;
   min-width: 0;
   max-width: 100%;
-  padding: 22px 0;
+  padding: 14px 0;
   color: inherit;
   border-bottom: 1px solid var(--rule);
   text-decoration: none;
@@ -19,8 +19,8 @@
 }
 .article::before {
   position: absolute;
-  top: 22px;
-  bottom: 22px;
+  top: 14px;
+  bottom: 14px;
   left: -14px;
   width: 3px;
   border-radius: 3px;
@@ -44,7 +44,7 @@
   align-items: start;
   column-gap: 10px;
   row-gap: 2px;
-  margin-bottom: 6px;
+  margin-bottom: 4px;
   font-size: 12px;
 }
 .article-section {
@@ -84,7 +84,7 @@
   content: "";
 }
 .article-title {
-  margin: 0 0 7px;
+  margin: 0 0 4px;
   color: var(--ink);
   font-family: var(--serif);
   font-size: 1.45rem;
@@ -107,6 +107,8 @@
   font-weight: 500;
   line-height: 1.35;
 }
+.article--feature .article-title { margin-bottom: 2px; }
+.article--feature .article-byline { margin: 0 0 8px; }
 .article-byline__label {
   display: inline;
   margin: 0;
@@ -189,7 +191,7 @@
 .article--lead {
   display: flex;
   flex-direction: column;
-  padding: 14px 0 22px;
+  padding: 12px 0 16px;
   border-bottom: 2px solid var(--rule-strong);
 }
 .article--lead > .article-eyebrow { order: 1; }
@@ -198,10 +200,10 @@
 .article--lead > .article-byline { order: 4; }
 .article--lead > .article-media { order: 5; }
 .article--lead > .article-brief { order: 6; }
-.article--lead::before { top: 56px; }
+.article--lead::before { top: 48px; }
 .article-eyebrow {
   display: inline-block;
-  margin-bottom: 14px;
+  margin-bottom: 8px;
   color: var(--accent);
   font-size: 11px;
   font-weight: 800;
@@ -209,11 +211,11 @@
   text-transform: uppercase;
 }
 .article--lead .article-title {
-  margin-bottom: 12px;
+  margin-bottom: 4px;
   font-size: var(--lead-title-size);
   line-height: 1.1;
 }
-.article--lead.has-image .article-title { margin-bottom: 14px; }
+.article--lead.has-image .article-title { margin-bottom: 4px; }
 /*
  * À la une : photo pleine largeur (16:9), jamais vignette flottante.
  * Les vedettes (feature) restent en carré à gauche ; la une ne partage pas
@@ -223,7 +225,7 @@
   float: none;
   width: 100%;
   max-width: 100%;
-  margin: 0 0 12px;
+  margin: 0 0 10px;
   overflow: hidden;
   background: var(--bg-soft);
   /* Figure seule porte le ratio : l’img suit. */
@@ -247,27 +249,88 @@
   border-radius: 8px;
   background: var(--bg-soft);
 }
-.article--lead .article-byline { margin-bottom: 10px; font-size: .95rem; }
+.article--lead .article-byline { margin-bottom: 8px; font-size: .95rem; }
 .article--lead .article-brief { max-width: none; font-size: 1.08rem; line-height: 1.6; }
 .article--feature .article-brief { max-width: none; font-size: .98rem; line-height: 1.52; }
 
-.article--compact { padding: 14px 0; }
-.article--compact .article-meta { margin-bottom: 4px; }
-.article--compact .article-title { margin-top: 0; font-size: 1.28rem; line-height: 1.18; hyphens: manual; }
-.article--compact .article-byline { margin: 2px 0 4px; font-size: .78rem; }
-.article--compact .article-brief { margin-top: 5px; color: var(--ink-soft); font-size: .88rem; line-height: 1.45; }
+.article--compact { padding: 11px 0; }
+.article--compact .article-meta { margin-bottom: 3px; }
+.article--compact .article-title { margin-top: 0; margin-bottom: 2px; font-size: 1.28rem; line-height: 1.18; hyphens: manual; }
+.article--compact .article-byline { margin: 0 0 6px; font-size: .78rem; }
+.article--compact .article-brief { margin-top: 0; color: var(--ink-soft); font-size: .88rem; line-height: 1.45; }
 /*
- * En bref (LE-RADAR) : clamp sur le *texte* seulement — le lien « Lire la suite »
+ * En bref sans photo : clamp sur le *texte* seulement — le lien « Lire la suite »
  * reste sur une ligne visible sous l’extrait.
  */
-.brief-rail .article--compact .article-brief-text {
+.brief-rail .article--compact:not(.has-image) .article-brief-text {
   display: -webkit-box;
   overflow: hidden;
   -webkit-box-orient: vertical;
   -webkit-line-clamp: 3;
 }
-.brief-rail .article--compact .article-brief.is-truncated .article-brief-text {
+.brief-rail .article--compact:not(.has-image) .article-brief.is-truncated .article-brief-text {
   -webkit-line-clamp: 2;
+}
+/*
+ * En bref + photo : float wrap (texte à droite puis sous la vignette).
+ * Accueil, sections, catégories, pages article — toute colonne .brief-rail.
+ */
+.brief-rail .article--compact.article--thumb.has-image {
+  display: block;
+  grid-template-columns: none;
+}
+.brief-rail .article--compact.article--thumb.has-image > .article-meta {
+  display: block;
+  margin-bottom: 3px;
+}
+.brief-rail .article--compact.article--thumb.has-image > .article-title {
+  display: block;
+  margin-bottom: 2px;
+}
+.brief-rail .article--compact.article--thumb.has-image > .article-byline {
+  display: block;
+  margin: 0 0 6px;
+}
+.brief-rail .article--compact.article--thumb.has-image > .article-media {
+  float: left;
+  width: clamp(64px, 22%, 96px);
+  margin: 2px 12px 4px 0;
+  shape-outside: margin-box;
+  grid-column: auto;
+  grid-row: auto;
+  aspect-ratio: auto;
+  overflow: visible;
+  background: transparent;
+}
+.brief-rail .article--compact.article--thumb.has-image > .article-title,
+.brief-rail .article--compact.article--thumb.has-image > .article-byline,
+.brief-rail .article--compact.article--thumb.has-image > .article-brief {
+  grid-column: auto;
+}
+.brief-rail .article--compact.article--thumb.has-image > .article-brief {
+  display: block;
+  overflow: visible;
+  margin-top: 0;
+  min-height: clamp(64px, 22%, 96px);
+}
+.brief-rail .article--compact.article--thumb.has-image .article-brief-text,
+.brief-rail .article--compact.article--thumb.has-image .article-brief.is-truncated .article-brief-text {
+  display: inline;
+  -webkit-line-clamp: unset;
+  -webkit-box-orient: initial;
+  overflow: visible;
+}
+.brief-rail .article--compact.article--thumb.has-image::after {
+  content: "";
+  display: table;
+  clear: both;
+}
+.brief-rail .article--compact.article--thumb.has-image .article-media img {
+  width: 100%;
+  height: auto;
+  aspect-ratio: 1 / 1;
+  object-fit: cover;
+  border-radius: 6px;
 }
 .brief-rail .article--compact .article-more {
   display: inline-block;
