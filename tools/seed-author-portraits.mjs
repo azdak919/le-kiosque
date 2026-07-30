@@ -31,7 +31,8 @@ const PORTRAITS = {
   'thomas-chen': { gender: 'men', id: 32 },
   'samuel-okonkwo': { gender: 'men', id: 75 },
   'olivier-roy': { gender: 'men', id: 52 },
-  'philippe-lavoie': { gender: 'men', id: 18 },
+  // 18 collidait avec un autre portrait déjà servi ; 22 = visage distinct.
+  'philippe-lavoie': { gender: 'men', id: 22 },
   'nicolas-petit': { gender: 'men', id: 41 },
 };
 

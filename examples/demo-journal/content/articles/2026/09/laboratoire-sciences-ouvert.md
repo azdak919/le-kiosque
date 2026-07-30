@@ -31,7 +31,12 @@ lead:
 
 Le laboratoire des sciences ouvrira ses portes au public pour une après-midi de démonstrations. Les projets de recherche étudiants — biologie, physique appliquée, chimie environnementale — seront présentés sous forme de postes interactifs et de courtes visites guidées.
 
-L'événement vise à rendre visibles des travaux qui restent souvent confinés aux salles de travaux pratiques. Chaque équipe disposera de quinze minutes pour expliquer sa question de recherche, sa méthode et ce qu'elle espère mesurer d'ici la fin de la session.
+<figure class="post-figure post-figure--right">
+<img src="/media/demo-library/articles/labo.jpg" alt="Paillasse de laboratoire de chimie avec verrerie" width="960" height="660" loading="lazy" decoding="async">
+<figcaption>Photo : Horia Varlan — poste de démonstration (illustration démo).</figcaption>
+</figure>
+
+L'événement vise à rendre visibles des travaux qui restent souvent confinés aux salles de travaux pratiques. Chaque équipe disposera de quinze minutes pour expliquer sa question de recherche, sa méthode et ce qu'elle espère mesurer d'ici la fin de la session. Des affiches bilingues résumeront les protocoles sans jargon inutile.
 
 ## Programme de l'après-midi
 

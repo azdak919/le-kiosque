@@ -18,13 +18,13 @@ tags: []
 lang: fr-CA
 lead:
   src: /media/demo-library/articles/cinema.jpg
-  alt: "Salle de cinéma vue depuis les sièges"
-  credit: "Fernandaodapassos"
+  alt: "Petite salle de cinéma avec rangées de sièges rouges et projecteur"
+  credit: "Mr N"
   license: "CC BY-SA 4.0"
-  licenseUrl: "https://creativecommons.org/licenses/by-sa/4.0"
-  sourceUrl: "https://commons.wikimedia.org/wiki/File:Movie_theater.jpg"
+  licenseUrl: "https://creativecommons.org/licenses/by-sa/4.0/"
+  sourceUrl: "https://commons.wikimedia.org/wiki/File:Kinolino-Kellerkino_02.jpg"
   width: 1920
-  height: 1440
+  height: 1443
   focalPoint: { x: 50, y: 48 }
 ---
 

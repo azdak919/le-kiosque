@@ -15,19 +15,24 @@ excerpt: >-
   Notre chroniqueuse fictive revient sur une programmation inventée de trois courts métrages qui abordent le passage à l'âge adulte. La discussion en salle, souvent aussi riche que les films, se tient le mercredi midi dans la petite salle du pavillon des arts, entrée libre pour la communauté.
 lead:
   src: /media/demo-library/articles/cinema.jpg
-  alt: "Salle de cinéma vue depuis les sièges"
-  credit: "Fernandaodapassos"
+  alt: "Petite salle de cinéma avec rangées de sièges rouges et projecteur"
+  credit: "Mr N"
   license: "CC BY-SA 4.0"
-  licenseUrl: "https://creativecommons.org/licenses/by-sa/4.0"
-  sourceUrl: "https://commons.wikimedia.org/wiki/File:Movie_theater.jpg"
+  licenseUrl: "https://creativecommons.org/licenses/by-sa/4.0/"
+  sourceUrl: "https://commons.wikimedia.org/wiki/File:Kinolino-Kellerkino_02.jpg"
   width: 1920
-  height: 1440
+  height: 1443
   focalPoint: { x: 50, y: 48 }
 ---
 
 La séance de cinéma du midi propose trois courts métrages contrastés sur le passage à l'âge adulte. La programmation, entièrement inventée pour cette démonstration, mêle humour sec, documentaire intime et fiction spéculative.
 
-La discussion qui suit la projection se révèle souvent aussi intéressante que les films. Les personnes présentes sont invitées à parler d'une scène qui les a marquées, sans obligation de « bien comprendre » l'œuvre. Un feuille de notes, distribuée à l'entrée, rappelle les questions de départ sans imposer de grille critique.
+<figure class="post-figure post-figure--right">
+<img src="/media/demo-library/articles/cinema.jpg" alt="Petite salle de projection avec sièges rouges" width="960" height="720" loading="lazy" decoding="async">
+<figcaption>Photo : Mr N — la petite salle du pavillon des arts (illustration démo).</figcaption>
+</figure>
+
+La discussion qui suit la projection se révèle souvent aussi intéressante que les films. Les personnes présentes sont invitées à parler d'une scène qui les a marquées, sans obligation de « bien comprendre » l'œuvre. Une feuille de notes, distribuée à l'entrée, rappelle les questions de départ sans imposer de grille critique.
 
 ## Horaires et accès
 

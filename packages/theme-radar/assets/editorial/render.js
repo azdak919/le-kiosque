@@ -35,9 +35,19 @@ function safeMediaUrl(value) {
   return /^(?:data:image\/(?:svg\+xml|png|webp|jpeg);base64,|https?:\/\/|\/)/i.test(raw) ? raw : '';
 }
 
-function byline(article, bundle) {
-  const names = article.authors.map((slug) => bundle.authors.find((author) => author.slug === slug)?.name || slug);
-  return names.length ? `<p class="article-byline">Par ${names.map(esc).join(' et ')}</p>` : '';
+function authorHref(base, slug) {
+  return link(base, `/auteurs/${encodeURIComponent(slug)}/`);
+}
+
+/** Byline carte : signatures cliquables → page auteur en nouvel onglet. */
+function bylineAuthors(article, bundle, base) {
+  return article.authors.map((slug) => {
+    const name = bundle.authors.find((author) => author.slug === slug)?.name || slug;
+    return {
+      name,
+      href: authorHref(base, slug),
+    };
+  });
 }
 
 function mediaFigure(article, base) {
@@ -79,7 +89,7 @@ function articleCard(article, bundle, base, variant = 'tail') {
       iso: article.publishedAt || article.updatedAt,
       label: formatDateTime(article.publishedAt || article.updatedAt, bundle.publication.timeZone),
     },
-    authors: article.authors.map((slug) => ({ name: bundle.authors.find((author) => author.slug === slug)?.name || slug })),
+    authors: bylineAuthors(article, bundle, base),
     image: src ? {
       src: src.startsWith('/') ? link(base, src) : src,
       alt: lead.alt || '',
@@ -117,7 +127,10 @@ export function renderRoute(bundle, base, pathname, renderBody) {
   if (parts[0] === 'articles' && parts[1]) {
     const article = published.find((item) => item.slug === decodeURIComponent(parts[1]));
     if (!article) return null;
-    const authors = article.authors.map((slug) => bundle.authors.find((item) => item.slug === slug)?.name || slug);
+    const authorLinks = article.authors.map((slug) => {
+      const name = bundle.authors.find((item) => item.slug === slug)?.name || slug;
+      return `<a href="${esc(authorHref(base, slug))}" target="_blank" rel="noopener noreferrer">${esc(name)}</a>`;
+    });
     const categories = article.categories.map((slug) => bundle.taxonomies.categories.find((item) => item.slug === slug)).filter(Boolean);
     const section = bundle.taxonomies.sections.find((item) => item.slug === article.section);
     const categoryFallback = categories[0];
@@ -132,7 +145,7 @@ export function renderRoute(bundle, base, pathname, renderBody) {
       ? `<a class="post-eyebrow" data-editorial-link href="${eyebrowHref}"${eyebrowColor ? ` style="--c:${esc(eyebrowColor)}"` : ''}>${esc(eyebrowName)}</a>`
       : '';
     const briefs = published.filter((item) => item.slug !== article.slug).slice(0, 5);
-    const post = `<article class="post post--in-magazine">${eyebrow}<h1 class="post-title">${esc(article.title)}</h1>${article.subtitle ? `<p class="post-subtitle">${esc(article.subtitle)}</p>` : ''}${article.dek ? `<p class="post-dek">${esc(article.dek)}</p>` : ''}<div class="post-meta"><span>Par ${authors.map(esc).join(', ')}</span><time datetime="${esc(article.publishedAt || article.updatedAt)}">${esc(formatDateTime(article.publishedAt || article.updatedAt, bundle.publication.timeZone))}</time></div>${mediaFigure(article, base)}<div class="post-body">${renderBody(article)}</div>${categories.length ? `<div class="post-tags">${categories.map((category) => `<a class="tag" data-editorial-link href="${link(base, `/categories/${encodeURIComponent(category.slug)}/`)}">${esc(category.name)}</a>`).join('')}</div>` : ''}</article>`;
+    const post = `<article class="post post--in-magazine">${eyebrow}<h1 class="post-title">${esc(article.title)}</h1>${article.subtitle ? `<p class="post-subtitle">${esc(article.subtitle)}</p>` : ''}${article.dek ? `<p class="post-dek">${esc(article.dek)}</p>` : ''}<div class="post-meta"><span>Par ${authorLinks.join(', ')}</span><time datetime="${esc(article.publishedAt || article.updatedAt)}">${esc(formatDateTime(article.publishedAt || article.updatedAt, bundle.publication.timeZone))}</time></div>${mediaFigure(article, base)}<div class="post-body">${renderBody(article)}</div>${categories.length ? `<div class="post-tags">${categories.map((category) => `<a class="tag" data-editorial-link href="${link(base, `/categories/${encodeURIComponent(category.slug)}/`)}">${esc(category.name)}</a>`).join('')}</div>` : ''}</article>`;
     const rail = briefs.length
       ? `<aside class="brief-rail brief-rail--article" aria-label="En bref"><h2>En bref</h2>${briefs.map((item) => articleCard(item, bundle, base, 'brief')).join('')}</aside>`
       : '';
@@ -206,6 +219,18 @@ export function renderRoute(bundle, base, pathname, renderBody) {
         title: `Au tableau — ${bundle.publication.name}`,
         html: `<div class="wrap wire wire--sports"><div class="wire-head"><h1 class="wire-title">Au tableau</h1><span class="wire-status">${teams.length} formation${teams.length > 1 ? 's' : ''}</span></div><p class="section-intro">Scores et prochains matchs — le tableau d’affichage du campus.</p><div class="sports-board-scroll"><div class="sports-board">${panels}</div></div>${feed}</div>`,
       };
+    }
+  }
+  /* Section Sports : même page que /sports/ (Au tableau + fil), pas le fil seul. */
+  if (parts[0] === 'sections' && parts[1] === 'sports') {
+    const sportsRaw = bundle.publication.masthead?.sports;
+    const rawTeams = Array.isArray(sportsRaw?.teams) && sportsRaw.teams.length
+      ? sportsRaw.teams
+      : (sportsRaw?.team ? [sportsRaw.team] : []);
+    if (sportsRaw && sportsRaw.enabled !== false && rawTeams.length) {
+      // Réutilise le rendu /sports/ (même payload, même titres).
+      const sportsPath = `${String(base || '').replace(/\/+$/, '')}/sports/`;
+      return renderRoute(bundle, base, sportsPath, renderBody);
     }
   }
   const definitions = {

@@ -27,7 +27,7 @@ lead:
   focalPoint: { x: 50, y: 48 }
 ---
 
-Les Orbites accueillent six recrues avant l'ouverture de leur camp automnal de basketball. Le personnel d'entraînement insiste sur deux axes : la profondeur du banc et la rapidité en transition, afin d'absorber un calendrier plus dense en début de saison. Comme le volleyball, cette formation du Cégep du Quorum est entièrement fictive — réservée à la démonstration du journal.
+Les Quorums accueillent six recrues avant l'ouverture de leur camp automnal de basketball. Le personnel d'entraînement insiste sur deux axes : la profondeur du banc et la rapidité en transition, afin d'absorber un calendrier plus dense en début de saison. Comme le volleyball, cette formation du Cégep du Quorum est entièrement fictive — réservée à la démonstration du journal.
 
 Le camp préparatoire commencera lundi avec deux séances ouvertes au public. Les athlètes enchaîneront ensuite une série de matchs hors concours destinés à évaluer les combinaisons de cinq et la gestion des minutes. La composition finale devrait être annoncée avant le premier match local.
 
@@ -35,4 +35,4 @@ Le camp préparatoire commencera lundi avec deux séances ouvertes au public. Le
 
 Parmi les nouvelles arrivées figurent deux ailières, un pivot et trois gardes polyvalents, selon la description fournie par l'association sportive fictive du campus. Les entraînements du soir resteront prioritaires pour les personnes qui ont des laboratoires le jour. Un horaire détaillé sera affiché dans le gymnase et sur le site du journal.
 
-La billetterie étudiante pour le premier match à domicile des Orbites ouvrira une semaine avant la date prévue. Les places gratuites pour les membres de la communauté collégiale seront limitées et distribuées sur présentation de la carte étudiante.
+La billetterie étudiante pour le premier match à domicile des Quorums ouvrira une semaine avant la date prévue. Les places gratuites pour les membres de la communauté collégiale seront limitées et distribuées sur présentation de la carte étudiante.

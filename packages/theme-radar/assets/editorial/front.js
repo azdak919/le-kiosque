@@ -16,14 +16,25 @@ function sanitize(html) {
   return template.innerHTML;
 }
 
+/** Préfixe `/media/…` avec le basePath SPA (déploiement sous-chemin). */
+function rewriteBodyMediaUrls(html) {
+  const root = String(config?.publicBasePath || '').replace(/\/+$/, '');
+  if (!root) return html;
+  return String(html || '').replace(
+    /(\s(?:src|href)=["'])(\/media\/[^"']+)(["'])/gi,
+    (_m, pre, path, post) => `${pre}${root}${path}${post}`,
+  );
+}
+
 function markdown(value) {
-  return sanitize(marked.parse(String(value || ''), { async: false }));
+  return rewriteBodyMediaUrls(sanitize(marked.parse(String(value || ''), { async: false })));
 }
 
 function articleBody(article) {
-  return article.body?.format === 'html'
+  const raw = article.body?.format === 'html'
     ? sanitize(String(article.body.raw || ''))
     : markdown(article.body?.raw || '');
+  return article.body?.format === 'html' ? rewriteBodyMediaUrls(raw) : raw;
 }
 
 async function render(push = false) {
@@ -63,6 +74,8 @@ async function render(push = false) {
 document.addEventListener('click', (event) => {
   const anchor = event.target.closest('a[data-editorial-link]');
   if (!anchor || event.metaKey || event.ctrlKey || event.shiftKey) return;
+  /* Nouvel onglet (auteurs, liens explicitement ciblés) : laisser le navigateur. */
+  if (anchor.target === '_blank') return;
   const url = new URL(anchor.href);
   if (!url.pathname.startsWith(config.publicBasePath)) return;
   event.preventDefault();

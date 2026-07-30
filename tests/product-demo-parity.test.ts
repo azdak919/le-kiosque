@@ -81,6 +81,18 @@ test('demo et template reçoivent le même theme.css / kiosque.js (packages/them
     /@media\s+print\s*\{[\s\S]*?\.demo-banner\s*\{[\s\S]*?display:\s*block\s*!important[\s\S]*?print-color-adjust:\s*exact/,
     'impression : bandeau démo rouge conservé',
   );
+  // Impression : photos modestes + texte qui flotte autour (lead + corps).
+  assert.match(demoCss, /\.post-body\s+figure\.post-figure/, 'figures flottantes dans le corps');
+  assert.match(
+    demoCss,
+    /@media\s+print\s*\{[\s\S]*?\.post-lead\s*\{[\s\S]*?float:\s*right[\s\S]*?max-width:\s*8\.2cm/,
+    'impression : lead flottant, largeur bornée',
+  );
+  assert.match(
+    demoCss,
+    /@media\s+print\s*\{[\s\S]*?\.post-body\s+figure\.post-figure[\s\S]*?max-width:\s*7\.2cm/,
+    'impression : photos du corps bornées',
+  );
   assert.match(demoJs, /computeMastheadFocalY/, 'cadrage auto mât présent');
   assert.match(demoJs, /function applyTheme/, 'bascule thème présente');
   // Mobile UX (7 points) : dock météo, nav peek, volume overlay.
@@ -103,7 +115,7 @@ test('demo et template reçoivent le même theme.css / kiosque.js (packages/them
   assert.match(demoHome, /id="masthead-weather-dock"/, 'emplacement dock météo');
   assert.match(tplHome, /id="masthead-weather-dock"/);
   assert.match(demoHome, /data-sports-payload/, 'équipe sports démo embarquée');
-  assert.match(demoHome, /Les Braises|Les Orbites|Les Corbeaux|Les Verglas/, 'équipes fictives maison');
+  assert.match(demoHome, /Les Quorums/, 'surnom maison unique (tous sports)');
   assert.match(demoHome, /code&quot;:&quot;QUO&quot;|"code":"QUO"/, 'code équipe QUO');
   assert.match(demoHome, /data-nav-shell/, 'shell nav mobile');
   assert.match(tplHome, /data-nav-shell/);
@@ -122,9 +134,10 @@ test('demo et template reçoivent le même theme.css / kiosque.js (packages/them
     'intro équipe reformulée',
   );
   const seed = await readFile(path.join(demo.out, 'assets/editorial/seed.json'), 'utf8');
-  assert.match(seed, /"version":\s*11/, 'seed démo v11 (surnoms Braises/Orbites/Corbeaux/Verglas)');
-  assert.match(seed, /Les Braises/, 'seed embarque l’équipe sports maison');
-  assert.match(seed, /Les Orbites|Les Corbeaux|Les Verglas/, 'plusieurs formations fictives maison');
+  assert.match(seed, /"version":\s*14/, 'seed démo v14 (photos corps + impression + Les Quorums)');
+  assert.match(seed, /Les Quorums/, 'seed embarque le surnom maison');
+  assert.match(seed, /"sport":"volleyball"/, 'plusieurs formations (sports) sous le même surnom');
+  assert.match(seed, /"sport":"basketball"|"sport":"soccer"|"sport":"hockey"/, 'au moins un autre sport');
   assert.match(seed, /Titans|Boomerang|Géants|Cheetahs/, 'adversaires = clubs RSEQ collégial réels');
   assert.match(seed, /"code":"QUO"/, 'code institution Cégep du Quorum = QUO');
   assert.match(seed, /"opponentCode":"(GAR|LIM|CSF|CAL|SLA|CEM|SJR)"/, 'codes adversaires = institutions RSEQ');

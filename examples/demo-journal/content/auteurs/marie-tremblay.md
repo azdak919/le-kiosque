@@ -6,8 +6,8 @@ cohort: '2026-2028'
 active: true
 avatar:
   src: /media/demo-library/auteurs/marie-tremblay.jpg
-  alt: "Portrait de Marie Tremblay"
-  credit: "randomuser.me"
+  alt: "Portrait fictif de Marie Tremblay"
+  credit: "randomuser.me (personnage fictif)"
   creditUrl: "https://randomuser.me/"
   license: "CC0"
   licenseUrl: "https://creativecommons.org/publicdomain/zero/1.0/"

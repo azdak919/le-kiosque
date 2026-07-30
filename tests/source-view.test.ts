@@ -43,6 +43,8 @@ test('le noyau de carte conserve les règles image, métadonnées et absence d�
   assert.match(lead, /width="1200" height="800"/);
   assert.match(lead, /loading="eager"/);
   assert.match(brief, /article-byline__label">Par<\/span>\s*<a class="article-author"/);
+  assert.match(brief, /target="_blank"/, 'signatures ouvrent en nouvel onglet');
+  assert.match(brief, /rel="noopener noreferrer"/);
   assert.match(brief, /Lire la suite/);
   // Texte et lien séparés : le line-clamp En bref ne doit pas avaler le lien.
   assert.match(brief, /article-brief-text/);

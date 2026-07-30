@@ -159,7 +159,8 @@ masthead:
         latitude: 46.8139
         longitude: -71.2080
         meteomediaSlug: quebec
-  # Scoreboard mât — formations maison fictives (surnoms) ; code institution = QUO
+  # Scoreboard mât — un seul surnom maison pour tous les sports (comme le RSEQ :
+  # une institution = un club, plusieurs formations). Code institution = QUO
   # (comme LE-RADAR : GAR, LIM, CSF…). Adversaires = vrais clubs RSEQ collégial
   # avec codes institution réels ; scores et dates restent de démonstration.
   # Mobile : codes (QUO vs SLA). Bureau : noms d’équipes + institutions.
@@ -173,7 +174,7 @@ masthead:
     demoAsOf: '2026-09-20'
     teams:
       - id: demo-quorums-volley
-        name: Les Braises
+        name: Les Quorums
         code: QUO
         institution: Cégep du Quorum
         sport: volleyball
@@ -211,7 +212,7 @@ masthead:
           home: true
           competition: RSEQ collégial (démo)
       - id: demo-quorums-basket
-        name: Les Orbites
+        name: Les Quorums
         code: QUO
         institution: Cégep du Quorum
         sport: basketball
@@ -249,7 +250,7 @@ masthead:
           home: true
           competition: RSEQ collégial (démo)
       - id: demo-quorums-soccer
-        name: Les Corbeaux
+        name: Les Quorums
         code: QUO
         institution: Cégep du Quorum
         sport: soccer
@@ -287,7 +288,7 @@ masthead:
           home: false
           competition: RSEQ collégial (démo)
       - id: demo-quorums-hockey
-        name: Les Verglas
+        name: Les Quorums
         code: QUO
         institution: Cégep du Quorum
         sport: hockey

@@ -892,7 +892,7 @@ export function articlePage(article: Article, ctx: RenderContext, relatedArticle
             ? `<span>Par ${article.authors
                 .map(
                   (s) =>
-                    `<a href="${safeUrl(relative(authorUrl(pub, s), ctx))}">${esc(ctx.authorsBySlug.get(s)?.name ?? s)}</a>`,
+                    `<a href="${safeUrl(relative(authorUrl(pub, s), ctx))}" target="_blank" rel="noopener noreferrer">${esc(ctx.authorsBySlug.get(s)?.name ?? s)}</a>`,
                 )
                 .join(', ')}</span>`
             : ''
@@ -955,6 +955,13 @@ ${article.body.html ?? ''}
 }
 
 export function sectionPage(section: Section, articles: Article[], ctx: RenderContext): string {
+  // Section Sports : même contenu que la puce mât (« Au tableau ») — scores
+  // + articles, pas seulement le fil. Les deux routes restent valides.
+  if (section.slug === 'sports') {
+    const sports = ctx.publication.masthead?.sports;
+    const teams = sports && sports.enabled !== false ? sportsTeamRoster(sports) : [];
+    if (teams.length) return sportsResultsPage(ctx, articles);
+  }
   return page(
     `<div class="wrap wire">
       <div class="wire-head">
