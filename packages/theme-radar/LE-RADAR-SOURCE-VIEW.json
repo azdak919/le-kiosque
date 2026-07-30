@@ -3,7 +3,7 @@
   "reference": {
     "project": "LE-RADAR",
     "repositoryPathHint": "../le-radar",
-    "commit": "974ad45",
+    "commit": "45e332f",
     "files": [
       "app.js#createArticle",
       "app.js#partitionSourceFeed",
