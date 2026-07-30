@@ -639,6 +639,14 @@
       weatherHomeParent.insertBefore(host, weatherHomeNext);
       if (!dock.childNodes.length) dock.hidden = true;
     }
+    /* Après dock : recalcul marquee (largeur disponible change). */
+    window.requestAnimationFrame(function () {
+      var chip = host.querySelector('.sports-chip');
+      var line = chip && chip.querySelector('.sports-chip__line');
+      if (line && typeof applySportsLineMarquee === 'function') {
+        try { applySportsLineMarquee(line); } catch (_) { /* ignore */ }
+      }
+    });
   }
 
   function syncMastheadWeatherDock() {
