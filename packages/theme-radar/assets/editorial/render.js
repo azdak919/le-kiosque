@@ -183,6 +183,31 @@ export function renderRoute(bundle, base, pathname, renderBody) {
           return new Intl.DateTimeFormat('fr-CA', { day: 'numeric', month: 'short', timeZone: bundle.publication.timeZone || 'America/Toronto' }).format(new Date(`${iso}T12:00:00`));
         } catch { return iso; }
       };
+      const shortInst = (inst) => String(inst || '')
+        .replace(/^Cégep\s+(de\s+|du\s+|d’|d')?/i, '')
+        .replace(/^Collège\s+/i, '')
+        .replace(/^Champlain\s+College\s+/i, 'Champlain ')
+        .replace(/^Université\s+(de\s+|du\s+|d’|d')?/i, '')
+        .trim();
+      const venueHtml = (home) => {
+        if (home === true) return ' <span class="sports-result__venue sports-result__venue--home" title="Match à domicile">Domicile</span>';
+        if (home === false) return ' <span class="sports-result__venue sports-result__venue--away" title="Match à l’extérieur">Extérieur</span>';
+        return '';
+      };
+      const oppHtml = (opponent, institution) => {
+        const nick = `<span class="sports-result__opp">${esc(opponent)}</span>`;
+        const short = shortInst(institution);
+        if (!short || short === opponent) return nick;
+        return `${nick} <span class="sports-result__opp-school">${esc(short)}</span>`;
+      };
+      const sexBadge = (sex) => {
+        if (!sex) return '';
+        const s = String(sex).toLowerCase();
+        if (s === 'f' || s.startsWith('fémin') || s.startsWith('femin')) return '<span class="sports-panel__sex sports-panel__sex--f" title="Féminin">F</span>';
+        if (s === 'm' || s.startsWith('mascul')) return '<span class="sports-panel__sex sports-panel__sex--m" title="Masculin">M</span>';
+        if (s.includes('mix')) return '<span class="sports-panel__sex sports-panel__sex--x" title="Mixte">Mixte</span>';
+        return `<span class="sports-panel__sex sports-panel__sex--x">${esc(sex)}</span>`;
+      };
       const panels = teams.map((team) => {
         const nested = Array.isArray(team.results) ? team.results : [];
         const global = (sports.results || []).filter((g) => !g.teamId || g.teamId === team.id);
@@ -191,24 +216,25 @@ export function renderRoute(bundle, base, pathname, renderBody) {
         if (!next && sports.nextGame && (!sports.nextGame.teamId || sports.nextGame.teamId === team.id)) next = sports.nextGame;
         const rows = results.map((g) => {
           const badge = g.result === 'W' ? 'V' : g.result === 'L' ? 'D' : 'N';
-          const opp = g.opponentInstitution
-            ? `${esc(g.opponent)} <span class="sports-result__inst">(${esc(g.opponentInstitution)})</span>`
-            : esc(g.opponent);
           const prior = g.priorSeason
             ? '<span class="sports-result__season-meta">Saison précédente</span>'
             : '';
-          return `<li class="sports-result sports-result--${esc(g.result)}${g.priorSeason ? ' sports-result--prior-season' : ''}"><time class="sports-result__time" datetime="${esc(g.date)}">${esc(fmt(g.date))}</time><span class="sports-result__score">${g.scoreFor}–${g.scoreAgainst}</span><span class="sports-result__title"><span class="sports-result__vs">vs</span> ${opp}</span><span class="sports-result__badge">${badge}</span>${prior}</li>`;
+          const homeAttr = g.home === true ? ' data-home="1"' : g.home === false ? ' data-home="0"' : '';
+          return `<li class="sports-result sports-result--${esc(g.result)}${g.priorSeason ? ' sports-result--prior-season' : ''}"${homeAttr}><time class="sports-result__time" datetime="${esc(g.date)}">${esc(fmt(g.date))}</time><span class="sports-result__score">${g.scoreFor}–${g.scoreAgainst}</span><span class="sports-result__title"><span class="sports-result__vs">vs</span> ${oppHtml(g.opponent, g.opponentInstitution)}${venueHtml(g.home)}</span><span class="sports-result__badge">${badge}</span>${prior}</li>`;
         });
         if (next) {
-          const when = [fmt(next.date), next.time ? String(next.time).replace(':', ' h ') : ''].filter(Boolean).join(' · ');
-          const nextOpp = next.opponentInstitution
-            ? `${esc(next.opponent)} <span class="sports-result__inst">(${esc(next.opponentInstitution)})</span>`
-            : esc(next.opponent);
-          rows.push(`<li class="sports-result sports-result--next"><time class="sports-result__time" datetime="${esc(next.date)}">${esc(when)}</time><span class="sports-result__score sports-result__score--next">À venir</span><span class="sports-result__title"><span class="sports-result__vs">vs</span> ${nextOpp}</span><span class="sports-result__badge sports-result__badge--next">→</span></li>`);
+          const day = fmt(next.date);
+          const clock = next.time ? String(next.time).replace(':', ' h ') : '';
+          const timeInner = clock
+            ? `<span class="sports-result__day">${esc(day)}</span><span class="sports-result__clock">${esc(clock)}</span>`
+            : esc(day);
+          const homeAttr = next.home === true ? ' data-home="1"' : next.home === false ? ' data-home="0"' : '';
+          rows.push(`<li class="sports-result sports-result--next"${homeAttr}><time class="sports-result__time" datetime="${esc(next.date)}">${timeInner}</time><span class="sports-result__score sports-result__score--next">À venir</span><span class="sports-result__title"><span class="sports-result__vs">vs</span> ${oppHtml(next.opponent, next.opponentInstitution)}${venueHtml(next.home)}</span><span class="sports-result__badge sports-result__badge--next">→</span></li>`);
         }
         const list = rows.length ? `<ul class="sports-panel__list">${rows.join('')}</ul>` : '<p class="sports-panel__empty">Aucun résultat.</p>';
         const color = team.colors?.primary || 'var(--accent)';
-        return `<section class="sports-panel" style="--sports-panel-c:${esc(color)}"><header class="sports-panel__head"><span class="sports-panel__glyph" aria-hidden="true">${glyph(team.sport)}</span><div class="sports-panel__identity"><h2 class="sports-panel__name">${esc(team.name)} <span class="sports-panel__code">${esc(team.code)}</span></h2><p class="sports-panel__meta">${esc(team.sportLabel || team.sport)}${team.institution ? ` · ${esc(team.institution)}` : ''}</p></div></header>${list}</section>`;
+        const code = team.code ? ` <span class="sports-panel__code">${esc(team.code)}</span>` : '';
+        return `<section class="sports-panel" style="--sports-panel-c:${esc(color)}"><header class="sports-panel__head"><span class="sports-panel__glyph" aria-hidden="true">${glyph(team.sport)}</span><div class="sports-panel__identity"><h2 class="sports-panel__name sports-panel__name--branded"><span class="sports-panel__brand">${esc(team.name)}</span>${code}${sexBadge(team.sex)}</h2><p class="sports-panel__meta">${esc(team.sportLabel || team.sport)}${team.institution ? ` · ${esc(team.institution)}` : ''}</p></div></header>${list}</section>`;
       }).join('');
       const feed = sportsArticles.length
         ? `<div class="sports-articles"><div class="wire-head"><h2 class="wire-title">Dans le journal</h2><span class="wire-status">${sportsArticles.length} article${sportsArticles.length > 1 ? 's' : ''}</span></div>${magazineFeedHtml(sportsArticles, bundle, base, 'Sports', 'Aucun article.')}</div>`
