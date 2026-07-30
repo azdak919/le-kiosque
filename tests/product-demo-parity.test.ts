@@ -135,12 +135,14 @@ test('demo et template reçoivent le même theme.css / kiosque.js (packages/them
     'intro équipe reformulée',
   );
   const seed = await readFile(path.join(demo.out, 'assets/editorial/seed.json'), 'utf8');
-  assert.match(seed, /"version":\s*18/, 'seed démo v18 (crédits Photo: sur figures corps)');
+  assert.match(seed, /"version":\s*19/, 'seed démo v19 (ville Saint-Louis-du-Ha! Ha!)');
   assert.match(seed, /Les Élans/, 'seed embarque le surnom maison Élans');
   assert.doesNotMatch(seed, /Les Quorums/, 'plus de surnom redondant Quorums');
   assert.match(seed, /hockey-interieur\.jpg/, 'photo corps hockey intérieur distincte du lead');
   assert.match(seed, /Photo : Joshua Scott/, 'figure corps hockey crédite le photographe');
   assert.match(seed, /Photo : Pambelle12|Photo : fir0002|Photo : art_inthecity/, 'autres figures corps créditées');
+  assert.match(seed, /Saint-Louis-du-Ha! Ha!/, 'météo démo = ville du cégep fictif');
+  assert.match(seed, /47\.6709/, 'latitude Saint-Louis-du-Ha! Ha!');
   assert.match(seed, /"sport":"volleyball"/, 'plusieurs formations (sports) sous le même surnom');
   assert.match(seed, /"sport":"basketball"|"sport":"soccer"|"sport":"hockey"/, 'au moins un autre sport');
   assert.match(seed, /Titans|Boomerang|Géants|Cheetahs/, 'adversaires = clubs RSEQ collégial réels');

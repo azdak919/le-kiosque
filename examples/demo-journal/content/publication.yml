@@ -6,6 +6,7 @@ name: Le Quorum
 tagline: On vote, on débat, on imprime
 institution: Cégep du Quorum
 institutionType: cegep
+# Province (QC). La ville de la démo = Saint-Louis-du-Ha! Ha! (Bas-Saint-Laurent) — météo mât.
 region: Québec
 lang: fr-CA
 siteUrl: https://journal-exemple.invalid
@@ -152,13 +153,14 @@ masthead:
         focalPoint: { x: 50, y: 46 }
   weather:
     enabled: true
-    # Coords OSM (WGS84) + slug MétéoMédia : le clic ouvre Environnement Canada
-    # (meteo.gc.ca / weather.gc.ca) ; MétéoMédia est associé en data- / title.
+    # Ville fictive du Cégep du Quorum : Saint-Louis-du-Ha! Ha! (Bas-Saint-Laurent).
+    # Coords OSM (WGS84) + slug MétéoMédia ; clic → Environnement Canada (coords)
+    # et MétéoMédia (data- / title).
     localities:
-      - name: Québec
-        latitude: 46.8139
-        longitude: -71.2080
-        meteomediaSlug: quebec
+      - name: Saint-Louis-du-Ha! Ha!
+        latitude: 47.6709
+        longitude: -68.9797
+        meteomediaSlug: saint-louis-du-ha-ha
   # Scoreboard mât — un seul surnom maison pour tous les sports (comme le RSEQ :
   # une institution = un club, plusieurs formations). Code institution = QUO.
   # Surnom : « Les Élans » (focus-group le-kiosque-team-nickname) — pas « Quorums ».

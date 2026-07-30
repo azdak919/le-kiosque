@@ -43,7 +43,7 @@
     station: (prefill.radio && prefill.radio.station) || 'station-exemple',
     backgroundsEnabled: !masthead.backgrounds || masthead.backgrounds.enabled !== false,
     weatherEnabled: Boolean(masthead.weather && masthead.weather.enabled),
-    weatherLocalities: (masthead.weather && masthead.weather.localities || ['Québec']).join(', '),
+    weatherLocalities: (masthead.weather && masthead.weather.localities || ['Saint-Louis-du-Ha! Ha!']).join(', '),
     pomodoro: !masthead.tools || masthead.tools.pomodoro !== false,
     solitaire: !masthead.tools || masthead.tools.solitaire !== false,
     users: (prefill.users || []).map(function (user) {
