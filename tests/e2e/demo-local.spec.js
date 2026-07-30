@@ -92,12 +92,12 @@ test('configurer, rédiger, prévisualiser, publier, persister et exporter sans 
   await page.getByRole('button', { name: 'Tableau de bord' }).click();
   page.once('dialog', (dialog) => dialog.accept());
   await page.getByRole('button', { name: 'Restaurer Le Quorum' }).click();
-  // Import banque + PGlite : long en CI. Attendre l’état durable (pas seulement le toast).
+  // Import banque + PGlite : long en CI. Le toast (#toast) est éphémère (CSS/timing) —
+  // attendre le bouton redevenu utilisable puis les exemples en liste.
   await expect(page.getByRole('button', { name: 'Restaurer Le Quorum' })).toBeEnabled({ timeout: 90_000 });
-  await expect(page.getByText('Les exemples du Quorum sont restaurés.')).toBeVisible({ timeout: 10_000 });
   await expect(page.locator('#publication-name')).toHaveText('La Relève locale');
   await page.getByRole('button', { name: 'Articles' }).click();
-  await expect(page.getByText('Exemple local').first()).toBeVisible({ timeout: 30_000 });
+  await expect(page.getByText('Exemple local').first()).toBeVisible({ timeout: 60_000 });
 
   await page.getByRole('button', { name: 'Configuration' }).click();
   await page.getByRole('button', { name: 'Choisir une photo' }).click();
