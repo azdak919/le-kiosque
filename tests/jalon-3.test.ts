@@ -92,10 +92,14 @@ test('la vitrine expose le bandeau illustré, les outils et la composition magaz
     : content.publication.masthead?.sports?.team
       ? [content.publication.masthead.sports.team]
       : [];
-  assert.ok(sportsTeams.length >= 6, 'plusieurs formations H/F/mixte (démo multi-cartes)');
+  assert.ok(sportsTeams.length >= 8, 'plusieurs formations H/F/mixte (démo multi-cartes)');
   assert.ok(sportsTeams.some((t) => t.code === 'QUO' && t.sport === 'volleyball'));
   assert.ok(sportsTeams.some((t) => t.sport === 'basketball'));
-  assert.ok(sportsTeams.some((t) => t.sport === 'soccer' || t.sport === 'hockey' || t.sport === 'flag-football'));
+  assert.ok(sportsTeams.some((t) => t.sport === 'hockey' && (t.sex === 'F' || t.sex === 'f')), 'hockey féminin');
+  assert.ok(
+    sportsTeams.some((t) => t.sport === 'flag-football' && (t.sex === 'F' || t.sex === 'f')),
+    'flag football féminin',
+  );
   assert.ok(sportsTeams.some((t) => t.sex === 'F' || t.sex === 'f'));
   assert.ok(sportsTeams.some((t) => t.sex === 'M' || t.sex === 'm'));
   assert.ok(sportsTeams.some((t) => String(t.sex || '').toLowerCase().includes('mix')));

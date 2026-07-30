@@ -519,6 +519,44 @@ masthead:
           opponentInstitution: Cégep de Valleyfield
           home: false
           competition: RSEQ collégial (démo)
+      - id: demo-elans-flag-f
+        name: Les Élans
+        code: QUO
+        institution: Cégep du Quorum
+        sport: flag-football
+        sportLabel: Flag football
+        sex: F
+        fictional: true
+        colors: { primary: '#c2410c', secondary: '#fff7ed' }
+        results:
+          - date: '2026-09-18'
+            opponent: Titans
+            opponentCode: LIM
+            opponentInstitution: Cégep Limoilou
+            home: true
+            scoreFor: 21
+            scoreAgainst: 14
+            result: W
+            sport: flag-football
+            competition: RSEQ collégial (démo)
+          - date: '2026-09-11'
+            opponent: Cheetahs
+            opponentCode: CAL
+            opponentInstitution: Cégep André-Laurendeau
+            home: false
+            scoreFor: 7
+            scoreAgainst: 28
+            result: L
+            sport: flag-football
+            competition: RSEQ collégial (démo)
+        nextGame:
+          date: '2026-10-10'
+          time: '16:30'
+          opponent: Boomerang
+          opponentCode: GAR
+          opponentInstitution: Cégep François-Xavier-Garneau
+          home: true
+          competition: RSEQ collégial (démo)
   tools:
     pomodoro: true
     solitaire: true
