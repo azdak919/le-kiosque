@@ -422,6 +422,23 @@ function sportsSexBadgeHtml(sex?: string): string {
   return `<span class="sports-panel__sex sports-panel__sex--x">${esc(sex)}</span>`;
 }
 
+/** Jour de référence éditorial (demoAsOf ou aujourd’hui dans le fuseau). */
+function sportsRefDayKey(sports: MastheadSports, timeZone: string): string {
+  if (sports.demoAsOf && /^\d{4}-\d{2}-\d{2}/.test(sports.demoAsOf)) {
+    return sports.demoAsOf.slice(0, 10);
+  }
+  try {
+    return new Intl.DateTimeFormat('en-CA', {
+      timeZone,
+      year: 'numeric',
+      month: '2-digit',
+      day: '2-digit',
+    }).format(new Date());
+  } catch {
+    return new Date().toISOString().slice(0, 10);
+  }
+}
+
 function sportsResultRows(
   team: SportsTeam,
   sports: MastheadSports,
@@ -429,10 +446,10 @@ function sportsResultRows(
 ): string {
   const global = (sports.results ?? []).filter((g) => !g.teamId || g.teamId === team.id);
   const nested = team.results ?? [];
-  const results = [...nested, ...global]
-    .sort((a, b) => String(b.date).localeCompare(String(a.date)))
-    .slice(0, 6);
+  const allResults = [...nested, ...global]
+    .sort((a, b) => String(b.date).localeCompare(String(a.date)));
 
+  /* Un seul « à venir » par carte (nextGame ; pas de nextGames multi). */
   let next: SportsNextGame | undefined = team.nextGame;
   if (!next && sports.nextGame && (!sports.nextGame.teamId || sports.nextGame.teamId === team.id)) {
     next = sports.nextGame;
@@ -441,8 +458,45 @@ function sportsResultRows(
     next = sports.nextGames.find((n) => !n.teamId || n.teamId === team.id);
   }
 
-  // Ordre carte : 1) prochain match (à venir) 2) passés du plus récent au plus ancien.
+  const refDay = sportsRefDayKey(sports, timeZone);
+  const nextDay = next?.date ? String(next.date).slice(0, 10) : '';
+  /* Si le prochain est déjà passé vs ref, ne pas l’afficher. */
+  if (next && nextDay && nextDay < refDay) next = undefined;
+
+  const todayResults = allResults.filter((g) => String(g.date).slice(0, 10) === refDay);
+  const olderResults = allResults
+    .filter((g) => String(g.date).slice(0, 10) !== refDay)
+    .slice(0, 5);
+
+  const renderPast = (g: (typeof allResults)[0]): string => {
+    const badge = g.result === 'W' ? 'V' : g.result === 'L' ? 'D' : 'N';
+    const label = g.result === 'W' ? 'Victoire' : g.result === 'L' ? 'Défaite' : 'Nul';
+    const venue = sportsVenueHtml(g.home);
+    const homeAria = g.home === true ? ' · domicile' : g.home === false ? ' · extérieur' : '';
+    const opp = sportsOppHtml(g.opponent, g.opponentInstitution);
+    const prior = !!g.priorSeason;
+    const priorClass = prior ? ' sports-result--prior-season' : '';
+    const priorMeta = prior
+      ? `\n  <span class="sports-result__season-meta">Saison précédente</span>`
+      : '';
+    const homeAttr = g.home === true ? ' data-home="1"' : g.home === false ? ' data-home="0"' : '';
+    return `<li class="sports-result sports-result--${esc(g.result)}${priorClass}" data-result="${esc(g.result)}"${prior ? ' data-prior-season="1"' : ''}${homeAttr}>
+  <time class="sports-result__time" datetime="${esc(g.date)}">${esc(formatSportsDate(g.date, timeZone))}</time>
+  <span class="sports-result__score" aria-label="${esc(label)}${homeAria}">${g.scoreFor}–${g.scoreAgainst}</span>
+  <span class="sports-result__title"><span class="sports-result__vs">vs</span> ${opp}${venue}</span>
+  <span class="sports-result__badge" title="${esc(label)}">${badge}</span>${priorMeta}
+</li>`;
+  };
+
+  /*
+   * Ordre anti-bug long terme :
+   * 1) matchs du jour (scores) — au-dessus de « À venir »
+   * 2) un seul prochain match
+   * 3) passés plus anciens
+   */
   const rows: string[] = [];
+  for (const g of todayResults) rows.push(renderPast(g));
+
   if (next) {
     const day = formatSportsDate(next.date, timeZone) || next.date;
     const clock = next.time ? next.time.replace(':', ' h ') : '';
@@ -459,25 +513,9 @@ function sportsResultRows(
   <span class="sports-result__badge sports-result__badge--next" title="Prochain match">→</span>
 </li>`);
   }
-  for (const g of results) {
-    const badge = g.result === 'W' ? 'V' : g.result === 'L' ? 'D' : 'N';
-    const label = g.result === 'W' ? 'Victoire' : g.result === 'L' ? 'Défaite' : 'Nul';
-    const venue = sportsVenueHtml(g.home);
-    const homeAria = g.home === true ? ' · domicile' : g.home === false ? ' · extérieur' : '';
-    const opp = sportsOppHtml(g.opponent, g.opponentInstitution);
-    const prior = !!g.priorSeason;
-    const priorClass = prior ? ' sports-result--prior-season' : '';
-    const priorMeta = prior
-      ? `\n  <span class="sports-result__season-meta">Saison précédente</span>`
-      : '';
-    const homeAttr = g.home === true ? ' data-home="1"' : g.home === false ? ' data-home="0"' : '';
-    rows.push(`<li class="sports-result sports-result--${esc(g.result)}${priorClass}" data-result="${esc(g.result)}"${prior ? ' data-prior-season="1"' : ''}${homeAttr}>
-  <time class="sports-result__time" datetime="${esc(g.date)}">${esc(formatSportsDate(g.date, timeZone))}</time>
-  <span class="sports-result__score" aria-label="${esc(label)}${homeAria}">${g.scoreFor}–${g.scoreAgainst}</span>
-  <span class="sports-result__title"><span class="sports-result__vs">vs</span> ${opp}${venue}</span>
-  <span class="sports-result__badge" title="${esc(label)}">${badge}</span>${priorMeta}
-</li>`);
-  }
+
+  for (const g of olderResults) rows.push(renderPast(g));
+
   if (!rows.length) {
     return '<p class="sports-panel__empty">Aucun résultat pour le moment.</p>';
   }
@@ -568,9 +606,9 @@ export function sportsResultsPage(ctx: RenderContext, sportsArticles: Article[] 
     `<div class="wrap wire wire--sports">
       <div class="wire-head">
         <h1 class="wire-title">Au tableau</h1>
-        <span class="wire-status">${teams.length} formation${teams.length > 1 ? 's' : ''}</span>
+        <span class="wire-status">${teams.length} équipe${teams.length > 1 ? 's' : ''}</span>
       </div>
-      <p class="section-intro">Scores et prochains matchs des formations du ${esc(ctx.publication.institution)} — le tableau d’affichage du campus.</p>
+      <p class="section-intro">Scores et prochains matchs des équipes du ${esc(ctx.publication.institution)} — le tableau d’affichage du campus.</p>
       <div class="sports-board-wrap" data-sports-board-wrap>
         <div class="sports-board-scroll">
           <div class="sports-board" role="list">
@@ -585,7 +623,7 @@ export function sportsResultsPage(ctx: RenderContext, sportsArticles: Article[] 
     </div>`,
     {
       title: `Au tableau — ${ctx.publication.name}`,
-      description: `Au tableau : scores et prochains matchs des formations du ${ctx.publication.institution}.`,
+      description: `Au tableau : scores et prochains matchs des équipes du ${ctx.publication.institution}.`,
       canonical: `${ctx.publication.siteUrl.replace(/\/+$/, '')}/sports/`,
       current: asset('/sports/', ctx),
     },

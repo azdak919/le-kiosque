@@ -269,8 +269,30 @@ export function renderRoute(bundle, base, pathname, renderBody) {
         const results = nested.concat(global).slice().sort((a, b) => String(b.date).localeCompare(String(a.date))).slice(0, 6);
         let next = team.nextGame || null;
         if (!next && sports.nextGame && (!sports.nextGame.teamId || sports.nextGame.teamId === team.id)) next = sports.nextGame;
-        // 1) À venir 2) passés récents → anciens
+        // Un seul à venir ; jour de ref (demoAsOf) pour scores du jour au-dessus.
+        let refDay = (sports.demoAsOf && String(sports.demoAsOf).slice(0, 10)) || '';
+        if (!/^\d{4}-\d{2}-\d{2}$/.test(refDay)) {
+          try {
+            refDay = new Intl.DateTimeFormat('en-CA', {
+              timeZone: bundle.publication.timeZone || 'America/Toronto',
+              year: 'numeric', month: '2-digit', day: '2-digit',
+            }).format(new Date());
+          } catch { refDay = new Date().toISOString().slice(0, 10); }
+        }
+        const nextDay = next?.date ? String(next.date).slice(0, 10) : '';
+        if (next && nextDay && nextDay < refDay) next = null;
+        const todayResults = results.filter((g) => String(g.date).slice(0, 10) === refDay);
+        const olderResults = results.filter((g) => String(g.date).slice(0, 10) !== refDay);
         const rows = [];
+        const pushPast = (g) => {
+          const badge = g.result === 'W' ? 'V' : g.result === 'L' ? 'D' : 'N';
+          const prior = g.priorSeason
+            ? '<span class="sports-result__season-meta">Saison précédente</span>'
+            : '';
+          const homeAttr = g.home === true ? ' data-home="1"' : g.home === false ? ' data-home="0"' : '';
+          rows.push(`<li class="sports-result sports-result--${esc(g.result)}${g.priorSeason ? ' sports-result--prior-season' : ''}"${homeAttr}><time class="sports-result__time" datetime="${esc(g.date)}">${esc(fmt(g.date))}</time><span class="sports-result__score">${g.scoreFor}–${g.scoreAgainst}</span><span class="sports-result__title"><span class="sports-result__vs">vs</span> ${oppHtml(g.opponent, g.opponentInstitution)}${venueHtml(g.home)}</span><span class="sports-result__badge">${badge}</span>${prior}</li>`);
+        };
+        todayResults.forEach(pushPast);
         if (next) {
           const day = fmt(next.date);
           const clock = next.time ? String(next.time).replace(':', ' h ') : '';
@@ -280,14 +302,7 @@ export function renderRoute(bundle, base, pathname, renderBody) {
           const homeAttr = next.home === true ? ' data-home="1"' : next.home === false ? ' data-home="0"' : '';
           rows.push(`<li class="sports-result sports-result--next"${homeAttr}><time class="sports-result__time" datetime="${esc(next.date)}">${timeInner}</time><span class="sports-result__score sports-result__score--next">À venir</span><span class="sports-result__title"><span class="sports-result__vs">vs</span> ${oppHtml(next.opponent, next.opponentInstitution)}${venueHtml(next.home)}</span><span class="sports-result__badge sports-result__badge--next">→</span></li>`);
         }
-        results.forEach((g) => {
-          const badge = g.result === 'W' ? 'V' : g.result === 'L' ? 'D' : 'N';
-          const prior = g.priorSeason
-            ? '<span class="sports-result__season-meta">Saison précédente</span>'
-            : '';
-          const homeAttr = g.home === true ? ' data-home="1"' : g.home === false ? ' data-home="0"' : '';
-          rows.push(`<li class="sports-result sports-result--${esc(g.result)}${g.priorSeason ? ' sports-result--prior-season' : ''}"${homeAttr}><time class="sports-result__time" datetime="${esc(g.date)}">${esc(fmt(g.date))}</time><span class="sports-result__score">${g.scoreFor}–${g.scoreAgainst}</span><span class="sports-result__title"><span class="sports-result__vs">vs</span> ${oppHtml(g.opponent, g.opponentInstitution)}${venueHtml(g.home)}</span><span class="sports-result__badge">${badge}</span>${prior}</li>`);
-        });
+        olderResults.forEach(pushPast);
         const list = rows.length ? `<ul class="sports-panel__list">${rows.join('')}</ul>` : '<p class="sports-panel__empty">Aucun résultat.</p>';
         const color = team.colors?.primary || 'var(--accent)';
         const code = team.code ? ` <span class="sports-panel__code">${esc(team.code)}</span>` : '';
@@ -298,7 +313,7 @@ export function renderRoute(bundle, base, pathname, renderBody) {
         : `<p class="section-intro"><a data-editorial-link href="${link(base, '/sections/sports/')}">Section Sports</a></p>`;
       return {
         title: `Au tableau — ${bundle.publication.name}`,
-        html: `<div class="wrap wire wire--sports"><div class="wire-head"><h1 class="wire-title">Au tableau</h1><span class="wire-status">${teams.length} formation${teams.length > 1 ? 's' : ''}</span></div><p class="section-intro">Scores et prochains matchs — le tableau d’affichage du campus.</p><div class="sports-board-wrap" data-sports-board-wrap><div class="sports-board-scroll"><div class="sports-board">${panels}</div></div><button type="button" class="sports-board-toggle" data-sports-board-toggle hidden aria-expanded="false"><span class="sports-board-toggle__label">Plus de matchs</span></button></div>${feed}</div>`,
+        html: `<div class="wrap wire wire--sports"><div class="wire-head"><h1 class="wire-title">Au tableau</h1><span class="wire-status">${teams.length} équipe${teams.length > 1 ? 's' : ''}</span></div><p class="section-intro">Scores et prochains matchs — le tableau d’affichage du campus.</p><div class="sports-board-wrap" data-sports-board-wrap><div class="sports-board-scroll"><div class="sports-board">${panels}</div></div><button type="button" class="sports-board-toggle" data-sports-board-toggle hidden aria-expanded="false"><span class="sports-board-toggle__label">Plus de matchs</span></button></div>${feed}</div>`,
       };
     }
   }
