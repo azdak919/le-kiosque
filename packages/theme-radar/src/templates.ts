@@ -550,6 +550,10 @@ export function sportsResultsPage(ctx: RenderContext, sportsArticles: Article[] 
         results: (prunedSports?.results ?? []) as MastheadSports['results'],
         nextGame: (prunedSports?.nextGame ?? undefined) as MastheadSports['nextGame'],
         nextGames: (prunedSports?.nextGames ?? undefined) as MastheadSports['nextGames'],
+        /* demoLive décale les dates : la ref jour doit suivre le demoAsOf pruné
+           (sinon nextGame « aujourd’hui » est jugé passé vs l’ancre YAML). */
+        demoAsOf: (prunedSports?.demoAsOf as string | undefined) ?? sports.demoAsOf,
+        demoLive: sports.demoLive,
       }
     : { enabled: false };
   const teams = sports
