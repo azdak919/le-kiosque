@@ -135,7 +135,7 @@ test('demo et template reçoivent le même theme.css / kiosque.js (packages/them
     'intro équipe reformulée',
   );
   const seed = await readFile(path.join(demo.out, 'assets/editorial/seed.json'), 'utf8');
-  assert.match(seed, /"version":\s*21/, 'seed démo v21 (flag F + météo nom entier + e2e seed-aware)');
+  assert.match(seed, /"version":\s*22/, 'seed démo v22 (Cégep de Saint-Louis-du-Ha! Ha!)');
   assert.match(seed, /Les Élans/, 'seed embarque le surnom maison Élans');
   assert.doesNotMatch(seed, /Les Quorums/, 'plus de surnom redondant Quorums');
   assert.match(seed, /hockey-interieur\.jpg/, 'photo corps hockey intérieur distincte du lead');
@@ -148,7 +148,9 @@ test('demo et template reçoivent le même theme.css / kiosque.js (packages/them
   assert.match(seed, /"sport":"soccer"|"sport":"hockey"|"sport":"flag-football"/, 'autres sports');
   assert.match(seed, /"sex":"(F|M|mixte)"/, 'formations F / M / mixte');
   assert.match(seed, /Titans|Boomerang|Géants|Cheetahs/, 'adversaires = clubs RSEQ collégial réels');
-  assert.match(seed, /"code":"QUO"/, 'code institution Cégep du Quorum = QUO');
+  assert.match(seed, /"code":"QUO"/, 'code institution Cégep de Saint-Louis-du-Ha! Ha! = QUO');
+  assert.match(seed, /Cégep de Saint-Louis-du-Ha! Ha!/, 'institution = ville / cégep Ha! Ha!');
+  assert.doesNotMatch(seed, /Cégep du Quorum/, 'plus de Cégep du Quorum (nom redondant journal)');
   assert.match(demoJs, /initSportsBoardCollapse|Plus de matchs|KiosqueRefreshSportsBoard/, 'repli Au tableau + Plus de matchs');
   assert.match(demoCss, /sports-board-wrap|sports-board-toggle/, 'CSS repli tableau sports');
   assert.match(demoJs, /sportsHomeRichLabel|sportsOppRichLabel/, 'puce : maison sans (institution)');

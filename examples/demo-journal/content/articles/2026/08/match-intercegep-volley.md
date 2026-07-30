@@ -28,7 +28,7 @@ lead:
   focalPoint: { x: 50, y: 48 }
 ---
 
-Les Élans, formation de volleyball fictive du Cégep du Quorum, ont entamé leurs matchs préparatoires contre deux formations tout aussi imaginaires de la région. Résultat mitigé, énergie intacte : les recrues apprennent vite ce que signifie « lire le filet » sous les encouragements (et les conseils non sollicités) des tribunes.
+Les Élans, formation de volleyball fictive du Cégep de Saint-Louis-du-Ha! Ha!, ont entamé leurs matchs préparatoires contre deux formations tout aussi imaginaires de la région. Résultat mitigé, énergie intacte : les recrues apprennent vite ce que signifie « lire le filet » sous les encouragements (et les conseils non sollicités) des tribunes.
 
 Les entraînements ont lieu les mardis et jeudis à 18 h. Public bienvenu aux matchs à domicile ; le gymnase sonne mieux quand il n’est pas vide.
 

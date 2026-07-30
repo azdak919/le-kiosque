@@ -4,7 +4,7 @@
 slug: le-quorum
 name: Le Quorum
 tagline: On vote, on débat, on imprime
-institution: Cégep du Quorum
+institution: Cégep de Saint-Louis-du-Ha! Ha!
 institutionType: cegep
 # Province (QC). La ville de la démo = Saint-Louis-du-Ha! Ha! (Bas-Saint-Laurent) — météo mât.
 region: Québec
@@ -153,9 +153,8 @@ masthead:
         focalPoint: { x: 50, y: 46 }
   weather:
     enabled: true
-    # Ville fictive du Cégep du Quorum : Saint-Louis-du-Ha! Ha! (Bas-Saint-Laurent).
-    # Coords OSM (WGS84) + slug MétéoMédia ; clic → Environnement Canada (coords)
-    # et MétéoMédia (data- / title).
+    # Localité du cégep fictif (Bas-Saint-Laurent). Coords OSM (WGS84) + slug
+    # MétéoMédia ; clic → Environnement Canada (coords) et MétéoMédia (data- / title).
     localities:
       - name: Saint-Louis-du-Ha! Ha!
         latitude: 47.6709
@@ -180,7 +179,7 @@ masthead:
       - id: demo-elans-volley-f
         name: Les Élans
         code: QUO
-        institution: Cégep du Quorum
+        institution: Cégep de Saint-Louis-du-Ha! Ha!
         sport: volleyball
         sportLabel: Volleyball
         sex: F
@@ -218,7 +217,7 @@ masthead:
       - id: demo-elans-volley-m
         name: Les Élans
         code: QUO
-        institution: Cégep du Quorum
+        institution: Cégep de Saint-Louis-du-Ha! Ha!
         sport: volleyball
         sportLabel: Volleyball
         sex: M
@@ -256,7 +255,7 @@ masthead:
       - id: demo-elans-basket-m
         name: Les Élans
         code: QUO
-        institution: Cégep du Quorum
+        institution: Cégep de Saint-Louis-du-Ha! Ha!
         sport: basketball
         sportLabel: Basketball
         sex: M
@@ -294,7 +293,7 @@ masthead:
       - id: demo-elans-basket-f
         name: Les Élans
         code: QUO
-        institution: Cégep du Quorum
+        institution: Cégep de Saint-Louis-du-Ha! Ha!
         sport: basketball
         sportLabel: Basketball
         sex: F
@@ -332,7 +331,7 @@ masthead:
       - id: demo-elans-soccer-x
         name: Les Élans
         code: QUO
-        institution: Cégep du Quorum
+        institution: Cégep de Saint-Louis-du-Ha! Ha!
         sport: soccer
         sportLabel: Soccer
         sex: mixte
@@ -370,7 +369,7 @@ masthead:
       - id: demo-elans-soccer-f
         name: Les Élans
         code: QUO
-        institution: Cégep du Quorum
+        institution: Cégep de Saint-Louis-du-Ha! Ha!
         sport: soccer
         sportLabel: Soccer
         sex: F
@@ -408,7 +407,7 @@ masthead:
       - id: demo-elans-hockey-m
         name: Les Élans
         code: QUO
-        institution: Cégep du Quorum
+        institution: Cégep de Saint-Louis-du-Ha! Ha!
         sport: hockey
         sportLabel: Hockey
         sex: M
@@ -446,7 +445,7 @@ masthead:
       - id: demo-elans-hockey-f
         name: Les Élans
         code: QUO
-        institution: Cégep du Quorum
+        institution: Cégep de Saint-Louis-du-Ha! Ha!
         sport: hockey
         sportLabel: Hockey
         sex: F
@@ -484,7 +483,7 @@ masthead:
       - id: demo-elans-flag-x
         name: Les Élans
         code: QUO
-        institution: Cégep du Quorum
+        institution: Cégep de Saint-Louis-du-Ha! Ha!
         sport: flag-football
         sportLabel: Flag football
         sex: mixte
@@ -522,7 +521,7 @@ masthead:
       - id: demo-elans-flag-f
         name: Les Élans
         code: QUO
-        institution: Cégep du Quorum
+        institution: Cégep de Saint-Louis-du-Ha! Ha!
         sport: flag-football
         sportLabel: Flag football
         sex: F
@@ -586,7 +585,7 @@ governance:
   # Une ORGANISATION, jamais un compte personnel.
   owner: kiosque-demo
   # L'entité permanente qui survit aux cohortes.
-  stewardEntity: Association étudiante du Cégep du Quorum
+  stewardEntity: Association étudiante du Cégep de Saint-Louis-du-Ha! Ha!
   # Une adresse institutionnelle, pas celle d'une personne.
   contact: redaction@lequorum.ca
   repo: https://github.com/kiosque-demo/le-quorum
@@ -595,4 +594,4 @@ governance:
   # Deux personnes minimum, toujours.
   recoveryContacts:
     - redaction@lequorum.ca
-    - vie-etudiante@cegep-du-quorum.qc.ca
+    - vie-etudiante@cegep-ha-ha.qc.ca
