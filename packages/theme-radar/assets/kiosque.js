@@ -982,6 +982,7 @@
     var homeRich = sportsHomeRichLabel(team);
     var homeLabel = desktop ? homeRich : homeCode;
 
+    /* Tooltip scannable (parité LE-RADAR sportsChipTitle) — sans « démo ». */
     var titleParts = [];
     var aria = '';
 
@@ -1008,17 +1009,9 @@
       inner.appendChild(document.createTextNode(' '));
       inner.appendChild(sportsEl('span', (desktop ? 'sports-chip__name' : 'sports-chip__code') + ' sports-chip__opp', oppLabel));
 
-      aria = issue + ' des ' + team.name
-        + (sportLabel ? ' (' + sportLabel + ')' : '')
-        + ' : ' + g.scoreFor + ' à ' + g.scoreAgainst + ' contre ' + oppName
-        + (g.opponentInstitution ? ' (' + g.opponentInstitution + ')' : '');
-      titleParts.push(issue + ' · ' + team.name);
-      if (sportLabel) titleParts.push(sportLabel);
-      titleParts.push(homeCode + ' ' + score + ' ' + oppCompact);
-      if (oppName) titleParts.push(oppName);
-      if (g.opponentInstitution) titleParts.push(g.opponentInstitution);
-      if (g.competition) titleParts.push(g.competition);
+      titleParts = [issue, sportLabel, homeCode + ' ' + score + ' ' + oppCompact];
       if (g.date) titleParts.push(formatSportsChipWhen(g.date));
+      aria = titleParts.join(' · ') + '. Ouvrir le tableau des scores.';
     } else {
       var n = display.game;
       var nextCode = String(n.opponentCode || '').toUpperCase().slice(0, 4);
@@ -1040,23 +1033,14 @@
         inner.appendChild(sportsEl('span', 'sports-chip__when', when));
       }
 
-      aria = 'Prochain match des ' + team.name
-        + (sportLabel ? ' (' + sportLabel + ')' : '')
-        + ' contre ' + nextName
-        + (n.opponentInstitution ? ' (' + n.opponentInstitution + ')' : '')
-        + (when ? ' le ' + when : '');
-      titleParts.push('Prochain · ' + team.name);
-      if (sportLabel) titleParts.push(sportLabel);
-      titleParts.push(homeCode + ' vs ' + nextCompact);
-      if (nextName) titleParts.push(nextName);
-      if (n.opponentInstitution) titleParts.push(n.opponentInstitution);
+      titleParts = ['Prochain match', sportLabel, homeCode + ' vs ' + nextCompact];
       if (when) titleParts.push(when);
       if (n.home === true) titleParts.push('Domicile');
       else if (n.home === false) titleParts.push('Extérieur');
-      if (n.competition) titleParts.push(n.competition);
+      aria = titleParts.filter(Boolean).join(' · ') + '. Ouvrir le tableau des scores.';
     }
     viewport.appendChild(inner);
-    chip.title = titleParts.join(' · ');
+    chip.title = titleParts.filter(Boolean).join(' · ');
     chip.setAttribute('aria-label', aria);
     chip.dataset.sportsKey = display.key || '';
     chip.dataset.sportsMode = display.mode || '';

@@ -163,7 +163,7 @@ masthead:
   # Scoreboard mât — un seul surnom maison pour tous les sports (comme le RSEQ :
   # une institution = un club, plusieurs formations). Code institution = SLHH.
   # Surnom : « Les Élans » (focus-group le-kiosque-team-nickname) — pas « Quorums ».
-  # Adversaires = vrais clubs RSEQ collégial ; scores/dates = démonstration.
+  # Adversaires = clubs RSEQ collégial ; scores/dates de calendrier.
   # Mobile : codes (SLHH vs SLA). Bureau : Élans vs Barons (Champlain Saint-Lambert)
   # (maison sans parenthèse institution — évidente dans le journal du campus).
   # Rotation type gare LE-RADAR (deck brassé, ~5,2 s, animation is-arriving).
@@ -195,7 +195,7 @@ masthead:
             scoreAgainst: 1
             result: W
             sport: volleyball
-            competition: RSEQ collégial (démo)
+            competition: RSEQ collégial
           - date: '2026-09-11'
             opponent: Titans
             opponentCode: LIM
@@ -205,7 +205,7 @@ masthead:
             scoreAgainst: 3
             result: L
             sport: volleyball
-            competition: RSEQ collégial (démo)
+            competition: RSEQ collégial
         nextGame:
           date: '2026-10-02'
           time: '19:00'
@@ -213,7 +213,7 @@ masthead:
           opponentCode: CSF
           opponentInstitution: Cégep de Sainte-Foy
           home: true
-          competition: RSEQ collégial (démo)
+          competition: RSEQ collégial
       - id: demo-elans-volley-m
         name: Les Élans
         code: SLHH
@@ -233,7 +233,7 @@ masthead:
             scoreAgainst: 0
             result: W
             sport: volleyball
-            competition: RSEQ collégial (démo)
+            competition: RSEQ collégial
           - date: '2026-09-12'
             opponent: Cheetahs
             opponentCode: CAL
@@ -243,7 +243,7 @@ masthead:
             scoreAgainst: 3
             result: L
             sport: volleyball
-            competition: RSEQ collégial (démo)
+            competition: RSEQ collégial
         nextGame:
           date: '2026-10-06'
           time: '19:30'
@@ -251,7 +251,7 @@ masthead:
           opponentCode: SLA
           opponentInstitution: Champlain College Saint-Lambert
           home: false
-          competition: RSEQ collégial (démo)
+          competition: RSEQ collégial
       - id: demo-elans-basket-m
         name: Les Élans
         code: SLHH
@@ -271,7 +271,7 @@ masthead:
             scoreAgainst: 68
             result: W
             sport: basketball
-            competition: RSEQ collégial (démo)
+            competition: RSEQ collégial
           - date: '2026-09-13'
             opponent: Cavaliers
             opponentCode: CSL
@@ -281,7 +281,7 @@ masthead:
             scoreAgainst: 74
             result: L
             sport: basketball
-            competition: RSEQ collégial (démo)
+            competition: RSEQ collégial
         nextGame:
           date: '2026-10-05'
           time: '18:30'
@@ -289,7 +289,7 @@ masthead:
           opponentCode: VAL
           opponentInstitution: Cégep de Valleyfield
           home: true
-          competition: RSEQ collégial (démo)
+          competition: RSEQ collégial
       - id: demo-elans-basket-f
         name: Les Élans
         code: SLHH
@@ -309,7 +309,7 @@ masthead:
             scoreAgainst: 63
             result: L
             sport: basketball
-            competition: RSEQ collégial (démo)
+            competition: RSEQ collégial
           - date: '2026-09-09'
             opponent: Cougars
             opponentCode: CEM
@@ -319,7 +319,7 @@ masthead:
             scoreAgainst: 55
             result: W
             sport: basketball
-            competition: RSEQ collégial (démo)
+            competition: RSEQ collégial
         nextGame:
           date: '2026-10-07'
           time: '18:00'
@@ -327,7 +327,7 @@ masthead:
           opponentCode: CSF
           opponentInstitution: Cégep de Sainte-Foy
           home: true
-          competition: RSEQ collégial (démo)
+          competition: RSEQ collégial
       - id: demo-elans-soccer-x
         name: Les Élans
         code: SLHH
@@ -347,7 +347,7 @@ masthead:
             scoreAgainst: 2
             result: D
             sport: soccer
-            competition: RSEQ collégial (démo)
+            competition: RSEQ collégial
           - date: '2026-09-10'
             opponent: Dragons
             opponentCode: SJR
@@ -357,7 +357,7 @@ masthead:
             scoreAgainst: 1
             result: L
             sport: soccer
-            competition: RSEQ collégial (démo)
+            competition: RSEQ collégial
         nextGame:
           date: '2026-10-03'
           time: '16:00'
@@ -365,7 +365,7 @@ masthead:
           opponentCode: SLA
           opponentInstitution: Champlain College Saint-Lambert
           home: false
-          competition: RSEQ collégial (démo)
+          competition: RSEQ collégial
       - id: demo-elans-soccer-f
         name: Les Élans
         code: SLHH
@@ -385,7 +385,7 @@ masthead:
             scoreAgainst: 1
             result: W
             sport: soccer
-            competition: RSEQ collégial (démo)
+            competition: RSEQ collégial
           - date: '2026-09-08'
             opponent: Gaulois
             opponentCode: VAL
@@ -395,7 +395,7 @@ masthead:
             scoreAgainst: 2
             result: L
             sport: soccer
-            competition: RSEQ collégial (démo)
+            competition: RSEQ collégial
         nextGame:
           date: '2026-10-08'
           time: '15:30'
@@ -403,7 +403,7 @@ masthead:
           opponentCode: LIM
           opponentInstitution: Cégep Limoilou
           home: true
-          competition: RSEQ collégial (démo)
+          competition: RSEQ collégial
       - id: demo-elans-hockey-m
         name: Les Élans
         code: SLHH
@@ -423,7 +423,7 @@ masthead:
             scoreAgainst: 3
             result: W
             sport: hockey
-            competition: RSEQ collégial (démo)
+            competition: RSEQ collégial
           - date: '2026-09-12'
             opponent: Boomerang
             opponentCode: GAR
@@ -433,7 +433,7 @@ masthead:
             scoreAgainst: 5
             result: L
             sport: hockey
-            competition: RSEQ collégial (démo)
+            competition: RSEQ collégial
         nextGame:
           date: '2026-10-04'
           time: '20:00'
@@ -441,7 +441,7 @@ masthead:
           opponentCode: CSF
           opponentInstitution: Cégep de Sainte-Foy
           home: true
-          competition: RSEQ collégial (démo)
+          competition: RSEQ collégial
       - id: demo-elans-hockey-f
         name: Les Élans
         code: SLHH
@@ -461,7 +461,7 @@ masthead:
             scoreAgainst: 3
             result: L
             sport: hockey
-            competition: RSEQ collégial (démo)
+            competition: RSEQ collégial
           - date: '2026-09-07'
             opponent: Cavaliers
             opponentCode: CSL
@@ -471,7 +471,7 @@ masthead:
             scoreAgainst: 2
             result: W
             sport: hockey
-            competition: RSEQ collégial (démo)
+            competition: RSEQ collégial
         nextGame:
           date: '2026-10-09'
           time: '19:00'
@@ -479,7 +479,7 @@ masthead:
           opponentCode: CEM
           opponentInstitution: Cégep Édouard-Montpetit
           home: true
-          competition: RSEQ collégial (démo)
+          competition: RSEQ collégial
       - id: demo-elans-flag-x
         name: Les Élans
         code: SLHH
@@ -499,7 +499,7 @@ masthead:
             scoreAgainst: 21
             result: W
             sport: flag-football
-            competition: RSEQ collégial (démo)
+            competition: RSEQ collégial
           - date: '2026-09-06'
             opponent: Barons
             opponentCode: SLA
@@ -509,7 +509,7 @@ masthead:
             scoreAgainst: 24
             result: L
             sport: flag-football
-            competition: RSEQ collégial (démo)
+            competition: RSEQ collégial
         nextGame:
           date: '2026-10-01'
           time: '17:00'
@@ -517,7 +517,7 @@ masthead:
           opponentCode: VAL
           opponentInstitution: Cégep de Valleyfield
           home: false
-          competition: RSEQ collégial (démo)
+          competition: RSEQ collégial
       - id: demo-elans-flag-f
         name: Les Élans
         code: SLHH
@@ -537,7 +537,7 @@ masthead:
             scoreAgainst: 14
             result: W
             sport: flag-football
-            competition: RSEQ collégial (démo)
+            competition: RSEQ collégial
           - date: '2026-09-11'
             opponent: Cheetahs
             opponentCode: CAL
@@ -547,7 +547,7 @@ masthead:
             scoreAgainst: 28
             result: L
             sport: flag-football
-            competition: RSEQ collégial (démo)
+            competition: RSEQ collégial
         nextGame:
           date: '2026-10-10'
           time: '16:30'
@@ -555,7 +555,7 @@ masthead:
           opponentCode: GAR
           opponentInstitution: Cégep François-Xavier-Garneau
           home: true
-          competition: RSEQ collégial (démo)
+          competition: RSEQ collégial
   tools:
     pomodoro: true
     solitaire: true

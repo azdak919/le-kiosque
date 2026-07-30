@@ -2076,7 +2076,7 @@ a.masthead-sports__chip:focus-visible {
   word-break: normal;
   hyphens: manual;
 }
-/* Domicile / extérieur — pastille claire, toujours visible. */
+/* Domicile / extérieur — pastille lisible clair + sombre. */
 .sports-result__venue {
   display: block;
   width: fit-content;
@@ -2091,14 +2091,37 @@ a.masthead-sports__chip:focus-visible {
   padding: 3px 8px;
 }
 .sports-result__venue--home {
-  color: #1b5e3b;
-  background: color-mix(in srgb, #3d9a6a 18%, transparent);
-  border: 1px solid color-mix(in srgb, #3d9a6a 42%, transparent);
+  color: #145c38;
+  background: color-mix(in srgb, #3d9a6a 22%, #fff);
+  border: 1px solid color-mix(in srgb, #3d9a6a 48%, transparent);
 }
 .sports-result__venue--away {
-  color: #5b3a12;
-  background: color-mix(in srgb, #c4922a 18%, transparent);
-  border: 1px solid color-mix(in srgb, #c4922a 40%, transparent);
+  color: #6b3f0e;
+  background: color-mix(in srgb, #c4922a 24%, #fff);
+  border: 1px solid color-mix(in srgb, #c4922a 48%, transparent);
+}
+/* Mode sombre : texte clair sur pastille teintée (AA sur fond carte). */
+:root[data-theme="dark"] .sports-result__venue--home {
+  color: #b8f0d0;
+  background: color-mix(in srgb, #3d9a6a 32%, #1a1d22);
+  border-color: color-mix(in srgb, #6bcf98 55%, transparent);
+}
+:root[data-theme="dark"] .sports-result__venue--away {
+  color: #f5d89a;
+  background: color-mix(in srgb, #c4922a 30%, #1a1d22);
+  border-color: color-mix(in srgb, #e0b45a 55%, transparent);
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) .sports-result__venue--home {
+    color: #b8f0d0;
+    background: color-mix(in srgb, #3d9a6a 32%, #1a1d22);
+    border-color: color-mix(in srgb, #6bcf98 55%, transparent);
+  }
+  :root:not([data-theme="light"]) .sports-result__venue--away {
+    color: #f5d89a;
+    background: color-mix(in srgb, #c4922a 30%, #1a1d22);
+    border-color: color-mix(in srgb, #e0b45a 55%, transparent);
+  }
 }
 /* Repli tableau : 1 rangée de cartes + « Plus de matchs » (parité suite du fil). */
 .sports-board-wrap {
