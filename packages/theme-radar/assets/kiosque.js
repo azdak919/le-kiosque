@@ -2008,15 +2008,16 @@
             if (!frame.dataset.baseH && h <= 72) frame.dataset.baseH = String(h);
             var baseH = Number(frame.dataset.baseH) || 68;
             /*
-             * Popover volume : d’abord rendre l’hôte transparent et plafonner
-             * sa hauteur, PUIS agrandir l’iframe — sinon un flash noir pleine
-             * largeur apparaît le temps du reflow.
+             * Popover volume : plafonner la hauteur hôte à la barre, PUIS
+             * agrandir l’iframe. Fond session conservé (pas transparent) :
+             * l’hôte ne dépasse pas baseH, donc pas de bandeau sous la bulle,
+             * et plus de bande / halo parasite.
              */
             if (h > baseH + 4) {
               host.style.height = baseH + 'px';
               host.style.zIndex = '105';
               host.style.overflow = 'visible';
-              host.style.background = 'transparent';
+              host.style.background = '';
               host.style.boxShadow = '0 8px 24px -14px rgba(0, 0, 0, 0.78)';
               frame.classList.add('is-vol-overlay');
               frame.style.background = 'transparent';
