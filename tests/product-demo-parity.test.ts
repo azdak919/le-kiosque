@@ -135,7 +135,7 @@ test('demo et template reçoivent le même theme.css / kiosque.js (packages/them
     'intro équipe reformulée',
   );
   const seed = await readFile(path.join(demo.out, 'assets/editorial/seed.json'), 'utf8');
-  assert.match(seed, /"version":\s*25/, 'seed démo v25 (pastilles sombre + sans « démo » sports)');
+  assert.match(seed, /"version":\s*26/, 'seed démo v26 (dates sports live + matchs du jour campus)');
   assert.match(seed, /Les Élans/, 'seed embarque le surnom maison Élans');
   assert.doesNotMatch(seed, /Les Quorums/, 'plus de surnom redondant Quorums');
   assert.match(seed, /hockey-interieur\.jpg/, 'photo corps hockey intérieur distincte du lead');
@@ -148,6 +148,8 @@ test('demo et template reçoivent le même theme.css / kiosque.js (packages/them
   assert.match(seed, /"sport":"soccer"|"sport":"hockey"|"sport":"flag-football"/, 'autres sports');
   assert.match(seed, /"sex":"(F|M|mixte)"/, 'formations F / M / mixte');
   assert.match(seed, /Titans|Boomerang|Géants|Cheetahs/, 'adversaires = clubs RSEQ collégial réels');
+  assert.doesNotMatch(seed, /Blue Jays|Canadiens de Montréal|Maple Leafs/i, 'pas de sport pro NHL/MLB dans la démo');
+  assert.match(seed, /"demoLive"\s*:\s*true/, 'démo sports : dates live (ancre → aujourd’hui)');
   assert.match(seed, /"code":"SLHH"/, 'code institution = SLHH (override mainteneur sports-code)');
   assert.doesNotMatch(seed, /"code":"HAH"/, 'HAH non retenu (override → SLHH)');
   assert.doesNotMatch(seed, /"code":"QUO"/, 'QUO retiré (plus de Cégep du Quorum)');

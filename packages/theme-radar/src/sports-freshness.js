@@ -148,21 +148,105 @@ export function resolveSportsReferenceDate(opts = {}) {
   return new Date();
 }
 
-export function pruneSportsPayload(payload, opts = {}) {
-  const ref = resolveSportsReferenceDate({
-    demoAsOf: opts.demoAsOf ?? payload.demoAsOf,
-    referenceDate: opts.referenceDate,
-  });
+/** Décale une date ISO AAAA-MM-JJ de `deltaDays` (calendaire, midi local). */
+export function shiftIsoDate(iso, deltaDays) {
+  const d = parseGameDay(iso);
+  if (!d || !Number.isFinite(deltaDays) || deltaDays === 0) {
+    const raw = typeof iso === 'string' ? iso.slice(0, 10) : '';
+    return /^\d{4}-\d{2}-\d{2}$/.test(raw) ? raw : iso;
+  }
+  d.setDate(d.getDate() + deltaDays);
+  return dayKey(d);
+}
+
+function shiftGameDates(game, deltaDays) {
+  if (!game || typeof game !== 'object') return game;
+  if (!game.date) return { ...game };
+  return { ...game, date: shiftIsoDate(game.date, deltaDays) };
+}
+
+/**
+ * Décale toutes les dates de matchs d’un payload (équipes + listes globales).
+ * Les écarts relatifs (résultats ↔ prochains) restent identiques.
+ */
+export function shiftSportsPayloadDates(payload, deltaDays) {
+  if (!payload || !Number.isFinite(deltaDays) || deltaDays === 0) return payload;
   const out = { ...payload };
   if (Array.isArray(payload.teams)) {
-    out.teams = payload.teams.map((t) => pruneSportsTeam(t, ref));
+    out.teams = payload.teams.map((team) => {
+      if (!team || typeof team !== 'object') return team;
+      const t = { ...team };
+      if (Array.isArray(team.results)) {
+        t.results = team.results.map((g) => shiftGameDates(g, deltaDays));
+      }
+      if (team.lastGame) t.lastGame = shiftGameDates(team.lastGame, deltaDays);
+      if (team.nextGame) t.nextGame = shiftGameDates(team.nextGame, deltaDays);
+      if (Array.isArray(team.nextGames)) {
+        t.nextGames = team.nextGames.map((g) => shiftGameDates(g, deltaDays));
+      }
+      return t;
+    });
   }
   if (Array.isArray(payload.results)) {
-    out.results = prunePastGames(payload.results, ref).games;
+    out.results = payload.results.map((g) => shiftGameDates(g, deltaDays));
   }
-  if (payload.nextGame) out.nextGame = pruneNextGame(payload.nextGame, ref);
+  if (payload.lastGame) out.lastGame = shiftGameDates(payload.lastGame, deltaDays);
+  if (payload.nextGame) out.nextGame = shiftGameDates(payload.nextGame, deltaDays);
   if (Array.isArray(payload.nextGames)) {
-    out.nextGames = payload.nextGames.filter((g) => isNextGameInHorizon(g, ref));
+    out.nextGames = payload.nextGames.map((g) => shiftGameDates(g, deltaDays));
   }
+  if (payload.demoAsOf) out.demoAsOf = shiftIsoDate(payload.demoAsOf, deltaDays);
+  return out;
+}
+
+/**
+ * Démo « live » : ancre `demoAsOf` (fixtures inventées) → jour courant.
+ * Ex. fixtures rédigées autour du 2026-09-20 restent « aujourd’hui / hier /
+ * demain » quel que soit le jour de consultation.
+ */
+export function alignDemoSportsToToday(payload, now = new Date()) {
+  if (!payload || payload.demoLive !== true) return payload;
+  const anchor = parseGameDay(payload.demoAsOf);
+  if (!anchor) return payload;
+  const todayKey = dayKey(now instanceof Date && Number.isFinite(now.getTime()) ? now : new Date());
+  const anchorKey = dayKey(anchor);
+  if (anchorKey === todayKey) {
+    return { ...payload, demoAsOf: todayKey };
+  }
+  const anchorNoon = parseGameDay(anchorKey);
+  const todayNoon = parseGameDay(todayKey);
+  if (!anchorNoon || !todayNoon) return payload;
+  const deltaDays = Math.round((todayNoon.getTime() - anchorNoon.getTime()) / 86_400_000);
+  const shifted = shiftSportsPayloadDates(payload, deltaDays);
+  return { ...shifted, demoAsOf: todayKey, demoLive: true };
+}
+
+export function pruneSportsPayload(payload, opts = {}) {
+  const live = opts.demoLive ?? payload?.demoLive;
+  const nowForLive = opts.referenceDate instanceof Date && Number.isFinite(opts.referenceDate.getTime())
+    ? opts.referenceDate
+    : (opts.referenceDate ? new Date(opts.referenceDate) : new Date());
+  const aligned = live === true
+    ? alignDemoSportsToToday(payload, nowForLive)
+    : payload;
+  // demoLive : après alignement, demoAsOf = jour cible (ne pas réinjecter l’ancre YAML).
+  // Sinon : demoAsOf figé (snapshot) ou referenceDate / now.
+  const ref = resolveSportsReferenceDate({
+    demoAsOf: live === true ? aligned.demoAsOf : (opts.demoAsOf ?? aligned?.demoAsOf),
+    referenceDate: live === true ? undefined : opts.referenceDate,
+  });
+  const out = { ...aligned };
+  if (Array.isArray(aligned.teams)) {
+    out.teams = aligned.teams.map((t) => pruneSportsTeam(t, ref));
+  }
+  if (Array.isArray(aligned.results)) {
+    out.results = prunePastGames(aligned.results, ref).games;
+  }
+  if (aligned.nextGame) out.nextGame = pruneNextGame(aligned.nextGame, ref);
+  if (Array.isArray(aligned.nextGames)) {
+    out.nextGames = aligned.nextGames.filter((g) => isNextGameInHorizon(g, ref));
+  }
+  if (aligned.demoAsOf) out.demoAsOf = aligned.demoAsOf;
+  if (aligned.demoLive != null) out.demoLive = aligned.demoLive;
   return out;
 }

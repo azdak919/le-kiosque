@@ -1,12 +1,15 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
 import {
+  alignDemoSportsToToday,
   isNextGameInHorizon,
   isWithinFreshnessWindow,
   prunePastGames,
   pruneSportsPayload,
   pruneSportsTeam,
   resolveSportsReferenceDate,
+  shiftIsoDate,
+  shiftSportsPayloadDates,
 } from '../packages/theme-radar/src/sports-freshness.js';
 
 const REF = new Date('2026-07-30T15:00:00');
@@ -69,4 +72,57 @@ test('demoAsOf ancre le prune (fixtures sept visibles en build juillet)', () => 
 test('resolveSportsReferenceDate préfère demoAsOf', () => {
   const d = resolveSportsReferenceDate({ demoAsOf: '2026-09-20' });
   assert.equal(d.toISOString().slice(0, 10), '2026-09-20');
+});
+
+test('shiftIsoDate décale le calendaire', () => {
+  assert.equal(shiftIsoDate('2026-09-20', 0), '2026-09-20');
+  assert.equal(shiftIsoDate('2026-09-20', 10), '2026-09-30');
+  assert.equal(shiftIsoDate('2026-09-20', -5), '2026-09-15');
+});
+
+test('demoLive aligne les fixtures sur le jour courant', () => {
+  const payload = {
+    demoAsOf: '2026-09-20',
+    demoLive: true,
+    teams: [
+      {
+        id: 't1',
+        results: [
+          { date: '2026-09-18', result: 'W', scoreFor: 3, scoreAgainst: 1, opponent: 'X' },
+          { date: '2026-09-20', result: 'W', scoreFor: 2, scoreAgainst: 0, opponent: 'Y' },
+        ],
+        nextGame: { date: '2026-09-20', time: '19:00', opponent: 'Z' },
+      },
+      {
+        id: 't2',
+        results: [{ date: '2026-09-11', result: 'L', scoreFor: 0, scoreAgainst: 1, opponent: 'A' }],
+        nextGame: { date: '2026-10-05', opponent: 'B' },
+      },
+    ],
+  };
+  const now = new Date('2026-07-30T15:00:00');
+  const aligned = alignDemoSportsToToday(payload, now);
+  assert.equal(aligned.demoAsOf, '2026-07-30');
+  assert.equal(aligned.teams[0].nextGame.date, '2026-07-30', 'match du jour');
+  assert.equal(aligned.teams[0].results[1].date, '2026-07-30', 'score du jour');
+  assert.equal(aligned.teams[0].results[0].date, '2026-07-28', 'écart relatif conservé');
+  assert.equal(aligned.teams[1].nextGame.date, '2026-08-14');
+
+  const pruned = pruneSportsPayload(payload, { demoLive: true, referenceDate: now });
+  assert.equal(pruned.demoAsOf, '2026-07-30');
+  assert.ok(pruned.teams[0].nextGame, 'nextGame du jour conservé');
+  assert.equal(pruned.teams[0].nextGame.date, '2026-07-30');
+  assert.equal(pruned.teams[0].results.length, 2, 'scores passés (dont jour J) visibles');
+  assert.ok(pruned.teams[1].nextGame, 'prochain futur dans l’horizon');
+});
+
+test('sans demoLive, les dates YAML restent figées', () => {
+  const payload = {
+    demoAsOf: '2026-09-20',
+    teams: [{ id: 't1', nextGame: { date: '2026-10-02', opponent: 'Z' } }],
+  };
+  const shifted = shiftSportsPayloadDates(payload, 5);
+  assert.equal(shifted.teams[0].nextGame.date, '2026-10-07');
+  const frozen = pruneSportsPayload(payload, { demoAsOf: '2026-09-20' });
+  assert.equal(frozen.teams[0].nextGame.date, '2026-10-02');
 });

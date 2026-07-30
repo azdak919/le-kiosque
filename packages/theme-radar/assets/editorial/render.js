@@ -165,7 +165,8 @@ export function renderRoute(bundle, base, pathname, renderBody) {
           nextGame: sportsRaw.nextGame || null,
           nextGames: sportsRaw.nextGames || [],
           demoAsOf: sportsRaw.demoAsOf,
-        }, { demoAsOf: sportsRaw.demoAsOf })
+          demoLive: sportsRaw.demoLive,
+        }, { demoAsOf: sportsRaw.demoAsOf, demoLive: sportsRaw.demoLive })
       : null;
     const teamsRaw = sports?.teams || [];
     if (sports && teamsRaw.length) {
@@ -181,7 +182,27 @@ export function renderRoute(bundle, base, pathname, renderBody) {
       };
       const fmt = (iso) => {
         try {
-          return new Intl.DateTimeFormat('fr-CA', { day: 'numeric', month: 'short', timeZone: bundle.publication.timeZone || 'America/Toronto' }).format(new Date(`${iso}T12:00:00`));
+          const tz = bundle.publication.timeZone || 'America/Toronto';
+          const day = String(iso || '').slice(0, 10);
+          const parts = new Intl.DateTimeFormat('en-CA', {
+            timeZone: tz, year: 'numeric', month: '2-digit', day: '2-digit',
+          }).formatToParts(new Date());
+          const y = parts.find((p) => p.type === 'year')?.value;
+          const m = parts.find((p) => p.type === 'month')?.value;
+          const d = parts.find((p) => p.type === 'day')?.value;
+          const todayKey = y && m && d ? `${y}-${m}-${d}` : '';
+          if (todayKey && day === todayKey) return 'Aujourd’hui';
+          if (todayKey) {
+            const tomorrow = new Date(`${todayKey}T12:00:00`);
+            tomorrow.setDate(tomorrow.getDate() + 1);
+            const tKey = `${tomorrow.getFullYear()}-${String(tomorrow.getMonth() + 1).padStart(2, '0')}-${String(tomorrow.getDate()).padStart(2, '0')}`;
+            if (day === tKey) return 'Demain';
+            const yesterday = new Date(`${todayKey}T12:00:00`);
+            yesterday.setDate(yesterday.getDate() - 1);
+            const yKey = `${yesterday.getFullYear()}-${String(yesterday.getMonth() + 1).padStart(2, '0')}-${String(yesterday.getDate()).padStart(2, '0')}`;
+            if (day === yKey) return 'Hier';
+          }
+          return new Intl.DateTimeFormat('fr-CA', { day: 'numeric', month: 'short', timeZone: tz }).format(new Date(`${iso}T12:00:00`));
         } catch { return iso; }
       };
       const shortInst = (inst) => {
@@ -428,14 +449,26 @@ export function applyBranding(bundle, base) {
       }
       const sportsHref = sportsBoardHref(base, sports);
       // setAttribute : évite les surprises dataset + garantit le re-parse kiosque.js
-      sportsHost.setAttribute('data-sports-payload', JSON.stringify({
+      const sportsPayload = pruneSportsPayload({
         teams: sportsTeams,
-        team: sportsTeams[0],
         results: sports.results || [],
         nextGame: sports.nextGame || null,
         nextGames: sports.nextGames || [],
-        href: sportsHref,
         demoAsOf: sports.demoAsOf || null,
+        demoLive: sports.demoLive,
+      }, { demoAsOf: sports.demoAsOf, demoLive: sports.demoLive });
+      const prunedTeams = Array.isArray(sportsPayload.teams) && sportsPayload.teams.length
+        ? sportsPayload.teams
+        : sportsTeams;
+      sportsHost.setAttribute('data-sports-payload', JSON.stringify({
+        teams: prunedTeams,
+        team: prunedTeams[0],
+        results: sportsPayload.results || [],
+        nextGame: sportsPayload.nextGame || null,
+        nextGames: sportsPayload.nextGames || [],
+        href: sportsHref,
+        demoAsOf: sportsPayload.demoAsOf || sports.demoAsOf || null,
+        demoLive: sports.demoLive || null,
       }));
       sportsHost.setAttribute('aria-label', 'Au tableau — scores et matchs');
     } else sportsHost?.remove();

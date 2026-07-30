@@ -235,6 +235,7 @@ function mastheadSports(v: unknown): MastheadSports | undefined {
     nextGames: nextGames.length ? nextGames : undefined,
     href: str(rec.href),
     demoAsOf: str(rec.demoAsOf),
+    demoLive: rec.demoLive === undefined ? undefined : Boolean(rec.demoLive),
   };
 }
 
