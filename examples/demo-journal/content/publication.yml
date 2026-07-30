@@ -161,10 +161,10 @@ masthead:
         longitude: -68.9797
         meteomediaSlug: saint-louis-du-ha-ha
   # Scoreboard mât — un seul surnom maison pour tous les sports (comme le RSEQ :
-  # une institution = un club, plusieurs formations). Code institution = HAH.
+  # une institution = un club, plusieurs formations). Code institution = SLHH.
   # Surnom : « Les Élans » (focus-group le-kiosque-team-nickname) — pas « Quorums ».
   # Adversaires = vrais clubs RSEQ collégial ; scores/dates = démonstration.
-  # Mobile : codes (HAH vs SLA). Bureau : Élans vs Barons (Champlain Saint-Lambert)
+  # Mobile : codes (SLHH vs SLA). Bureau : Élans vs Barons (Champlain Saint-Lambert)
   # (maison sans parenthèse institution — évidente dans le journal du campus).
   # Rotation type gare LE-RADAR (deck brassé, ~5,2 s, animation is-arriving).
   sports:
@@ -178,7 +178,7 @@ masthead:
     teams:
       - id: demo-elans-volley-f
         name: Les Élans
-        code: HAH
+        code: SLHH
         institution: Cégep de Saint-Louis-du-Ha! Ha!
         sport: volleyball
         sportLabel: Volleyball
@@ -216,7 +216,7 @@ masthead:
           competition: RSEQ collégial (démo)
       - id: demo-elans-volley-m
         name: Les Élans
-        code: HAH
+        code: SLHH
         institution: Cégep de Saint-Louis-du-Ha! Ha!
         sport: volleyball
         sportLabel: Volleyball
@@ -254,7 +254,7 @@ masthead:
           competition: RSEQ collégial (démo)
       - id: demo-elans-basket-m
         name: Les Élans
-        code: HAH
+        code: SLHH
         institution: Cégep de Saint-Louis-du-Ha! Ha!
         sport: basketball
         sportLabel: Basketball
@@ -292,7 +292,7 @@ masthead:
           competition: RSEQ collégial (démo)
       - id: demo-elans-basket-f
         name: Les Élans
-        code: HAH
+        code: SLHH
         institution: Cégep de Saint-Louis-du-Ha! Ha!
         sport: basketball
         sportLabel: Basketball
@@ -330,7 +330,7 @@ masthead:
           competition: RSEQ collégial (démo)
       - id: demo-elans-soccer-x
         name: Les Élans
-        code: HAH
+        code: SLHH
         institution: Cégep de Saint-Louis-du-Ha! Ha!
         sport: soccer
         sportLabel: Soccer
@@ -368,7 +368,7 @@ masthead:
           competition: RSEQ collégial (démo)
       - id: demo-elans-soccer-f
         name: Les Élans
-        code: HAH
+        code: SLHH
         institution: Cégep de Saint-Louis-du-Ha! Ha!
         sport: soccer
         sportLabel: Soccer
@@ -406,7 +406,7 @@ masthead:
           competition: RSEQ collégial (démo)
       - id: demo-elans-hockey-m
         name: Les Élans
-        code: HAH
+        code: SLHH
         institution: Cégep de Saint-Louis-du-Ha! Ha!
         sport: hockey
         sportLabel: Hockey
@@ -444,7 +444,7 @@ masthead:
           competition: RSEQ collégial (démo)
       - id: demo-elans-hockey-f
         name: Les Élans
-        code: HAH
+        code: SLHH
         institution: Cégep de Saint-Louis-du-Ha! Ha!
         sport: hockey
         sportLabel: Hockey
@@ -482,7 +482,7 @@ masthead:
           competition: RSEQ collégial (démo)
       - id: demo-elans-flag-x
         name: Les Élans
-        code: HAH
+        code: SLHH
         institution: Cégep de Saint-Louis-du-Ha! Ha!
         sport: flag-football
         sportLabel: Flag football
@@ -520,7 +520,7 @@ masthead:
           competition: RSEQ collégial (démo)
       - id: demo-elans-flag-f
         name: Les Élans
-        code: HAH
+        code: SLHH
         institution: Cégep de Saint-Louis-du-Ha! Ha!
         sport: flag-football
         sportLabel: Flag football

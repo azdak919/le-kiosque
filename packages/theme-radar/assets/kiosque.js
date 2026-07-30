@@ -920,7 +920,7 @@
 
   /**
    * Format scoreboard (parité LE-RADAR / RDS) :
-   *   mobile  — codes institution :  🏐 V  HAH  3–1  GAR
+   *   mobile  — codes institution :  🏐 V  SLHH  3–1  GAR
    *   bureau  —  🏐 V  Élans  3–1  Boomerang (Garneau)
    *             (maison = surnom seul ; adversaire = surnom + institution)
    * Détail long toujours dans title/aria.

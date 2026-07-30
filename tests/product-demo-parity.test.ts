@@ -117,7 +117,7 @@ test('demo et template reçoivent le même theme.css / kiosque.js (packages/them
   assert.match(tplHome, /id="masthead-weather-dock"/);
   assert.match(demoHome, /data-sports-payload/, 'équipe sports démo embarquée');
   assert.match(demoHome, /Les Élans|Les &Eacute;lans/, 'surnom maison unique (focus-group Élans)');
-  assert.match(demoHome, /code&quot;:&quot;HAH&quot;|"code":"HAH"/, 'code équipe HAH (Ha! Ha!)');
+  assert.match(demoHome, /code&quot;:&quot;SLHH&quot;|"code":"SLHH"/, 'code équipe SLHH (override mainteneur)');
   assert.match(demoHome, /data-nav-shell/, 'shell nav mobile');
   assert.match(tplHome, /data-nav-shell/);
   assert.match(demoHome, /data-nav-toggle/, 'bouton Toutes les rubriques');
@@ -135,7 +135,7 @@ test('demo et template reçoivent le même theme.css / kiosque.js (packages/them
     'intro équipe reformulée',
   );
   const seed = await readFile(path.join(demo.out, 'assets/editorial/seed.json'), 'utf8');
-  assert.match(seed, /"version":\s*23/, 'seed démo v23 (code sports HAH)');
+  assert.match(seed, /"version":\s*24/, 'seed démo v24 (code sports SLHH)');
   assert.match(seed, /Les Élans/, 'seed embarque le surnom maison Élans');
   assert.doesNotMatch(seed, /Les Quorums/, 'plus de surnom redondant Quorums');
   assert.match(seed, /hockey-interieur\.jpg/, 'photo corps hockey intérieur distincte du lead');
@@ -148,7 +148,8 @@ test('demo et template reçoivent le même theme.css / kiosque.js (packages/them
   assert.match(seed, /"sport":"soccer"|"sport":"hockey"|"sport":"flag-football"/, 'autres sports');
   assert.match(seed, /"sex":"(F|M|mixte)"/, 'formations F / M / mixte');
   assert.match(seed, /Titans|Boomerang|Géants|Cheetahs/, 'adversaires = clubs RSEQ collégial réels');
-  assert.match(seed, /"code":"HAH"/, 'code institution = HAH (focus-group RSEQ, Ha! Ha!)');
+  assert.match(seed, /"code":"SLHH"/, 'code institution = SLHH (override mainteneur sports-code)');
+  assert.doesNotMatch(seed, /"code":"HAH"/, 'HAH non retenu (override → SLHH)');
   assert.doesNotMatch(seed, /"code":"QUO"/, 'QUO retiré (plus de Cégep du Quorum)');
   assert.match(seed, /Cégep de Saint-Louis-du-Ha! Ha!/, 'institution = ville / cégep Ha! Ha!');
   assert.doesNotMatch(seed, /Cégep du Quorum/, 'plus de Cégep du Quorum (nom redondant journal)');

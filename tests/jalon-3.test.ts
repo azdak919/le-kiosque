@@ -93,7 +93,7 @@ test('la vitrine expose le bandeau illustré, les outils et la composition magaz
       ? [content.publication.masthead.sports.team]
       : [];
   assert.ok(sportsTeams.length >= 8, 'plusieurs formations H/F/mixte (démo multi-cartes)');
-  assert.ok(sportsTeams.some((t) => t.code === 'HAH' && t.sport === 'volleyball'));
+  assert.ok(sportsTeams.some((t) => t.code === 'SLHH' && t.sport === 'volleyball'));
   assert.ok(sportsTeams.some((t) => t.sport === 'basketball'));
   assert.ok(sportsTeams.some((t) => t.sport === 'hockey' && (t.sex === 'F' || t.sex === 'f')), 'hockey féminin');
   assert.ok(
