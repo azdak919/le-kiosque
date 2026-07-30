@@ -1424,9 +1424,12 @@
     var card = cards[cards.length - 1];
     if (!card) return false;
     card.remove();
-    /* Gabarit suite : plus compact / vignette optionnelle retirée du rail. */
-    card.classList.remove('article--compact', 'article--brief', 'article--thumb');
+    /* Gabarit suite : rôle tail sans image (parité source-view / noImageRoles). */
+    card.classList.remove('article--compact', 'article--brief', 'article--thumb', 'has-image');
     card.classList.add('article--tail');
+    card.querySelectorAll('.article-media').forEach(function (media) {
+      media.remove();
+    });
     var tail = ensureNewsTailSection(layout);
     var body = tail.querySelector('.news-tail-body') || tail;
     /* En tête de suite (plus frais que le bas du fil historique). */

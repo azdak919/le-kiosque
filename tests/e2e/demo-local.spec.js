@@ -3,8 +3,8 @@ import { expect, test } from '@playwright/test';
 test('configurer, rédiger, prévisualiser, publier, persister et exporter sans serveur', async ({ page, context }) => {
   // Ce parcours exerce PGlite, deux téléchargements et une réimportation ; il
   // reste volontairement intégral. La banque élargie (~50 médias) allonge
-  // reset/import — 3 min sur un CI saturé.
-  test.setTimeout(180_000);
+  // reset/import — 4 min sur un CI saturé.
+  test.setTimeout(240_000);
   await page.goto('/autre-nom/configurer/');
   await page.getByRole('button', { name: 'Commencer' }).click();
   await page.getByLabel('Nom du journal').fill('La Relève locale');
@@ -92,10 +92,12 @@ test('configurer, rédiger, prévisualiser, publier, persister et exporter sans 
   await page.getByRole('button', { name: 'Tableau de bord' }).click();
   page.once('dialog', (dialog) => dialog.accept());
   await page.getByRole('button', { name: 'Restaurer Le Quorum' }).click();
-  await expect(page.getByText('Les exemples du Quorum sont restaurés.')).toBeVisible({ timeout: 45_000 });
+  // Import banque + PGlite : long en CI. Attendre l’état durable (pas seulement le toast).
+  await expect(page.getByRole('button', { name: 'Restaurer Le Quorum' })).toBeEnabled({ timeout: 90_000 });
+  await expect(page.getByText('Les exemples du Quorum sont restaurés.')).toBeVisible({ timeout: 10_000 });
   await expect(page.locator('#publication-name')).toHaveText('La Relève locale');
   await page.getByRole('button', { name: 'Articles' }).click();
-  await expect(page.getByText('Exemple local').first()).toBeVisible();
+  await expect(page.getByText('Exemple local').first()).toBeVisible({ timeout: 30_000 });
 
   await page.getByRole('button', { name: 'Configuration' }).click();
   await page.getByRole('button', { name: 'Choisir une photo' }).click();

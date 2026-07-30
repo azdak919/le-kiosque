@@ -11,10 +11,13 @@ let backend;
 let bundle;
 let view = 'dashboard';
 
-function notify(message) {
+let notifyTimer = 0;
+function notify(message, durationMs = 2200) {
+  if (!toast) return;
   toast.textContent = message;
   toast.classList.add('visible');
-  setTimeout(() => toast.classList.remove('visible'), 2200);
+  window.clearTimeout(notifyTimer);
+  notifyTimer = window.setTimeout(() => toast.classList.remove('visible'), durationMs);
 }
 
 function contrastRatio(hex, other = '#ffffff') {
@@ -438,10 +441,17 @@ function render() {
       const button = event.currentTarget;
       button.disabled = true;
       button.textContent = 'Restauration en cours…';
-      await backend.resetDemo();
-      await refresh();
-      notify('Les exemples du Quorum sont restaurés.');
-      render();
+      try {
+        await backend.resetDemo();
+        await refresh();
+        render();
+        // Après render() : toast plus long (import banque lent) pour les tests e2e / lecture humaine.
+        notify('Les exemples du Quorum sont restaurés.', 8000);
+      } catch (error) {
+        button.disabled = false;
+        button.textContent = 'Restaurer Le Quorum';
+        notify(error?.message || 'Échec de la restauration des exemples.');
+      }
     };
   }
   if (view === 'taxonomies') {
