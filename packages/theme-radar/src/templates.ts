@@ -184,6 +184,28 @@ function weatherDockHtml(): string {
   return `<div class="masthead-weather-dock" id="masthead-weather-dock" hidden aria-label="Météo et sports"></div>`;
 }
 
+/**
+ * Bandeau démo sticky. Coupe sur — / – pour deux lignes contrôlées sur mobile :
+ *   lead  (ex. Démonstration du Kiosque)
+ *   rest  (ex. journal étudiant fictif)
+ * Le CSS mobile masque le séparateur et ajoute « — » en fin de 1ʳᵉ ligne.
+ */
+function demoBannerHtml(notice: string | undefined): string {
+  const trimmed = (notice ?? '').trim();
+  if (!trimmed) return '';
+  const m = trimmed.match(/^(.+?)\s*[—–]\s*(.+)$/u);
+  if (m) {
+    return (
+      `<div class="demo-banner" role="note">` +
+      `<span class="demo-banner__lead">${esc(m[1])}</span>` +
+      `<span class="demo-banner__sep" aria-hidden="true"> — </span>` +
+      `<span class="demo-banner__rest">${esc(m[2])}</span>` +
+      `</div>`
+    );
+  }
+  return `<div class="demo-banner" role="note">${esc(trimmed)}</div>`;
+}
+
 /** Icônes du mât — mêmes tracés que LE-RADAR (index.html). */
 function icon(label: 'home' | 'rss' | 'shuffle' | 'sun' | 'moon', _assetsBase?: string): string {
   if (label === 'home') {
@@ -814,7 +836,7 @@ export function page(content: string, options: PageOptions, ctx: RenderContext):
 ${options.jsonLd ? `<script type="application/ld+json">${options.jsonLd}</script>\n` : ''}</head>
 <body${bodyClasses ? ` class="${esc(bodyClasses)}"` : ''}>
 <a class="skip-link" href="#contenu">Aller au contenu</a>
-${ctx.demoNotice ? `<div class="demo-banner">${esc(ctx.demoNotice)}</div>` : ''}
+${demoBannerHtml(ctx.demoNotice)}
 <header class="masthead${masthead.image ? ' masthead--illustrated' : ''}" data-text-alignment="${masthead.textAlignment}" style="--masthead-overlay:${masthead.overlayStrength}">
   ${mastheadBackground(ctx, masthead)}
   <div class="wrap">

@@ -45,6 +45,8 @@ async function buildFrom(
       root: dir,
       source: { adapter: 'markdown' },
       deploy: { basePath: '' },
+      // Même bandeau que la démo publiée : lead / rest pour 2 lignes mobile.
+      demoNotice: 'Démonstration du Kiosque — journal étudiant fictif',
       ...(opts.editorial ? { editorial: opts.editorial } : {}),
     },
     bundle,
@@ -178,4 +180,21 @@ test('demo et template reçoivent le même theme.css / kiosque.js (packages/them
   assert.match(demoJs, /is-arriving/, 'animation gare sports');
   assert.match(demoCss, /sports-tile-arrive/, 'keyframes arrivée scoreboard');
   assert.match(demoCss, /sports-marquee-slide[\s\S]*18%/, 'marquee avec pauses aux extrémités');
+  // Marquee net (pas de fondu permanent gauche/droite sur la puce).
+  assert.doesNotMatch(
+    demoCss,
+    /\.sports-chip__line\.is-sports-marquee\s*\{[^}]*mask-image/,
+    'pas de mask-image flou permanent sur le marquee sports',
+  );
+  // Bandeau démo 2 lignes mobile + offset sticky mesuré (évite clip radio).
+  assert.match(demoHome, /demo-banner__lead/, 'bandeau démo : lead (1ʳᵉ ligne mobile)');
+  assert.match(demoHome, /demo-banner__rest/, 'bandeau démo : rest (2ᵉ ligne mobile)');
+  assert.match(demoJs, /syncDemoBannerStickyOffset|initDemoBannerStickyOffset/, 'mesure hauteur bandeau → sticky radio');
+  assert.match(demoCss, /demo-banner__lead::after/, 'tiret long en fin de 1ʳᵉ ligne mobile');
+  // Espace garanti après le nom de ville (ex. Ha! 15°).
+  assert.match(
+    demoCss,
+    /\.weather-chip__temp[\s\S]*?margin-inline-start/,
+    'température météo : air après le nom (Ha! …)',
+  );
 });
