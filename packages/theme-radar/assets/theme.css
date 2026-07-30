@@ -304,9 +304,21 @@ body:has(.demo-banner) {
   /*
    * Coque réservée dès le premier paint (parité hauteur embed kiosque-v1).
    * Évite le « pop » quand l’iframe répond ready — plus de [hidden] display:none.
+   * Desktop / tablette = 68 px ; mobile embed = 62 px (voir media ci-dessous).
    */
   min-height: 68px;
   box-sizing: border-box;
+}
+/* Mobile kiosque-v1 : barre embed 62 px — évite une bande sous l’iframe. */
+@media (max-width: 559.98px) {
+  .radar-tuner {
+    min-height: 62px;
+  }
+}
+/* Pas d’anneau pourpre du parent sur l’iframe (focus-visible global = --accent). */
+.radar-tuner iframe:focus,
+.radar-tuner iframe:focus-visible {
+  outline: none;
 }
 /* Indisponible / retiré : collapser sans laisser de trou. */
 .radar-tuner[data-state="gone"],
@@ -362,15 +374,16 @@ body.with-radio .nav {
 /*
  * Volume popover mobile : l’iframe grandit pour peindre la bulle ;
  * l’hôte reste à la hauteur de la barre (JS) pour ne pas peindre un
- * bandeau sombre sous le popover. Fond hôte transparent hors barre.
+ * bandeau sous le popover. Fond session conservé (hôte = hauteur barre
+ * uniquement) : un hôte transparent laissait une bande / halo parasite.
  */
 .radar-tuner:has(iframe.is-vol-overlay) {
   overflow: visible;
   /* Au-dessus du fil ; le bandeau démo sticky reste lisible (110). */
   z-index: 105;
-  /* Hauteur fixée en JS (= baseH) ; fond transparent sous la bulle. */
-  background: transparent;
-  /* Ombre de barre conservée (hôte = hauteur barre uniquement). */
+  /* Hauteur fixée en JS (= baseH) ; fond = barre session, pas transparent. */
+  background: var(--tuner-session-base, var(--tuner-bg, #121820));
+  /* Ombre de barre (hôte = hauteur barre uniquement). */
   box-shadow: 0 8px 24px -14px rgba(0, 0, 0, 0.78);
 }
 .radar-tuner iframe.is-vol-overlay {
