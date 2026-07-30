@@ -135,9 +135,10 @@ test('demo et template reçoivent le même theme.css / kiosque.js (packages/them
     'intro équipe reformulée',
   );
   const seed = await readFile(path.join(demo.out, 'assets/editorial/seed.json'), 'utf8');
-  assert.match(seed, /"version":\s*16/, 'seed démo v16 (surnom Élans, focus-group)');
+  assert.match(seed, /"version":\s*17/, 'seed démo v17 (hockey-interieur corps ≠ lead)');
   assert.match(seed, /Les Élans/, 'seed embarque le surnom maison Élans');
   assert.doesNotMatch(seed, /Les Quorums/, 'plus de surnom redondant Quorums');
+  assert.match(seed, /hockey-interieur\.jpg/, 'photo corps hockey intérieur distincte du lead');
   assert.match(seed, /"sport":"volleyball"/, 'plusieurs formations (sports) sous le même surnom');
   assert.match(seed, /"sport":"basketball"|"sport":"soccer"|"sport":"hockey"/, 'au moins un autre sport');
   assert.match(seed, /Titans|Boomerang|Géants|Cheetahs/, 'adversaires = clubs RSEQ collégial réels');
