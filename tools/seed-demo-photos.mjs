@@ -2,10 +2,15 @@
 /**
  * Télécharge des photos libres (Wikimedia Commons) pour la démo Le Quorum.
  * - Pas d'API de recherche (évite les 429) : titres de fichiers connus.
+ * - Priorité Québec / campus collégial-universitaire (cégep, UdeM, Laval, McGill,
+ *   RTC/STM, Grande Bibliothèque…) — pas d’écoliers, pas de scènes hors QC.
  * - Stockage local versionné sous examples/demo-journal/media/demo-library/
  * - Met à jour manifest.json + article-photo-map.json
  *
- * Usage: node tools/seed-demo-photos.mjs
+ * Usage:
+ *   node tools/seed-demo-photos.mjs
+ *   node tools/seed-demo-photos.mjs --force
+ *   node tools/seed-demo-photos.mjs --force-themes=bus,calme
  */
 import crypto from 'node:crypto';
 import fs from 'node:fs/promises';
@@ -70,11 +75,12 @@ const ARTICLE_THEMES = {
     licenseUrl: 'https://creativecommons.org/licenses/by-sa/2.0/',
   },
   'campus-vie': {
-    file: 'Students enjoy springtime weather. (5554288570).jpg',
-    alt: 'Étudiantes et étudiants sur un campus au printemps',
-    credit: 'Tulane Public Relations',
-    license: 'CC BY 2.0',
-    licenseUrl: 'https://creativecommons.org/licenses/by/2.0/',
+    // Début de session — Université de Montréal (adultes, campus QC).
+    file: 'News. Opening of Classes - University of Montreal -Début de session - Université de Montréal- (50597330003).jpg',
+    alt: 'Étudiantes et étudiants au début de session sur un campus montréalais',
+    credit: 'Wikimedia Commons',
+    license: 'Public domain',
+    licenseUrl: 'https://commons.wikimedia.org/wiki/File:News._Opening_of_Classes_-_University_of_Montreal_-D%C3%A9but_de_session_-_Universit%C3%A9_de_Montr%C3%A9al-_(50597330003).jpg',
   },
   velo: {
     file: 'Bike repair station.jpg',
@@ -126,18 +132,20 @@ const ARTICLE_THEMES = {
     licenseUrl: 'https://commons.wikimedia.org/wiki/File:Bookshelves.jpg',
   },
   bus: {
-    file: 'Bus.jpg',
-    alt: 'Autobus de transport collectif',
+    // Autobus RTC Québec (Nova Bus LFS) — pas un bus hors QC.
+    file: 'Québec RTC - Nova Bus LFS.jpg',
+    alt: 'Autobus RTC de la Ville de Québec (Nova Bus LFS)',
     credit: 'Wikimedia Commons',
-    license: 'voir source',
-    licenseUrl: 'https://commons.wikimedia.org/wiki/File:Bus.jpg',
+    license: 'CC BY-SA 3.0',
+    licenseUrl: 'https://commons.wikimedia.org/wiki/File:Qu%C3%A9bec_RTC_-_Nova_Bus_LFS.jpg',
   },
   calme: {
-    file: 'Students_studying.jpg',
-    alt: 'Étudiantes et étudiants en zone d’étude calme',
+    // Grande Bibliothèque (BAnQ, Montréal) — lieu d’étude adulte, Québec.
+    file: 'Grande Bibliotheque Quebec Interieur.JPG',
+    alt: 'Salle de lecture calme à la Grande Bibliothèque de Montréal',
     credit: 'Wikimedia Commons',
-    license: 'voir source',
-    licenseUrl: 'https://commons.wikimedia.org/wiki/File:Students_studying.jpg',
+    license: 'CC BY-SA 3.0',
+    licenseUrl: 'https://commons.wikimedia.org/wiki/File:Grande_Bibliotheque_Quebec_Interieur.JPG',
   },
   arts: {
     file: 'Art_exhibition.jpg',
@@ -190,11 +198,12 @@ const ARTICLE_THEMES = {
     licenseUrl: 'https://commons.wikimedia.org/wiki/File:Montreal_Street_Art_Graffiti_(29241125286).jpg',
   },
   tutoring: {
-    file: 'Students in a group for studies.jpg',
-    alt: 'Groupe d’étude et tutorat entre pairs',
+    // Atelier / cours au Cégep du Vieux Montréal (cohortes collégiales).
+    file: 'Formation condensée à Wikipédia lors du cours IPMSH du Cégep du Vieux Montréal.jpg',
+    alt: 'Étudiantes et étudiants en atelier de tutorat au cégep',
     credit: 'Wikimedia Commons',
-    license: 'voir source',
-    licenseUrl: 'https://commons.wikimedia.org/wiki/File:Students_in_a_group_for_studies.jpg',
+    license: 'CC BY-SA 4.0',
+    licenseUrl: 'https://commons.wikimedia.org/wiki/File:Formation_condens%C3%A9e_%C3%A0_Wikip%C3%A9dia_lors_du_cours_IPMSH_du_C%C3%A9gep_du_Vieux_Montr%C3%A9al.jpg',
   },
   resume: {
     file: 'What to Expect at a Job Interview at a Teaching School.jpg',
@@ -218,40 +227,44 @@ const ARTICLE_THEMES = {
     licenseUrl: 'https://commons.wikimedia.org/wiki/File:Exhibitors_at_the_Career_Fair_(30983205220).jpg',
   },
   stage: {
-    file: 'Open mic The Local 824 Hinton Avenue in Belmont Charlottesville VA April 2023 1.jpg',
-    alt: 'Scène ouverte avec micro pour spectacle étudiant',
+    // Événement culturel étudiant — Cégep du Vieux Montréal.
+    file: 'Le chant des cageux, Cégép du Vieux Montréal, 2020. (49623021442).jpg',
+    alt: 'Scène et public lors d’un spectacle étudiant au cégep',
     credit: 'Wikimedia Commons',
-    license: 'voir source',
-    licenseUrl: 'https://commons.wikimedia.org/wiki/File:Open_mic_The_Local_824_Hinton_Avenue_in_Belmont_Charlottesville_VA_April_2023_1.jpg',
+    license: 'CC BY 2.0',
+    licenseUrl: 'https://commons.wikimedia.org/wiki/File:Le_chant_des_cageux,_C%C3%A9g%C3%A9p_du_Vieux_Montr%C3%A9al,_2020._(49623021442).jpg',
   },
   trail: {
-    file: 'Forest path through a deciduous forest in spring, Finland.jpg',
-    alt: 'Sentier forestier pour course d’orientation',
+    // Nature / orientation — parc du Mont-Royal (Montréal).
+    file: 'Parc du Mont-Royal 015.jpg',
+    alt: 'Sentier et sous-bois du parc du Mont-Royal à Montréal',
     credit: 'Wikimedia Commons',
-    license: 'voir source',
-    licenseUrl: 'https://commons.wikimedia.org/wiki/File:Forest_path_through_a_deciduous_forest_in_spring,_Finland.jpg',
+    license: 'CC BY-SA 3.0',
+    licenseUrl: 'https://commons.wikimedia.org/wiki/File:Parc_du_Mont-Royal_015.jpg',
   },
   graduation: {
-    file: 'AnnapolisGraduation.jpg',
-    alt: 'Cérémonie de diplomation',
-    credit: 'Wikimedia Commons',
-    license: 'voir source',
-    licenseUrl: 'https://commons.wikimedia.org/wiki/File:AnnapolisGraduation.jpg',
+    // Remise de diplômes / finissants — cadre collégial-universitaire QC si dispo.
+    file: 'Étudiants près du pavillon Charles-De Koninck 266-1-005.jpg',
+    alt: 'Étudiantes et étudiants sur le campus de l’Université Laval',
+    credit: 'Yves Tessier',
+    license: 'CC BY-SA 4.0',
+    licenseUrl: 'https://commons.wikimedia.org/wiki/File:%C3%89tudiants_pr%C3%A8s_du_pavillon_Charles-De_Koninck_266-1-005.jpg',
   },
   participatory: {
-    file: 'Lecture hall.jpg',
-    alt: 'Assemblée en amphithéâtre',
+    // Amphithéâtre / assemblée — Cégep Sainte-Foy (intérieur campus collégial).
+    file: 'Cégep de Sainte-Foy (intérieur).JPG',
+    alt: 'Hall et espaces communs d’un campus collégial québécois',
     credit: 'Wikimedia Commons',
-    license: 'voir source',
-    licenseUrl: 'https://commons.wikimedia.org/wiki/File:Amphi.jpg',
-    // Repli : même image que amphi si Amphi.jpg absent — remplacé au seed si besoin
+    license: 'CC BY-SA 3.0',
+    licenseUrl: 'https://commons.wikimedia.org/wiki/File:C%C3%A9gep_de_Sainte-Foy_(int%C3%A9rieur).JPG',
   },
   'photo-club': {
-    file: 'Welsh Schools art exhibition at Bangor (1569389).jpg',
-    alt: 'Exposition photographique et artistique en galerie',
+    // Street art montréalais (expo / culture visuelle étudiante).
+    file: 'Montreal Street Art Graffiti (29241125286).jpg',
+    alt: 'Murale et art urbain à Montréal',
     credit: 'Wikimedia Commons',
     license: 'voir source',
-    licenseUrl: 'https://commons.wikimedia.org/wiki/File:Welsh_Schools_art_exhibition_at_Bangor_(1569389).jpg',
+    licenseUrl: 'https://commons.wikimedia.org/wiki/File:Montreal_Street_Art_Graffiti_(29241125286).jpg',
   },
 };
 
@@ -738,12 +751,21 @@ async function enrichLicenseFromCommons(fileName, meta) {
 async function main() {
   await ensureDir(ART);
   const forceLabo = process.argv.includes('--force-labo');
+  const forceAll = process.argv.includes('--force');
+  // --force-themes=bus,calme,campus-vie
+  const forceArg = process.argv.find((a) => a.startsWith('--force-themes='));
+  const forceThemes = new Set(
+    forceArg
+      ? forceArg.slice('--force-themes='.length).split(',').map((s) => s.trim()).filter(Boolean)
+      : [],
+  );
+  if (forceLabo) forceThemes.add('labo');
 
   // --- Article themes ---
   const themeAssets = {};
   for (const [theme, meta0] of Object.entries(ARTICLE_THEMES)) {
     const dest = path.join(ART, `${theme}.jpg`);
-    const force = forceLabo && theme === 'labo';
+    const force = forceAll || forceThemes.has(theme);
     try {
       let meta = await enrichLicenseFromCommons(meta0.file, meta0);
       await sleep(400);

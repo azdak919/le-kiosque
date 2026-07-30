@@ -19,13 +19,13 @@ tags: []
 lang: fr-CA
 lead:
   src: /media/demo-library/articles/bus.jpg
-  alt: "Autobus de transport collectif"
-  credit: "Ici2015"
+  alt: "Autobus RTC de la Ville de Québec (Nova Bus LFS)"
+  credit: "Bouchecl"
   license: CC BY-SA 3.0
-  licenseUrl: https://creativecommons.org/licenses/by-sa/3.0
-  sourceUrl: https://commons.wikimedia.org/wiki/File:Bus.jpg
-  width: 1600
-  height: 1200
+  licenseUrl: https://creativecommons.org/licenses/by-sa/3.0/
+  sourceUrl: https://commons.wikimedia.org/wiki/File:Qu%C3%A9bec_RTC_-_Nova_Bus_LFS.jpg
+  width: 1920
+  height: 1440
   focalPoint: { x: 50, y: 48 }
 ---
 

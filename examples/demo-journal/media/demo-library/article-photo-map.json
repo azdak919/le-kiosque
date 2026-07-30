@@ -106,13 +106,13 @@
   },
   "veille-sante-mentale": {
     "src": "/media/demo-library/articles/campus-vie.jpg",
-    "alt": "Étudiantes et étudiants sur un campus au printemps",
-    "credit": "Tulane Public Relations",
-    "license": "CC BY 2.0",
-    "licenseUrl": "https://creativecommons.org/licenses/by/2.0/",
-    "sourceUrl": "https://commons.wikimedia.org/wiki/File:Students_enjoy_springtime_weather._(5554288570).jpg",
+    "alt": "Étudiantes et étudiants au début de session sur un campus montréalais",
+    "credit": "Bibliothèque et Archives nationales du Québec",
+    "license": "Public domain",
+    "licenseUrl": "https://commons.wikimedia.org/wiki/File:News._Opening_of_Classes_-_University_of_Montreal_-D%C3%A9but_de_session_-_Universit%C3%A9_de_Montr%C3%A9al-_(50597330003).jpg",
+    "sourceUrl": "https://commons.wikimedia.org/wiki/File:News._Opening_of_Classes_-_University_of_Montreal_-D%C3%A9but_de_session_-_Universit%C3%A9_de_Montr%C3%A9al-_(50597330003).jpg",
     "width": 1920,
-    "height": 1286,
+    "height": 1234,
     "focalPoint": {
       "x": 50,
       "y": 48
@@ -241,13 +241,13 @@
   },
   "editorial-espaces-calmes": {
     "src": "/media/demo-library/articles/calme.jpg",
-    "alt": "Étudiantes et étudiants en zone d’étude calme",
-    "credit": "SJISE",
-    "license": "CC BY-SA 4.0",
-    "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
-    "sourceUrl": "https://commons.wikimedia.org/wiki/File:Students_studying.jpg",
+    "alt": "Salle de lecture calme à la Grande Bibliothèque de Montréal",
+    "credit": "Mourial",
+    "license": "CC BY-SA 3.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by-sa/3.0",
+    "sourceUrl": "https://commons.wikimedia.org/wiki/File:Grande_Bibliotheque_Quebec_Interieur.JPG",
     "width": 1920,
-    "height": 1280,
+    "height": 1440,
     "focalPoint": {
       "x": 50,
       "y": 48
@@ -271,13 +271,13 @@
   },
   "transport-collectif-editorial": {
     "src": "/media/demo-library/articles/bus.jpg",
-    "alt": "Autobus de transport collectif",
-    "credit": "Ici2015",
+    "alt": "Autobus RTC de la Ville de Québec (Nova Bus LFS)",
+    "credit": "Bouchecl",
     "license": "CC BY-SA 3.0",
-    "licenseUrl": "https://creativecommons.org/licenses/by-sa/3.0",
-    "sourceUrl": "https://commons.wikimedia.org/wiki/File:Bus.jpg",
-    "width": 1600,
-    "height": 1200,
+    "licenseUrl": "https://creativecommons.org/licenses/by-sa/3.0/",
+    "sourceUrl": "https://commons.wikimedia.org/wiki/File:Qu%C3%A9bec_RTC_-_Nova_Bus_LFS.jpg",
+    "width": 1920,
+    "height": 1440,
     "focalPoint": {
       "x": 50,
       "y": 48
@@ -376,13 +376,13 @@
   },
   "aide-devoirs-pair": {
     "src": "/media/demo-library/articles/tutoring.jpg",
-    "alt": "Groupe d’étude et tutorat entre pairs",
-    "credit": "Knowledge and philosophy",
+    "alt": "Étudiantes et étudiants en atelier de tutorat au cégep",
+    "credit": "JBouchez",
     "license": "CC BY-SA 4.0",
     "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
-    "sourceUrl": "https://commons.wikimedia.org/wiki/File:Students_in_a_group_for_studies.jpg",
-    "width": 1920,
-    "height": 2560,
+    "sourceUrl": "https://commons.wikimedia.org/wiki/File:Formation_condens%C3%A9e_%C3%A0_Wikip%C3%A9dia_lors_du_cours_IPMSH_du_C%C3%A9gep_du_Vieux_Montr%C3%A9al.jpg",
+    "width": 1200,
+    "height": 800,
     "focalPoint": {
       "x": 50,
       "y": 48
@@ -436,13 +436,13 @@
   },
   "scene-libre-vendredi": {
     "src": "/media/demo-library/articles/stage.jpg",
-    "alt": "Scène ouverte avec micro pour spectacle étudiant",
-    "credit": "Artaxerxes",
-    "license": "CC BY-SA 4.0",
-    "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
-    "sourceUrl": "https://commons.wikimedia.org/wiki/File:Open_mic_The_Local_824_Hinton_Avenue_in_Belmont_Charlottesville_VA_April_2023_1.jpg",
+    "alt": "Scène et public lors d’un spectacle étudiant au cégep",
+    "credit": "art_inthecity from Montréal, CA",
+    "license": "CC BY 2.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by/2.0",
+    "sourceUrl": "https://commons.wikimedia.org/wiki/File:Le_chant_des_cageux%2C_C%C3%A9g%C3%A9p_du_Vieux_Montr%C3%A9al%2C_2020._(49623021442).jpg",
     "width": 1920,
-    "height": 2560,
+    "height": 1440,
     "focalPoint": {
       "x": 50,
       "y": 48
@@ -451,13 +451,13 @@
   },
   "course-orientation-bois": {
     "src": "/media/demo-library/articles/trail.jpg",
-    "alt": "Sentier forestier pour course d’orientation",
-    "credit": "Sanzzu",
-    "license": "CC BY-SA 4.0",
-    "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
-    "sourceUrl": "https://commons.wikimedia.org/wiki/File:Forest_path_through_a_deciduous_forest_in_spring%2C_Finland.jpg",
+    "alt": "Sentier et sous-bois du parc du Mont-Royal à Montréal",
+    "credit": "Jean Gagnon",
+    "license": "CC BY-SA 3.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by-sa/3.0",
+    "sourceUrl": "https://commons.wikimedia.org/wiki/File:Parc_du_Mont-Royal_015.jpg",
     "width": 1920,
-    "height": 1280,
+    "height": 1440,
     "focalPoint": {
       "x": 50,
       "y": 48
@@ -466,13 +466,13 @@
   },
   "rencontre-alumni-redaction": {
     "src": "/media/demo-library/articles/graduation.jpg",
-    "alt": "Cérémonie de diplomation",
-    "credit": "U.S. Navy Photographer's Mate 2nd Class Daniel J. McLain",
-    "license": "Public domain",
-    "licenseUrl": "https://commons.wikimedia.org/wiki/File:AnnapolisGraduation.jpg",
-    "sourceUrl": "https://commons.wikimedia.org/wiki/File:AnnapolisGraduation.jpg",
+    "alt": "Étudiantes et étudiants sur le campus de l’Université Laval",
+    "credit": "Yves Tessier",
+    "license": "CC BY-SA 4.0",
+    "licenseUrl": "https://commons.wikimedia.org/wiki/File:%C3%89tudiants_pr%C3%A8s_du_pavillon_Charles-De_Koninck_266-1-005.jpg",
+    "sourceUrl": "https://commons.wikimedia.org/wiki/File:%C3%89tudiants_pr%C3%A8s_du_pavillon_Charles-De_Koninck_266-1-005.jpg",
     "width": 1920,
-    "height": 1277,
+    "height": 1229,
     "focalPoint": {
       "x": 50,
       "y": 48
@@ -481,13 +481,13 @@
   },
   "budget-participatif-agee": {
     "src": "/media/demo-library/articles/participatory.jpg",
-    "alt": "Assemblée en amphithéâtre",
-    "credit": "Kannan5645",
+    "alt": "Hall et espaces communs d’un campus collégial québécois",
+    "credit": "Khayman",
     "license": "CC BY-SA 3.0",
     "licenseUrl": "https://creativecommons.org/licenses/by-sa/3.0",
-    "sourceUrl": "https://commons.wikimedia.org/wiki/File:Lecture_hall.jpg",
-    "width": 1600,
-    "height": 1200,
+    "sourceUrl": "https://commons.wikimedia.org/wiki/File:C%C3%A9gep_de_Sainte-Foy_(int%C3%A9rieur).JPG",
+    "width": 1920,
+    "height": 1285,
     "focalPoint": {
       "x": 50,
       "y": 48
@@ -496,13 +496,13 @@
   },
   "club-photo-exposition": {
     "src": "/media/demo-library/articles/photo-club.jpg",
-    "alt": "Exposition photographique et artistique en galerie",
-    "credit": "Geoff Charles",
-    "license": "CC BY-SA 4.0",
-    "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
-    "sourceUrl": "https://commons.wikimedia.org/wiki/File:Welsh_Schools_art_exhibition_at_Bangor_(1569389).jpg",
-    "width": 1200,
-    "height": 1822,
+    "alt": "Murale et art urbain à Montréal",
+    "credit": "Coastal Elite from Halifax, Canada",
+    "license": "CC BY-SA 2.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by-sa/2.0",
+    "sourceUrl": "https://commons.wikimedia.org/wiki/File:Montreal_Street_Art_Graffiti_(29241125286).jpg",
+    "width": 1920,
+    "height": 1209,
     "focalPoint": {
       "x": 50,
       "y": 48
@@ -541,13 +541,13 @@
   },
   "editorial-bibliotheque-silence": {
     "src": "/media/demo-library/articles/calme.jpg",
-    "alt": "Étudiantes et étudiants en zone d’étude calme",
-    "credit": "SJISE",
-    "license": "CC BY-SA 4.0",
-    "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
-    "sourceUrl": "https://commons.wikimedia.org/wiki/File:Students_studying.jpg",
+    "alt": "Salle de lecture calme à la Grande Bibliothèque de Montréal",
+    "credit": "Mourial",
+    "license": "CC BY-SA 3.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by-sa/3.0",
+    "sourceUrl": "https://commons.wikimedia.org/wiki/File:Grande_Bibliotheque_Quebec_Interieur.JPG",
     "width": 1920,
-    "height": 1280,
+    "height": 1440,
     "focalPoint": {
       "x": 50,
       "y": 48
@@ -571,13 +571,13 @@
   },
   "lettre-ouverte-transport": {
     "src": "/media/demo-library/articles/bus.jpg",
-    "alt": "Autobus de transport collectif",
-    "credit": "Ici2015",
+    "alt": "Autobus RTC de la Ville de Québec (Nova Bus LFS)",
+    "credit": "Bouchecl",
     "license": "CC BY-SA 3.0",
-    "licenseUrl": "https://creativecommons.org/licenses/by-sa/3.0",
-    "sourceUrl": "https://commons.wikimedia.org/wiki/File:Bus.jpg",
-    "width": 1600,
-    "height": 1200,
+    "licenseUrl": "https://creativecommons.org/licenses/by-sa/3.0/",
+    "sourceUrl": "https://commons.wikimedia.org/wiki/File:Qu%C3%A9bec_RTC_-_Nova_Bus_LFS.jpg",
+    "width": 1920,
+    "height": 1440,
     "focalPoint": {
       "x": 50,
       "y": 48
@@ -586,13 +586,13 @@
   },
   "opinion-frais-associatifs": {
     "src": "/media/demo-library/articles/participatory.jpg",
-    "alt": "Assemblée en amphithéâtre",
-    "credit": "Kannan5645",
+    "alt": "Hall et espaces communs d’un campus collégial québécois",
+    "credit": "Khayman",
     "license": "CC BY-SA 3.0",
     "licenseUrl": "https://creativecommons.org/licenses/by-sa/3.0",
-    "sourceUrl": "https://commons.wikimedia.org/wiki/File:Lecture_hall.jpg",
-    "width": 1600,
-    "height": 1200,
+    "sourceUrl": "https://commons.wikimedia.org/wiki/File:C%C3%A9gep_de_Sainte-Foy_(int%C3%A9rieur).JPG",
+    "width": 1920,
+    "height": 1285,
     "focalPoint": {
       "x": 50,
       "y": 48

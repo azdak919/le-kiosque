@@ -13,13 +13,13 @@ tags: []
 lang: fr-CA
 lead:
   src: /media/demo-library/articles/calme.jpg
-  alt: "Étudiantes et étudiants en zone d’étude calme"
-  credit: "SJISE"
-  license: CC BY-SA 4.0
-  licenseUrl: https://creativecommons.org/licenses/by-sa/4.0
-  sourceUrl: https://commons.wikimedia.org/wiki/File:Students_studying.jpg
+  alt: "Salle de lecture calme à la Grande Bibliothèque de Montréal"
+  credit: "Mourial"
+  license: CC BY-SA 3.0
+  licenseUrl: https://creativecommons.org/licenses/by-sa/3.0
+  sourceUrl: https://commons.wikimedia.org/wiki/File:Grande_Bibliotheque_Quebec_Interieur.JPG
   width: 1920
-  height: 1280
+  height: 1440
   focalPoint: { x: 50, y: 48 }
 excerpt: >-
   La rédaction fictive réclame une signalisation claire, des zones sans appels vidéo et davantage d'espaces réellement calmes pour étudier. Trop souvent, le silence devient une négociation de table en table plutôt qu'un droit d'accès simple, surtout en période d'examens.
