@@ -20,9 +20,9 @@ lead:
   src: /media/demo-library/articles/volleyball.jpg
   alt: "Match de volleyball en gymnase"
   credit: "Zorro2212"
-  license: CC BY-SA 3.0
-  licenseUrl: https://creativecommons.org/licenses/by-sa/3.0
-  sourceUrl: https://commons.wikimedia.org/wiki/File:Volleyball_match_-_shakehands_before_the_match.jpg
+  license: "CC BY-SA 3.0"
+  licenseUrl: "https://creativecommons.org/licenses/by-sa/3.0"
+  sourceUrl: "https://commons.wikimedia.org/wiki/File:Volleyball_match_-_shakehands_before_the_match.jpg"
   width: 1920
   height: 1285
   focalPoint: { x: 50, y: 48 }

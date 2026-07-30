@@ -21,9 +21,9 @@ lead:
   src: /media/demo-library/articles/labo.jpg
   alt: "Laboratoire de chimie moderne"
   credit: "Horia Varlan"
-  license: CC BY 2.0
-  licenseUrl: https://creativecommons.org/licenses/by/2.0/
-  sourceUrl: https://commons.wikimedia.org/wiki/File:Chemistry_laboratory.jpg
+  license: "CC BY 2.0"
+  licenseUrl: "https://creativecommons.org/licenses/by/2.0/"
+  sourceUrl: "https://commons.wikimedia.org/wiki/File:Chemistry_laboratory.jpg"
   width: 1920
   height: 1325
   focalPoint: { x: 50, y: 48 }

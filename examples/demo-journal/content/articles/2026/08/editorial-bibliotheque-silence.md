@@ -20,9 +20,9 @@ lead:
   src: /media/demo-library/articles/calme.jpg
   alt: "Salle de lecture calme à la Grande Bibliothèque de Montréal"
   credit: "Mourial"
-  license: CC BY-SA 3.0
-  licenseUrl: https://creativecommons.org/licenses/by-sa/3.0
-  sourceUrl: https://commons.wikimedia.org/wiki/File:Grande_Bibliotheque_Quebec_Interieur.JPG
+  license: "CC BY-SA 3.0"
+  licenseUrl: "https://creativecommons.org/licenses/by-sa/3.0"
+  sourceUrl: "https://commons.wikimedia.org/wiki/File:Grande_Bibliotheque_Quebec_Interieur.JPG"
   width: 1920
   height: 1440
   focalPoint: { x: 50, y: 48 }

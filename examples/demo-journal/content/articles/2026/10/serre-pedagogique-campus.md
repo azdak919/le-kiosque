@@ -16,18 +16,18 @@ categories:
 tags:
   - transition-ecologique
 lang: fr-CA
+excerpt: >-
+  Une serre quatre saisons de soixante mètres carrés servira à la fois de laboratoire, de garde-manger pédagogique et de lieu de rencontre pour la biologie, la cuisine et le comité environnemental. Le projet, né dans trois départements, doit prendre racine avant les premières neiges.
 lead:
   src: /media/demo-library/articles/serre.jpg
   alt: "Serre pédagogique avec des plants"
   credit: "Rodrigo.Argenton"
-  license: CC BY-SA 4.0
-  licenseUrl: https://creativecommons.org/licenses/by-sa/4.0/
-  sourceUrl: https://commons.wikimedia.org/wiki/File:Estufa_principal_do_Jardim_Bot%C3%A2nico_de_Curitiba_02.jpg
+  license: "CC BY-SA 4.0"
+  licenseUrl: "https://creativecommons.org/licenses/by-sa/4.0/"
+  sourceUrl: "https://commons.wikimedia.org/wiki/File:Estufa_principal_do_Jardim_Bot%C3%A2nico_de_Curitiba_02.jpg"
   width: 1920
   height: 1317
   focalPoint: { x: 50, y: 48 }
-excerpt: >-
-  Une serre quatre saisons de soixante mètres carrés servira à la fois de laboratoire, de garde-manger pédagogique et de lieu de rencontre pour la biologie, la cuisine et le comité environnemental. Le projet, né dans trois départements, doit prendre racine avant les premières neiges.
 ---
 
 Une structure vitrée de soixante mètres carrés doit être installée derrière le

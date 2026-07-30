@@ -21,9 +21,9 @@ lead:
   src: /media/demo-library/articles/stage.jpg
   alt: "Scène et public lors d’un spectacle étudiant au cégep"
   credit: "art_inthecity from Montréal, CA"
-  license: CC BY 2.0
-  licenseUrl: https://creativecommons.org/licenses/by/2.0
-  sourceUrl: https://commons.wikimedia.org/wiki/File:Le_chant_des_cageux%2C_C%C3%A9g%C3%A9p_du_Vieux_Montr%C3%A9al%2C_2020._(49623021442).jpg
+  license: "CC BY 2.0"
+  licenseUrl: "https://creativecommons.org/licenses/by/2.0"
+  sourceUrl: "https://commons.wikimedia.org/wiki/File:Le_chant_des_cageux%2C_C%C3%A9g%C3%A9p_du_Vieux_Montr%C3%A9al%2C_2020._(49623021442).jpg"
   width: 1920
   height: 1440
   focalPoint: { x: 50, y: 48 }

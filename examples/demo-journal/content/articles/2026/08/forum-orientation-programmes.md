@@ -21,9 +21,9 @@ lead:
   src: /media/demo-library/articles/career.jpg
   alt: "Salon de l’emploi ou forum d’orientation"
   credit: "German Embassy London"
-  license: CC BY 2.0
-  licenseUrl: https://creativecommons.org/licenses/by/2.0
-  sourceUrl: https://commons.wikimedia.org/wiki/File:Exhibitors_at_the_Career_Fair_(30983205220).jpg
+  license: "CC BY 2.0"
+  licenseUrl: "https://creativecommons.org/licenses/by/2.0"
+  sourceUrl: "https://commons.wikimedia.org/wiki/File:Exhibitors_at_the_Career_Fair_(30983205220).jpg"
   width: 1920
   height: 1280
   focalPoint: { x: 50, y: 48 }

@@ -20,9 +20,9 @@ lead:
   src: /media/demo-library/articles/photo-club.jpg
   alt: "Murale et art urbain à Montréal"
   credit: "Coastal Elite from Halifax, Canada"
-  license: CC BY-SA 2.0
-  licenseUrl: https://creativecommons.org/licenses/by-sa/2.0
-  sourceUrl: https://commons.wikimedia.org/wiki/File:Montreal_Street_Art_Graffiti_(29241125286).jpg
+  license: "CC BY-SA 2.0"
+  licenseUrl: "https://creativecommons.org/licenses/by-sa/2.0"
+  sourceUrl: "https://commons.wikimedia.org/wiki/File:Montreal_Street_Art_Graffiti_(29241125286).jpg"
   width: 1920
   height: 1209
   focalPoint: { x: 50, y: 48 }

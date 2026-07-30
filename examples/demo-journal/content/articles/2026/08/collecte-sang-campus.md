@@ -19,9 +19,9 @@ lead:
   src: /media/demo-library/articles/blood.jpg
   alt: "Prélèvement sanguin lors d’une collecte de sang"
   credit: "Staff Sgt. Stephanie Rubi, U.S. Air Force"
-  license: Public domain
-  licenseUrl: https://commons.wikimedia.org/wiki/File:Patient_gets_blood_drawn_to_be_screened_as_a_blood_donor.jpg
-  sourceUrl: https://commons.wikimedia.org/wiki/File:Patient_gets_blood_drawn_to_be_screened_as_a_blood_donor.jpg
+  license: "Public domain"
+  licenseUrl: "https://commons.wikimedia.org/wiki/File:Patient_gets_blood_drawn_to_be_screened_as_a_blood_donor.jpg"
+  sourceUrl: "https://commons.wikimedia.org/wiki/File:Patient_gets_blood_drawn_to_be_screened_as_a_blood_donor.jpg"
   width: 1920
   height: 1275
   focalPoint: { x: 50, y: 48 }

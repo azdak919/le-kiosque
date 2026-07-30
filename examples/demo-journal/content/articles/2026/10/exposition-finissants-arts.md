@@ -13,19 +13,19 @@ section: culture
 categories: [culture]
 tags: []
 lang: fr-CA
+excerpt: >-
+  Quinze œuvres fictives investissent la bibliothèque pendant deux semaines et explorent la mémoire, le territoire et la vie collégiale. Peintures, photographies et installations jalonnent le parcours jusqu'à la mezzanine, avec une rencontre artistes annoncée pour jeudi à 17 h.
+bodyFormat: html
 lead:
   src: /media/demo-library/articles/arts.jpg
   alt: "Exposition d’art dans une galerie"
   credit: "YessMendez"
-  license: CC BY-SA 4.0
-  licenseUrl: https://creativecommons.org/licenses/by-sa/4.0
-  sourceUrl: https://commons.wikimedia.org/wiki/File:Art_exhibition.jpg
+  license: "CC BY-SA 4.0"
+  licenseUrl: "https://creativecommons.org/licenses/by-sa/4.0"
+  sourceUrl: "https://commons.wikimedia.org/wiki/File:Art_exhibition.jpg"
   width: 1920
   height: 1440
   focalPoint: { x: 50, y: 48 }
-excerpt: >-
-  Quinze œuvres fictives investissent la bibliothèque pendant deux semaines et explorent la mémoire, le territoire et la vie collégiale. Peintures, photographies et installations jalonnent le parcours jusqu'à la mezzanine, avec une rencontre artistes annoncée pour jeudi à 17 h.
-bodyFormat: html
 ---
 
 <p>La bibliothèque présente pendant deux semaines une sélection de peintures, de photographies et d'installations réalisées dans le cadre de cours de fin de parcours en arts. Quinze œuvres explorent la mémoire familiale, le territoire urbain et le quotidien collégial.</p>

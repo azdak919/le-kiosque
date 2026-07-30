@@ -11,18 +11,18 @@ section: culture
 categories: [culture]
 tags: []
 lang: fr-CA
+excerpt: >-
+  Une rencontre mensuelle fictive du club de lecture portera sur un roman québécois inventé pour la rentrée. Exemplaires au comptoir de prêt, discussion libre guidée par deux questions, nouvelles personnes bienvenues sans cotisation : le club mise sur l'échange plutôt que sur la « bonne » lecture.
 lead:
   src: /media/demo-library/articles/livres.jpg
   alt: "Rayons de livres en bibliothèque"
   credit: "w:it:Utente:OrbiliusMagister"
-  license: Public domain
-  licenseUrl: https://commons.wikimedia.org/wiki/File:Bookshelves.jpg
-  sourceUrl: https://commons.wikimedia.org/wiki/File:Bookshelves.jpg
+  license: "Public domain"
+  licenseUrl: "https://commons.wikimedia.org/wiki/File:Bookshelves.jpg"
+  sourceUrl: "https://commons.wikimedia.org/wiki/File:Bookshelves.jpg"
   width: 1920
   height: 1318
   focalPoint: { x: 50, y: 48 }
-excerpt: >-
-  Une rencontre mensuelle fictive du club de lecture portera sur un roman québécois inventé pour la rentrée. Exemplaires au comptoir de prêt, discussion libre guidée par deux questions, nouvelles personnes bienvenues sans cotisation : le club mise sur l'échange plutôt que sur la « bonne » lecture.
 ---
 
 Le club de lecture a choisi un roman québécois — titre inventé pour cette démonstration — comme lecture de rentrée. La première rencontre mensuelle aura lieu le troisième jeudi d'octobre, de 17 h à 18 h 30, dans la salle de travail silencieuse de la bibliothèque.

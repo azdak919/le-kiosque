@@ -21,9 +21,9 @@ lead:
   src: /media/demo-library/articles/course.jpg
   alt: "Course à pied en nature"
   credit: "Isaacvp"
-  license: CC BY-SA 4.0
-  licenseUrl: https://creativecommons.org/licenses/by-sa/4.0/
-  sourceUrl: https://commons.wikimedia.org/wiki/File:2018_Orizaba_Running_race_01.jpg
+  license: "CC BY-SA 4.0"
+  licenseUrl: "https://creativecommons.org/licenses/by-sa/4.0/"
+  sourceUrl: "https://commons.wikimedia.org/wiki/File:2018_Orizaba_Running_race_01.jpg"
   width: 1920
   height: 1080
   focalPoint: { x: 50, y: 48 }

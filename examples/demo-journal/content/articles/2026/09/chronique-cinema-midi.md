@@ -11,18 +11,18 @@ section: culture
 categories: [culture]
 tags: []
 lang: fr-CA
+excerpt: >-
+  Notre chroniqueuse fictive revient sur une programmation inventée de trois courts métrages qui abordent le passage à l'âge adulte. La discussion en salle, souvent aussi riche que les films, se tient le mercredi midi dans la petite salle du pavillon des arts, entrée libre pour la communauté.
 lead:
   src: /media/demo-library/articles/cinema.jpg
   alt: "Salle de cinéma vue depuis les sièges"
   credit: "Fernandaodapassos"
-  license: CC BY-SA 4.0
-  licenseUrl: https://creativecommons.org/licenses/by-sa/4.0
-  sourceUrl: https://commons.wikimedia.org/wiki/File:Movie_theater.jpg
+  license: "CC BY-SA 4.0"
+  licenseUrl: "https://creativecommons.org/licenses/by-sa/4.0"
+  sourceUrl: "https://commons.wikimedia.org/wiki/File:Movie_theater.jpg"
   width: 1920
   height: 1440
   focalPoint: { x: 50, y: 48 }
-excerpt: >-
-  Notre chroniqueuse fictive revient sur une programmation inventée de trois courts métrages qui abordent le passage à l'âge adulte. La discussion en salle, souvent aussi riche que les films, se tient le mercredi midi dans la petite salle du pavillon des arts, entrée libre pour la communauté.
 ---
 
 La séance de cinéma du midi propose trois courts métrages contrastés sur le passage à l'âge adulte. La programmation, entièrement inventée pour cette démonstration, mêle humour sec, documentaire intime et fiction spéculative.

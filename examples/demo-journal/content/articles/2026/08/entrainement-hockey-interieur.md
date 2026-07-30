@@ -21,9 +21,9 @@ lead:
   src: /media/demo-library/articles/hockey.jpg
   alt: "Match de hockey sur glace en aréna"
   credit: "Daniel Case"
-  license: CC BY-SA 3.0
-  licenseUrl: https://creativecommons.org/licenses/by-sa/3.0
-  sourceUrl: https://commons.wikimedia.org/wiki/File:Shot_on_goal_during_youth_hockey_tournament_at_West_Edmonton_Mall_Ice_Palace.jpg
+  license: "CC BY-SA 3.0"
+  licenseUrl: "https://creativecommons.org/licenses/by-sa/3.0"
+  sourceUrl: "https://commons.wikimedia.org/wiki/File:Shot_on_goal_during_youth_hockey_tournament_at_West_Edmonton_Mall_Ice_Palace.jpg"
   width: 1920
   height: 1360
   focalPoint: { x: 50, y: 48 }

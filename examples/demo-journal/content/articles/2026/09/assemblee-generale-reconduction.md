@@ -18,18 +18,18 @@ tags:
   - assemblee-generale
   - financement
 lang: fr-CA
+excerpt: >-
+  La proposition de reconduire le mandat de grève a été adoptée à main levée après deux heures de débat. Quorum atteint de justesse, opposition organisée dans l'auditorium, trois amendements déposés : la suite du conflit de financement se jouera aussi dans les corridors et les comités.
 lead:
   src: /media/demo-library/articles/amphi.jpg
   alt: "Amphithéâtre universitaire rempli"
   credit: "Kannan5645"
-  license: CC BY-SA 3.0
-  licenseUrl: https://creativecommons.org/licenses/by-sa/3.0
-  sourceUrl: https://commons.wikimedia.org/wiki/File:Lecture_hall.jpg
+  license: "CC BY-SA 3.0"
+  licenseUrl: "https://creativecommons.org/licenses/by-sa/3.0"
+  sourceUrl: "https://commons.wikimedia.org/wiki/File:Lecture_hall.jpg"
   width: 1600
   height: 1200
   focalPoint: { x: 50, y: 48 }
-excerpt: >-
-  La proposition de reconduire le mandat de grève a été adoptée à main levée après deux heures de débat. Quorum atteint de justesse, opposition organisée dans l'auditorium, trois amendements déposés : la suite du conflit de financement se jouera aussi dans les corridors et les comités.
 ---
 
 L'assemblée générale extraordinaire de mardi a reconduit le mandat de grève pour

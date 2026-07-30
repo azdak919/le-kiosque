@@ -15,18 +15,18 @@ categories:
 tags:
   - soccer
 lang: fr-CA
+excerpt: >-
+  Six équipes mixtes pourront s'inscrire au tournoi amical du 24 octobre : matchs de vingt minutes sur terrain synthétique, inscriptions gratuites du 5 au 12 octobre, arbitrage bénévole et report possible en cas de pluie forte. L'esprit reste celui d'une activité accessible en milieu de session.
 lead:
   src: /media/demo-library/articles/soccer.jpg
   alt: "Ballon de soccer sur un terrain en herbe"
   credit: "Peter Glaser baraida"
-  license: CC0
-  licenseUrl: https://creativecommons.org/publicdomain/mark/1.0/
-  sourceUrl: https://commons.wikimedia.org/wiki/File:Adidas_soccer_ball_on_a_grass_pitch_(Unsplash).jpg
+  license: "CC0"
+  licenseUrl: "https://creativecommons.org/publicdomain/mark/1.0/"
+  sourceUrl: "https://commons.wikimedia.org/wiki/File:Adidas_soccer_ball_on_a_grass_pitch_(Unsplash).jpg"
   width: 1920
   height: 1280
   focalPoint: { x: 50, y: 48 }
-excerpt: >-
-  Six équipes mixtes pourront s'inscrire au tournoi amical du 24 octobre : matchs de vingt minutes sur terrain synthétique, inscriptions gratuites du 5 au 12 octobre, arbitrage bénévole et report possible en cas de pluie forte. L'esprit reste celui d'une activité accessible en milieu de session.
 ---
 
 Les inscriptions au tournoi interprogramme seront ouvertes du 5 au 12 octobre. L'activité est gratuite et chaque équipe devra compter entre huit et douze personnes, avec une composition mixte encouragée mais non imposée par programme.

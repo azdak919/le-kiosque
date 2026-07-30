@@ -11,18 +11,18 @@ section: opinion
 categories: [opinion]
 tags: []
 lang: fr-CA
+excerpt: >-
+  La rédaction fictive réclame une signalisation claire, des zones sans appels vidéo et davantage d'espaces réellement calmes pour étudier. Trop souvent, le silence devient une négociation de table en table plutôt qu'un droit d'accès simple, surtout en période d'examens.
 lead:
   src: /media/demo-library/articles/calme.jpg
   alt: "Salle de lecture calme à la Grande Bibliothèque de Montréal"
   credit: "Mourial"
-  license: CC BY-SA 3.0
-  licenseUrl: https://creativecommons.org/licenses/by-sa/3.0
-  sourceUrl: https://commons.wikimedia.org/wiki/File:Grande_Bibliotheque_Quebec_Interieur.JPG
+  license: "CC BY-SA 3.0"
+  licenseUrl: "https://creativecommons.org/licenses/by-sa/3.0"
+  sourceUrl: "https://commons.wikimedia.org/wiki/File:Grande_Bibliotheque_Quebec_Interieur.JPG"
   width: 1920
   height: 1440
   focalPoint: { x: 50, y: 48 }
-excerpt: >-
-  La rédaction fictive réclame une signalisation claire, des zones sans appels vidéo et davantage d'espaces réellement calmes pour étudier. Trop souvent, le silence devient une négociation de table en table plutôt qu'un droit d'accès simple, surtout en période d'examens.
 ---
 
 Le campus a besoin de davantage d'espaces réellement calmes. Trop souvent, les salles présentées comme silencieuses accueillent des appels vidéo, des discussions de travail de groupe et des notifications en continu. Étudier devient alors une négociation permanente plutôt qu'un droit d'accès simple.

@@ -20,9 +20,9 @@ lead:
   src: /media/demo-library/articles/resume.jpg
   alt: "Entretien d’embauche ou atelier candidature"
   credit: "HeatherKatz001"
-  license: CC BY-SA 4.0
-  licenseUrl: https://creativecommons.org/licenses/by-sa/4.0
-  sourceUrl: https://commons.wikimedia.org/wiki/File:What_to_Expect_at_a_Job_Interview_at_a_Teaching_School.jpg
+  license: "CC BY-SA 4.0"
+  licenseUrl: "https://creativecommons.org/licenses/by-sa/4.0"
+  sourceUrl: "https://commons.wikimedia.org/wiki/File:What_to_Expect_at_a_Job_Interview_at_a_Teaching_School.jpg"
   width: 1920
   height: 1484
   focalPoint: { x: 50, y: 48 }

@@ -22,9 +22,9 @@ lead:
   src: /media/demo-library/articles/velo.jpg
   alt: "Station de réparation de vélos"
   credit: "Briana18091440"
-  license: CC BY-SA 4.0
-  licenseUrl: https://creativecommons.org/licenses/by-sa/4.0
-  sourceUrl: https://commons.wikimedia.org/wiki/File:Bike_repair_station.jpg
+  license: "CC BY-SA 4.0"
+  licenseUrl: "https://creativecommons.org/licenses/by-sa/4.0"
+  sourceUrl: "https://commons.wikimedia.org/wiki/File:Bike_repair_station.jpg"
   width: 1920
   height: 2560
   focalPoint: { x: 50, y: 48 }

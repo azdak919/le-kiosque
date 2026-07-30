@@ -13,18 +13,18 @@ section: culture
 categories: [culture]
 tags: [archives, radio-etudiante]
 lang: fr-CA
+excerpt: >-
+  La série fictive combine archives sonores, témoignages et narration étudiante pour raconter cinquante ans d'histoires de corridor. Chaque épisode se concentre sur un lieu du campus et explique comment la rédaction vérifie les souvenirs avant de les diffuser.
 lead:
   src: /media/demo-library/articles/radio.jpg
   alt: "Studio de radio avec microphones"
   credit: "Ethan Long"
-  license: CC BY-SA 2.0
-  licenseUrl: https://creativecommons.org/licenses/by-sa/2.0/
-  sourceUrl: https://commons.wikimedia.org/wiki/File:Broadcast_Studio_(53998133689).jpg
+  license: "CC BY-SA 2.0"
+  licenseUrl: "https://creativecommons.org/licenses/by-sa/2.0/"
+  sourceUrl: "https://commons.wikimedia.org/wiki/File:Broadcast_Studio_(53998133689).jpg"
   width: 1920
   height: 2880
   focalPoint: { x: 50, y: 48 }
-excerpt: >-
-  La série fictive combine archives sonores, témoignages et narration étudiante pour raconter cinquante ans d'histoires de corridor. Chaque épisode se concentre sur un lieu du campus et explique comment la rédaction vérifie les souvenirs avant de les diffuser.
 ---
 
 Un balado étudiant lance une série qui raconte cinquante ans d'histoires de corridor. Chaque épisode se concentre sur un lieu du campus — bibliothèque, cafétéria, studio de radio, sous-sol d'un pavillon — et sur les personnes qui l'ont transformé.

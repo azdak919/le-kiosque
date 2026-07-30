@@ -20,9 +20,9 @@ lead:
   src: /media/demo-library/articles/parking.jpg
   alt: "Stationnement pour vélos sur un campus"
   credit: "David Shay"
-  license: CC BY-SA 2.5
-  licenseUrl: https://creativecommons.org/licenses/by-sa/2.5
-  sourceUrl: https://commons.wikimedia.org/wiki/File:Bicycle_parking.jpg
+  license: "CC BY-SA 2.5"
+  licenseUrl: "https://creativecommons.org/licenses/by-sa/2.5"
+  sourceUrl: "https://commons.wikimedia.org/wiki/File:Bicycle_parking.jpg"
   width: 1120
   height: 845
   focalPoint: { x: 50, y: 48 }
