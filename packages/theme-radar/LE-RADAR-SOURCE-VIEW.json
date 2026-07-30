@@ -3,7 +3,7 @@
   "reference": {
     "project": "LE-RADAR",
     "repositoryPathHint": "../le-radar",
-    "commit": "2769cf9",
+    "commit": "974ad45",
     "files": [
       "app.js#createArticle",
       "app.js#partitionSourceFeed",
@@ -11,8 +11,8 @@
     ],
     "fingerprints": {
       "partitionSourceFeed": "76295dde508aee75d3946ef48fa31df31b23dc3837598c0e528fcdfed02e1740",
-      "createArticle": "922b6b4e3576ad8bfece7bf845538f9d3a31dfb7a1590a3523cc68cebfb681bf",
-      "articleCardsCss": "3f6dc0a2eb3fcee8bf3ab1ad1e362d62c9b02093a8349901890ab2c56f5eb6a1"
+      "createArticle": "5a690811e88f1540c3d375a49e39d17fc5acd45334697b3d3f42389441e7de68",
+      "articleCardsCss": "9bed91c8c57a1798931a0ecc47d0cbaa3d37e791bdc93b737e887e518dc9ec54"
     }
   },
   "port": {
@@ -24,7 +24,9 @@
   "intentionalAdaptations": [
     "LE-KIOSQUE rend des articles dont il est l’éditeur : le lien principal est local et ne reçoit pas target=_blank.",
     "Les médias LE-KIOSQUE sont des fichiers locaux validés par le pipeline; aucun proxy d’image externe n’est ajouté.",
-    "Le noyau reste JavaScript sans dépendance afin que le HTML soit identique pendant la génération statique et dans la démonstration PGlite."
+    "Le noyau reste JavaScript sans dépendance afin que le HTML soit identique pendant la génération statique et dans la démonstration PGlite.",
+    "LE-RADAR plafonne la photo d’une (max-height) pour l’équilibre magazine multi-colonnes ; LE-KIOSQUE n’applique pas ce plafond (journal unique, pas de colonne En bref concurrente).",
+    "Ordre titre→byline→media pour feature/compact déjà dans source-view.js ; le port ne recrée pas ensureLeadTitleAboveMedia (HTML généré d’un coup)."
   ],
   "syncRule": "Toute modification du modèle de source individuelle dans LE-RADAR exige l’exécution de npm run radar:reference:check puis une revue explicite de ce port avant sa publication."
 }
