@@ -400,12 +400,20 @@ body.with-radio .nav {
   margin: 0 auto;
   padding: 0 var(--pad);
   box-sizing: border-box;
+  min-width: 0;
+  width: 100%;
 }
 .masthead-weather-dock:not(:empty) {
   display: block;
   /* Même rythme haut/bas que LE-RADAR sports strip. */
   padding-top: 8px;
   padding-bottom: 8px;
+}
+/* Host docké = pleine largeur utile sous la radio. */
+.masthead-weather-dock .masthead-status,
+.masthead-weather-dock .masthead-status--docked {
+  width: 100%;
+  max-width: 100%;
 }
 .masthead-weather--docked,
 .masthead-status--docked {
@@ -419,6 +427,11 @@ body.with-radio .nav {
   min-width: 0;
   box-sizing: border-box;
 }
+/*
+ * Bandeau météo + sports (mât ou dock sous radio).
+ * Dynamique : météo = largeur du nom de ville ; sports = tout l’espace restant.
+ * Jamais de coupe nette du chrome (bord droit arrondi toujours visible).
+ */
 .masthead-status {
   display: flex;
   align-items: stretch;
@@ -427,71 +440,97 @@ body.with-radio .nav {
   max-width: 100%;
   flex: 1 1 auto;
   width: 100%;
-  /* visible : ne jamais trancher la pilule sports à droite (clip = line only). */
   overflow: visible;
 }
-/* Météo : largeur au contenu pour le nom de ville complet. */
+/* Météo : largeur au contenu (ville longue/courte). */
 .masthead-status .masthead-weather {
   flex: 0 1 auto;
   min-width: 0;
-  max-width: 100%;
-  overflow-x: auto;
-  scrollbar-width: none;
+  max-width: min(100%, max-content);
+  overflow: visible;
 }
 .masthead-status .weather-chip,
 .masthead-status .masthead-weather__city {
   min-width: 0;
   width: max-content;
-  max-width: none;
+  max-width: min(100%, 22rem);
+  box-sizing: border-box;
 }
-/*
- * Bureau : météo puis sports collés (sports immédiatement à droite de la
- * météo — pas collé aux outils à l’extrême droite).
- */
+/* Sports : occupe l’espace libre après la météo (marquee si trop long). */
+.masthead-status .masthead-sports {
+  flex: 1 1 auto;
+  min-width: 0;
+  max-width: none;
+  overflow: visible;
+  display: flex;
+}
+.masthead-status .sports-chip,
+.masthead-status .masthead-sports__chip {
+  flex: 1 1 auto;
+  width: 100%;
+  min-width: 0;
+  max-width: 100%;
+  box-sizing: border-box;
+}
 @media (min-width: 721px) {
   .masthead-status {
     justify-content: flex-start;
     align-items: center;
     gap: 8px;
-    /* Ne pas étirer toute la colonne 1fr : le groupe météo+sports reste compact. */
-    flex: 0 1 auto;
+    flex: 1 1 auto;
     width: auto;
     max-width: 100%;
+    min-width: 0;
     overflow: visible;
   }
   .masthead-status .masthead-weather {
-    flex: 0 0 auto;
-    max-width: none;
-    overflow: visible;
+    flex: 0 1 auto;
+    max-width: min(45vw, 18rem);
   }
   .masthead-status .masthead-sports {
-    flex: 0 1 auto;
-    margin-left: 0; /* collé après la météo */
-    /* Bureau : noms d’équipes + institutions (densité riche). */
-    min-width: 12rem;
-    max-width: min(28rem, 42vw);
-    overflow: visible;
+    flex: 1 1 auto;
+    margin-left: 0;
+    min-width: 0;
+    max-width: none;
   }
   .masthead-status .weather-chip,
   .masthead-status .masthead-weather__city {
     width: max-content;
-    min-width: 0;
-    max-width: none;
+    max-width: 100%;
   }
   .masthead-status .sports-chip,
   .masthead-status .masthead-sports__chip {
-    width: auto;
-    min-width: 12rem;
+    width: 100%;
+    min-width: 0;
     max-width: 100%;
-  }
-  .masthead-status .sports-chip--rich {
-    min-width: 13rem;
   }
 }
 /*
- * Sous la radio (mobile) : météo et sports se partagent la rangée.
- * Météo : largeur au contenu (nom entier) ; sports prend le reste.
+ * Dock sous la radio (≤720px) : météo au contenu, sports = reste de la rangée.
  */
+.masthead-status--docked,
+.masthead-weather--docked {
+  width: 100%;
+  max-width: 100%;
+  box-sizing: border-box;
+}
+.masthead-status--docked .masthead-weather,
+.masthead-weather--docked.masthead-weather {
+  /* Largeur = nom de ville ; ne grossit pas, peut rétrécir si la rangée déborde. */
+  flex: 0 1 auto;
+  min-width: 0;
+  max-width: none;
+  display: flex;
+  overflow: visible;
+}
+.masthead-status--docked .masthead-sports {
+  /* Tout l’espace restant après la météo (dynamique). */
+  flex: 1 1 auto;
+  min-width: 0;
+  max-width: none;
+  display: flex;
+  overflow: visible;
+}
 .masthead-weather--docked .weather-chip,
 .masthead-weather--docked .masthead-weather__city,
 .masthead-status--docked .weather-chip,
@@ -504,26 +543,17 @@ body.with-radio .nav {
   justify-content: flex-start;
 }
 .masthead-status--docked .sports-chip,
-.masthead-weather--docked .sports-chip {
-  flex: 1 1 0;
-  width: auto;
+.masthead-weather--docked .sports-chip,
+.masthead-status--docked .masthead-sports__chip {
+  flex: 1 1 auto;
+  width: 100%;
   max-width: 100%;
-  /* Mini-largeur pour garder la pilule entière (pas un moignon coupé). */
-  min-width: min(10rem, 100%);
+  min-width: 0;
   box-sizing: border-box;
   justify-content: flex-start;
-  overflow: hidden; /* clip interne line ; chrome de carte intact dans le dock */
-}
-.masthead-status--docked .masthead-weather,
-.masthead-status--docked .masthead-sports {
-  flex: 1 1 0;
-  min-width: 0;
-  max-width: 100%;
-  display: flex;
-  overflow: visible; /* pilule entière ; clip seulement dans .sports-chip__line */
-}
-.masthead-status--docked .masthead-sports {
-  min-width: min(10.5rem, 48%);
+  /* overflow hidden ici = radius + marquee ; le cadre reste arrondi. */
+  overflow: hidden;
+  border-radius: 6px;
 }
 /*
  * Dock sous la radio (mobile) : même famille ardoise LE-RADAR
@@ -1466,10 +1496,13 @@ body.with-radio .masthead--illustrated {
 .masthead-utility {
   min-height: 42px;
   display: grid;
-  grid-template-columns: minmax(130px, auto) 1fr auto;
+  /* Colonne milieu (météo+sports) : minmax(0,1fr) pour ne pas forcer le clip. */
+  grid-template-columns: minmax(0, auto) minmax(0, 1fr) auto;
   align-items: start;
   gap: 12px;
   padding-bottom: 12px;
+  min-width: 0;
+  overflow: visible;
 }
 .masthead-clock {
   margin: 0;
@@ -1615,17 +1648,16 @@ a.masthead-weather__city:focus-visible {
 
 /*
  * Puce sports — même famille ardoise que la météo, tone = issue W/L/D.
- * Cadre de la carte TOUJOURS entier (bords arrondis visibles).
- * Seul le viewport .sports-chip__line clippe + défile (marquee).
+ * Largeur = 100 % du slot (dynamique selon météo).
+ * overflow:hidden + border-radius sur la puce = coins arrondis intacts ;
+ * seul .sports-chip__line défile (marquee).
  */
 .masthead-sports {
   display: flex;
   align-items: stretch;
-  /* Ne pas écraser la pilule sous la météo élargie : largeur mini lisible. */
-  min-width: min(11.5rem, 100%);
-  max-width: min(20rem, 52vw);
-  flex: 0 1 auto;
-  /* Parent ne doit jamais trancher le chrome de la carte. */
+  min-width: 0;
+  max-width: none;
+  flex: 1 1 auto;
   overflow: visible;
 }
 .sports-chip,
@@ -1637,7 +1669,8 @@ a.masthead-weather__city:focus-visible {
   min-width: 0;
   max-width: 100%;
   width: 100%;
-  padding: 4px 12px 4px 8px;
+  flex: 1 1 auto;
+  padding: 4px 10px 4px 8px;
   border: 1px solid rgba(255, 255, 255, 0.24);
   border-radius: 6px;
   background:
@@ -1647,8 +1680,9 @@ a.masthead-weather__city:focus-visible {
   font-size: 11px;
   font-weight: 700;
   white-space: nowrap;
-  /* Clip interne pour le radius — le contenu long vit dans .sports-chip__line. */
+  /* Clip + radius = bord droit arrondi (pas d’arête droite parent). */
   overflow: hidden;
+  border-radius: 6px;
   box-shadow:
     0 1px 2px rgba(0, 0, 0, 0.24),
     0 3px 10px rgba(0, 0, 0, 0.18),
@@ -1659,8 +1693,6 @@ a.masthead-weather__city:focus-visible {
   box-sizing: border-box;
   cursor: pointer;
   -webkit-tap-highlight-color: transparent;
-  /* Évite qu’un ancêtre overflow:hidden tranche la pilule à droite. */
-  flex-shrink: 1;
 }
 a.sports-chip:focus-visible,
 a.masthead-sports__chip:focus-visible {
@@ -2171,7 +2203,7 @@ a.masthead-sports__chip:focus-visible {
   transition: border-color 140ms ease, color 140ms ease, background 140ms ease;
 }
 .sports-board-wrap.has-overflow .sports-board-toggle { display: inline-flex; }
-.sports-board-wrap.is-expanded .sports-board-toggle { display: none !important; }
+/* Toggle reste visible déplié (« Moins de matchs ») pour re-réduire. */
 @media (hover: hover) and (pointer: fine) {
   .sports-board-toggle:hover {
     border-color: var(--accent);
