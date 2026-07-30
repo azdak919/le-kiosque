@@ -925,6 +925,28 @@
    *             (maison = surnom seul ; adversaire = surnom + institution)
    * Détail long toujours dans title/aria.
    */
+  /**
+   * Deep-link Au tableau — parité LE-RADAR sportsBoardHref :
+   * /sports/?team=<id>&sport=<sport> → scroll + pulse de la carte formation.
+   */
+  function sportsBoardHref(display) {
+    var base = (sportsPayloadCache && sportsPayloadCache.href) || '/sports/';
+    try {
+      var u = new URL(base, window.location.href);
+      var teamId = display && display.team && display.team.id
+        ? String(display.team.id).trim()
+        : '';
+      var sport = '';
+      if (display && display.game && display.game.sport) sport = String(display.game.sport).toLowerCase();
+      else if (display && display.team && display.team.sport) sport = String(display.team.sport).toLowerCase();
+      if (sport) u.searchParams.set('sport', sport);
+      if (teamId) u.searchParams.set('team', teamId);
+      return u.pathname + u.search;
+    } catch (_) {
+      return base;
+    }
+  }
+
   function paintSportsChip(host, display, animate) {
     if (!host || !display) return;
     host.textContent = '';
@@ -934,7 +956,7 @@
     var sportLabel = team.sportLabel || sport || '';
     var tone = display.tone || sportsSlideTone(display);
     var desktop = sportsIsDesktopLabel();
-    var href = (sportsPayloadCache && sportsPayloadCache.href) || '';
+    var href = sportsBoardHref(display);
     var chip = document.createElement(href ? 'a' : 'span');
     chip.className = 'sports-chip masthead-sports__chip';
     if (desktop) chip.classList.add('sports-chip--rich');
@@ -948,6 +970,7 @@
       /* SPA démo : même routeur que le menu (évite un full reload hors basePath). */
       chip.setAttribute('data-editorial-link', '');
     }
+    if (team && team.id) chip.dataset.sportsTeam = String(team.id);
 
     var glyph = sportsEl('span', 'sports-chip__glyph', sportsGlyph(sport));
     glyph.setAttribute('aria-hidden', 'true');
@@ -1851,7 +1874,77 @@
   window.KiosqueRefreshSportsBoard = function () {
     sportsBoardExpanded = false;
     syncSportsBoardCollapse();
+    focusSportsTeamFromUrl();
   };
+
+  /**
+   * Deep-link ?team=… (puce mât) : ouvrir le tableau si replié, scroller
+   * jusqu’à la carte formation et pulser le contour (parité LE-RADAR).
+   */
+  function clearSportsTeamSpotlight() {
+    document.querySelectorAll('.sports-panel.is-spotlight').forEach(function (p) {
+      p.classList.remove('is-spotlight');
+    });
+  }
+
+  function focusSportsTeam(teamId) {
+    clearSportsTeamSpotlight();
+    if (!teamId) return null;
+    var panel = null;
+    try {
+      if (typeof CSS !== 'undefined' && typeof CSS.escape === 'function') {
+        panel = document.querySelector('.sports-panel[data-team="' + CSS.escape(teamId) + '"]');
+      }
+    } catch (_) { panel = null; }
+    if (!panel) {
+      var all = document.querySelectorAll('.sports-panel[data-team]');
+      for (var i = 0; i < all.length; i++) {
+        if (all[i].getAttribute('data-team') === teamId) {
+          panel = all[i];
+          break;
+        }
+      }
+    }
+    if (!panel) return null;
+
+    /* Déplier « Plus de matchs » pour que la carte ne soit pas hors vue. */
+    sportsBoardExpanded = true;
+    try { syncSportsBoardCollapse(); } catch (_) { /* ignore */ }
+
+    panel.classList.add('is-spotlight');
+    window.requestAnimationFrame(function () {
+      window.requestAnimationFrame(function () {
+        try {
+          panel.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        } catch (_) {
+          try { panel.scrollIntoView(true); } catch (__) { /* ignore */ }
+        }
+      });
+    });
+    return panel;
+  }
+
+  function focusSportsTeamFromUrl() {
+    var teamId = '';
+    try {
+      teamId = new URLSearchParams(window.location.search).get('team') || '';
+    } catch (_) {
+      teamId = '';
+    }
+    teamId = String(teamId || '').trim();
+    if (!teamId) {
+      clearSportsTeamSpotlight();
+      return;
+    }
+    /* Laisser le layout (repli board) se mesurer avant le scroll. */
+    window.requestAnimationFrame(function () {
+      focusSportsTeam(teamId);
+    });
+    window.setTimeout(function () { focusSportsTeam(teamId); }, 200);
+    window.setTimeout(function () { focusSportsTeam(teamId); }, 700);
+  }
+
+  window.KiosqueFocusSportsTeam = focusSportsTeamFromUrl;
 
   // ── Barre radio LE-RADAR ───────────────────────────────────────────────
   // Coque sombre réservée dès le HTML (data-state=loading, min-height 68).
@@ -2222,6 +2315,7 @@
       sportsBoardExpanded = false;
       syncSportsBoardCollapse();
     } catch (_) { /* ignore */ }
+    try { focusSportsTeamFromUrl(); } catch (_) { /* ignore */ }
   }
 
   window.KiosqueRefreshFeed = refreshFeedChrome;
@@ -2242,6 +2336,7 @@
     initRadarTuner();
     initPageScrollTop();
     initNewsSearch();
+    focusSportsTeamFromUrl();
   }
 
   if (document.readyState === 'loading') {

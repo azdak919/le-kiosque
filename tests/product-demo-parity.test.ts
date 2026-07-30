@@ -154,6 +154,8 @@ test('demo et template reçoivent le même theme.css / kiosque.js (packages/them
   assert.doesNotMatch(seed, /Cégep du Quorum/, 'plus de Cégep du Quorum (nom redondant journal)');
   assert.match(demoJs, /initSportsBoardCollapse|Plus de matchs|KiosqueRefreshSportsBoard/, 'repli Au tableau + Plus de matchs');
   assert.match(demoCss, /sports-board-wrap|sports-board-toggle/, 'CSS repli tableau sports');
+  assert.match(demoJs, /sportsBoardHref|focusSportsTeam|KiosqueFocusSportsTeam/, 'deep-link puce → carte formation');
+  assert.match(demoCss, /is-spotlight|sports-panel-spotlight-pulse/, 'pulse contour carte ciblée (parité LE-RADAR)');
   assert.match(demoJs, /sportsHomeRichLabel|sportsOppRichLabel/, 'puce : maison sans (institution)');
   assert.match(seed, /"opponentCode":"(GAR|LIM|CSF|CAL|SLA|CEM|SJR)"/, 'codes adversaires = institutions RSEQ');
   // Prochains matchs : institution adverse (puce bureau + page Au tableau).

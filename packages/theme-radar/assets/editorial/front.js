@@ -79,8 +79,10 @@ document.addEventListener('click', (event) => {
   const url = new URL(anchor.href);
   if (!url.pathname.startsWith(config.publicBasePath)) return;
   event.preventDefault();
-  history.pushState({}, '', url.pathname);
-  /* Remonter en tête : le bandeau démo + la radio sticky restent montés. */
+  /* Conserver ?team= / ?sport= (deep-link Au tableau depuis la puce mât). */
+  history.pushState({}, '', url.pathname + url.search + url.hash);
+  /* Remonter en tête : le bandeau démo + la radio sticky restent montés.
+   * (Le spotlight sports re-scrolle vers la carte ciblée juste après.) */
   window.scrollTo(0, 0);
   render().catch(showFailure);
 });

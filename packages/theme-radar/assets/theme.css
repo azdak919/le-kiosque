@@ -1843,7 +1843,43 @@ a.masthead-sports__chip:focus-visible {
   border-top: 3px solid var(--sports-panel-c, var(--accent));
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
   min-width: 0;
-  transition: box-shadow 180ms ease, border-color 180ms ease;
+  scroll-margin-top: 5.5rem; /* sous barre radio sticky */
+  transition: box-shadow 180ms ease, border-color 180ms ease, background 180ms ease;
+}
+/*
+ * Deep-link puce mât (?team=) — carte formation ciblée (parité LE-RADAR).
+ * Seule la bordure / le halo pulse ; le fond reste lisible.
+ */
+.sports-panel.is-spotlight {
+  background: var(--bg-soft);
+  border-color: var(--sports-panel-c, var(--accent));
+  box-shadow:
+    0 0 0 2px color-mix(in srgb, var(--sports-panel-c, var(--accent)) 42%, transparent),
+    0 8px 22px -12px color-mix(in srgb, var(--sports-panel-c, var(--accent)) 38%, transparent);
+  animation: sports-panel-spotlight-pulse 2.4s ease-in-out infinite;
+}
+@keyframes sports-panel-spotlight-pulse {
+  0%, 100% {
+    border-color: color-mix(in srgb, var(--sports-panel-c, var(--accent)) 72%, var(--rule));
+    box-shadow:
+      0 0 0 2px color-mix(in srgb, var(--sports-panel-c, var(--accent)) 28%, transparent),
+      0 6px 18px -12px color-mix(in srgb, var(--sports-panel-c, var(--accent)) 30%, transparent);
+  }
+  50% {
+    border-color: var(--sports-panel-c, var(--accent));
+    box-shadow:
+      0 0 0 3px color-mix(in srgb, var(--sports-panel-c, var(--accent)) 48%, transparent),
+      0 10px 26px -10px color-mix(in srgb, var(--sports-panel-c, var(--accent)) 42%, transparent);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .sports-panel.is-spotlight {
+    animation: none;
+    border-color: var(--sports-panel-c, var(--accent));
+    box-shadow:
+      0 0 0 2px color-mix(in srgb, var(--sports-panel-c, var(--accent)) 40%, transparent),
+      0 6px 18px -12px color-mix(in srgb, var(--sports-panel-c, var(--accent)) 32%, transparent);
+  }
 }
 .sports-panel__head {
   display: flex;

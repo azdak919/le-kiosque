@@ -125,6 +125,7 @@ test('la vitrine expose le bandeau illustré, les outils et la composition magaz
   assert.match(sportsPage, /sports-result__venue--away|Extérieur/, 'extérieur visible sur les cartes');
   assert.match(sportsPage, /sports-panel__sex/, 'pastille F/M/Mixte (parité LE-RADAR)');
   assert.match(sportsPage, /sports-result--next/, 'prochain match en tête de carte');
+  assert.match(sportsPage, /data-team="/, 'cartes formation portent data-team (deep-link puce)');
   // Première ligne d’un panneau : À venir (ou score récent), pas un vieux résultat en bas.
   const firstPanel = sportsPage.match(/<section class="sports-panel"[\s\S]*?<\/section>/);
   assert.ok(firstPanel, 'au moins un panneau formation');
