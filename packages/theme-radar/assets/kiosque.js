@@ -2083,6 +2083,40 @@
     return q.split(' ').filter(function (t) { return t.length >= 1; });
   }
 
+  /**
+   * Hauteur réelle du bandeau démo → offset sticky de .radar-tuner.
+   * Sur mobile le bandeau fait 2 lignes : une valeur fixe 2rem laissait
+   * l’iframe radio glisser / cliper sous le rouge au scroll.
+   */
+  function syncDemoBannerStickyOffset() {
+    var banner = document.querySelector('.demo-banner');
+    var root = document.documentElement;
+    if (!banner) {
+      root.style.removeProperty('--demo-banner-sticky-h');
+      return;
+    }
+    var h = Math.ceil(banner.getBoundingClientRect().height);
+    if (h > 0) {
+      root.style.setProperty('--demo-banner-sticky-h', h + 'px');
+    }
+  }
+
+  function initDemoBannerStickyOffset() {
+    syncDemoBannerStickyOffset();
+    if (initDemoBannerStickyOffset._bound) return;
+    initDemoBannerStickyOffset._bound = true;
+    window.addEventListener('resize', syncDemoBannerStickyOffset, { passive: true });
+    if (typeof ResizeObserver === 'function') {
+      var banner = document.querySelector('.demo-banner');
+      if (banner) {
+        try {
+          var ro = new ResizeObserver(function () { syncDemoBannerStickyOffset(); });
+          ro.observe(banner);
+        } catch (_) { /* ignore */ }
+      }
+    }
+  }
+
   function initPageScrollTop() {
     var btn = document.getElementById('page-scroll-top');
     if (!btn || btn.dataset.bound === '1') return;
@@ -2321,6 +2355,7 @@
 
   function init() {
     initTheme();
+    initDemoBannerStickyOffset();
     initMastheadClock();
     initMastheadBackgrounds();
     initMastheadSports();

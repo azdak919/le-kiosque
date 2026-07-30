@@ -255,12 +255,13 @@ a { color: inherit; }
 
 /* ─────────────── BANDEAU DE DÉMONSTRATION ───────────────
  * Sticky au scroll (démo) : reste au-dessus de la barre radio.
- * Hauteur utilisée comme offset sticky de .radar-tuner. */
+ * --demo-banner-sticky-h = hauteur réelle (mesurée en JS) pour que
+ * .radar-tuner ne glisse pas sous un bandeau 2 lignes sur mobile. */
 :root {
   --demo-banner-sticky-h: 0px;
 }
 body:has(.demo-banner) {
-  /* 7+7 padding + ~14 px de ligne (12 px × 1,2) ≈ 28–32 px. */
+  /* 1 ligne : 7+7 padding + ~14 px de ligne ≈ 28–32 px. */
   --demo-banner-sticky-h: 2rem;
 }
 
@@ -269,9 +270,12 @@ body:has(.demo-banner) {
   top: 0;
   z-index: 110;
   display: flex;
+  flex-wrap: wrap;
   align-items: center;
   justify-content: center;
-  min-height: var(--demo-banner-sticky-h, 2rem);
+  /* min-height fixe (1 ligne) — ne pas lier à --demo-banner-sticky-h
+   * (sinon circularité quand le JS mesure offsetHeight). */
+  min-height: 2rem;
   background: var(--live);
   color: #fff;
   font-size: 12px;
@@ -281,8 +285,41 @@ body:has(.demo-banner) {
   text-align: center;
   padding: 7px var(--pad);
   box-sizing: border-box;
+  line-height: 1.25;
 }
 .demo-banner a { color: #fff; }
+.demo-banner__lead,
+.demo-banner__rest {
+  display: inline;
+}
+/* Mobile : 2 lignes contrôlées
+ *   DÉMONSTRATION DU KIOSQUE —
+ *   JOURNAL ÉTUDIANT FICTIF
+ * (évite « FICTIF » seul sur la 2ᵉ ligne par wrap naturel). */
+@media (max-width: 720px) {
+  body:has(.demo-banner) {
+    /* Fallback 2 lignes tant que le JS n’a pas mesuré. */
+    --demo-banner-sticky-h: 2.85rem;
+  }
+  .demo-banner {
+    flex-direction: column;
+    flex-wrap: nowrap;
+    gap: 1px;
+    padding-top: 6px;
+    padding-bottom: 6px;
+  }
+  .demo-banner__sep {
+    display: none;
+  }
+  .demo-banner__lead::after {
+    content: ' —';
+  }
+  .demo-banner__lead,
+  .demo-banner__rest {
+    display: block;
+    max-width: 100%;
+  }
+}
 
 /* ─────────────── BARRE RADIO LE-RADAR (sticky, parité LE-RADAR .tuner) ─────────────── */
 
@@ -1622,10 +1659,12 @@ a.masthead-weather__city:focus-visible {
   flex: 0 0 auto;
   filter: brightness(1.12) saturate(1.05);
 }
-/* Texte toujours clair sur ardoise — nom de ville entier (pas d’ellipsis). */
+/* Texte toujours clair sur ardoise — nom de ville entier (pas d’ellipsis).
+ * flex-shrink: 0 : le nom ne se compresse pas sous la température
+ * (sinon overflow:visible peignait « Ha!15° » sans espace visible). */
 .weather-chip__name,
 .masthead-weather__name {
-  flex: 0 1 auto;
+  flex: 0 0 auto;
   min-width: 0;
   overflow: visible;
   text-overflow: clip;
@@ -1639,6 +1678,8 @@ a.masthead-weather__city:focus-visible {
 .weather-chip__temp,
 .masthead-weather__temp {
   flex: 0 0 auto;
+  /* Air garanti après le nom (y compris « Ha! »), en plus du gap flex. */
+  margin-inline-start: 0.2em;
   font-variant-numeric: tabular-nums;
   color: #fff;
   opacity: 0.98;
@@ -1764,24 +1805,11 @@ a.masthead-sports__chip:focus-visible {
  * Marquee scoreboard (repère weather-name-scroll / tunerMarquee LE-RADAR) :
  * pauses en début et fin de course pour lire le score avant de bouger,
  * et avant le retour. Sans hold, le texte part trop vite.
+ *
+ * Pas de mask-image en fondu : un dégradé ~0,65 rem laissait les deux bouts
+ * du libellé (mobile) flous en permanence, y compris aux pauses. Clip net
+ * (overflow:hidden sur .sports-chip__line) + shift JS +2 px suffisent.
  */
-.sports-chip__line.is-sports-marquee {
-  /* Fondu gauche/droite : le défilement ne « tranche » pas la carte. */
-  -webkit-mask-image: linear-gradient(
-    to right,
-    transparent 0,
-    #000 0.65rem,
-    #000 calc(100% - 0.65rem),
-    transparent 100%
-  );
-  mask-image: linear-gradient(
-    to right,
-    transparent 0,
-    #000 0.65rem,
-    #000 calc(100% - 0.65rem),
-    transparent 100%
-  );
-}
 .sports-chip__line.is-sports-marquee .sports-chip__line-inner {
   animation: sports-marquee-slide var(--sports-marquee-duration, 10s) ease-in-out infinite alternate;
   will-change: transform;
@@ -1791,10 +1819,6 @@ a.masthead-sports__chip:focus-visible {
   82%, 100% { transform: translateX(var(--sports-marquee-shift, 0px)); }
 }
 @media (prefers-reduced-motion: reduce) {
-  .sports-chip__line.is-sports-marquee {
-    -webkit-mask-image: none;
-    mask-image: none;
-  }
   .sports-chip__line.is-sports-marquee .sports-chip__line-inner {
     animation: none;
   }
