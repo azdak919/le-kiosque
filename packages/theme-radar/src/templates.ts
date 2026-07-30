@@ -285,7 +285,7 @@ function sportsPayload(ctx: RenderContext): string {
   if (!sports || sports.enabled === false) return '';
   const teams = sportsTeamRoster(sports);
   if (!teams.length) return '';
-  /* Focus-group B : prune sessions (demoAsOf en démo, sinon now). */
+  /* Focus-group B : prune sessions (demoAsOf / demoLive en démo, sinon now). */
   const pruned = pruneSportsPayload(
     {
       teams,
@@ -293,8 +293,9 @@ function sportsPayload(ctx: RenderContext): string {
       nextGame: sports.nextGame ?? null,
       nextGames: sports.nextGames ?? [],
       demoAsOf: sports.demoAsOf,
+      demoLive: sports.demoLive,
     },
-    { demoAsOf: sports.demoAsOf },
+    { demoAsOf: sports.demoAsOf, demoLive: sports.demoLive },
   );
   const prunedTeams = pruned.teams ?? [];
   if (!prunedTeams.length) return '';
@@ -305,7 +306,8 @@ function sportsPayload(ctx: RenderContext): string {
     nextGame: pruned.nextGame ?? null,
     nextGames: pruned.nextGames ?? [],
     href: sportsPagePath(sports, ctx),
-    demoAsOf: sports.demoAsOf,
+    demoAsOf: pruned.demoAsOf ?? sports.demoAsOf,
+    demoLive: sports.demoLive,
   };
   return `<div class="masthead-sports" data-sports-payload="${esc(JSON.stringify(payload))}" aria-label="Au tableau — scores et matchs" aria-live="polite"></div>`;
 }
@@ -320,9 +322,35 @@ function sportsGlyphHtml(sport: string): string {
   return '🏅';
 }
 
-function formatSportsDate(iso: string, timeZone: string): string {
+function formatSportsDate(iso: string, timeZone: string, now = new Date()): string {
   if (!iso) return '';
   try {
+    const day = String(iso).slice(0, 10);
+    const todayParts = new Intl.DateTimeFormat('en-CA', {
+      timeZone,
+      year: 'numeric',
+      month: '2-digit',
+      day: '2-digit',
+    }).formatToParts(now);
+    const y = todayParts.find((p) => p.type === 'year')?.value;
+    const m = todayParts.find((p) => p.type === 'month')?.value;
+    const d = todayParts.find((p) => p.type === 'day')?.value;
+    const todayKey = y && m && d ? `${y}-${m}-${d}` : '';
+    if (todayKey && day === todayKey) return 'Aujourd’hui';
+    if (todayKey) {
+      const tomorrow = new Date(`${todayKey}T12:00:00`);
+      tomorrow.setDate(tomorrow.getDate() + 1);
+      const ty = tomorrow.getFullYear();
+      const tm = String(tomorrow.getMonth() + 1).padStart(2, '0');
+      const td = String(tomorrow.getDate()).padStart(2, '0');
+      if (day === `${ty}-${tm}-${td}`) return 'Demain';
+      const yesterday = new Date(`${todayKey}T12:00:00`);
+      yesterday.setDate(yesterday.getDate() - 1);
+      const yy = yesterday.getFullYear();
+      const ym = String(yesterday.getMonth() + 1).padStart(2, '0');
+      const yd = String(yesterday.getDate()).padStart(2, '0');
+      if (day === `${yy}-${ym}-${yd}`) return 'Hier';
+    }
     return new Intl.DateTimeFormat('fr-CA', {
       day: 'numeric',
       month: 'short',
@@ -509,8 +537,9 @@ export function sportsResultsPage(ctx: RenderContext, sportsArticles: Article[] 
           nextGame: sports.nextGame ?? null,
           nextGames: sports.nextGames ?? [],
           demoAsOf: sports.demoAsOf,
+          demoLive: sports.demoLive,
         },
-        { demoAsOf: sports.demoAsOf },
+        { demoAsOf: sports.demoAsOf, demoLive: sports.demoLive },
       )
     : null;
   const rawPrunedTeams = (prunedSports?.teams ?? []) as SportsTeam[];
@@ -521,6 +550,10 @@ export function sportsResultsPage(ctx: RenderContext, sportsArticles: Article[] 
         results: (prunedSports?.results ?? []) as MastheadSports['results'],
         nextGame: (prunedSports?.nextGame ?? undefined) as MastheadSports['nextGame'],
         nextGames: (prunedSports?.nextGames ?? undefined) as MastheadSports['nextGames'],
+        /* demoLive décale les dates : la ref jour doit suivre le demoAsOf pruné
+           (sinon nextGame « aujourd’hui » est jugé passé vs l’ancre YAML). */
+        demoAsOf: (prunedSports?.demoAsOf as string | undefined) ?? sports.demoAsOf,
+        demoLive: sports.demoLive,
       }
     : { enabled: false };
   const teams = sports

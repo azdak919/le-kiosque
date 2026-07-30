@@ -330,8 +330,15 @@ export interface MastheadSports {
    * appliquer la fenêtre de fraîcheur. En démo, figer une date « en saison »
    * pour que les fixtures inventées restent visibles hors calendrier réel.
    * Absent → prune sur la date du build (prod).
+   * Avec `demoLive: true`, sert d’ancre de rédaction : toutes les dates sont
+   * décalées pour que ce jour devienne « aujourd’hui » à chaque affichage.
    */
   demoAsOf?: string;
+  /**
+   * Démo uniquement : décale les fixtures pour que `demoAsOf` = jour courant
+   * (scores récents, matchs du jour, prochains matchs). Prod : laisser absent.
+   */
+  demoLive?: boolean;
 }
 
 /** Le journal lui-même. */

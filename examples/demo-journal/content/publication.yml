@@ -170,10 +170,11 @@ masthead:
   sports:
     enabled: true
     href: /sports/
-    # Snapshot éditorial (focus-group B) : prune sessions contre cette date,
-    # pas contre le jour du build — sinon les fixtures sept–oct disparaissent en été.
-    # Après les derniers scores (sept.) et avant le prochain match (oct.).
+    # Ancre de rédaction des fixtures inventées (écarts relatifs entre matchs).
+    # demoLive: décale tout pour que cette date = « aujourd’hui » à l’affichage
+    # (scores récents, matchs du jour, prochains) — la démo ne vieillit pas.
     demoAsOf: '2026-09-20'
+    demoLive: true
     # Formations Élans : H / F / mixte + plusieurs sports (parité RSEQ multi-cartes).
     teams:
       - id: demo-elans-volley-f
@@ -207,7 +208,8 @@ masthead:
             sport: volleyball
             competition: RSEQ collégial
         nextGame:
-          date: '2026-10-02'
+          # Même jour que demoAsOf → match du jour après décalage live
+          date: '2026-09-20'
           time: '19:00'
           opponent: Géants
           opponentCode: CSF
@@ -359,7 +361,7 @@ masthead:
             sport: soccer
             competition: RSEQ collégial
         nextGame:
-          date: '2026-10-03'
+          date: '2026-09-20'
           time: '16:00'
           opponent: Barons
           opponentCode: SLA
@@ -435,7 +437,7 @@ masthead:
             sport: hockey
             competition: RSEQ collégial
         nextGame:
-          date: '2026-10-04'
+          date: '2026-09-20'
           time: '20:00'
           opponent: Géants
           opponentCode: CSF
@@ -511,7 +513,7 @@ masthead:
             sport: flag-football
             competition: RSEQ collégial
         nextGame:
-          date: '2026-10-01'
+          date: '2026-09-20'
           time: '17:00'
           opponent: Gaulois
           opponentCode: VAL
