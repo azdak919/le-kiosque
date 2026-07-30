@@ -31,11 +31,6 @@ lead:
 
 L’équipe de hockey intérieur a publié ses créneaux d’entraînement : lundis et mercredis, 21 h à 22 h 30, gymnase principal. Ouvert aux personnes déjà inscrites au club et, selon les places, à quelques essayages en début de session.
 
-<figure class="post-figure post-figure--right">
-<img src="/media/demo-library/articles/hockey.jpg" alt="Joueurs de hockey en aréna lors d’un entraînement" width="960" height="680" loading="lazy" decoding="async">
-<figcaption>Photo : Daniel Case — séance d’illustration (démonstration).</figcaption>
-</figure>
-
 Bâtons et balles fournis ; gants et protecteurs restent personnels. L’intensité varie : on vise le fun structuré, pas le circuit professionnel. Les entraîneurs insistent sur deux consignes simples — arriver à l’heure et signaler les absences — pour que le banc reste prévisible d’une séance à l’autre.
 
 Les créneaux de 21 h collent au rythme collégial : après les labs, avant le dernier autobus. Le gymnase principal reste partagé avec d’autres activités ; un calendrier collé à l’entrée indique les exceptions (examens, tournois externes, maintenance du plancher).
@@ -44,11 +39,11 @@ Les créneaux de 21 h collent au rythme collégial : après les labs, avant le d
 
 Passez au local des sports avant vendredi pour confirmer votre présence. Les absences répétées sans avis libèrent la place au profit de la liste d’attente — une liste qui, cette année, ressemble déjà à une file de billetterie.
 
-<figure class="post-figure post-figure--left">
-<img src="/media/demo-library/articles/volleyball.jpg" alt="Sport collectif en gymnase collégial" width="960" height="640" loading="lazy" decoding="async">
+<figure class="post-figure post-figure--right">
+<img src="/media/demo-library/articles/volleyball.jpg" alt="Sport collectif en gymnase collégial — partage d’horaire" width="800" height="534" loading="lazy" decoding="async">
 <figcaption>Le gymnase accueille aussi d’autres formations — partage d’horaires obligatoire.</figcaption>
 </figure>
 
-Le local des sports ouvre en semaine de 10 h à 16 h. Apportez votre carte étudiante : l’inscription est gratuite pour les membres du club, et une caution symbolique (équipement prêté) peut être demandée. Les essayages de début de session se font sur les deux premières semaines de septembre seulement.
+Le local des sports ouvre en semaine de 10 h à 16 h. Apportez votre carte étudiante : l’inscription est gratuite pour les membres du club, et une caution symbolique (équipement prêté) peut être demandée. Les essayages de début de session se font sur les deux premières semaines de septembre seulement. Le calendrier affiché à l’entrée du gymnase prime sur toute annonce de corridor.
 
 Premier match amical prévu fin septembre contre un cégep voisin. Venez encourager, ou du moins ne pas confondre le ballon avec un ballon de soccer.

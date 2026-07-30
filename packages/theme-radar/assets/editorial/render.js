@@ -60,11 +60,9 @@ function mediaFigure(article, base) {
   const y = Number(article.lead.focalPoint?.y ?? 50);
   const w = article.lead.width ? ` width="${Number(article.lead.width)}"` : '';
   const h = article.lead.height ? ` height="${Number(article.lead.height)}"` : '';
-  const ratio = article.lead.width && article.lead.height
-    ? `;aspect-ratio:${Number(article.lead.width)}/${Number(article.lead.height)}`
-    : '';
   // Même figure .post-lead que le build statique (photo + crédit, pas crédit seul).
-  return `<figure class="post-lead"><img class="post-lead__img" src="${esc(resolved)}" alt="${esc(article.lead.alt || '')}" decoding="async" fetchpriority="high"${w}${h} style="object-position:${x}% ${y}%${ratio}">${credit ? `<figcaption class="post-lead__credit">${credit}</figcaption>` : ''}</figure>`;
+  // Sans aspect-ratio inline : l’impression doit pouvoir réduire la lead.
+  return `<figure class="post-lead"><img class="post-lead__img" src="${esc(resolved)}" alt="${esc(article.lead.alt || '')}" decoding="async" fetchpriority="high"${w}${h} style="object-position:${x}% ${y}%">${credit ? `<figcaption class="post-lead__credit">${credit}</figcaption>` : ''}</figure>`;
 }
 
 function articleCard(article, bundle, base, variant = 'tail') {
@@ -145,7 +143,7 @@ export function renderRoute(bundle, base, pathname, renderBody) {
       ? `<a class="post-eyebrow" data-editorial-link href="${eyebrowHref}"${eyebrowColor ? ` style="--c:${esc(eyebrowColor)}"` : ''}>${esc(eyebrowName)}</a>`
       : '';
     const briefs = published.filter((item) => item.slug !== article.slug).slice(0, 5);
-    const post = `<article class="post post--in-magazine">${eyebrow}<h1 class="post-title">${esc(article.title)}</h1>${article.subtitle ? `<p class="post-subtitle">${esc(article.subtitle)}</p>` : ''}${article.dek ? `<p class="post-dek">${esc(article.dek)}</p>` : ''}<div class="post-meta"><span>Par ${authorLinks.join(', ')}</span><time datetime="${esc(article.publishedAt || article.updatedAt)}">${esc(formatDateTime(article.publishedAt || article.updatedAt, bundle.publication.timeZone))}</time></div>${mediaFigure(article, base)}<div class="post-body">${renderBody(article)}</div>${categories.length ? `<div class="post-tags">${categories.map((category) => `<a class="tag" data-editorial-link href="${link(base, `/categories/${encodeURIComponent(category.slug)}/`)}">${esc(category.name)}</a>`).join('')}</div>` : ''}</article>`;
+    const post = `<article class="post post--in-magazine">${eyebrow}<h1 class="post-title">${esc(article.title)}</h1>${article.subtitle ? `<p class="post-subtitle">${esc(article.subtitle)}</p>` : ''}${article.dek ? `<p class="post-dek">${esc(article.dek)}</p>` : ''}<div class="post-meta"><span>Par ${authorLinks.join(', ')}</span><time datetime="${esc(article.publishedAt || article.updatedAt)}">${esc(formatDateTime(article.publishedAt || article.updatedAt, bundle.publication.timeZone))}</time></div><div class="post-flow">${mediaFigure(article, base)}<div class="post-body">${renderBody(article)}</div></div>${categories.length ? `<div class="post-tags">${categories.map((category) => `<a class="tag" data-editorial-link href="${link(base, `/categories/${encodeURIComponent(category.slug)}/`)}">${esc(category.name)}</a>`).join('')}</div>` : ''}</article>`;
     const rail = briefs.length
       ? `<aside class="brief-rail brief-rail--article" aria-label="En bref"><h2>En bref</h2>${briefs.map((item) => articleCard(item, bundle, base, 'brief')).join('')}</aside>`
       : '';
