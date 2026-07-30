@@ -116,7 +116,7 @@ test('demo et template reçoivent le même theme.css / kiosque.js (packages/them
   assert.match(demoHome, /id="masthead-weather-dock"/, 'emplacement dock météo');
   assert.match(tplHome, /id="masthead-weather-dock"/);
   assert.match(demoHome, /data-sports-payload/, 'équipe sports démo embarquée');
-  assert.match(demoHome, /Les Quorums/, 'surnom maison unique (tous sports)');
+  assert.match(demoHome, /Les Élans|Les &Eacute;lans/, 'surnom maison unique (focus-group Élans)');
   assert.match(demoHome, /code&quot;:&quot;QUO&quot;|"code":"QUO"/, 'code équipe QUO');
   assert.match(demoHome, /data-nav-shell/, 'shell nav mobile');
   assert.match(tplHome, /data-nav-shell/);
@@ -135,12 +135,14 @@ test('demo et template reçoivent le même theme.css / kiosque.js (packages/them
     'intro équipe reformulée',
   );
   const seed = await readFile(path.join(demo.out, 'assets/editorial/seed.json'), 'utf8');
-  assert.match(seed, /"version":\s*15/, 'seed démo v15 (print cm + figures sans doublon lead)');
-  assert.match(seed, /Les Quorums/, 'seed embarque le surnom maison');
+  assert.match(seed, /"version":\s*16/, 'seed démo v16 (surnom Élans, focus-group)');
+  assert.match(seed, /Les Élans/, 'seed embarque le surnom maison Élans');
+  assert.doesNotMatch(seed, /Les Quorums/, 'plus de surnom redondant Quorums');
   assert.match(seed, /"sport":"volleyball"/, 'plusieurs formations (sports) sous le même surnom');
   assert.match(seed, /"sport":"basketball"|"sport":"soccer"|"sport":"hockey"/, 'au moins un autre sport');
   assert.match(seed, /Titans|Boomerang|Géants|Cheetahs/, 'adversaires = clubs RSEQ collégial réels');
   assert.match(seed, /"code":"QUO"/, 'code institution Cégep du Quorum = QUO');
+  assert.match(demoJs, /sportsHomeRichLabel|sportsOppRichLabel/, 'puce : maison sans (institution)');
   assert.match(seed, /"opponentCode":"(GAR|LIM|CSF|CAL|SLA|CEM|SJR)"/, 'codes adversaires = institutions RSEQ');
   // Prochains matchs : institution adverse (puce bureau + page Au tableau).
   assert.match(
