@@ -926,7 +926,11 @@
     if (team.colors && team.colors.primary) {
       chip.style.setProperty('--sports-brand', team.colors.primary);
     }
-    if (chip.tagName === 'A') chip.href = href;
+    if (chip.tagName === 'A') {
+      chip.href = href;
+      /* SPA démo : même routeur que le menu (évite un full reload hors basePath). */
+      chip.setAttribute('data-editorial-link', '');
+    }
 
     var glyph = sportsEl('span', 'sports-chip__glyph', sportsGlyph(sport));
     glyph.setAttribute('aria-hidden', 'true');

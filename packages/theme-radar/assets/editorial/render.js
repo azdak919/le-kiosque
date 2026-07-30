@@ -13,6 +13,23 @@ function link(base, path) {
   return `${base}${path.startsWith('/') ? path : `/${path}`}`;
 }
 
+/**
+ * URL de la page Au tableau pour la puce mât.
+ * Le YAML stocke souvent « /sports/ » sans basePath : après applyBranding SPA
+ * il faut préfixer (ex. /le-kiosque/demo/sports/), sinon clic → 404 racine.
+ */
+function sportsBoardHref(base, sports) {
+  const raw = String(sports?.href || '/sports/').trim() || '/sports/';
+  if (/^https?:\/\//i.test(raw)) return raw;
+  let path = raw.startsWith('/') ? raw : `/${raw}`;
+  const root = String(base || '').replace(/\/+$/, '');
+  if (root && (path === root || path.startsWith(`${root}/`))) {
+    return path.endsWith('/') ? path : `${path}/`;
+  }
+  if (/^\/?sports\/?$/i.test(path)) return link(base || '', '/sports/');
+  return link(base || '', path);
+}
+
 function safeMediaUrl(value) {
   const raw = String(value || '');
   return /^(?:data:image\/(?:svg\+xml|png|webp|jpeg);base64,|https?:\/\/|\/)/i.test(raw) ? raw : '';
@@ -324,14 +341,17 @@ export function applyBranding(bundle, base) {
         sportsHost.className = 'masthead-sports';
         statusHost.append(sportsHost);
       }
-      sportsHost.dataset.sportsPayload = JSON.stringify({
+      const sportsHref = sportsBoardHref(base, sports);
+      // setAttribute : évite les surprises dataset + garantit le re-parse kiosque.js
+      sportsHost.setAttribute('data-sports-payload', JSON.stringify({
         teams: sportsTeams,
         team: sportsTeams[0],
         results: sports.results || [],
         nextGame: sports.nextGame || null,
         nextGames: sports.nextGames || [],
-        href: sports.href || '',
-      });
+        href: sportsHref,
+        demoAsOf: sports.demoAsOf || null,
+      }));
       sportsHost.setAttribute('aria-label', 'Au tableau — scores et matchs');
     } else sportsHost?.remove();
   } else {
