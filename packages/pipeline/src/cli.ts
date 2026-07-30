@@ -27,6 +27,7 @@ import { normalizeBasePath, type KiosqueConfig } from './config.ts';
 import { readSharedMediaManifest } from './shared-media.ts';
 import { doctor, formatDoctorReport } from './doctor.ts';
 import { adopt } from './adopt.ts';
+import { writeDeployHint } from './deploy-hint.ts';
 
 const log = createConsoleLogger('kiosque');
 
@@ -39,6 +40,7 @@ Le Kiosque — socle libre pour les journaux étudiants
   kiosque doctor                                  diagnostic local (sans réseau)
   kiosque adopt   [--out <file.md>]               checklist de passation
   kiosque export  [--out <dir>]                   archive portable du miroir
+  kiosque deploy-hint [--out <file.md>]           guide de publication (pas d’hébergement)
   kiosque cms:config                              régénère admin/config.yml
 
 Options communes
@@ -256,6 +258,12 @@ async function main(): Promise<number> {
         );
       }
       log.info(`export portable dans ${outDir} (miroir + config, sans backend)`);
+      return 0;
+    }
+
+    case 'deploy-hint': {
+      const file = await writeDeployHint(config, args.out);
+      log.info(`guide de publication écrit dans ${file}`);
       return 0;
     }
 
