@@ -84,7 +84,7 @@ test('la vitrine expose le bandeau illustré, les outils et la composition magaz
   const content = await bundle();
   const weatherLoc = content.publication.masthead?.weather?.localities[0];
   const weatherName = typeof weatherLoc === 'string' ? weatherLoc : weatherLoc?.name;
-  assert.equal(weatherName, 'Québec');
+  assert.equal(weatherName, 'Saint-Louis-du-Ha! Ha!');
   assert.equal(content.publication.masthead?.tools?.pomodoro, true);
   assert.equal(content.publication.masthead?.tools?.solitaire, true);
   const sportsTeams = content.publication.masthead?.sports?.teams?.length
@@ -118,7 +118,8 @@ test('la vitrine expose le bandeau illustré, les outils et la composition magaz
   const sportsSection = await readFile(path.join(out, 'sections/sports/index.html'), 'utf8');
   assert.match(sportsSection, /Au tableau/, 'section Sports affiche Au tableau');
   assert.match(sportsSection, /sports-board/);
-  assert.match(home, /Qu&eacute;bec|Québec/);
+  assert.match(home, /Saint-Louis-du-Ha|Ha! Ha!|Ha!/, 'météo mât = ville du cégep fictif');
+  assert.match(home, /47\.6709|-68\.9797|saint-louis-du-ha-ha/, 'coords / slug météo Ha! Ha!');
   assert.match(home, /href="https:\/\/le-radar\.ca\/pomo\/"/);
   assert.match(home, /href="https:\/\/le-radar\.ca\/solitaire\/"/);
   assert.match(home, /class="article article--lead(?: [^"]*)?"/);
