@@ -16,7 +16,9 @@ export const escapeSourceViewHtml = (value) => String(value ?? '').replace(/[&<>
 
 /* Extraits assez longs pour qu’en float mobile le texte remplisse
  * l’espace sous la vignette (pas une seule ligne orpheline). */
-const EXCERPT_LIMITS = Object.freeze({ lead: 960, feature: 780, brief: 360, tail: 280 });
+/* Feature ≥ ~320 car. utiles pour que le texte épouse le bas de la vignette
+ * (float mobile) ; 1100 laisse de la marge pour 3–4 lignes sous la photo. */
+const EXCERPT_LIMITS = Object.freeze({ lead: 960, feature: 1100, brief: 360, tail: 280 });
 
 function normalizeRole(value) {
   return ['lead', 'feature', 'brief', 'tail'].includes(value) ? value : 'tail';

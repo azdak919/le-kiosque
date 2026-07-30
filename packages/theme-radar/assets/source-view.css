@@ -705,6 +705,8 @@
     overflow: visible;
     /* L’extrait remplit l’espace à droite puis sous la photo. */
     margin-top: 0;
+    /* ≈ hauteur vignette : évite un trou bas quand l’extrait est encore court. */
+    min-height: clamp(92px, 28vw, 118px);
   }
   .news-hero .article--feature.article--thumb.has-image::after {
     content: "";

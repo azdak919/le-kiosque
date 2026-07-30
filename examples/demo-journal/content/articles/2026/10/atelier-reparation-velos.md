@@ -5,7 +5,10 @@ slug: atelier-reparation-velos
 excerpt: >-
   Le nouvel atelier de réparation de vélos ouvrira ses portes dès la semaine prochaine,
   les mardis et jeudis de 11 h 30 à 13 h 30, dans le local adjacent au local des
-  associations. Des bénévoles formés offriront des…
+  associations. Des bénévoles formés offriront des outils, des conseils de mécanique
+  de base et un coup de main pour les pannes courantes : pneus, freins, chaînes et
+  éclairage. L’atelier ne remplace pas un magasin spécialisé : il vise surtout à
+  éviter qu’un problème mineur laisse un vélo inutilisé pendant des semaines.
 status: published
 demo: true
 publishedAt: 2026-10-02T13:00:00Z

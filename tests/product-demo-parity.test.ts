@@ -130,7 +130,10 @@ test('demo et template reçoivent le même theme.css / kiosque.js (packages/them
   assert.match(demoBackend, /#refreshUnmodifiedDemo|refreshUnmodifiedDemo/, 'upgrade seed local sans perdre les éditions');
   assert.match(demoBackend, /seed\.publication/, 'refresh seed met à jour publication (sports mât)');
   assert.match(demoJs, /KiosqueRefreshMasthead/, 're-paint sports après branding éditorial');
-  assert.match(demoJs, /SPORTS_ROTATE_MS|5200/, 'rotation sports ~5,2 s comme météo LE-RADAR');
+  assert.match(demoJs, /SPORTS_ROTATE_MIN_MS|5600/, 'dwell min sports ~5,6 s');
+  assert.match(demoJs, /SPORTS_MARQUEE_PX_PER_S|scheduleSportsRotate/, 'marquee lent + rotation après cycle');
+  assert.match(demoJs, /sports-chip__badge|sports-chip__score/, 'format scoreboard codes + score');
   assert.match(demoJs, /is-arriving/, 'animation gare sports');
   assert.match(demoCss, /sports-tile-arrive/, 'keyframes arrivée scoreboard');
+  assert.match(demoCss, /sports-marquee-slide[\s\S]*18%/, 'marquee avec pauses aux extrémités');
 });

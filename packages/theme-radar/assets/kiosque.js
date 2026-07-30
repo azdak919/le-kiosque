@@ -623,9 +623,14 @@
     setMastheadWeatherDocked(shouldDock);
   }
 
-  /* Rotation scoreboard — mêmes repères que LE-RADAR météo (gare) :
-   * intervalle 5200 ms, deck brassé (Fisher–Yates), animation is-arriving. */
-  var SPORTS_ROTATE_MS = 5200;
+  /* Rotation scoreboard — deck brassé (Fisher–Yates), animation is-arriving.
+   * Format type RDS/TVA : codes + score (pas de prose longue).
+   * Marquee : pauses aux extrémités (keyframes) + dwell = 1 cycle aller-retour. */
+  var SPORTS_ROTATE_MIN_MS = 5600;
+  /* Vitesse lente (~20 px/s) pour laisser lire score + codes. */
+  var SPORTS_MARQUEE_PX_PER_S = 20;
+  var SPORTS_MARQUEE_MIN_SEC = 7;
+  var SPORTS_ARRIVE_MS = 500;
   var sportsPayloadCache = null;
   var sportsSlides = [];
   var sportsDeck = [];
@@ -635,6 +640,23 @@
     sportsReducedMotion = !!(window.matchMedia
       && window.matchMedia('(prefers-reduced-motion: reduce)').matches);
   } catch (_) {}
+
+  function clearSportsRotateTimer() {
+    if (sportsTimer) {
+      window.clearTimeout(sportsTimer);
+      sportsTimer = null;
+    }
+  }
+
+  function scheduleSportsRotate(delayMs) {
+    clearSportsRotateTimer();
+    if (sportsSlides.length < 2 || sportsReducedMotion) return;
+    var wait = Math.max(SPORTS_ROTATE_MIN_MS, delayMs | 0);
+    sportsTimer = window.setTimeout(function () {
+      sportsTimer = null;
+      rotateSportsChip();
+    }, wait);
+  }
 
   function sportsResultTone(result) {
     if (result === 'W') return '#3d9a6a';
@@ -751,30 +773,62 @@
     return label;
   }
 
-  function applySportsLineMarquee(viewport) {
-    if (!viewport) return;
-    var inner = viewport.firstElementChild;
-    if (!inner) return;
+  /**
+   * Marquee type bandeau météo LE-RADAR / RDS :
+   * pauses aux extrémités dans les keyframes ; dwell = 1 aller-retour complet.
+   */
+  function applySportsLineMarquee(viewport, onReady) {
+    if (!viewport) {
+      if (onReady) onReady(SPORTS_ROTATE_MIN_MS);
+      return;
+    }
+    var inner = viewport.querySelector('.sports-chip__line-inner') || viewport.firstElementChild;
+    if (!inner) {
+      if (onReady) onReady(SPORTS_ROTATE_MIN_MS);
+      return;
+    }
     viewport.classList.remove('is-sports-marquee');
     viewport.style.removeProperty('--sports-marquee-shift');
     viewport.style.removeProperty('--sports-marquee-duration');
-    if (sportsReducedMotion) return;
-    /* Mesure après paint (arrive anim + fonts). */
+    if (sportsReducedMotion) {
+      if (onReady) onReady(SPORTS_ROTATE_MIN_MS);
+      return;
+    }
     requestAnimationFrame(function () {
       requestAnimationFrame(function () {
         var overflow = inner.scrollWidth - viewport.clientWidth;
-        if (overflow <= 2) return;
-        viewport.classList.add('is-sports-marquee');
-        viewport.style.setProperty('--sports-marquee-shift', '-' + Math.round(overflow) + 'px');
-        /* ~28 px/s comme applyMarquee des titres kiosque / météo LE-RADAR. */
-        viewport.style.setProperty(
-          '--sports-marquee-duration',
-          Math.max(6, overflow / 28).toFixed(1) + 's',
-        );
+        var dwellMs = SPORTS_ROTATE_MIN_MS;
+        if (overflow > 2) {
+          /* Une direction = pauses (keyframes ~20 %+20 %) + déplacement.
+           * durationSec = un sens ; ×2 = aller + retour (animation alternate). */
+          var durationSec = Math.max(
+            SPORTS_MARQUEE_MIN_SEC,
+            overflow / SPORTS_MARQUEE_PX_PER_S,
+          );
+          viewport.classList.add('is-sports-marquee');
+          viewport.style.setProperty('--sports-marquee-shift', '-' + Math.round(overflow) + 'px');
+          viewport.style.setProperty('--sports-marquee-duration', durationSec.toFixed(1) + 's');
+          /* 2 sens + petite marge pour finir le hold de fin de cycle. */
+          dwellMs = Math.round(durationSec * 1000) * 2 + 400;
+        }
+        if (onReady) onReady(Math.max(SPORTS_ROTATE_MIN_MS, dwellMs));
       });
     });
   }
 
+  function sportsEl(tag, className, text) {
+    var el = document.createElement(tag);
+    if (className) el.className = className;
+    if (text != null && text !== '') el.textContent = text;
+    return el;
+  }
+
+  /**
+   * Format scoreboard québécois (RDS / TVA Sports) en puce compacte :
+   *   résultat :  🏐  V  QUO  3–1  MOT
+   *   à venir  :  🏐  QUO  vs  MAJ  ·  2 oct.
+   * Codes + score d’abord ; détail long (noms, compétition) dans title/aria.
+   */
   function paintSportsChip(host, display, animate) {
     if (!host || !display) return;
     host.textContent = '';
@@ -792,74 +846,105 @@
     }
     if (chip.tagName === 'A') chip.href = href;
 
-    var glyph = document.createElement('span');
-    glyph.className = 'sports-chip__glyph';
+    var glyph = sportsEl('span', 'sports-chip__glyph', sportsGlyph(sport));
     glyph.setAttribute('aria-hidden', 'true');
-    glyph.textContent = sportsGlyph(sport);
 
-    /*
-     * Ligne enrichie + viewport marquee (défilement L→R si trop long),
-     * même principe que les noms météo LE-RADAR / titres is-marquee.
-     */
-    var viewport = document.createElement('span');
-    viewport.className = 'sports-chip__line';
-    var inner = document.createElement('span');
-    inner.className = 'sports-chip__line-inner';
+    var viewport = sportsEl('span', 'sports-chip__line');
+    var inner = sportsEl('span', 'sports-chip__line-inner');
 
     var titleParts = [];
     var aria = '';
-    var lineText = '';
+
     if (display.mode === 'result') {
       var g = display.game;
       var score = g.scoreFor + '–' + g.scoreAgainst;
       var badge = g.result === 'W' ? 'V' : g.result === 'L' ? 'D' : 'N';
+      var badgeMod = g.result === 'W' ? 'w' : g.result === 'L' ? 'l' : 'd';
       var issue = g.result === 'W' ? 'Victoire' : g.result === 'L' ? 'Défaite' : 'Match nul';
-      var oppName = g.opponent || g.opponentCode || 'Adversaire';
-      /* Code · V/D · score · nom adversaire (pas seulement le code). */
-      lineText = code + ' · ' + badge + ' ' + score + ' · ' + oppName;
-      if (sportLabel) lineText += ' · ' + sportLabel;
-      aria = issue + ' des ' + team.name + ' (' + sportLabel + ') : '
-        + g.scoreFor + ' à ' + g.scoreAgainst + ' contre ' + oppName;
-      titleParts.push(issue + ' · ' + team.name + ' · ' + sportLabel);
-      titleParts.push(score + ' vs ' + oppName);
+      var oppCode = String(g.opponentCode || '').toUpperCase().slice(0, 4);
+      var oppName = g.opponent || oppCode || 'Adversaire';
+      var oppShort = oppCode || String(oppName).slice(0, 8);
+
+      /* Pastille V/D hors marquee — lue d’un coup d’œil (RDS-style). */
+      var badgeEl = sportsEl('span', 'sports-chip__badge sports-chip__badge--' + badgeMod, badge);
+      badgeEl.setAttribute('aria-hidden', 'true');
+      chip.appendChild(glyph);
+      chip.appendChild(badgeEl);
+
+      /* Ligne : QUO 3–1 MOT (codes + score tabular). */
+      inner.appendChild(sportsEl('span', 'sports-chip__code', code));
+      inner.appendChild(document.createTextNode(' '));
+      inner.appendChild(sportsEl('span', 'sports-chip__score', score));
+      inner.appendChild(document.createTextNode(' '));
+      inner.appendChild(sportsEl('span', 'sports-chip__code sports-chip__opp', oppShort));
+
+      aria = issue + ' des ' + team.name
+        + (sportLabel ? ' (' + sportLabel + ')' : '')
+        + ' : ' + g.scoreFor + ' à ' + g.scoreAgainst + ' contre ' + oppName;
+      titleParts.push(issue + ' · ' + team.name);
+      if (sportLabel) titleParts.push(sportLabel);
+      titleParts.push(code + ' ' + score + ' ' + oppShort);
+      if (oppName !== oppShort) titleParts.push(oppName);
       if (g.opponentInstitution) titleParts.push(g.opponentInstitution);
       if (g.competition) titleParts.push(g.competition);
       if (g.date) titleParts.push(formatSportsChipWhen(g.date));
     } else {
       var n = display.game;
-      var nextOpp = n.opponent || n.opponentCode || 'Adversaire';
+      var nextCode = String(n.opponentCode || '').toUpperCase().slice(0, 4);
+      var nextName = n.opponent || nextCode || 'Adversaire';
+      var nextShort = nextCode || String(nextName).slice(0, 8);
       var when = formatSportsChipWhen(n.date, n.time);
-      lineText = code + ' · À venir vs ' + nextOpp;
-      if (when) lineText += ' · ' + when;
-      if (sportLabel) lineText += ' · ' + sportLabel;
-      if (n.home === true) lineText += ' · domicile';
-      else if (n.home === false) lineText += ' · extérieur';
-      aria = 'Prochain match des ' + team.name + ' (' + sportLabel + ') contre '
-        + nextOpp + (when ? ' le ' + when : '');
-      titleParts.push('Prochain · ' + team.name + ' · ' + sportLabel);
-      titleParts.push('vs ' + nextOpp);
+
+      chip.appendChild(glyph);
+
+      /* Ligne : QUO vs MAJ · 2 oct. */
+      inner.appendChild(sportsEl('span', 'sports-chip__code', code));
+      inner.appendChild(document.createTextNode(' '));
+      inner.appendChild(sportsEl('span', 'sports-chip__vs', 'vs'));
+      inner.appendChild(document.createTextNode(' '));
+      inner.appendChild(sportsEl('span', 'sports-chip__code sports-chip__opp', nextShort));
+      if (when) {
+        inner.appendChild(document.createTextNode(' · '));
+        inner.appendChild(sportsEl('span', 'sports-chip__when', when));
+      }
+
+      aria = 'Prochain match des ' + team.name
+        + (sportLabel ? ' (' + sportLabel + ')' : '')
+        + ' contre ' + nextName + (when ? ' le ' + when : '');
+      titleParts.push('Prochain · ' + team.name);
+      if (sportLabel) titleParts.push(sportLabel);
+      titleParts.push(code + ' vs ' + nextShort);
+      if (nextName !== nextShort) titleParts.push(nextName);
       if (when) titleParts.push(when);
+      if (n.home === true) titleParts.push('Domicile');
+      else if (n.home === false) titleParts.push('Extérieur');
+      if (n.competition) titleParts.push(n.competition);
     }
     if (team.fictional) titleParts.push('Formation fictive (démonstration)');
 
-    inner.textContent = lineText;
     viewport.appendChild(inner);
-
     chip.title = titleParts.join(' · ');
     chip.setAttribute('aria-label', aria);
     if (team.fictional) chip.dataset.fictional = 'true';
     chip.dataset.sportsKey = display.key || '';
+    chip.dataset.sportsMode = display.mode || '';
 
-    chip.appendChild(glyph);
     chip.appendChild(viewport);
     host.appendChild(chip);
     host.hidden = false;
-    applySportsLineMarquee(viewport);
+
+    function afterMarqueeReady(dwellMs) {
+      scheduleSportsRotate(dwellMs);
+    }
     if (animate && !sportsReducedMotion) {
+      applySportsLineMarquee(viewport);
       window.setTimeout(function () {
+        if (!chip.isConnected) return;
         chip.classList.remove('is-arriving');
-        applySportsLineMarquee(viewport);
-      }, 500);
+        applySportsLineMarquee(viewport, afterMarqueeReady);
+      }, SPORTS_ARRIVE_MS);
+    } else {
+      applySportsLineMarquee(viewport, afterMarqueeReady);
     }
   }
 
@@ -876,16 +961,8 @@
     syncMastheadWeatherDock();
   }
 
-  function startSportsRotation() {
-    if (sportsTimer) {
-      window.clearInterval(sportsTimer);
-      sportsTimer = null;
-    }
-    if (sportsSlides.length < 2 || sportsReducedMotion) return;
-    sportsTimer = window.setInterval(rotateSportsChip, SPORTS_ROTATE_MS);
-  }
-
   function initMastheadSports() {
+    clearSportsRotateTimer();
     var host = document.querySelector('.masthead-sports[data-sports-payload]');
     if (!host) return;
     var payload;
@@ -910,7 +987,6 @@
     var first = sportsDeck.shift() || sportsSlides[0];
     paintSportsChip(host, first, false);
     syncMastheadWeatherDock();
-    startSportsRotation();
   }
 
   /** Appelé après applyBranding (front éditorial) pour peindre la puce sports. */
