@@ -6,8 +6,8 @@ cohort: '2026-2027'
 active: true
 avatar:
   src: /media/demo-library/auteurs/amira-benali.jpg
-  alt: "Portrait de Amira Benali"
-  credit: "randomuser.me"
+  alt: "Portrait fictif de Amira Benali"
+  credit: "randomuser.me (personnage fictif)"
   creditUrl: "https://randomuser.me/"
   license: "CC0"
   licenseUrl: "https://creativecommons.org/publicdomain/zero/1.0/"

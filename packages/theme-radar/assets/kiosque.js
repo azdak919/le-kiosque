@@ -726,7 +726,7 @@
     }
   }
 
-  /** « Les Corbeaux » → « Corbeaux » pour la puce (place limitée). */
+  /** « Les Quorums » → « Quorums » pour la puce (place limitée). */
   function sportsShortTeamName(name) {
     var n = String(name || '').trim();
     return n.replace(/^(Les|Le|La|L’|L')\s+/i, '') || n;

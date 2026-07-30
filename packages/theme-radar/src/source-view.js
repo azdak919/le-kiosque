@@ -99,13 +99,17 @@ function imageMarkup(image, role) {
   return `<figure class="article-media"><img src="${escapeSourceViewHtml(image.src)}" alt="${escapeSourceViewHtml(image.alt || '')}" loading="${loading}" decoding="async" style="object-position:${x}% ${y}%"${width}${height} ${onErr}>${credit ? `<figcaption class="article-media-credit">${credit}</figcaption>` : ''}</figure>`;
 }
 
-function authorsMarkup(authors, linkAttributes) {
+/**
+ * Byline auteurs. Les pages signature s’ouvrent en nouvel onglet (cible
+ * front-end : ne pas quitter l’article en lecture ; front.js ne doit pas
+ * intercepter `target=_blank`).
+ */
+function authorsMarkup(authors, _linkAttributes) {
   if (!Array.isArray(authors) || !authors.length) return '';
   const names = authors.map((author) => {
     const name = escapeSourceViewHtml(author?.name || '');
-    const attributes = linkAttributes ? `${linkAttributes} ` : '';
     return author?.href
-      ? `<a class="article-author" ${attributes}href="${escapeSourceViewHtml(author.href)}">${name}</a>`
+      ? `<a class="article-author" href="${escapeSourceViewHtml(author.href)}" target="_blank" rel="noopener noreferrer">${name}</a>`
       : `<span class="article-author">${name}</span>`;
   }).filter(Boolean);
   if (!names.length) return '';

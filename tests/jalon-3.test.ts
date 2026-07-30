@@ -104,13 +104,17 @@ test('la vitrine expose le bandeau illustré, les outils et la composition magaz
   assert.match(home, /id="masthead-backgrounds"/);
   assert.match(home, /data-weather-localities="/);
   assert.match(home, /data-sports-payload="/);
-  assert.match(home, /Les Braises|Les Orbites|Les Corbeaux|Les Verglas/);
+  assert.match(home, /Les Quorums/);
   assert.match(home, /\/sports\//, 'puce sports pointe vers la page résultats');
   const sportsPage = await readFile(path.join(out, 'sports/index.html'), 'utf8');
   assert.match(sportsPage, /Au tableau/);
   assert.match(sportsPage, /sports-board/);
   assert.match(sportsPage, /sports-panel/);
   assert.match(sportsPage, /Boomerang|Titans|Cheetahs/);
+  // Nav section Sports = même contenu Au tableau (pas le fil seul).
+  const sportsSection = await readFile(path.join(out, 'sections/sports/index.html'), 'utf8');
+  assert.match(sportsSection, /Au tableau/, 'section Sports affiche Au tableau');
+  assert.match(sportsSection, /sports-board/);
   assert.match(home, /Qu&eacute;bec|Québec/);
   assert.match(home, /href="https:\/\/le-radar\.ca\/pomo\/"/);
   assert.match(home, /href="https:\/\/le-radar\.ca\/solitaire\/"/);

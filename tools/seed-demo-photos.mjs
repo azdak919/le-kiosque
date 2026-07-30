@@ -120,11 +120,13 @@ const ARTICLE_THEMES = {
     licenseUrl: 'https://commons.wikimedia.org/wiki/File:Cafeteria.jpg',
   },
   cinema: {
-    file: 'Movie theater.jpg',
-    alt: 'Salle de cinéma vue depuis les sièges',
-    credit: 'Wikimedia Commons',
-    license: 'voir source',
-    licenseUrl: 'https://commons.wikimedia.org/wiki/File:Movie_theater.jpg',
+    // Petite salle de projection (sièges + projecteur) — pas une façade abandonnée.
+    // L’ancien File:Movie_theater.jpg était en réalité le CineLandia en ruines.
+    file: 'Kinolino-Kellerkino 02.jpg',
+    alt: 'Petite salle de cinéma avec rangées de sièges rouges et projecteur',
+    credit: 'Mr N',
+    license: 'CC BY-SA 4.0',
+    licenseUrl: 'https://creativecommons.org/licenses/by-sa/4.0/',
   },
   livres: {
     file: 'Bookshelves.jpg',

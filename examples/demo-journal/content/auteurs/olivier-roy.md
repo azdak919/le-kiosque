@@ -6,8 +6,8 @@ cohort: '2025-2027'
 active: true
 avatar:
   src: /media/demo-library/auteurs/olivier-roy.jpg
-  alt: "Portrait de Olivier Roy"
-  credit: "randomuser.me"
+  alt: "Portrait fictif de Olivier Roy"
+  credit: "randomuser.me (personnage fictif)"
   creditUrl: "https://randomuser.me/"
   license: "CC0"
   licenseUrl: "https://creativecommons.org/publicdomain/zero/1.0/"

@@ -6,8 +6,8 @@ cohort: '2023-2025'
 active: false
 avatar:
   src: /media/demo-library/auteurs/leonie-gagnon.jpg
-  alt: "Portrait de Léonie Gagnon"
-  credit: "randomuser.me"
+  alt: "Portrait fictif de Léonie Gagnon"
+  credit: "randomuser.me (personnage fictif)"
   creditUrl: "https://randomuser.me/"
   license: "CC0"
   licenseUrl: "https://creativecommons.org/publicdomain/zero/1.0/"

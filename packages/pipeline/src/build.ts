@@ -160,12 +160,28 @@ export async function guardAgainstEmptying(
 
 marked.setOptions({ gfm: true, breaks: false });
 
-function renderBody(article: Article): string {
-  if (article.body.format === 'html') return sanitizeHtml(article.body.raw);
-  // Le Markdown de notre propre dépôt est de confiance, mais on l'assainit
-  // quand même : `marked` laisse passer le HTML brut inséré dans le Markdown,
-  // et un jour ce Markdown viendra d'un import WordPress.
-  return sanitizeHtml(marked.parse(article.body.raw, { async: false }) as string);
+/**
+ * Préfixe les chemins racine `/media/…` avec le basePath de déploiement
+ * (ex. `/le-kiosque/demo`) pour que les photos du corps d’article se chargent
+ * sous un sous-chemin GitHub Pages.
+ */
+function rewriteBodyMediaUrls(html: string, basePath: string): string {
+  const root = String(basePath || '').replace(/\/+$/, '');
+  if (!root) return html;
+  return html.replace(
+    /(\s(?:src|href)=["'])(\/media\/[^"']+)(["'])/gi,
+    (_m, pre: string, path: string, post: string) => `${pre}${root}${path}${post}`,
+  );
+}
+
+function renderBody(article: Article, basePath = ''): string {
+  const raw = article.body.format === 'html'
+    ? sanitizeHtml(article.body.raw)
+    // Le Markdown de notre propre dépôt est de confiance, mais on l'assainit
+    // quand même : `marked` laisse passer le HTML brut inséré dans le Markdown,
+    // et un jour ce Markdown viendra d'un import WordPress.
+    : sanitizeHtml(marked.parse(article.body.raw, { async: false }) as string);
+  return rewriteBodyMediaUrls(raw, basePath);
 }
 
 function atomFeed(bundle: ContentBundle, articles: Article[], limit: number): string {
@@ -315,7 +331,7 @@ export async function build(options: BuildOptions): Promise<BuildResult> {
   // Articles
   let redirects = 0;
   for (const article of paged) {
-    const withHtml: Article = { ...article, body: { ...article.body, html: renderBody(article) } };
+    const withHtml: Article = { ...article, body: { ...article.body, html: renderBody(article, basePath) } };
     // Rail « En bref » : listés (published), du plus récent, hors l’article courant.
     const related = listed.filter((item) => item.slug !== article.slug);
     await emit(outDir, `/articles/${article.slug}/`, articlePage(withHtml, ctx, related));
@@ -506,7 +522,7 @@ export async function build(options: BuildOptions): Promise<BuildResult> {
     await writeFile(path.join(outDir, 'assets', 'editorial', 'seed.json'), JSON.stringify({
       // Bump version when demo authors/media/articles change so PGlite
       // re-hydrates unmodified demo rows (portraits, lead photos, etc.).
-      format: 'kiosque-demo-seed', version: 11,
+      format: 'kiosque-demo-seed', version: 14,
       publication: { ...bundle.publication, theme: { ...bundle.publication.theme, typography: bundle.publication.theme.typography ?? 'modern-accessible' } },
       articles: bundle.articles.map((article) => ({ ...article, isDemo: true, isUserModified: false })),
       authors: bundle.authors.map((author) => ({ ...author, isDemo: true, isUserModified: false })),

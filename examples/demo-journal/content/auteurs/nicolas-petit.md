@@ -6,8 +6,8 @@ cohort: '2021-2023'
 active: false
 avatar:
   src: /media/demo-library/auteurs/nicolas-petit.jpg
-  alt: "Portrait de Nicolas Petit"
-  credit: "randomuser.me"
+  alt: "Portrait fictif de Nicolas Petit"
+  credit: "randomuser.me (personnage fictif)"
   creditUrl: "https://randomuser.me/"
   license: "CC0"
   licenseUrl: "https://creativecommons.org/publicdomain/zero/1.0/"

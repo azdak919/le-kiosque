@@ -35,6 +35,17 @@ pavillon des sciences avant les premières neiges. Pensée comme un laboratoire
 commun, la serre sera utilisée par les cours de biologie, l'équipe de cuisine et
 le comité environnemental.
 
+<figure class="post-figure post-figure--right">
+<img src="/media/demo-library/articles/serre.jpg" alt="Intérieur d’une serre pédagogique avec des plants" width="960" height="660" loading="lazy" decoding="async">
+<figcaption>Photo : Rodrigo.Argenton — structure type pour la démo.</figcaption>
+</figure>
+
+Le budget prévisionnel combine une subvention du comité environnemental, un
+crédit de matériaux et des heures bénévoles pour le montage. Les plans techniques
+restent modestes : ventilation manuelle, irrigation goutte-à-goutte, tablettes
+réglables. L’important, disent les porteuses du dossier, est d’avoir un lieu
+partagé avant l’hiver.
+
 ## Un projet né dans trois départements
 
 L'idée a commencé par une question simple posée dans un cours d'écologie : que

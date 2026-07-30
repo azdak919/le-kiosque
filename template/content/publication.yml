@@ -30,7 +30,7 @@ masthead:
     localities: [] # Un simple nom, ex. Québec; quatre maximum.
   # Puce scoreboard (style météo ardoise) à côté de la météo.
   # Multi-équipes / multi-sports : rotation ~5 s (deck brassé, animation gare).
-  # Démo Quorum : Braises, Orbites, Corbeaux, Verglas. Ici : off par défaut.
+  # Démo Quorum : un surnom maison « Les Quorums » pour tous les sports. Ici : off par défaut.
   # Activer : enabled true + teams[] (id, name, code, sport, results, nextGame).
   # Génère alors /sports/ (« Au tableau ») et la puce mât y mène.
   sports:
