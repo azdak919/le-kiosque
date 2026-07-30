@@ -414,7 +414,8 @@ body.with-radio .nav {
   max-width: 100%;
   flex: 1 1 auto;
   width: 100%;
-  overflow: hidden; /* jamais de clipping hors de la cellule mât */
+  /* visible : ne jamais trancher la pilule sports à droite (clip = line only). */
+  overflow: visible;
 }
 /* Météo : largeur au contenu pour le nom de ville complet. */
 .masthead-status .masthead-weather {
@@ -454,7 +455,9 @@ body.with-radio .nav {
     flex: 0 1 auto;
     margin-left: 0; /* collé après la météo */
     /* Bureau : noms d’équipes + institutions (densité riche). */
-    max-width: min(34rem, 52vw);
+    min-width: 12rem;
+    max-width: min(28rem, 42vw);
+    overflow: visible;
   }
   .masthead-status .weather-chip,
   .masthead-status .masthead-weather__city {
@@ -466,10 +469,10 @@ body.with-radio .nav {
   .masthead-status .masthead-sports__chip {
     width: auto;
     min-width: 12rem;
-    max-width: min(34rem, 52vw);
+    max-width: 100%;
   }
   .masthead-status .sports-chip--rich {
-    min-width: 14rem;
+    min-width: 13rem;
   }
 }
 /*
@@ -492,9 +495,11 @@ body.with-radio .nav {
   flex: 1 1 0;
   width: auto;
   max-width: 100%;
-  min-width: 0;
+  /* Mini-largeur pour garder la pilule entière (pas un moignon coupé). */
+  min-width: min(10rem, 100%);
   box-sizing: border-box;
   justify-content: flex-start;
+  overflow: hidden; /* clip interne line ; chrome de carte intact dans le dock */
 }
 .masthead-status--docked .masthead-weather,
 .masthead-status--docked .masthead-sports {
@@ -502,6 +507,10 @@ body.with-radio .nav {
   min-width: 0;
   max-width: 100%;
   display: flex;
+  overflow: visible; /* pilule entière ; clip seulement dans .sports-chip__line */
+}
+.masthead-status--docked .masthead-sports {
+  min-width: min(10.5rem, 48%);
 }
 /*
  * Dock sous la radio (mobile) : même famille ardoise LE-RADAR
@@ -1591,13 +1600,20 @@ a.masthead-weather__city:focus-visible {
   text-shadow: none;
 }
 
-/* Puce sports — même famille ardoise que la météo, tone = issue W/L/D. */
+/*
+ * Puce sports — même famille ardoise que la météo, tone = issue W/L/D.
+ * Cadre de la carte TOUJOURS entier (bords arrondis visibles).
+ * Seul le viewport .sports-chip__line clippe + défile (marquee).
+ */
 .masthead-sports {
   display: flex;
   align-items: stretch;
-  min-width: 0;
-  max-width: min(16rem, 48vw);
+  /* Ne pas écraser la pilule sous la météo élargie : largeur mini lisible. */
+  min-width: min(11.5rem, 100%);
+  max-width: min(20rem, 52vw);
   flex: 0 1 auto;
+  /* Parent ne doit jamais trancher le chrome de la carte. */
+  overflow: visible;
 }
 .sports-chip,
 .masthead-sports__chip {
@@ -1618,6 +1634,7 @@ a.masthead-weather__city:focus-visible {
   font-size: 11px;
   font-weight: 700;
   white-space: nowrap;
+  /* Clip interne pour le radius — le contenu long vit dans .sports-chip__line. */
   overflow: hidden;
   box-shadow:
     0 1px 2px rgba(0, 0, 0, 0.24),
@@ -1629,6 +1646,8 @@ a.masthead-weather__city:focus-visible {
   box-sizing: border-box;
   cursor: pointer;
   -webkit-tap-highlight-color: transparent;
+  /* Évite qu’un ancêtre overflow:hidden tranche la pilule à droite. */
+  flex-shrink: 1;
 }
 a.sports-chip:focus-visible,
 a.masthead-sports__chip:focus-visible {
@@ -1674,13 +1693,20 @@ a.masthead-sports__chip:focus-visible {
 .sports-chip__badge--w { background: #2f8f5b; }
 .sports-chip__badge--l { background: #b84848; }
 .sports-chip__badge--d { background: #6b7c8c; }
-/* Viewport : scoreboard compact ; marquee seulement si overflow. */
+/*
+ * Viewport texte : seul endroit où le scoreboard peut « clipper ».
+ * Glyph + badge restent hors viewport → carte entière à gauche.
+ * Marquee + masque en fondu : pas de coupure nette en milieu de lettre
+ * sur le bord droit de la pilule.
+ */
 .sports-chip__line {
   flex: 1 1 auto;
   min-width: 0;
   overflow: hidden;
   letter-spacing: 0.02em;
   color: rgba(245, 246, 248, 0.96);
+  /* Garde un peu d’air avant le bord droit du chrome de la carte. */
+  margin-right: 1px;
 }
 .sports-chip__line-inner {
   display: inline-block;
@@ -1694,6 +1720,23 @@ a.masthead-sports__chip:focus-visible {
  * pauses en début et fin de course pour lire le score avant de bouger,
  * et avant le retour. Sans hold, le texte part trop vite.
  */
+.sports-chip__line.is-sports-marquee {
+  /* Fondu gauche/droite : le défilement ne « tranche » pas la carte. */
+  -webkit-mask-image: linear-gradient(
+    to right,
+    transparent 0,
+    #000 0.65rem,
+    #000 calc(100% - 0.65rem),
+    transparent 100%
+  );
+  mask-image: linear-gradient(
+    to right,
+    transparent 0,
+    #000 0.65rem,
+    #000 calc(100% - 0.65rem),
+    transparent 100%
+  );
+}
 .sports-chip__line.is-sports-marquee .sports-chip__line-inner {
   animation: sports-marquee-slide var(--sports-marquee-duration, 10s) ease-in-out infinite alternate;
   will-change: transform;
@@ -1703,6 +1746,10 @@ a.masthead-sports__chip:focus-visible {
   82%, 100% { transform: translateX(var(--sports-marquee-shift, 0px)); }
 }
 @media (prefers-reduced-motion: reduce) {
+  .sports-chip__line.is-sports-marquee {
+    -webkit-mask-image: none;
+    mask-image: none;
+  }
   .sports-chip__line.is-sports-marquee .sports-chip__line-inner {
     animation: none;
   }

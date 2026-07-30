@@ -889,9 +889,11 @@
     }
     requestAnimationFrame(function () {
       requestAnimationFrame(function () {
-        var overflow = inner.scrollWidth - viewport.clientWidth;
+        /* +2 px : fin de course = dernier glyphe entièrement dans le viewport
+         * (évite une carte qui semble encore coupée à droite en fin de défilement). */
+        var overflow = Math.ceil(inner.scrollWidth - viewport.clientWidth) + 2;
         var dwellMs = SPORTS_ROTATE_MIN_MS;
-        if (overflow > 2) {
+        if (overflow > 4) {
           /* Une direction = pauses (keyframes ~20 %+20 %) + déplacement.
            * durationSec = un sens ; ×2 = aller + retour (animation alternate). */
           var durationSec = Math.max(
