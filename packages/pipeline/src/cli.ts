@@ -4,13 +4,16 @@
  *
  *   kiosque sync     rapatrie le contenu du backend vers le miroir  (parle au CMS)
  *   kiosque build    produit le site statique depuis le miroir      (ne parle à rien)
- *   kiosque deploy   publie dist/                                    (à venir, jalon 4)
- *   kiosque export   archive complète, portable                      (à venir, jalon 4)
+ *   kiosque doctor   diagnostic local (jalon 4)
+ *   kiosque adopt    checklist de passation (jalon 4)
+ *   kiosque export   archive portable du miroir (jalon 4)
+ *   kiosque deploy   publie dist/                                    (à venir)
  *
  * `build` fonctionne toujours, même sans backend configuré, même sans réseau.
  * C'est la propriété qui fait vivre un journal au-delà de ses fondateurs.
  */
 
+import fs from 'node:fs/promises';
 import path from 'node:path';
 import { pathToFileURL } from 'node:url';
 
@@ -22,6 +25,8 @@ import { mirrorExists, verifyMediaIntegrity } from './mirror.ts';
 import { renderCmsConfig } from './cms-config.ts';
 import { normalizeBasePath, type KiosqueConfig } from './config.ts';
 import { readSharedMediaManifest } from './shared-media.ts';
+import { doctor, formatDoctorReport } from './doctor.ts';
+import { adopt } from './adopt.ts';
 
 const log = createConsoleLogger('kiosque');
 
@@ -31,6 +36,9 @@ Le Kiosque — socle libre pour les journaux étudiants
   kiosque sync    [--since <date>] [--dry-run]   rapatrie le contenu du backend
   kiosque build   [--allow-deletions] [--out <dir>]  produit le site statique
   kiosque verify                                  vérifie l'intégrité du miroir
+  kiosque doctor                                  diagnostic local (sans réseau)
+  kiosque adopt   [--out <file.md>]               checklist de passation
+  kiosque export  [--out <dir>]                   archive portable du miroir
   kiosque cms:config                              régénère admin/config.yml
 
 Options communes
@@ -198,6 +206,57 @@ async function main(): Promise<number> {
       }
       for (const u of report.untracked) log.warn(`média non suivi : ${u}`);
       return report.ok ? 0 : 1;
+    }
+
+    case 'doctor': {
+      const report = await doctor(config);
+      console.log(formatDoctorReport(report));
+      return report.ok ? 0 : 1;
+    }
+
+    case 'adopt': {
+      const report = await adopt(config);
+      const out =
+        args.out ?? path.join(config.root, 'PASSATION.md');
+      await fs.writeFile(out, report.markdown, 'utf8');
+      log.info(`checklist de passation écrite dans ${out}`);
+      const pending = report.checklist.filter((c) => !c.done);
+      if (pending.length) {
+        log.warn(`${pending.length} point(s) encore ouverts — voir ${out}`);
+      }
+      return report.doctor.ok ? 0 : 1;
+    }
+
+    case 'export': {
+      // Archive portable = copie du miroir + config, sans node_modules ni dist.
+      if (!(await mirrorExists(config.root))) {
+        log.error(`aucun miroir dans ${config.root}/content`);
+        return 1;
+      }
+      const outDir = args.out ?? path.join(config.root, 'export-kiosque');
+      await fs.mkdir(outDir, { recursive: true });
+      const copyIf = async (rel: string) => {
+        const src = path.join(config.root, rel);
+        const dest = path.join(outDir, rel);
+        try {
+          await fs.cp(src, dest, { recursive: true });
+          return true;
+        } catch {
+          return false;
+        }
+      };
+      await copyIf('content');
+      await copyIf('media');
+      await copyIf('kiosque.config.ts');
+      if (await copyIf('README.md') === false) {
+        await fs.writeFile(
+          path.join(outDir, 'README.md'),
+          `# Export LE KIOSQUE\n\nMiroir portable. Reconstruire :\n\n\`\`\`bash\nkiosque build --root .\n\`\`\`\n`,
+          'utf8',
+        );
+      }
+      log.info(`export portable dans ${outDir} (miroir + config, sans backend)`);
+      return 0;
     }
 
     default:
