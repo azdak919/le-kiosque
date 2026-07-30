@@ -1062,7 +1062,8 @@ body.with-radio .nav {
   margin-top: 28px;
   padding-top: 8px;
 }
-@media (max-width: 900px) {
+/* Aligné midwidth C (magazine mid dès 900 px). */
+@media (max-width: 899.98px) {
   .magazine-layout--team {
     grid-template-columns: 1fr;
   }

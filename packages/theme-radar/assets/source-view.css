@@ -148,6 +148,10 @@
   line-height: 1.55;
 }
 .article-brief-text { display: inline; }
+/*
+ * Suite du fil — focus-group le-radar-suite-more (B) :
+ * more INLINE après le chapô (pas block+end = trou vide bas-droite).
+ */
 .article-more {
   display: inline;
   margin-left: .35em;
@@ -156,10 +160,26 @@
   font-weight: 600;
   white-space: nowrap;
   text-decoration: none;
+  line-height: 1.25;
 }
 .article-more:hover {
   text-decoration: underline;
   text-underline-offset: 2px;
+}
+/*
+ * Vedettes / En bref — focus-group le-radar-brief-more (A) :
+ * more bas-droite colonne texte, jamais float orphelin.
+ */
+.news-hero .article--feature .article-more,
+.brief-rail .article--compact .article-more {
+  display: block;
+  float: none;
+  width: 100%;
+  box-sizing: border-box;
+  margin: 0.2rem 0 0;
+  margin-left: 0;
+  padding: 0;
+  text-align: end;
 }
 
 /*
@@ -312,15 +332,17 @@
   -webkit-line-clamp: 2;
 }
 /*
- * En bref + photo : float wrap (texte à droite puis sous la vignette).
- * Accueil, sections, catégories, pages article — toute colonne .brief-rail.
+ * En bref + photo — focus-group le-radar-brief-more (A) :
+ * grille 2 pistes vignette | texte (plus de float wrap / more orphelin).
  */
 .brief-rail .article--compact.article--thumb.has-image {
-  display: block;
-  grid-template-columns: none;
+  display: grid;
+  grid-template-columns: minmax(4rem, 5.75rem) minmax(0, 1fr);
+  column-gap: 0.65rem;
+  align-items: start;
 }
-/* Garder la grille méta (rubrique | date) — display:block cassait l’alignement droite. */
 .brief-rail .article--compact.article--thumb.has-image > .article-meta {
+  grid-column: 1 / -1;
   display: grid;
   grid-template-columns: minmax(0, 1fr) auto;
   align-items: start;
@@ -338,6 +360,25 @@
 .brief-rail .article--compact.article--thumb.has-image > .article-meta .article-time::before {
   display: none;
 }
+.brief-rail .article--compact.article--thumb.has-image > .article-media {
+  grid-column: 1;
+  /* title + byline + brief = 3 rangées (pas 4 → vide sous « Lire la suite »). */
+  grid-row: 2 / span 3;
+  float: none;
+  width: 100%;
+  margin: 2px 0 0;
+  shape-outside: none;
+  aspect-ratio: auto;
+  align-self: start;
+  overflow: visible;
+  background: transparent;
+}
+.brief-rail .article--compact.article--thumb.has-image > .article-title,
+.brief-rail .article--compact.article--thumb.has-image > .article-byline,
+.brief-rail .article--compact.article--thumb.has-image > .article-brief {
+  grid-column: 2;
+  min-width: 0;
+}
 .brief-rail .article--compact.article--thumb.has-image > .article-title {
   display: block;
   margin-bottom: 2px;
@@ -346,45 +387,21 @@
   display: block;
   margin: 0 0 6px;
 }
-.brief-rail .article--compact.article--thumb.has-image > .article-media {
-  float: left;
-  width: clamp(64px, 22%, 96px);
-  margin: 2px 12px 4px 0;
-  shape-outside: margin-box;
-  grid-column: auto;
-  grid-row: auto;
-  aspect-ratio: auto;
-  overflow: visible;
-  background: transparent;
-}
-.brief-rail .article--compact.article--thumb.has-image > .article-title,
-.brief-rail .article--compact.article--thumb.has-image > .article-byline,
-.brief-rail .article--compact.article--thumb.has-image > .article-brief {
-  grid-column: auto;
-}
 .brief-rail .article--compact.article--thumb.has-image > .article-brief {
   display: block;
-  overflow: visible;
+  overflow: hidden;
   margin-top: 0;
-  min-height: clamp(64px, 22%, 96px);
+  margin-bottom: 0;
+  min-height: 0;
+  padding-bottom: 0;
 }
-/*
- * En bref + photo : garder display:inline pour le float wrap (texte à droite
- * puis sous la vignette). Pas de -webkit-box ici : ça cassait le contournement.
- * Budget JS (~360 car. / ≥12 mots) + text-wrap:pretty évitent la demi-ligne.
- */
 .brief-rail .article--compact.article--thumb.has-image .article-brief-text,
 .brief-rail .article--compact.article--thumb.has-image .article-brief.is-truncated .article-brief-text {
-  display: inline;
-  -webkit-line-clamp: unset;
-  -webkit-box-orient: initial;
-  overflow: visible;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 4;
+  overflow: hidden;
   text-wrap: pretty;
-}
-.brief-rail .article--compact.article--thumb.has-image::after {
-  content: "";
-  display: table;
-  clear: both;
 }
 .brief-rail .article--compact.article--thumb.has-image .article-media img {
   width: 100%;
@@ -392,11 +409,6 @@
   aspect-ratio: 1 / 1;
   object-fit: cover;
   border-radius: 6px;
-}
-.brief-rail .article--compact .article-more {
-  display: inline-block;
-  margin-top: 2px;
-  margin-left: 0;
 }
 .article--thumb.has-image {
   display: grid;
@@ -451,17 +463,19 @@
   -webkit-line-clamp: 2;
 }
 /*
- * Vedettes : float wrap toutes largeurs (comme En bref) — plus d’espace perdu
- * à côté de la vignette. Tailles progressives mobile → bureau.
+ * Vedettes + photo — focus-group le-radar-brief-more (A) :
+ * grille 2 pistes (plus de float wrap / CTA orphelin).
  */
 .news-hero .article--feature.article--thumb.has-image {
-  display: block;
-  grid-template-columns: none;
+  display: grid;
+  grid-template-columns: minmax(6.5rem, 9rem) minmax(0, 1fr);
+  column-gap: 0.85rem;
+  align-items: start;
   padding-top: 12px;
-  padding-bottom: 12px;
+  padding-bottom: 8px;
 }
-/* Garder la grille méta (rubrique | date) — display:block collait date à la rubrique. */
 .news-hero .article--feature.article--thumb.has-image > .article-meta {
+  grid-column: 1 / -1;
   display: grid;
   grid-template-columns: minmax(0, 1fr) auto;
   align-items: start;
@@ -479,6 +493,25 @@
 .news-hero .article--feature.article--thumb.has-image > .article-meta .article-time::before {
   display: none;
 }
+.news-hero .article--feature.article--thumb.has-image > .article-media {
+  grid-column: 1;
+  /* title + byline + brief = 3 rangées (pas 4 → vide sous « Lire la suite »). */
+  grid-row: 2 / span 3;
+  float: none;
+  width: 100%;
+  margin: 2px 0 0;
+  shape-outside: none;
+  aspect-ratio: auto;
+  align-self: start;
+  overflow: visible;
+  background: transparent;
+}
+.news-hero .article--feature.article--thumb.has-image > .article-title,
+.news-hero .article--feature.article--thumb.has-image > .article-byline,
+.news-hero .article--feature.article--thumb.has-image > .article-brief {
+  grid-column: 2;
+  min-width: 0;
+}
 .news-hero .article--feature.article--thumb.has-image > .article-title {
   display: block;
   margin-bottom: 4px;
@@ -487,40 +520,22 @@
   display: block;
   margin: 0 0 6px;
 }
-.news-hero .article--feature.article--thumb.has-image > .article-media {
-  float: left;
-  width: clamp(96px, 30vw, 128px);
-  margin: 2px 14px 4px 0;
-  shape-outside: margin-box;
-  grid-column: auto;
-  grid-row: auto;
-  aspect-ratio: auto;
-  overflow: visible;
-  background: transparent;
-}
-.news-hero .article--feature.article--thumb.has-image > .article-title,
-.news-hero .article--feature.article--thumb.has-image > .article-byline,
-.news-hero .article--feature.article--thumb.has-image > .article-brief {
-  grid-column: auto;
-}
 .news-hero .article--feature.article--thumb.has-image > .article-brief {
   display: block;
-  overflow: visible;
+  overflow: hidden;
   margin-top: 0;
-  min-height: clamp(96px, 30vw, 128px);
+  margin-bottom: 0;
+  min-height: 0;
   max-width: none;
+  padding-bottom: 0;
 }
 .news-hero .article--feature.article--thumb.has-image .article-brief-text,
 .news-hero .article--feature.article--thumb.has-image .article-brief.is-truncated .article-brief-text {
-  display: inline;
-  -webkit-line-clamp: unset;
-  overflow: visible;
-  -webkit-box-orient: initial;
-}
-.news-hero .article--feature.article--thumb.has-image::after {
-  content: "";
-  display: table;
-  clear: both;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 5;
+  overflow: hidden;
+  line-height: 1.48;
 }
 .news-hero .article--feature.article--thumb.has-image .article-media img {
   width: 100%;
@@ -533,20 +548,13 @@
   .article--thumb.has-image { grid-template-columns: clamp(72px, 22%, 110px) minmax(0, 1fr); column-gap: 14px; }
   .article--thumb.has-image > .article-media { margin-top: 3px; }
   .article--thumb.has-image .article-media-credit { font-size: .6rem; line-height: 1.3; -webkit-line-clamp: 3; }
-  .news-hero .article--feature.article--thumb.has-image > .article-media {
-    width: clamp(128px, 34%, 168px);
+  .news-hero .article--feature.article--thumb.has-image {
+    grid-template-columns: minmax(7.5rem, 10.5rem) minmax(0, 1fr);
+    column-gap: 0.9rem;
   }
-  .news-hero .article--feature.article--thumb.has-image > .article-brief {
-    min-height: clamp(128px, 34%, 168px);
-  }
-}
-@media (min-width: 1100px) {
-  .news-hero .article--feature.article--thumb.has-image > .article-media {
-    width: clamp(140px, 36%, 184px);
-    margin: 2px 16px 4px 0;
-  }
-  .news-hero .article--feature.article--thumb.has-image > .article-brief {
-    min-height: clamp(140px, 36%, 184px);
+  .brief-rail .article--compact.article--thumb.has-image {
+    grid-template-columns: minmax(4.5rem, 6.25rem) minmax(0, 1fr);
+    column-gap: 0.75rem;
   }
 }
 
@@ -836,7 +844,65 @@
     backdrop-filter: none;
   }
 }
-@media (max-width: 1099px) {
+/*
+ * Midwidth — focus-group le-radar-midwidth-fil (C) :
+ * densify 600–899 (stack 1 col) ; magazine mid 900–1099 (rail étroit) ;
+ * bureau ≥1100 inchangé (tracks ci-dessus).
+ */
+@media (min-width: 900px) and (max-width: 1099.98px) {
+  .magazine-layout {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(240px, 280px);
+    gap: 0;
+    align-items: stretch;
+    border-bottom: 1px solid var(--rule);
+  }
+  .news-hero {
+    padding-right: 1rem;
+  }
+  .brief-rail {
+    padding-left: 0.85rem;
+  }
+  .magazine-layout--article .article-column {
+    padding-right: 1rem;
+  }
+  .news-hero .article--feature.article--thumb.has-image {
+    grid-template-columns: minmax(6rem, 8.5rem) minmax(0, 1fr);
+    column-gap: 0.75rem;
+  }
+  .brief-rail .article--compact.article--thumb.has-image {
+    grid-template-columns: minmax(3.75rem, 5.25rem) minmax(0, 1fr);
+    column-gap: 0.55rem;
+  }
+  .news-hero .article--feature .article-title {
+    font-size: 1.38rem;
+    line-height: 1.18;
+  }
+  .brief-rail .article--compact .article-title {
+    font-size: 1.12rem;
+    line-height: 1.2;
+  }
+}
+
+@media (min-width: 600px) and (max-width: 899.98px) {
+  /* Densité stack : un peu moins d’air vertical. */
+  .news-hero .article--feature,
+  .brief-rail .article--compact,
+  .news-tail .article--standard {
+    padding-top: 0.8rem;
+    padding-bottom: 0.8rem;
+  }
+  .news-hero .article--feature.article--thumb.has-image {
+    grid-template-columns: minmax(6rem, 8.5rem) minmax(0, 1fr);
+    column-gap: 0.75rem;
+  }
+  .article--thumb.has-image {
+    grid-template-columns: clamp(72px, 20%, 88px) minmax(0, 1fr);
+    column-gap: 0.75rem;
+  }
+}
+
+@media (max-width: 899.98px) {
   .magazine-layout {
     display: block;
     border-bottom: none;
@@ -893,19 +959,17 @@
   .article-meta { grid-template-columns: 1fr; }
   .article-time { justify-self: start; text-align: left; }
 
-  /* Vedettes mobile : vignette un cran plus petite (float déjà global). */
-  .news-hero .article--feature.article--thumb.has-image > .article-media {
-    width: clamp(92px, 28vw, 118px);
-  }
-  .news-hero .article--feature.article--thumb.has-image > .article-brief {
-    min-height: clamp(92px, 28vw, 118px);
+  /* Vedettes mobile : piste vignette un cran plus étroite (grille). */
+  .news-hero .article--feature.article--thumb.has-image {
+    grid-template-columns: minmax(5.5rem, 7.5rem) minmax(0, 1fr);
+    column-gap: 0.65rem;
   }
 
   /*
    * À la une mobile : reste en colonne (eyebrow → méta → titre → byline →
    * photo pleine largeur 16:9 → extrait). Ne pas flotter la photo : le
    * 16:9 forcé dans une pastille ~140 px donnait le crop bizarre vu sur
-   * l’accueil et les fiches journaliste. Les vedettes gardent le float.
+   * l’accueil et les fiches journaliste. Les vedettes restent en grille.
    */
   .news-hero .article--lead.has-image {
     display: flex;
