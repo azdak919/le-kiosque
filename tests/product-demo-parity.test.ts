@@ -175,6 +175,10 @@ test('demo et template reçoivent le même theme.css / kiosque.js (packages/them
   assert.match(demoJs, /sportsMatchVerb|reçoit/, 'verbe reçoit / à (pas seulement vs)');
   assert.match(demoCss, /\.sports-chip__body|\.sports-chip--match \.sports-chip__sub/, 'CSS 2 lignes score');
   assert.match(demoCss, /sports-chip-rim-glow/, 'pulse bordure pourpre (chip-look)');
+  assert.match(demoJs, /SPORTS_CHIP_LEAVE_MS|is-leaving/, 'rotation sports : sortie soft leave');
+  assert.match(demoCss, /sports-chip-leave|sports-chip-arrive/, 'keyframes leave/arrive soft');
+  assert.match(demoJs, /weatherToneName|dataset\.weatherTone|data-weather-tone/, 'météo data-weather-tone');
+  assert.match(demoCss, /masthead-photo-credit[\s\S]*backdrop-filter/, 'crédit photo soft glass');
   const demoBackend = await readFile(path.join(demo.out, 'assets/editorial/demo-backend.js'), 'utf8');
   assert.match(demoBackend, /#refreshUnmodifiedDemo|refreshUnmodifiedDemo/, 'upgrade seed local sans perdre les éditions');
   assert.match(demoBackend, /seed\.publication/, 'refresh seed met à jour publication (sports mât)');
@@ -182,8 +186,8 @@ test('demo et template reçoivent le même theme.css / kiosque.js (packages/them
   assert.match(demoJs, /SPORTS_ROTATE_MIN_MS|5600/, 'dwell min sports ~5,6 s');
   assert.match(demoJs, /SPORTS_MARQUEE_PX_PER_S|scheduleSportsRotate/, 'marquee lent + rotation après cycle');
   assert.match(demoJs, /sports-chip__badge|sports-chip__score/, 'format scoreboard codes + score');
-  assert.match(demoJs, /is-arriving/, 'animation gare sports');
-  assert.match(demoCss, /sports-tile-arrive/, 'keyframes arrivée scoreboard');
+  assert.match(demoJs, /is-arriving/, 'animation arrivée sports');
+  assert.match(demoCss, /sports-chip-arrive|sports-tile-arrive/, 'keyframes arrivée scoreboard');
   assert.match(demoCss, /sports-marquee-slide[\s\S]*18%/, 'marquee avec pauses aux extrémités');
   // Port session LE-RADAR 2026-08-11 : horloge FR « h », ordre sports, pas de flash date.
   assert.match(demoJs, /formatMastheadClock|h \$2|\$1 h \$2/, 'horloge mât : séparateur h (QC)');
