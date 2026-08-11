@@ -1995,19 +1995,33 @@ a.masthead-sports__chip:focus-visible {
 .sports-chip[data-fictional="true"]::after {
   content: '';
 }
-/* Arrivée type gare LE-RADAR (weather-tile-arrive) à chaque rotation. */
+/*
+ * Rotation soft LE-RADAR : leave (0,42 s) puis arrive (0,64 s) — pas le « clac » gare.
+ */
+.sports-chip.is-leaving,
+.masthead-sports__chip.is-leaving {
+  animation: sports-chip-leave 0.42s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+  pointer-events: none;
+}
 .sports-chip.is-arriving,
 .masthead-sports__chip.is-arriving {
-  animation: sports-tile-arrive 460ms cubic-bezier(.22, .8, .28, 1);
+  animation: sports-chip-arrive 0.64s cubic-bezier(0.33, 0.1, 0.2, 1) both;
 }
-@keyframes sports-tile-arrive {
-  from { opacity: 0; transform: translateY(75%); }
-  to { opacity: 1; transform: translateY(0); }
+@keyframes sports-chip-leave {
+  from { opacity: 1; transform: translateY(0); filter: blur(0); }
+  to   { opacity: 0; transform: translateY(-5%); filter: blur(0.4px); }
+}
+@keyframes sports-chip-arrive {
+  from { opacity: 0; transform: translateY(8%); filter: blur(0.5px); }
+  to   { opacity: 1; transform: translateY(0); filter: blur(0); }
 }
 @media (prefers-reduced-motion: reduce) {
   .sports-chip.is-arriving,
-  .masthead-sports__chip.is-arriving {
+  .masthead-sports__chip.is-arriving,
+  .sports-chip.is-leaving,
+  .masthead-sports__chip.is-leaving {
     animation: none;
+    filter: none;
   }
 }
 
@@ -2590,14 +2604,46 @@ a.masthead-sports__chip:focus-visible {
 .masthead-tool .ico-sun[hidden] { display: none !important; }
 .masthead-photo-credit {
   position: absolute;
-  right: max(var(--pad), calc((100vw - var(--maxw)) / 2 + var(--pad)));
+  /* Gouttière contenu (parité LE-RADAR --masthead-edge-right). */
+  right: max(
+    env(safe-area-inset-right, 0px),
+    calc((100% - min(100%, var(--maxw, 100%))) / 2 + var(--pad, 24px))
+  );
   bottom: 7px;
-  color: rgba(255, 255, 255, 0.88);
-  font-size: 10px;
   z-index: 1;
-  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.45);
+  max-width: min(70vw, 14rem);
+  padding: 0.12rem 0.38rem;
+  border-radius: 0.4rem;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  background: rgba(12, 14, 18, 0.45);
+  backdrop-filter: blur(6px) saturate(1.05);
+  -webkit-backdrop-filter: blur(6px) saturate(1.05);
+  color: rgba(255, 255, 255, 0.82);
+  font-size: 9.5px;
+  line-height: 1.25;
+  text-align: right;
+  text-shadow: 0 1px 1px rgba(0, 0, 0, 0.45);
+  box-sizing: border-box;
 }
-.masthead-photo-credit a { color: inherit; }
+.masthead-photo-credit a {
+  color: inherit;
+  text-decoration: none;
+}
+.masthead-photo-credit a:hover {
+  text-decoration: underline;
+  text-decoration-color: rgba(255, 255, 255, 0.45);
+}
+/* data-weather-tone : lavis condition (parité LE-RADAR). */
+.weather-chip[data-weather-tone="sun"],
+.masthead-weather__city[data-weather-tone="sun"] { --weather-tone: #f0b429; }
+.weather-chip[data-weather-tone="cloud"],
+.masthead-weather__city[data-weather-tone="cloud"] { --weather-tone: #8fa3b0; }
+.weather-chip[data-weather-tone="rain"],
+.masthead-weather__city[data-weather-tone="rain"] { --weather-tone: #5b9fd4; }
+.weather-chip[data-weather-tone="snow"],
+.masthead-weather__city[data-weather-tone="snow"] { --weather-tone: #a8c5d4; }
+.weather-chip[data-weather-tone="storm"],
+.masthead-weather__city[data-weather-tone="storm"] { --weather-tone: #8b7ec8; }
 .masthead[data-text-alignment="center"] .masthead-top { text-align: center; justify-content: center; }
 .masthead[data-text-alignment="center"] .masthead-meta { width: 100%; justify-content: center; }
 .masthead[data-text-alignment="right"] .masthead-top { text-align: right; flex-direction: row-reverse; }

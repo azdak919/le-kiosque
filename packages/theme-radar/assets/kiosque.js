@@ -580,6 +580,16 @@
     return '#8fa3b0';
   }
 
+  /** Clé sémantique pour data-weather-tone (sun|cloud|rain|snow|storm). */
+  function weatherToneName(code) {
+    if (code === 0 || code === 1) return 'sun';
+    if (code === 2 || code === 3 || code === 45 || code === 48) return 'cloud';
+    if ([51, 53, 55, 56, 57, 61, 63, 65, 66, 67, 80, 81, 82].indexOf(code) !== -1) return 'rain';
+    if ([71, 73, 75, 77, 85, 86].indexOf(code) !== -1) return 'snow';
+    if ([95, 96, 99].indexOf(code) !== -1) return 'storm';
+    return 'cloud';
+  }
+
   /**
    * Normalise une localité YAML (string ou objet CMS).
    * Coords optionnelles = OpenStreetMap / Open-Meteo ; slugs optionnels = liens officiels.
@@ -682,14 +692,14 @@
     setMastheadWeatherDocked(shouldDock);
   }
 
-  /* Rotation scoreboard — deck brassé (Fisher–Yates), animation is-arriving.
-   * Format type RDS/TVA : codes + score (pas de prose longue).
-   * Marquee : pauses aux extrémités (keyframes) + dwell = 1 cycle aller-retour. */
+  /* Rotation scoreboard — ordre récent→prochain, leave puis arrive (LE-RADAR).
+   * 2 lignes lecture : pas de marquee score ; dwell lecture ~9–12 s. */
   var SPORTS_ROTATE_MIN_MS = 5600;
-  /* Vitesse lente (~20 px/s) pour laisser lire score + codes. */
+  /* Vitesse marquee (repli legacy si un jour réactivé). */
   var SPORTS_MARQUEE_PX_PER_S = 20;
   var SPORTS_MARQUEE_MIN_SEC = 7;
-  var SPORTS_ARRIVE_MS = 500;
+  var SPORTS_ARRIVE_MS = 640;
+  var SPORTS_CHIP_LEAVE_MS = 420;
   /* Palette par sport (import LE-RADAR) — évite le tout-rouge des prochains matchs. */
   var SPORTS_SPORT_TONES = {
     football: '#c45c2a',
@@ -1156,6 +1166,19 @@
     }
     var next = sportsDeck.shift();
     if (!next) return;
+    var oldChip = host.querySelector('.sports-chip');
+    /* Sortie douce puis entrée (parité LE-RADAR is-leaving → is-arriving). */
+    if (oldChip && !sportsReducedMotion) {
+      oldChip.classList.remove('is-arriving');
+      oldChip.classList.add('is-leaving');
+      oldChip.style.pointerEvents = 'none';
+      window.setTimeout(function () {
+        if (!host.isConnected) return;
+        paintSportsChip(host, next, true);
+        syncMastheadWeatherDock();
+      }, SPORTS_CHIP_LEAVE_MS);
+      return;
+    }
     paintSportsChip(host, next, true);
     syncMastheadWeatherDock();
   }
@@ -1181,7 +1204,7 @@
       sportsPayloadCache = null;
       return;
     }
-    /* Départ aléatoire (variance) — comme le brassage initial LE-RADAR. */
+    /* Départ = match le plus récent / prochain le plus proche (orderSportsDeck). */
     refillSportsDeck(null);
     var first = sportsDeck.shift() || sportsSlides[0];
     paintSportsChip(host, first, false);
@@ -1285,6 +1308,7 @@
         var chip = document.createElement(href !== '#' ? 'a' : 'span');
         chip.className = 'weather-chip masthead-weather__city';
         chip.style.setProperty('--weather-tone', weatherTone(value.code));
+        chip.dataset.weatherTone = weatherToneName(value.code);
         if (chip.tagName === 'A') {
           chip.href = href;
           chip.target = '_blank';
