@@ -73,18 +73,43 @@
   }
 
   // ── Mât : heure, photos locales et météo facultative ───────────────────
+  /** Typographie QC : « 15 h 03 » (parité LE-RADAR). */
+  function formatMastheadClock(now) {
+    var raw = new Intl.DateTimeFormat('fr-CA', {
+      hour: '2-digit',
+      minute: '2-digit',
+      hour12: false,
+    }).format(now);
+    return String(raw)
+      .replace(/(\d{1,2})\s*[:.]\s*(\d{2})/, '$1 h $2')
+      .replace(/\s*h\s*/i, ' h ')
+      .replace(/\s+/g, ' ')
+      .trim();
+  }
+
   function initMastheadClock() {
     var date = document.querySelector('[data-masthead-date]');
     var time = document.querySelector('[data-masthead-time]');
     if (!date || !time) return;
     function refresh() {
       var now = new Date();
-      date.textContent = new Intl.DateTimeFormat('fr-CA', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' }).format(now);
-      time.textContent = new Intl.DateTimeFormat('fr-CA', { hour: '2-digit', minute: '2-digit', hour12: false }).format(now);
-      time.dateTime = now.toISOString();
+      date.textContent = new Intl.DateTimeFormat('fr-CA', {
+        weekday: 'long',
+        day: 'numeric',
+        month: 'long',
+        year: 'numeric',
+      }).format(now);
+      time.textContent = formatMastheadClock(now);
+      time.dateTime = now.toTimeString().slice(0, 5);
     }
     refresh();
     setInterval(refresh, 30000);
+  }
+
+  /** Date visible seulement après 1ʳᵉ photo mât (évite flash style nu). */
+  function markMastheadPhotoReady() {
+    var masthead = liveMasthead();
+    if (masthead) masthead.classList.add('masthead--photo-ready');
   }
 
   /**
@@ -327,6 +352,7 @@
     }
     updateMastheadCredit(item);
     mastheadBgState.hasShown = true;
+    markMastheadPhotoReady();
   }
 
   function showMastheadIndex(next, options) {
@@ -477,11 +503,13 @@
     }
     // Ne pas recharger si c’est déjà la bonne photo ; marquer hasShown pour le prochain shuffle.
     mastheadBgState.hasShown = true;
+    markMastheadPhotoReady();
     cancelMastheadTransition();
     if (!image.dataset.errorBound) {
       image.dataset.errorBound = '1';
       image.addEventListener('error', function () {
         liveMasthead()?.classList.add('masthead--image-error');
+        markMastheadPhotoReady(); /* date visible même sans image */
       });
     }
     var shuffleBtn = document.getElementById('masthead-shuffle');
@@ -775,15 +803,26 @@
     return '🏅';
   }
 
-  function shuffleSportsDeck(items) {
-    var shuffled = items.slice();
-    for (var i = shuffled.length - 1; i > 0; i -= 1) {
-      var j = Math.floor(Math.random() * (i + 1));
-      var tmp = shuffled[i];
-      shuffled[i] = shuffled[j];
-      shuffled[j] = tmp;
-    }
-    return shuffled;
+  /**
+   * Ordre d’affichage scoreboard (parité LE-RADAR) :
+   * résultats les plus récents d’abord, puis prochains les plus proches.
+   * Plus de brassage total (ressenti « aléatoire »).
+   */
+  function orderSportsDeck(items) {
+    return items.slice().sort(function (a, b) {
+      var modeRank = function (s) { return s && s.mode === 'result' ? 0 : 1; };
+      if (modeRank(a) !== modeRank(b)) return modeRank(a) - modeRank(b);
+      var da = String((a && a.game && a.game.date) || '');
+      var db = String((b && b.game && b.game.date) || '');
+      var ta = String((a && a.game && a.game.time) || '');
+      var tb = String((b && b.game && b.game.time) || '');
+      if (a && a.mode === 'result') {
+        if (db !== da) return db.localeCompare(da);
+        return tb.localeCompare(ta);
+      }
+      if (da !== db) return da.localeCompare(db);
+      return ta.localeCompare(tb);
+    });
   }
 
   function sportsTeamList(payload) {
@@ -848,12 +887,16 @@
       sportsDeck = pool.slice();
       return;
     }
-    sportsDeck = shuffleSportsDeck(pool);
-    /* Évite de rejouer tout de suite la même carte après un cycle (variance). */
-    if (preferNotKey && sportsDeck.length > 1 && sportsDeck[0].key === preferNotKey) {
-      var swap = sportsDeck[1];
-      sportsDeck[1] = sportsDeck[0];
-      sportsDeck[0] = swap;
+    sportsDeck = orderSportsDeck(pool);
+    /* Cycle : après la carte courante, reprendre la suite (pas un shuffle). */
+    if (preferNotKey && sportsDeck.length > 1) {
+      var idx = -1;
+      for (var i = 0; i < sportsDeck.length; i += 1) {
+        if (sportsDeck[i].key === preferNotKey) { idx = i; break; }
+      }
+      if (idx >= 0) {
+        sportsDeck = sportsDeck.slice(idx + 1).concat(sportsDeck.slice(0, idx + 1));
+      }
     }
   }
 
