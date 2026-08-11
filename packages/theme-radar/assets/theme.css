@@ -1552,6 +1552,46 @@ body.with-radio .masthead--illustrated {
 }
 .masthead-clock span,
 .masthead-clock time { display: block; }
+/*
+ * Sur photo : une ligne date · heure (parité LE-RADAR), point médian centré.
+ * Invisible tant que la 1ʳᵉ image n’est pas peinte (masthead--photo-ready).
+ */
+.masthead--illustrated:not(.masthead--photo-ready) .masthead-clock {
+  opacity: 0;
+  pointer-events: none;
+}
+.masthead--illustrated.masthead--photo-ready .masthead-clock {
+  opacity: 1;
+  transition: opacity 220ms ease-out;
+  display: inline-flex;
+  flex-direction: row;
+  flex-wrap: nowrap;
+  align-items: center;
+  gap: 0;
+  max-width: 100%;
+  min-width: 0;
+}
+.masthead--illustrated.masthead--photo-ready .masthead-clock span,
+.masthead--illustrated.masthead--photo-ready .masthead-clock time {
+  display: inline;
+  white-space: nowrap;
+}
+.masthead--illustrated.masthead--photo-ready .masthead-clock time {
+  font-weight: 800;
+  letter-spacing: 0.02em;
+  text-transform: none;
+  font-variant-numeric: tabular-nums;
+}
+.masthead--illustrated.masthead--photo-ready .masthead-clock time::before {
+  content: "·";
+  display: inline-block;
+  margin: 0 0.42em;
+  font-weight: 600;
+  font-size: 0.95em;
+  line-height: 1;
+  transform: translateY(-0.04em);
+  opacity: 0.55;
+}
 .masthead-weather {
   display: flex;
   gap: 6px;

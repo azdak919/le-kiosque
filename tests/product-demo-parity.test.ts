@@ -180,6 +180,16 @@ test('demo et template reçoivent le même theme.css / kiosque.js (packages/them
   assert.match(demoJs, /is-arriving/, 'animation gare sports');
   assert.match(demoCss, /sports-tile-arrive/, 'keyframes arrivée scoreboard');
   assert.match(demoCss, /sports-marquee-slide[\s\S]*18%/, 'marquee avec pauses aux extrémités');
+  // Port session LE-RADAR 2026-08-11 : horloge FR « h », ordre sports, pas de flash date.
+  assert.match(demoJs, /formatMastheadClock|h \$2|\$1 h \$2/, 'horloge mât : séparateur h (QC)');
+  assert.match(demoJs, /orderSportsDeck/, 'deck sports ordonné (récent → prochain), pas shuffle total');
+  assert.doesNotMatch(demoJs, /function shuffleSportsDeck/, 'plus de Fisher–Yates total sur le deck sports');
+  assert.match(demoCss, /masthead--photo-ready/, 'date mât visible après photo prête');
+  assert.match(
+    demoCss,
+    /\.masthead--illustrated\.masthead--photo-ready \.masthead-clock time::before/,
+    'point médian date·heure sur photo',
+  );
   // Marquee net (pas de fondu permanent gauche/droite sur la puce).
   assert.doesNotMatch(
     demoCss,
