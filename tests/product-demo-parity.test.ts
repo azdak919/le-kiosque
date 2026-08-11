@@ -170,6 +170,11 @@ test('demo et template reçoivent le même theme.css / kiosque.js (packages/them
     'nextGame porte opponentInstitution (ex. Géants / Sainte-Foy)',
   );
   assert.match(demoJs, /sportsIsDesktopLabel|sports-chip--rich|SPORTS_SPORT_TONES/, 'densité mobile codes / bureau noms');
+  // Port LE-RADAR : 2 lignes (noms + date·sport), « reçoit »/« à », pas marquee score.
+  assert.match(demoJs, /sports-chip--match|sports-chip__body|sportsMatchSubLine/, 'puce 2 lignes (body + sous-ligne)');
+  assert.match(demoJs, /sportsMatchVerb|reçoit/, 'verbe reçoit / à (pas seulement vs)');
+  assert.match(demoCss, /\.sports-chip__body|\.sports-chip--match \.sports-chip__sub/, 'CSS 2 lignes score');
+  assert.match(demoCss, /sports-chip-rim-glow/, 'pulse bordure pourpre (chip-look)');
   const demoBackend = await readFile(path.join(demo.out, 'assets/editorial/demo-backend.js'), 'utf8');
   assert.match(demoBackend, /#refreshUnmodifiedDemo|refreshUnmodifiedDemo/, 'upgrade seed local sans perdre les éditions');
   assert.match(demoBackend, /seed\.publication/, 'refresh seed met à jour publication (sports mât)');

@@ -912,9 +912,31 @@
       label = iso;
     }
     if (time) {
-      label += ' · ' + String(time).replace(':', ' h ');
+      label += ' · ' + String(time).replace(/(\d{1,2})\s*[:.]\s*(\d{2})/, '$1 h $2').replace(/:/g, ' h ');
     }
     return label;
+  }
+
+  /** Domicile « reçoit », extérieur « à » (ton presse LE-RADAR). */
+  function sportsMatchVerb(game) {
+    if (game && game.home === false) return 'à';
+    return 'reçoit';
+  }
+
+  /**
+   * Sous-ligne 2e ligne de la puce (parité LE-RADAR sportsMatchSubLine) :
+   * date · heure · sport [sexe] · [compétition].
+   */
+  function sportsMatchSubLine(display) {
+    var g = (display && display.game) || {};
+    var team = (display && display.team) || {};
+    var when = formatSportsChipWhen(g.date, g.time);
+    if (g.competition) return [when, String(g.competition).trim()].filter(Boolean).join(' · ');
+    var sportLabel = team.sportLabel || g.sport || '';
+    var sex = team.sex;
+    var sexLabel = sex === 'F' ? 'féminin' : sex === 'M' ? 'masculin' : sex === 'mixte' ? 'mixte' : '';
+    var meta = [sportLabel, sexLabel].filter(Boolean).join(' ');
+    return [when, meta].filter(Boolean).join(' · ');
   }
 
   /**
@@ -998,6 +1020,11 @@
     }
   }
 
+  /**
+   * Puce 2 lignes (parité LE-RADAR sports-chip--match) :
+   *   haut — noms + score / « reçoit »|« à »
+   *   bas  — date · sport (jamais de marquee sur le score ; lecture + rotation)
+   */
   function paintSportsChip(host, display, animate) {
     if (!host || !display) return;
     host.textContent = '';
@@ -1009,7 +1036,7 @@
     var desktop = sportsIsDesktopLabel();
     var href = sportsBoardHref(display);
     var chip = document.createElement(href ? 'a' : 'span');
-    chip.className = 'sports-chip masthead-sports__chip';
+    chip.className = 'sports-chip masthead-sports__chip sports-chip--match';
     if (desktop) chip.classList.add('sports-chip--rich');
     if (animate && !sportsReducedMotion) chip.classList.add('is-arriving');
     chip.style.setProperty('--sports-tone', tone);
@@ -1018,7 +1045,6 @@
     }
     if (chip.tagName === 'A') {
       chip.href = href;
-      /* SPA démo : même routeur que le menu (évite un full reload hors basePath). */
       chip.setAttribute('data-editorial-link', '');
     }
     if (team && team.id) chip.dataset.sportsTeam = String(team.id);
@@ -1026,16 +1052,19 @@
     var glyph = sportsEl('span', 'sports-chip__glyph', sportsGlyph(sport));
     glyph.setAttribute('aria-hidden', 'true');
 
-    var viewport = sportsEl('span', 'sports-chip__line');
+    var body = sportsEl('span', 'sports-chip__body');
+    var line = sportsEl('span', 'sports-chip__line');
     var inner = sportsEl('span', 'sports-chip__line-inner');
+    var sub = sportsEl('span', 'sports-chip__sub');
+    var subText = sportsEl('span', 'sports-chip__sub-text');
 
     var homeCode = code;
     var homeRich = sportsHomeRichLabel(team);
-    var homeLabel = desktop ? homeRich : homeCode;
-
-    /* Tooltip scannable (parité LE-RADAR sportsChipTitle) — sans « démo ». */
+    /* 2 lignes : toujours le surnom lisible (codes trop cryptiques hors mobile dense). */
+    var homeLabel = desktop ? homeRich : (homeRich || homeCode);
     var titleParts = [];
     var aria = '';
+    var subLine = sportsMatchSubLine(display);
 
     if (display.mode === 'result') {
       var g = display.game;
@@ -1047,21 +1076,22 @@
       var oppName = g.opponent || oppCode || 'Adversaire';
       var oppCompact = oppCode || String(oppName).slice(0, 8);
       var oppRich = sportsOppRichLabel(oppName, g.opponentInstitution);
-      var oppLabel = desktop ? oppRich : oppCompact;
+      var oppLabel = desktop ? oppRich : (sportsShortTeamName(oppName) || oppCompact);
 
       var badgeEl = sportsEl('span', 'sports-chip__badge sports-chip__badge--' + badgeMod, badge);
       badgeEl.setAttribute('aria-hidden', 'true');
       chip.appendChild(glyph);
       chip.appendChild(badgeEl);
 
-      inner.appendChild(sportsEl('span', desktop ? 'sports-chip__name' : 'sports-chip__code', homeLabel));
+      inner.appendChild(sportsEl('span', 'sports-chip__name', homeLabel));
       inner.appendChild(document.createTextNode(' '));
       inner.appendChild(sportsEl('span', 'sports-chip__score', score));
       inner.appendChild(document.createTextNode(' '));
-      inner.appendChild(sportsEl('span', (desktop ? 'sports-chip__name' : 'sports-chip__code') + ' sports-chip__opp', oppLabel));
+      inner.appendChild(sportsEl('span', 'sports-chip__name sports-chip__opp', oppLabel));
 
+      subText.textContent = subLine;
       titleParts = [issue, sportLabel, homeCode + ' ' + score + ' ' + oppCompact];
-      if (g.date) titleParts.push(formatSportsChipWhen(g.date));
+      if (g.date) titleParts.push(formatSportsChipWhen(g.date, g.time));
       aria = titleParts.join(' · ') + '. Ouvrir le tableau des scores.';
     } else {
       var n = display.game;
@@ -1069,51 +1099,51 @@
       var nextName = n.opponent || nextCode || 'Adversaire';
       var nextCompact = nextCode || String(nextName).slice(0, 8);
       var nextRich = sportsOppRichLabel(nextName, n.opponentInstitution);
-      var nextLabel = desktop ? nextRich : nextCompact;
-      var when = formatSportsChipWhen(n.date, n.time);
+      var nextLabel = desktop ? nextRich : (sportsShortTeamName(nextName) || nextCompact);
+      var verb = sportsMatchVerb(n);
 
       chip.appendChild(glyph);
 
-      inner.appendChild(sportsEl('span', desktop ? 'sports-chip__name' : 'sports-chip__code', homeLabel));
+      inner.appendChild(sportsEl('span', 'sports-chip__name', homeLabel));
       inner.appendChild(document.createTextNode(' '));
-      inner.appendChild(sportsEl('span', 'sports-chip__vs', 'vs'));
+      inner.appendChild(sportsEl('span', 'sports-chip__vs', verb));
       inner.appendChild(document.createTextNode(' '));
-      inner.appendChild(sportsEl('span', (desktop ? 'sports-chip__name' : 'sports-chip__code') + ' sports-chip__opp', nextLabel));
-      if (when) {
-        inner.appendChild(document.createTextNode(' · '));
-        inner.appendChild(sportsEl('span', 'sports-chip__when', when));
-      }
+      inner.appendChild(sportsEl('span', 'sports-chip__name sports-chip__opp', nextLabel));
 
-      titleParts = ['Prochain match', sportLabel, homeCode + ' vs ' + nextCompact];
-      if (when) titleParts.push(when);
+      subText.textContent = subLine;
+      titleParts = ['Prochain match', sportLabel, homeCode + ' ' + verb + ' ' + nextCompact];
+      if (subLine) titleParts.push(subLine);
       if (n.home === true) titleParts.push('Domicile');
       else if (n.home === false) titleParts.push('Extérieur');
       aria = titleParts.filter(Boolean).join(' · ') + '. Ouvrir le tableau des scores.';
     }
-    viewport.appendChild(inner);
+
+    line.appendChild(inner);
+    sub.appendChild(subText);
+    body.appendChild(line);
+    body.appendChild(sub);
+    chip.appendChild(body);
+
     chip.title = titleParts.filter(Boolean).join(' · ');
     chip.setAttribute('aria-label', aria);
     chip.dataset.sportsKey = display.key || '';
     chip.dataset.sportsMode = display.mode || '';
     chip.dataset.sportsSport = sport || '';
-    chip.dataset.sportsDensity = desktop ? 'rich' : 'codes';
+    chip.dataset.sportsDensity = desktop ? 'rich' : 'compact';
 
-    chip.appendChild(viewport);
     host.appendChild(chip);
     host.hidden = false;
 
-    function afterMarqueeReady(dwellMs) {
-      scheduleSportsRotate(dwellMs);
-    }
+    /* Pas de marquee sur 2 lignes (FG A LE-RADAR) : dwell lecture ~9–12 s. */
+    var readDwell = SPORTS_ROTATE_MIN_MS + 3500;
     if (animate && !sportsReducedMotion) {
-      applySportsLineMarquee(viewport);
       window.setTimeout(function () {
         if (!chip.isConnected) return;
         chip.classList.remove('is-arriving');
-        applySportsLineMarquee(viewport, afterMarqueeReady);
+        scheduleSportsRotate(readDwell);
       }, SPORTS_ARRIVE_MS);
     } else {
-      applySportsLineMarquee(viewport, afterMarqueeReady);
+      scheduleSportsRotate(readDwell);
     }
   }
 
