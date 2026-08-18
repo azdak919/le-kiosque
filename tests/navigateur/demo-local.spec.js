@@ -17,7 +17,7 @@ function demoSeedMediaCount() {
   const seed = JSON.parse(readFileSync(seedPath, 'utf8'));
   const n = Array.isArray(seed.media) ? seed.media.length : 0;
   if (n < 40) {
-    throw new Error(`seed démo trop court (${n} médias) — rebuild site avant e2e`);
+    throw new Error(`seed démo trop court (${n} médias) — rebuild site avant le test navigateur`);
   }
   return n;
 }
