@@ -149,7 +149,7 @@ test('la vitrine expose le bandeau illustré, les outils et la composition magaz
 });
 
 test('le déploiement et le configurateur du jalon 3 sont présents à la racine', async () => {
-  const workflow = await readFile(path.join(ROOT, '.github/workflows/pages.yml'), 'utf8');
+  const workflow = await readFile(path.join(ROOT, '.github/workflows/verification.yml'), 'utf8');
   const testAt = workflow.indexOf('npm test');
   const siteAt = workflow.indexOf('npm run site');
   assert.ok(testAt >= 0 && siteAt > testAt, 'les tests doivent précéder le build Pages');

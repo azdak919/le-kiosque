@@ -1,7 +1,7 @@
 import { defineConfig } from '@playwright/test';
 
-const e2ePort = Number(process.env.PLAYWRIGHT_PORT || 4173);
-const e2eOrigin = `http://127.0.0.1:${e2ePort}`;
+const port = Number(process.env.PLAYWRIGHT_PORT || 4173);
+const origin = `http://127.0.0.1:${port}`;
 
 const browserProjects = [
   { name: 'chromium', use: { browserName: 'chromium' } },
@@ -10,7 +10,7 @@ const browserProjects = [
 ];
 
 export default defineConfig({
-  testDir: './tests/e2e',
+  testDir: './tests/navigateur',
   workers: 1,
   fullyParallel: false,
   timeout: 90_000,
@@ -20,7 +20,7 @@ export default defineConfig({
   forbidOnly: Boolean(process.env.CI),
   reporter: process.env.CI ? [['line'], ['html', { open: 'never' }]] : 'line',
   use: {
-    baseURL: e2eOrigin,
+    baseURL: origin,
     trace: 'retain-on-failure',
     screenshot: 'only-on-failure',
     video: 'off',
@@ -28,8 +28,8 @@ export default defineConfig({
     navigationTimeout: 45_000,
   },
   webServer: {
-    command: 'node tools/serve-e2e.mjs',
-    url: `${e2eOrigin}/autre-nom/`,
+    command: 'node tools/serve-navigateur.mjs',
+    url: `${origin}/autre-nom/`,
     reuseExistingServer: !process.env.CI,
     timeout: 20_000,
   },

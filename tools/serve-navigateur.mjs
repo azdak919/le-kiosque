@@ -23,4 +23,4 @@ createServer(async (request, response) => {
   }
   response.setHeader('Content-Type', mime[path.extname(file)] || 'application/octet-stream');
   createReadStream(file).pipe(response);
-}).listen(port, '127.0.0.1', () => console.log(`E2E: http://127.0.0.1:${port}/autre-nom/`));
+}).listen(port, '127.0.0.1', () => console.log(`Navigateur: http://127.0.0.1:${port}/autre-nom/`));

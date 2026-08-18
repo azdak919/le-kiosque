@@ -75,7 +75,7 @@ adaptateur : c'est vérifié par un test.
 
 ```bash
 npm test                    # tests unitaires — doit rester vert
-npm run test:e2e            # parcours Chromium PGlite sous un basePath renommé
+npm run test:navigateur     # parcours Chromium PGlite sous un basePath renommé
 npm run test:continuity     # le test décisif du projet (voir plus bas)
 npm run typecheck           # tsc --noEmit (typage seul, aucune compilation)
 
@@ -89,7 +89,7 @@ npm run radar:reference:check -- --from=../le-radar  # revue du port éditorial
 ```
 
 Si un serveur local occupe `4173`, choisir un port libre sans l’interrompre :
-`PLAYWRIGHT_PORT=43818 npm run test:e2e`.
+`PLAYWRIGHT_PORT=43818 npm run test:navigateur`.
 
 Node **≥ 22.18** exécute le TypeScript directement. Il n'y a **aucune étape de
 compilation** et il ne doit pas y en avoir.

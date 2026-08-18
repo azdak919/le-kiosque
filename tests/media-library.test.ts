@@ -15,15 +15,15 @@ test('la banque photo de démonstration est locale, attribuée et recadrable', a
   const manifest = await readSharedMediaManifest(DEMO);
   assert.ok(manifest);
   assert.ok(manifest.media.length >= 40, `attendu ≥40 médias, reçu ${manifest.media.length}`);
-  // Garde-fou anti-régression e2e : le parcours Playwright lit le seed, pas un
+  // Garde-fou anti-régression navigateur : le parcours Playwright lit le seed, pas un
   // entier magique. Si ce test passe et que le seed build suit le manifest,
   // `toHaveCount(50)` ne doit plus jamais réapparaître.
-  const e2eSpec = await readFile(path.join(DEMO, '../../tests/e2e/demo-local.spec.js'), 'utf8');
-  assert.match(e2eSpec, /demoSeedMediaCount|seed\.media/, 'e2e doit lire le seed pour le compte médias');
+  const navSpec = await readFile(path.join(DEMO, '../../tests/navigateur/demo-local.spec.js'), 'utf8');
+  assert.match(navSpec, /demoSeedMediaCount|seed\.media/, 'le test navigateur doit lire le seed pour le compte médias');
   assert.doesNotMatch(
-    e2eSpec,
+    navSpec,
     /\.media-card'\)\)\.toHaveCount\(\d+\)/,
-    'e2e ne doit pas figer toHaveCount(N) sur .media-card',
+    'le test navigateur ne doit pas figer toHaveCount(N) sur .media-card',
   );
   assert.match(manifest.notice, /campus réels|scènes réels/i);
   assert.match(manifest.notice, /ne représentent pas/i);
