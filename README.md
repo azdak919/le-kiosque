@@ -95,6 +95,11 @@ deploy: { basePath: '/<depot>' }   // laisser vide avec un domaine dédié
 **Pour que votre équipe écrive sans jamais voir Git :**
 [`docs/brancher-sveltia.md`](docs/brancher-sveltia.md)
 
+**Installer chez un journal depuis une clé USB** (hébergeur mutualisé, serveur,
+à côté d’un WordPress) : `npm run kit`, puis voir
+[`tools/kit/GUIDE.md`](tools/kit/GUIDE.md) et la
+[fiche à imprimer](tools/kit/FICHE-A-IMPRIMER.html).
+
 **Pour essayer sans compte, jeton ni terminal :** terminez le configurateur,
 puis ouvrez `/admin/`. Le [mode de démonstration local](docs/demo-local-pglite.md)
 conserve les données uniquement dans IndexedDB, dans ce navigateur.
