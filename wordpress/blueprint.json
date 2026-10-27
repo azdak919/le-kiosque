@@ -1,0 +1,12 @@
+{
+  "$schema": "https://playground.wordpress.net/blueprint-schema.json",
+  "landingPage": "/wp-admin/admin.php?page=le-kiosque",
+  "preferredVersions": { "php": "8.3", "wp": "latest" },
+  "steps": [
+    { "step": "setSiteLanguage", "language": "fr_CA" },
+    { "step": "login", "username": "admin", "password": "password" },
+    { "step": "installPlugin", "pluginData": { "resource": "git:directory", "url": "https://github.com/azdak919/le-kiosque", "ref": "main", "path": "wordpress/le-kiosque" }, "options": { "activate": true } },
+    { "step": "writeFile", "path": "/tmp/kiosque-config.json", "data": { "resource": "url", "url": "https://raw.githubusercontent.com/azdak919/le-kiosque/main/wordpress/exemple-kiosque-config.json" } },
+    { "step": "runPHP", "code": "<?php require '/wordpress/wp-load.php'; $d = Le_Kiosque_Importeur::lire( file_get_contents( '/tmp/kiosque-config.json' ) ); Le_Kiosque_Importeur::appliquer( $d );" }
+  ]
+}

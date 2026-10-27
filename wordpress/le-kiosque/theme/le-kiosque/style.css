@@ -1,0 +1,21 @@
+/*
+Theme Name: Le Kiosque
+Theme URI: https://github.com/azdak919/le-kiosque
+Author: Azdak
+Description: Thème de blocs du Kiosque pour les journaux étudiants : mât à la couleur du journal, titres à empattement, rubriques en menu. Installé par l'extension Le Kiosque.
+Version: 0.1.0
+Requires at least: 6.4
+License: MIT
+Text Domain: le-kiosque
+*/
+.kiosque-mat { border-top: 6px solid var(--wp--preset--color--accent); }
+.kiosque-etablissement { background: var(--wp--preset--color--accent); color: #fff; text-transform: uppercase; letter-spacing: .08em; font-size: .72rem; font-weight: 800; padding: 6px 16px; margin: 0; }
+.kiosque-chapeau { font-size: 1.25rem; line-height: 1.5; font-family: var(--wp--preset--font-family--serif); color: var(--wp--preset--color--contrast); }
+.kiosque-signatures, .kiosque-credit { color: #5b5f66; font-size: .9rem; }
+.wp-block-post-terms a { color: var(--wp--preset--color--accent); text-transform: uppercase; font-weight: 800; font-size: .78rem; letter-spacing: .08em; text-decoration: none; }
+@media (prefers-color-scheme: dark) {
+  body { background: #0e0f12; color: #eceff3; }
+  a { color: var(--wp--preset--color--accent-dark); }
+  .wp-block-post-terms a { color: var(--wp--preset--color--accent-dark); }
+  .kiosque-chapeau { color: #eceff3; }
+}

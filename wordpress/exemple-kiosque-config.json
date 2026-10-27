@@ -1,0 +1,99 @@
+{
+  "format": "kiosque-config",
+  "version": 1,
+  "journal": {
+    "nom": "La Gazette du Nord",
+    "slug": "la-gazette-du-nord",
+    "signature": "",
+    "etablissement": "Cégep du Nord",
+    "typeEtablissement": "cegep",
+    "region": "Québec",
+    "fondation": "2026",
+    "adresse": "https://journal-exemple.invalid",
+    "fuseau": "America/Toronto",
+    "langue": "fr-CA"
+  },
+  "apparence": {
+    "couleur": "#8a1538",
+    "couleurSombre": "#bf7e92",
+    "typographie": "modern-accessible",
+    "logo": null,
+    "logoAlt": "La Gazette du Nord"
+  },
+  "sections": [
+    {
+      "nom": "Actualités",
+      "slug": "actualites",
+      "description": "",
+      "ordre": 1
+    },
+    {
+      "nom": "Campus",
+      "slug": "campus",
+      "description": "",
+      "ordre": 2
+    },
+    {
+      "nom": "Culture",
+      "slug": "culture",
+      "description": "",
+      "ordre": 3
+    },
+    {
+      "nom": "Sports",
+      "slug": "sports",
+      "description": "",
+      "ordre": 4
+    },
+    {
+      "nom": "Opinion",
+      "slug": "opinion",
+      "description": "",
+      "ordre": 5
+    }
+  ],
+  "pages": [
+    {
+      "slug": "equipe",
+      "titre": "Équipe"
+    },
+    {
+      "slug": "a-propos",
+      "titre": "À propos"
+    },
+    {
+      "slug": "politique-de-correction",
+      "titre": "Politique de correction"
+    },
+    {
+      "slug": "deontologie",
+      "titre": "Déontologie"
+    }
+  ],
+  "roles": [
+    {
+      "slug": "kiosque_journaliste",
+      "nom": "Journaliste",
+      "base": "contributor",
+      "kiosque": "auteur"
+    },
+    {
+      "slug": "kiosque_chef_pupitre",
+      "nom": "Chef de pupitre",
+      "base": "editor",
+      "kiosque": "editeur"
+    },
+    {
+      "slug": "kiosque_redacteur_chef",
+      "nom": "Rédacteur en chef",
+      "base": "editor",
+      "kiosque": "redacteur"
+    }
+  ],
+  "options": {
+    "radio": true,
+    "station": "",
+    "meteo": false,
+    "localites": ""
+  }
+}
