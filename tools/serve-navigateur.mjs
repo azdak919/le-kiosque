@@ -6,7 +6,7 @@ import path from 'node:path';
 const root = path.resolve('dist');
 const prefix = '/autre-nom';
 const port = Number(process.env.PLAYWRIGHT_PORT || 4173);
-const mime = { '.html': 'text/html; charset=utf-8', '.js': 'text/javascript; charset=utf-8', '.css': 'text/css; charset=utf-8', '.json': 'application/json', '.wasm': 'application/wasm', '.data': 'application/octet-stream', '.xml': 'application/xml; charset=utf-8', '.svg': 'image/svg+xml' };
+const mime = { '.html': 'text/html; charset=utf-8', '.js': 'text/javascript; charset=utf-8', '.mjs': 'text/javascript; charset=utf-8', '.css': 'text/css; charset=utf-8', '.json': 'application/json', '.wasm': 'application/wasm', '.data': 'application/octet-stream', '.xml': 'application/xml; charset=utf-8', '.svg': 'image/svg+xml' };
 
 createServer(async (request, response) => {
   const url = new URL(request.url || '/', 'http://localhost');
