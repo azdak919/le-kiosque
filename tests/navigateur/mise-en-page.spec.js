@@ -44,3 +44,42 @@ for (const theme of ['light', 'dark']) for (const largeur of largeurs) {
     await ctx.close();
   });
 }
+
+/**
+ * Mât uniforme (t346u) : toutes les pastilles ont la même hauteur, le même
+ * rayon et la même taille de texte; les boutons ronds ont un diamètre égal à
+ * la hauteur des pastilles, sur la même ligne; aucun texte n'est coupé.
+ */
+for (const theme of ['light', 'dark']) for (const largeur of [390, 1024, 1280, 1440, 1920]) {
+  test(`pastilles du mât uniformes à ${largeur} px (${theme})`, async ({ browser }) => {
+    const ctx = await browser.newContext({ viewport: { width: largeur, height: 900 }, colorScheme: theme });
+    const page = await ctx.newPage();
+    await page.goto('/autre-nom/demo/');
+    await page.waitForTimeout(1200);
+    const m = await page.evaluate(() => {
+      const mesure = (e) => { const r = e.getBoundingClientRect(), c = getComputedStyle(e);
+        return { h: r.height, w: r.width, milieu: r.top + r.height / 2, rayon: parseFloat(c.borderTopLeftRadius), fs: c.fontSize, fond: c.backgroundColor }; };
+      const pastilles = ['.masthead-clock', '.masthead-status .weather-chip', '.masthead-status .sports-chip']
+        .map((s) => document.querySelector(s)).filter((e) => e && e.getBoundingClientRect().width);
+      const boutons = [...document.querySelectorAll('.masthead-tools .masthead-tool')].filter((e) => e.getBoundingClientRect().width);
+      const coupe = [...document.querySelectorAll('.masthead-clock, .weather-chip__name, .sports-chip__line')].some((e) => e.scrollWidth > e.clientWidth + 1)
+        || [...document.querySelectorAll('.masthead-status .sports-chip__line-inner')].some((e) => e.scrollWidth > e.closest('.sports-chip__body').clientWidth + 1);
+      return { p: pastilles.map(mesure), b: boutons.map(mesure), horloge: mesure(document.querySelector('.masthead-clock')), coupe };
+    });
+    expect(m.p.length).toBeGreaterThanOrEqual(1);
+    const h = m.p[0].h;
+    for (const p of m.p) {
+      expect(Math.abs(p.h - h), 'hauteur des pastilles').toBeLessThanOrEqual(1);
+      expect(Math.abs(p.rayon - h / 2), 'rayon des pastilles').toBeLessThanOrEqual(1);
+      expect(p.fs).toBe(m.p[0].fs);
+      expect(p.fond).toBe(m.p[0].fond);
+    }
+    for (const b of m.b) {
+      expect(Math.abs(b.h - h), 'diamètre des boutons').toBeLessThanOrEqual(1);
+      expect(Math.abs(b.w - h)).toBeLessThanOrEqual(1);
+      expect(Math.abs(b.milieu - m.horloge.milieu), 'boutons alignés sur la date').toBeLessThanOrEqual(1);
+    }
+    expect(m.coupe, 'texte coupé dans le mât').toBe(false);
+    await ctx.close();
+  });
+}

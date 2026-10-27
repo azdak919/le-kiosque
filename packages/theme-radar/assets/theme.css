@@ -3216,3 +3216,59 @@ a.masthead-sports__chip:focus-visible {
   .masthead .masthead-utility > .masthead-clock span, .masthead .masthead-utility > .masthead-clock time { white-space: normal; overflow-wrap: anywhere; min-width: 0; max-width: 100%; }
   .masthead-utility > .masthead-clock { flex-wrap: wrap; overflow: visible; }
 }
+/* Mât uniforme (t346u) : date, météo, score et boutons partagent la même
+   hauteur, le même verre, la même bordure, le même arrondi et le même texte.
+   Les boutons ronds ont pour diamètre la hauteur des pastilles. */
+html {
+  --mat-h: 32px;
+  --mat-rayon: 16px;
+  --mat-fond: rgba(18, 21, 27, 0.62);
+  --mat-bord: 1px solid rgba(255, 255, 255, 0.24);
+  --mat-flou: blur(10px) saturate(1.06);
+  --mat-texte: 11px;
+  --mat-pad: 0 12px;
+}
+@media (max-width: 720px) { html { --mat-h: 30px; --mat-rayon: 15px; --mat-pad: 0 10px; --mat-texte: 10px; } }
+.masthead .masthead-utility { align-items: center; }
+.masthead-status { align-items: center; }
+.masthead .masthead-clock,
+.masthead-status .weather-chip,
+.masthead-status .sports-chip,
+.masthead--illustrated.masthead--photo-ready .masthead-clock {
+  box-sizing: border-box; height: var(--mat-h); min-height: var(--mat-h); max-height: var(--mat-h);
+  padding: var(--mat-pad); border: var(--mat-bord) !important; border-radius: var(--mat-rayon) !important;
+  background: var(--mat-fond) !important; -webkit-backdrop-filter: var(--mat-flou); backdrop-filter: var(--mat-flou);
+  color: #fff; font-size: var(--mat-texte); line-height: 1; box-shadow: none;
+  display: inline-flex; align-items: center; gap: 6px; margin: 0;
+}
+.masthead .masthead-tools { align-items: center; gap: 6px; }
+.masthead .masthead-tools > .masthead-tool {
+  box-sizing: border-box; width: var(--mat-h); height: var(--mat-h); min-width: var(--mat-h);
+  border: var(--mat-bord); border-radius: 50%; background: var(--mat-fond);
+  -webkit-backdrop-filter: var(--mat-flou); backdrop-filter: var(--mat-flou);
+  display: inline-flex; align-items: center; justify-content: center; padding: 0; margin: 0;
+}
+/* Score sur une ligne : la date et la ligue restent dans l'infobulle. */
+.masthead-status .sports-chip .sports-chip__body { display: flex; align-items: center; min-width: 0; height: auto; }
+.masthead-status .sports-chip .sports-chip__sub { display: none; }
+.masthead-status .sports-chip .sports-chip__line { display: block; min-width: 0; overflow: hidden; white-space: nowrap; text-overflow: clip; font-size: var(--mat-texte); line-height: 1; }
+.masthead-status .sports-chip .sports-chip__badge { width: 16px; height: 16px; line-height: 16px; font-size: 9px; border-radius: 50%; }
+.masthead-status .masthead-weather,
+.masthead-status .masthead-sports { height: var(--mat-h); display: flex; align-items: center; min-width: 0; }
+.masthead-status .weather-chip .weather-icon-meteocon { width: 18px; height: 18px; }
+@media (min-width: 1101px) { .masthead-status .masthead-weather { max-width: none; flex-shrink: 0; } }
+/* La météo garde sa taille naturelle; c'est le score qui s'abrège (sigle). */
+.masthead-status .masthead-weather { max-width: none !important; flex: 0 1 auto !important; min-width: 0; }
+.masthead-status .masthead-weather .weather-chip__name { overflow: hidden; text-overflow: clip; min-width: 0; }
+.masthead-status .masthead-sports { flex: 0 1 auto; min-width: 0; }
+.masthead-status .sports-chip__line, .masthead-status .sports-chip__line-inner { justify-content: flex-start; text-align: left; }
+.masthead .masthead-clock time, .masthead .masthead-clock span { white-space: nowrap !important; flex: 0 0 auto; }
+.masthead .masthead-clock { flex-shrink: 0; max-width: none; overflow: visible; }
+.masthead-status .sports-chip { max-width: 100%; min-width: 0; overflow: hidden; }
+.masthead-status { overflow: hidden; }
+/* Mobile : la date garde la même pastille sur une ligne, en plus petit. */
+@media (max-width: 720px) {
+  .masthead .masthead-utility > .masthead-clock,
+  .masthead--illustrated.masthead--photo-ready .masthead-clock { flex-direction: row; white-space: nowrap; }
+  .masthead .masthead-utility > .masthead-clock span { white-space: nowrap; }
+}
