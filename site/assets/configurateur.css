@@ -93,3 +93,43 @@ button:disabled { opacity: .45; cursor: not-allowed; }
   .config-step { min-height: 500px; padding: 28px 20px; }
   .config-controls { padding: 14px 20px; }
 }
+
+/* ── Configurateur simplifié (4 étapes + aperçu en direct) ─────────────── */
+.config-layout--simple { max-width: 1320px; grid-template-columns: minmax(0, 1fr) 360px; grid-template-rows: auto 1fr; gap: 0 28px; padding: 0 24px; }
+.config-steps { grid-column: 1 / -1; display: flex; gap: 8px; list-style: none; margin: 22px 0 0; padding: 0; counter-reset: step; }
+.config-steps li { counter-increment: step; flex: 1; display: flex; align-items: center; gap: 8px; padding: 10px 12px; border-bottom: 3px solid var(--rule); color: var(--muted); font-size: .86rem; font-weight: 700; }
+.config-steps li::before { content: counter(step); width: 24px; height: 24px; flex: 0 0 auto; display: grid; place-items: center; border: 1px solid var(--rule); border-radius: 50%; font-size: .72rem; }
+.config-steps li.current { color: var(--ink); border-color: var(--accent); }
+.config-steps li.current::before { color: #fff; background: var(--accent); border-color: var(--accent); }
+.config-steps li.done::before { content: "✓"; color: #fff; background: #276444; border-color: #276444; }
+.config-layout--simple .config-main { padding: 22px 0 40px; }
+.config-layout--simple .example-banner, .config-layout--simple #config-form { max-width: none; }
+.config-layout--simple .config-step { min-height: 0; }
+.config-layout--simple .config-step h1 { font-size: clamp(1.9rem, 4vw, 2.8rem); }
+.ou { display: block; color: var(--muted); font-size: .76rem; font-weight: 400; text-transform: none; }
+.avance { margin-top: 26px; border: 1px solid var(--rule); border-radius: 6px; padding: 0 16px; }
+.avance > summary { cursor: pointer; padding: 14px 0; font-weight: 800; font-size: .9rem; }
+.avance > summary small { color: var(--muted); font-weight: 400; }
+.avance[open] { padding-bottom: 18px; }
+.avance .fields { margin-top: 6px; }
+.avance .choice-card { margin-top: 12px; padding: 14px; }
+.step-error { margin: 18px 0 0; padding: 10px 12px; border-radius: 4px; color: #7d1f24; background: #fde8e8; font-size: .88rem; }
+input[aria-invalid="true"], textarea[aria-invalid="true"] { border-color: #b3261e; }
+.config-apercu { padding-top: 22px; }
+.config-apercu > p { margin: 0 0 10px; color: var(--muted); font-size: .72rem; font-weight: 800; letter-spacing: .1em; text-transform: uppercase; }
+.config-apercu .live-preview { position: sticky; top: 16px; }
+.live-preview .preview-mast { display: flex; align-items: center; gap: 12px; padding: 20px 20px 8px; }
+.live-preview .preview-mast img { width: 48px; height: 48px; object-fit: contain; }
+.live-preview .preview-mast strong { padding: 0; border: 0; font: 700 2rem/1 var(--serif); overflow-wrap: anywhere; }
+.live-preview > em { display: block; min-height: 1em; padding: 0 20px 12px; border-bottom: 3px solid #16181c; color: #44474d; font-size: .8rem; font-style: normal; }
+.live-preview nav { display: flex; flex-wrap: wrap; gap: 4px 14px; }
+.live-preview nav b { color: var(--preview-accent); }
+.finish-grid--3 article { display: flex; flex-direction: column; align-items: flex-start; }
+.finish-grid--3 article > :last-child { margin-top: auto; }
+@media (max-width: 980px) {
+  .config-layout--simple { grid-template-columns: 1fr; padding: 0 14px; }
+  .config-apercu { padding-top: 0; }
+  .config-apercu .live-preview { position: static; }
+  .config-steps li { font-size: 0; gap: 0; justify-content: center; }
+}
+.swatch{display:inline-block;width:12px;height:12px;border-radius:2px;vertical-align:-1px}
