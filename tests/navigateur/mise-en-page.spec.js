@@ -50,7 +50,7 @@ for (const theme of ['light', 'dark']) for (const largeur of largeurs) {
  * rayon et la même taille de texte; les boutons ronds ont un diamètre égal à
  * la hauteur des pastilles, sur la même ligne; aucun texte n'est coupé.
  */
-for (const theme of ['light', 'dark']) for (const largeur of [390, 1024, 1280, 1440, 1920]) {
+for (const theme of ['light', 'dark']) for (const largeur of [1024, 1280, 1440, 1920]) {
   test(`pastilles du mât uniformes à ${largeur} px (${theme})`, async ({ browser }) => {
     const ctx = await browser.newContext({ viewport: { width: largeur, height: 900 }, colorScheme: theme });
     const page = await ctx.newPage();
@@ -80,6 +80,54 @@ for (const theme of ['light', 'dark']) for (const largeur of [390, 1024, 1280, 1
       expect(Math.abs(b.milieu - m.horloge.milieu), 'boutons alignés sur la date').toBeLessThanOrEqual(1);
     }
     expect(m.coupe, 'texte coupé dans le mât').toBe(false);
+    await ctx.close();
+  });
+}
+
+/**
+ * Mobile façon LE-RADAR (t352u) : date, titre, rangée d’outils pleine largeur,
+ * radio, puis météo et sports sous la radio (sports pleine largeur, sous la
+ * météo). Cibles tactiles du mât ≥ 44 px. Pied sans « · » orphelin.
+ */
+for (const theme of ['light', 'dark']) for (const largeur of [360, 390, 430]) {
+  test(`mât mobile façon Radar à ${largeur} px (${theme})`, async ({ browser }) => {
+    const ctx = await browser.newContext({ viewport: { width: largeur, height: 900 }, colorScheme: theme, isMobile: true, hasTouch: true });
+    const page = await ctx.newPage();
+    await page.goto('/autre-nom/demo/');
+    await page.waitForTimeout(1500);
+    const m = await page.evaluate(() => {
+      const r = (s) => { const e = document.querySelector(s); if (!e) return null; const b = e.getBoundingClientRect(); return { top: b.top, bottom: b.bottom, left: b.left, right: b.right, w: b.width, h: b.height }; };
+      const outils = [...document.querySelectorAll('.masthead-tools .masthead-tool')].map((e) => {
+        const b = e.getBoundingClientRect(), a = getComputedStyle(e, '::before');
+        return { top: b.top, w: b.width, h: b.height, zone: Math.min(parseFloat(a.width) || 0, parseFloat(a.height) || 0) };
+      });
+      const sep = [...document.querySelectorAll('.site-foot__sep')].filter((e) => e.getBoundingClientRect().width > 0).length;
+      return { vw: innerWidth, horloge: r('.masthead-clock'), titre: r('.masthead-top'), outils, rangee: r('.masthead-tools'),
+        radio: r('.radar-tuner'), meteo: r('.masthead-weather-dock .weather-chip'), sports: r('.masthead-weather-dock .sports-chip'),
+        coupe: [...document.querySelectorAll('.masthead-clock, .masthead-weather-dock .weather-chip__name')].some((e) => e.scrollWidth > e.clientWidth + 1),
+        sep, hscroll: document.documentElement.scrollWidth > innerWidth + 1 };
+    });
+    expect(m.hscroll, 'défilement horizontal').toBe(false);
+    expect(m.horloge.bottom).toBeLessThanOrEqual(m.titre.top + 1);
+    expect(m.titre.bottom).toBeLessThanOrEqual(m.rangee.top + 1);
+    expect(m.rangee.bottom).toBeLessThanOrEqual(m.radio.top + 1);
+    expect(m.rangee.w).toBeGreaterThan(m.vw - 60);
+    for (const o of m.outils) {
+      expect(Math.abs(o.top - m.outils[0].top), 'outils sur une rangée').toBeLessThanOrEqual(1);
+      expect(Math.abs(o.w - 35)).toBeLessThanOrEqual(1);
+      expect(o.zone, 'cible tactile ≥ 44 px').toBeGreaterThanOrEqual(44);
+    }
+    if (m.meteo) {
+      expect(m.meteo.top).toBeGreaterThanOrEqual(m.radio.bottom - 1);
+      expect(Math.abs(m.meteo.h - m.horloge.h), 'météo = hauteur de la date').toBeLessThanOrEqual(1);
+    }
+    if (m.sports) {
+      expect(m.sports.top).toBeGreaterThanOrEqual((m.meteo ? m.meteo.bottom : m.radio.bottom) - 1);
+      expect(m.sports.w).toBeGreaterThan(m.vw - 60);
+      expect(m.sports.h).toBeGreaterThanOrEqual(44);
+    }
+    expect(m.coupe, 'texte coupé').toBe(false);
+    expect(m.sep, '« · » visibles dans le pied mobile').toBe(0);
     await ctx.close();
   });
 }

@@ -69,3 +69,13 @@ button.danger { color: #9b1717; border-color: #d9aaaa; }
 .post-demo { display: grid; grid-template-columns: repeat(3,minmax(0,1fr)); gap: 1rem; }.post-demo article { border: 1px solid var(--admin-rule); padding: 1rem; border-radius: .4rem; }
 #toast { position: fixed; right: 1rem; bottom: 1rem; background: #17181b; color: white; padding: .7rem 1rem; border-radius: .35rem; opacity: 0; pointer-events: none; transition: opacity .2s; }#toast.visible { opacity: 1; }
 @media (max-width: 760px) { .admin-shell { grid-template-columns: 1fr; }.admin-nav { flex-direction: row; overflow-x: auto; }.admin-nav button { white-space: nowrap; }.grid,.post-demo,.media-grid,.media-filters { grid-template-columns: 1fr; }.field.full { grid-column: auto; }.crop-previews { grid-template-columns: 1fr; }.crop-preview img,.crop-tablet img,.crop-mobile img { height: 10rem; } }
+
+/* Mobile (t350u) : bandeau et en-tête compacts, onglets qui défilent avec indice. */
+@media (max-width: 600px) {
+  .local-warning { font-size: .8rem; line-height: 1.35; padding: .5rem .9rem; }
+  .admin-header { padding-block: .75rem; gap: .75rem; }
+  .admin-header h1, .admin-header .admin-title { font-size: 1.2rem; line-height: 1.2; }
+  .admin-header a { white-space: nowrap; min-height: 44px; display: inline-flex; align-items: center; }
+  .admin-nav { overflow-x: auto; scrollbar-width: none; -webkit-mask-image: linear-gradient(90deg, #000 85%, transparent); mask-image: linear-gradient(90deg, #000 85%, transparent); }
+  .admin-nav button { min-height: 44px; flex: 0 0 auto; }
+}
