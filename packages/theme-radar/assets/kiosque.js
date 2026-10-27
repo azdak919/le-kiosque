@@ -93,17 +93,16 @@
     if (!date || !time) return;
     function refresh() {
       var now = new Date();
-      date.textContent = new Intl.DateTimeFormat('fr-CA', {
-        weekday: 'long',
-        day: 'numeric',
-        month: 'long',
-        year: 'numeric',
-      }).format(now);
+      var court = window.matchMedia && window.matchMedia('(max-width: 1100px)').matches;
+      date.textContent = new Intl.DateTimeFormat('fr-CA', court
+        ? { weekday: 'short', day: 'numeric', month: 'short' }
+        : { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' }).format(now);
       time.textContent = formatMastheadClock(now);
       time.dateTime = now.toTimeString().slice(0, 5);
     }
     refresh();
     setInterval(refresh, 30000);
+    window.addEventListener('resize', refresh);
   }
 
   /** Date visible seulement après 1ʳᵉ photo mât (évite flash style nu). */
@@ -1098,6 +1097,11 @@
       inner.appendChild(sportsEl('span', 'sports-chip__score', score));
       inner.appendChild(document.createTextNode(' '));
       inner.appendChild(sportsEl('span', 'sports-chip__name sports-chip__opp', oppLabel));
+      chip._abreger = [
+        ['.sports-chip__opp', sportsShortTeamName(oppName) || oppCompact],
+        ['.sports-chip__opp', oppCompact],
+        ['.sports-chip__name:not(.sports-chip__opp)', homeCode],
+      ];
 
       subText.textContent = subLine;
       titleParts = [issue, sportLabel, homeCode + ' ' + score + ' ' + oppCompact];
@@ -1119,6 +1123,11 @@
       inner.appendChild(sportsEl('span', 'sports-chip__vs', verb));
       inner.appendChild(document.createTextNode(' '));
       inner.appendChild(sportsEl('span', 'sports-chip__name sports-chip__opp', nextLabel));
+      chip._abreger = [
+        ['.sports-chip__opp', sportsShortTeamName(nextName) || nextCompact],
+        ['.sports-chip__opp', nextCompact],
+        ['.sports-chip__name:not(.sports-chip__opp)', homeCode],
+      ];
 
       subText.textContent = subLine;
       titleParts = ['Prochain match', sportLabel, homeCode + ' ' + verb + ' ' + nextCompact];
@@ -1143,6 +1152,7 @@
 
     host.appendChild(chip);
     host.hidden = false;
+    sportsAbregerSiTropLong(chip);
 
     /* Pas de marquee sur 2 lignes (FG A LE-RADAR) : dwell lecture ~9–12 s. */
     var readDwell = SPORTS_ROTATE_MIN_MS + 3500;
@@ -1155,6 +1165,36 @@
     } else {
       scheduleSportsRotate(readDwell);
     }
+  }
+
+  /**
+   * Pastille sur une seule ligne (même hauteur que les autres) : si le texte
+   * ne tient pas, on abrège proprement (surnom, puis sigle) au lieu de couper.
+   */
+  function sportsAbregerSiTropLong(chip) {
+    var line = chip.querySelector('.sports-chip__line');
+    if (!line || !chip._abreger) return;
+    var status = chip.closest('.masthead-status');
+    var trop = function () {
+      var inner = line.querySelector('.sports-chip__line-inner') || line;
+      var body = chip.querySelector('.sports-chip__body') || line;
+      return line.scrollWidth > line.clientWidth + 1 ||
+        inner.scrollWidth > body.clientWidth + 1 ||
+        chip.scrollWidth > chip.clientWidth + 1 ||
+        (status && status.scrollWidth > status.clientWidth + 1);
+    };
+    if (!chip._origine) {
+      chip._origine = chip._abreger.map(function (a) { var e = chip.querySelector(a[0]); return e ? e.textContent : ''; });
+      if (window.ResizeObserver) {
+        new ResizeObserver(function () { sportsAbregerSiTropLong(chip); }).observe(chip.parentNode || chip);
+      }
+    }
+    chip._abreger.forEach(function (a, j) { var e = chip.querySelector(a[0]); if (e && chip._origine[j]) e.textContent = chip._origine[j]; });
+    for (var i = 0; i < chip._abreger.length && trop(); i++) {
+      var el = chip.querySelector(chip._abreger[i][0]);
+      if (el && chip._abreger[i][1]) el.textContent = chip._abreger[i][1];
+    }
+    chip.classList.toggle('is-abrege', i > 0);
   }
 
   function rotateSportsChip() {
@@ -1342,6 +1382,25 @@
         chip.appendChild(nameEl);
         chip.appendChild(temp);
         host.appendChild(chip);
+        chip.title = value.name + ' · ' + value.temperature + '°';
+        /* Abréger proprement plutôt que « Saint-L… » : St-, Ste-, puis premier mot. */
+        var abreger = [
+          function (n) { return n.replace(/\bSainte-/g, 'Ste-').replace(/\bSaint-/g, 'St-'); },
+          function (n) { return n.split(/-(?:du|de|des|la|le|sur)-|\s/)[0]; },
+        ];
+        var status = host.closest('.masthead-status');
+        var ajuster = function () {
+          nameEl.textContent = value.name;
+          var trop = function () {
+            return nameEl.scrollWidth > nameEl.clientWidth + 1 ||
+              (status && status.scrollWidth > status.clientWidth + 1);
+          };
+          for (var k = 0; k < abreger.length && trop(); k++) {
+            nameEl.textContent = abreger[k](nameEl.textContent);
+          }
+        };
+        ajuster();
+        if (window.ResizeObserver && status) new ResizeObserver(ajuster).observe(status);
       });
       syncMastheadWeatherDock();
     }).catch(function () {
