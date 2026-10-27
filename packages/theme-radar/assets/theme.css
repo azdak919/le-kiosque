@@ -3272,3 +3272,74 @@ html {
   .masthead--illustrated.masthead--photo-ready .masthead-clock { flex-direction: row; white-space: nowrap; }
   .masthead .masthead-utility > .masthead-clock span { white-space: nowrap; }
 }
+
+/* ---------------------------------------------------------------------------
+ * Mobile façon LE-RADAR (t352u) — ordre : date, titre, outils, radio, météo
+ * (grille 2 colonnes), sports pleine largeur sur 2 lignes. Valeurs relevées
+ * sur le-radar.ca à 390 px (date r5 h29, outils 35 px, météo r5 h29,
+ * carte sports r6 ≈ 54 px, marges latérales 18 px, écarts 4 px).
+ * ------------------------------------------------------------------------- */
+@media (max-width: 720px) {
+  html { --mat-h: 29px; --mat-rayon: 5px; --mat-texte: 11px; --mat-pad: 0 10px; }
+  :has(> .masthead-utility) { display: flex; flex-direction: column; }
+  .masthead .masthead-utility { display: contents; }
+  .masthead .masthead-clock { order: 1; align-self: flex-start; font-weight: 650; }
+  :has(> .masthead-utility) > .masthead-top { order: 2; }
+  :has(> .masthead-utility) > :not(.masthead-utility):not(.masthead-top) { order: 4; }
+  .masthead .masthead-tools {
+    order: 3; width: 100%; display: flex; justify-content: space-between; gap: 4px;
+    margin: 6px 0 8px;
+  }
+  .masthead .masthead-tools .masthead-tool { width: 35px; height: 35px; min-width: 35px; border-radius: 999px; }
+  .masthead { height: auto !important; max-height: none !important; min-height: 0 !important; }
+  :has(> .masthead-utility) { padding-top: 10px; padding-bottom: 24px; }
+  .masthead .masthead-top { margin: 6px 0 0; }
+  .masthead .masthead-tagline { display: none; }
+  .masthead-weather-dock { padding: 4px 18px 2px; }
+  .masthead-weather-dock .masthead-status {
+    display: flex !important; flex-direction: column; align-items: stretch; gap: 4px; width: 100%; overflow: visible;
+  }
+  .masthead-weather-dock .masthead-weather { display: grid !important; grid-template-columns: 1fr 1fr; gap: 4px; width: 100%; }
+  .masthead-weather-dock .weather-chip,
+  .masthead-weather-dock .masthead-status .sports-chip { background: rgba(42, 46, 54, .92) !important; color: #fff; }
+  .masthead-weather-dock .weather-chip { width: 100%; justify-content: flex-start; gap: 5px; padding: 0 7px; font-weight: 650; }
+  .masthead-weather-dock .masthead-sports { width: 100%; height: auto !important; max-height: none !important; overflow: visible !important; }
+  .masthead-weather-dock .masthead-status .sports-chip {
+    width: 100%; max-width: none; height: auto !important; min-height: 44px;
+    border-radius: 6px !important; padding: 5px 10px 5px 7px; gap: 6px; font-weight: 700; align-items: center;
+  }
+  .masthead-weather-dock .sports-chip__line,
+  .masthead-weather-dock .sports-chip__line-inner { justify-content: flex-start !important; text-align: left !important; }
+  .masthead-weather-dock .sports-chip__body { display: flex; flex-direction: column; align-items: flex-start !important; text-align: left !important; min-width: 0; flex: 1 1 auto; }
+  .masthead-weather-dock .masthead-status .sports-chip__sub {
+    display: block !important; font-size: 9px; font-weight: 600; opacity: .72;
+    white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+  }
+}
+
+/* Cibles tactiles ≥ 44 px (t350u) sans changer l’apparence : zone élargie
+ * par un pseudo-élément transparent centré sur le lien ou le bouton. */
+@media (pointer: coarse), (max-width: 900px) {
+  .masthead .masthead-tool,
+  .nav .nav-section,
+  .article-more,
+  .post-meta a,
+  main#contenu li > a,
+  .site-foot a { position: relative; }
+  .masthead .masthead-tool::before,
+  .nav .nav-section::after,
+  .article-more::after,
+  .post-meta a::after,
+  main#contenu li > a::after,
+  .site-foot a::after {
+    content: ""; position: absolute; left: 50%; top: 50%;
+    width: max(100%, 44px); height: max(100%, 44px); transform: translate(-50%, -50%);
+  }
+}
+
+/* Pied mobile (t350u) : pas de « · » orphelin en début de ligne. */
+@media (max-width: 720px) {
+  .site-foot__nav .site-foot__sep, .site-foot__links .site-foot__sep { display: none; }
+  .site-foot__nav, .site-foot__links { display: flex; flex-wrap: wrap; gap: 4px 18px; }
+  .site-foot { padding-bottom: 88px; }
+}
