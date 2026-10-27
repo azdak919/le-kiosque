@@ -24,7 +24,27 @@ export async function readConfiguratorBootstrap() {
   });
 }
 
+/**
+ * PGlite (≈ 5 Mo wasm + données) ne se charge que pour /admin/ ou pour un
+ * navigateur qui a déjà ouvert l’admin (ou le configurateur) : les lecteurs
+ * reçoivent le HTML statique, identique au rendu initial.
+ */
+export function editorialFlagKey() {
+  return `kiosque-editorial-actif:${manifest().databaseKey}`;
+}
+
+export function markEditorialActive() {
+  try { localStorage.setItem(editorialFlagKey(), '1'); } catch (_) { /* stockage bloqué */ }
+}
+
+export async function editorialNeeded() {
+  if (/\/admin(\/|$)/.test(location.pathname)) return true;
+  try { if (localStorage.getItem(editorialFlagKey())) return true; } catch (_) { return true; }
+  return Boolean(await readConfiguratorBootstrap());
+}
+
 export async function getBackend() {
+  markEditorialActive();
   if (!backendPromise) {
     backendPromise = (async () => {
       const config = manifest();
