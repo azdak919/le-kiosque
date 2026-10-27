@@ -1,0 +1,23 @@
+# Entretien automatique : les mises à jour mineures et correctives sont
+# regroupées puis fusionnées par dependabot-automerge.yml quand tout est vert.
+# Les majeures restent ouvertes ; la veille hebdomadaire les signale après 30 j.
+version: 2
+updates:
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: weekly
+    open-pull-requests-limit: 5
+    groups:
+      actions-mineures:
+        patterns: ["*"]
+        update-types: ["minor", "patch"]
+  - package-ecosystem: npm
+    directory: /
+    schedule:
+      interval: weekly
+    open-pull-requests-limit: 5
+    groups:
+      npm-mineures:
+        patterns: ["*"]
+        update-types: ["minor", "patch"]

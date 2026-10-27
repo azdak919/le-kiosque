@@ -30,9 +30,18 @@ jobs:
           cache: npm
       - run: npm ci
       - run: npm test
-      - run: npm run site
+      # Un dépôt créé avec « Use this template » porte un autre nom : on prend
+      # le sous-chemin que GitHub Pages annonce, sans rien configurer.
       - if: github.event_name != 'pull_request'
+        id: pages
         uses: actions/configure-pages@v5
+      - name: Construire le site
+        env:
+          EVENT: ${{ github.event_name }}
+          PAGES_BASE: ${{ steps.pages.outputs.base_path }}
+        run: |
+          if [ "$EVENT" != pull_request ]; then export BASE="$PAGES_BASE"; fi
+          npm run site
       - if: github.event_name != 'pull_request'
         uses: actions/upload-pages-artifact@v3
         with:
