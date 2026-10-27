@@ -1535,7 +1535,7 @@ body.with-radio .masthead--illustrated {
   min-height: 42px;
   display: grid;
   /* Colonne milieu (météo+sports) : minmax(0,1fr) pour ne pas forcer le clip. */
-  grid-template-columns: minmax(0, auto) minmax(0, 1fr) auto;
+  grid-template-columns: max-content minmax(0, 1fr) auto;
   align-items: start;
   gap: 12px;
   padding-bottom: 12px;
@@ -3178,4 +3178,39 @@ a.masthead-sports__chip:focus-visible {
 
 @media print {
   .page-tools { display: none !important; }
+}
+
+/* Mise en page démo (t343u) : la date/heure ne se fait jamais recouvrir,
+   la météo ne déborde pas sur les sports. */
+.masthead-utility > .masthead-clock { white-space: nowrap; min-width: max-content; }
+.masthead-status .masthead-weather { flex-shrink: 0; }
+.masthead-status .weather-chip,
+.masthead-status .masthead-weather__city { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.masthead-status .masthead-sports { overflow: hidden; }
+@media (min-width: 721px) and (max-width: 1100px) {
+  .masthead-status .masthead-weather { max-width: 11rem; flex-shrink: 1; }
+}
+.masthead-status .weather-chip__name,
+.masthead-status .masthead-weather__name { min-width: 0; flex: 0 1 auto; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.masthead-status .weather-chip__temp { flex: 0 0 auto; }
+/* Date et heure en pastille sombre, comme le mât LE-RADAR : lisibles sur
+   n'importe quelle photo et alignées sur la hauteur des pastilles voisines. */
+.masthead--illustrated .masthead-utility { align-items: center; }
+.masthead--illustrated .masthead-clock {
+  display: inline-flex; align-items: center; min-height: 30px; padding: 0 10px;
+  border: 1px solid rgba(255, 255, 255, 0.24); border-radius: 6px;
+  background: rgba(30, 33, 38, 0.62);
+  backdrop-filter: blur(10px) saturate(1.06); -webkit-backdrop-filter: blur(10px) saturate(1.06);
+  box-sizing: border-box;
+}
+/* L'embed kiosque-v1 de LE-RADAR passe en disposition « grand écran » à
+   1280 px et plus, disposition qui ne tient pas dans 68 px (commandes coupées,
+   volume flottant). On garde l'iframe sous 1280 px, centrée sur la colonne;
+   la coque sombre de .radar-tuner continue de peindre toute la largeur. */
+.radar-tuner iframe { max-width: 1100px; margin-left: auto; margin-right: auto; display: block; }
+@media (max-width: 720px) {
+  .masthead-utility { grid-template-columns: minmax(0, 1fr) auto; }
+  .masthead-utility > .masthead-clock { min-width: 0; white-space: normal; }
+  .masthead--illustrated.masthead--photo-ready .masthead-clock { flex-direction: column; align-items: flex-start; justify-self: start; padding: 3px 8px; line-height: 1.25; }
+  .masthead--illustrated.masthead--photo-ready .masthead-clock time::before { content: none; }
 }
