@@ -93,8 +93,13 @@
     if (!date || !time) return;
     function refresh() {
       var now = new Date();
-      var court = window.matchMedia && window.matchMedia('(max-width: 1100px)').matches;
-      date.textContent = new Intl.DateTimeFormat('fr-CA', court
+      var mm = function (q) { return window.matchMedia && window.matchMedia(q).matches; };
+      var court = mm('(max-width: 1100px)');
+      /* Mobile : « 27 oct. » seulement, pour tenir même avec des polices larges. */
+      var mini = mm('(max-width: 480px)');
+      date.textContent = new Intl.DateTimeFormat('fr-CA', mini
+        ? { day: 'numeric', month: 'short' }
+        : court
         ? { weekday: 'short', day: 'numeric', month: 'short' }
         : { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' }).format(now);
       time.textContent = formatMastheadClock(now);
