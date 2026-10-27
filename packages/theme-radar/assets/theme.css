@@ -3263,7 +3263,7 @@ html {
 .masthead-status .masthead-sports { flex: 0 1 auto; min-width: 0; }
 .masthead-status .sports-chip__line, .masthead-status .sports-chip__line-inner { justify-content: flex-start; text-align: left; }
 .masthead .masthead-clock time, .masthead .masthead-clock span { white-space: nowrap !important; flex: 0 0 auto; }
-.masthead .masthead-clock { flex-shrink: 0; }
+.masthead .masthead-clock { flex-shrink: 0; max-width: none; overflow: visible; }
 .masthead-status .sports-chip { max-width: 100%; min-width: 0; overflow: hidden; }
 .masthead-status { overflow: hidden; }
 /* Mobile : la date garde la même pastille sur une ligne, en plus petit. */
