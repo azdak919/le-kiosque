@@ -176,3 +176,15 @@ test('l’alias admin redirige et le bandeau ne promet aucun service distant', a
   const body = await page.locator('body').innerText();
   expect(body).not.toMatch(/authentification réelle|sauvegarde distante|publication automatique dans GitHub/i);
 });
+
+test('un lecteur de la démo ne télécharge pas PGlite (réservé à /admin/)', async ({ browser }) => {
+  const ctx = await browser.newContext();
+  const page = await ctx.newPage();
+  const pglite = [];
+  ctx.on('request', (r) => { if (/pglite|\.wasm$|\.data$/.test(r.url())) pglite.push(r.url()); });
+  await page.goto('/autre-nom/demo/');
+  await page.waitForFunction(() => document.documentElement.dataset.editorialReady === 'true');
+  await page.waitForTimeout(1500);
+  expect(pglite).toEqual([]);
+  await ctx.close();
+});
