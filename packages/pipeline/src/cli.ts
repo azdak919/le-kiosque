@@ -35,7 +35,8 @@ const USAGE = `
 Le Kiosque — socle libre pour les journaux étudiants
 
   kiosque sync    [--since <date>] [--dry-run]   rapatrie le contenu du backend
-  kiosque build   [--allow-deletions] [--out <dir>]  produit le site statique
+  kiosque build   [--allow-deletions] [--out <dir>] [--base </sous-dossier>]
+                                                  produit le site statique
   kiosque verify                                  vérifie l'intégrité du miroir
   kiosque doctor                                  diagnostic local (sans réseau)
   kiosque adopt   [--out <file.md>]               checklist de passation
@@ -58,6 +59,7 @@ interface Args {
   since?: string;
   dryRun: boolean;
   allowDeletions: boolean;
+  base?: string;
 }
 
 function parseArgs(argv: string[]): Args {
@@ -75,6 +77,7 @@ function parseArgs(argv: string[]): Args {
     else if (a === '--since') args.since = argv[++i];
     else if (a === '--dry-run') args.dryRun = true;
     else if (a === '--allow-deletions') args.allowDeletions = true;
+    else if (a === '--base') args.base = argv[++i];
     else if (a === '--help' || a === '-h') args.command = 'help';
   }
   return args;
@@ -91,7 +94,9 @@ async function loadConfig(args: Args): Promise<KiosqueConfig> {
     ...raw,
     root,
     source: raw.source ?? { adapter: 'markdown' },
-    deploy: { ...raw.deploy, basePath: normalizeBasePath(raw.deploy?.basePath) },
+    // --base l'emporte : le kit portable construit pour le sous-dossier choisi
+    // à l'installation, sans faire éditer kiosque.config.ts.
+    deploy: { ...raw.deploy, basePath: normalizeBasePath(args.base ?? raw.deploy?.basePath) },
   } as KiosqueConfig;
 }
 

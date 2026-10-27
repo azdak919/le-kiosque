@@ -36,7 +36,18 @@ export function indexPath(root: string): string {
  * quand même — il permet à `build` de connaître l'état attendu sans relire tout
  * le contenu, et c'est lui qui alimente l'invariant anti-site-vide.
  */
-export async function writeIndex(root: string, bundle: ContentBundle): Promise<void> {
+export async function writeIndex(
+  root: string,
+  bundle: ContentBundle,
+  /**
+   * Entrées d'un index précédent à conserver. Un `sync --since` ne voit que
+   * les articles modifiés : sans cette fusion, l'index retomberait à ce
+   * delta et le garde-fou anti-site-vide comparerait contre presque rien.
+   */
+  carry: NonNullable<MirrorIndex['articles']> = [],
+): Promise<void> {
+  const fresh = new Set(bundle.articles.map((a) => a.id));
+  const kept = carry.filter((entry) => !fresh.has(entry.id));
   const payload = {
     _comment:
       'Index dérivé, régénéré par `kiosque sync`. Reconstructible à 100 % depuis content/. ' +
@@ -44,7 +55,7 @@ export async function writeIndex(root: string, bundle: ContentBundle): Promise<v
     syncedAt: bundle.syncedAt,
     publication: bundle.publication.slug,
     counts: {
-      articles: bundle.articles.length,
+      articles: bundle.articles.length + kept.length,
       authors: bundle.authors.length,
       sections: bundle.taxonomies.sections.length,
     },
@@ -59,6 +70,7 @@ export async function writeIndex(root: string, bundle: ContentBundle): Promise<v
         canonicalUrl: a.canonicalUrl,
         previousUrls: a.previousUrls?.length ? a.previousUrls : undefined,
       }))
+      .concat(kept as never[])
       .sort((x, y) => x.slug.localeCompare(y.slug)),
   };
   await mkdir(path.dirname(indexPath(root)), { recursive: true });

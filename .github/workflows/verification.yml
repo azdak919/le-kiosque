@@ -34,7 +34,7 @@ jobs:
       # le sous-chemin que GitHub Pages annonce, sans rien configurer.
       - if: github.event_name != 'pull_request'
         id: pages
-        uses: actions/configure-pages@v5
+        uses: actions/configure-pages@v6
       - name: Construire le site
         env:
           EVENT: ${{ github.event_name }}
