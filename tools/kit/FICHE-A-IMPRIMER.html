@@ -1,0 +1,24 @@
+<!doctype html><html lang="fr-CA"><meta charset="utf-8">
+<title>LE KIOSQUE — Ce qu'il faut demander</title>
+<style>body{font:11pt/1.35 system-ui,sans-serif;margin:1.5cm}h1{font-size:15pt;margin:0 0 .2em}
+table{border-collapse:collapse;width:100%}td,th{border:1px solid #999;padding:5px;vertical-align:top;text-align:left}
+th{background:#eee}td.r{width:24%}small{color:#444}@page{size:letter;margin:1cm}</style>
+<h1>Ce qu'il faut demander au service informatique ou à l'hébergeur</h1>
+<p><small>Pour installer le site du journal avec LE KIOSQUE. Ne notez <b>pas</b> le mot de passe sur cette feuille : transmettez-le de vive voix ou par un gestionnaire de mots de passe.</small></p>
+<table><tr><th>Élément</th><th>Pourquoi</th><th>Exemple</th><th class="r">Réponse</th></tr>
+<tr><td><b>Type d'accès</b> : SFTP, FTPS ou FTP</td><td>Pour envoyer les fichiers du site. SFTP est le plus sûr.</td><td>SFTP</td><td></td></tr>
+<tr><td><b>Adresse du serveur</b> (hôte)</td><td>L'ordinateur qui reçoit les fichiers (différent de l'adresse du site).</td><td>ftp.journal-exemple.ca · 145.14.12.34 · ftp.cluster021.hosting.ovh.net</td><td></td></tr>
+<tr><td><b>Port</b></td><td>La « porte » d'entrée du serveur.</td><td>22 (SFTP), 65002 (SSH Hostinger), 21 (FTP)</td><td></td></tr>
+<tr><td><b>Identifiant</b> FTP/SSH</td><td>Le compte qui a le droit d'écrire les fichiers.</td><td>u123456789 · journal-ftp</td><td></td></tr>
+<tr><td><b>Mot de passe</b> de ce compte</td><td>Demandé à chaque publication, jamais enregistré par le kit.</td><td>(à transmettre à part)</td><td>☐ reçu</td></tr>
+<tr><td><b>Dossier web</b></td><td>Le dossier que le serveur publie sur Internet.</td><td>public_html · www · /var/www/html · public_html/journal</td><td></td></tr>
+<tr><td><b>Site existant à conserver ?</b> (WordPress…)</td><td>Pour ne rien écraser : on publie alors dans un sous-dossier.</td><td>Oui, WordPress dans public_html → utiliser public_html/journal</td><td></td></tr>
+<tr><td><b>Adresse publique</b> du site</td><td>Ce que les lecteurs taperont; sert à construire les liens.</td><td>https://journal-exemple.ca · https://cegep-exemple.ca/journal</td><td></td></tr>
+<tr><td><b>Domaine et DNS</b> : qui les gère ?</td><td>Pour faire pointer l'adresse vers l'hébergement (enregistrement A ou CNAME).</td><td>Registraire : Hostinger; A → 145.14.12.34</td><td></td></tr>
+<tr><td><b>Certificat HTTPS</b></td><td>Pour le cadenas du navigateur. Souvent automatique (Let's Encrypt / AutoSSL).</td><td>AutoSSL activé dans cPanel</td><td></td></tr>
+<tr><td><b>Accès cPanel / hPanel / espace client</b> (facultatif)</td><td>Pour créer un compte FTP, activer SSH ou réinitialiser un mot de passe soi-même.</td><td>https://hpanel.hostinger.com · cpanel.journal-exemple.ca:2083</td><td></td></tr>
+<tr><td><b>Propriétaire des comptes</b></td><td>Survivre aux fondateurs : le compte doit appartenir au journal (courriel générique).</td><td>redaction@journal-exemple.ca</td><td></td></tr>
+<tr><td><b>Pare-feu du campus</b></td><td>Les ports 21/22 sont parfois bloqués depuis le réseau étudiant.</td><td>« Le port 22 sortant est-il ouvert ? »</td><td></td></tr>
+</table>
+<p><small>Où le trouver soi-même — cPanel / o2switch : « Comptes FTP » et « Accès SSH ». Hostinger : Sites web → Gérer → Fichiers → Comptes FTP. OVH : Hébergements → onglet « FTP - SSH ».</small></p>
+</html>
