@@ -15,7 +15,7 @@ import { createSourceContext, safeHealth, type ContentSource } from '../../core/
 import { freezeId } from '../../adapters/markdown/src/frontmatter.ts';
 import { formatIssues, validateBundle } from '../../core/src/validate.ts';
 import type { Article, ContentBundle } from '../../core/src/model.ts';
-import { writeChecksums, writeIndex, writeMedia } from './mirror.ts';
+import { readChecksums, readIndex, writeChecksums, writeIndex, writeMedia } from './mirror.ts';
 import type { KiosqueConfig } from './config.ts';
 
 export interface SyncOptions {
@@ -137,7 +137,10 @@ export async function sync(options: SyncOptions): Promise<SyncResult> {
 
   // Miroir des médias. Chaque fichier est enregistré avec son empreinte : c'est
   // ce qui permettra plus tard de détecter une archive silencieusement corrompue.
-  const checksums: Record<string, string> = {};
+  // En incrémental, on part des empreintes connues : réécrire seulement celles
+  // du delta ferait passer tout l'historique pour « non suivi ».
+  const checksums: Record<string, string> = options.since ? await readChecksums(config.root) : {};
+  const seen = new Set<string>();
   let mediaMirrored = 0;
 
   const assets = [
@@ -147,7 +150,8 @@ export async function sync(options: SyncOptions): Promise<SyncResult> {
   ].filter((a): a is NonNullable<typeof a> => Boolean(a));
 
   for (const asset of assets) {
-    if (checksums[asset.src]) continue;
+    if (seen.has(asset.src)) continue;
+    seen.add(asset.src);
     try {
       const bytes = await source.resolveMedia(asset);
       checksums[asset.src] = await writeMedia(config.root, asset.src, bytes);
@@ -160,7 +164,8 @@ export async function sync(options: SyncOptions): Promise<SyncResult> {
   }
 
   await writeChecksums(config.root, checksums);
-  await writeIndex(config.root, bundle);
+  const carry = options.since ? ((await readIndex(config.root))?.articles ?? []) : [];
+  await writeIndex(config.root, bundle, carry);
 
   log.info(`${articles.length} articles, ${authors.length} signatures, ${mediaMirrored} médias`);
   return { bundle, mediaMirrored, warnings: warnings.length, idsFrozen };
