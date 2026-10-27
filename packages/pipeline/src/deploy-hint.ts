@@ -38,11 +38,12 @@ ${hasDist ? '3. `dist/index.html` **présent** sur cette machine' : '3. `dist/` 
 # Depuis la racine du journal, après build :
 # 1. Committer le miroir content/ + media/
 # 2. Publier dist/ via Actions ou branche gh-pages
-npx gh-pages -d dist   # si vous utilisez l’outil communautaire (optionnel)
+# Le workflow « Vérification » du gabarit publie dist/ tout seul et
+# détecte le sous-chemin /REPO : Settings → Pages → Source « GitHub Actions ».
 \`\`\`
 
 \`basePath\` configuré : \`${base}\`  
-Sur \`https://ORG.github.io/REPO/\`, \`basePath\` doit être \`/REPO/\`.
+Sur \`https://ORG.github.io/REPO/\`, \`basePath\` vaut \`/REPO\` (sans barre finale).
 
 ### Netlify / Cloudflare Pages / serveur maison
 
