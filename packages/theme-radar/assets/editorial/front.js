@@ -1,5 +1,5 @@
 import { marked } from './marked.esm.js';
-import { getBackend } from './runtime.js';
+import { editorialFlagKey, editorialNeeded, getBackend } from './runtime.js';
 import { applyBranding, renderRoute } from './render.js';
 
 const config = window.KIOSQUE_EDITORIAL;
@@ -105,7 +105,22 @@ function showFailure(error) {
   notice.querySelector('button').onclick = () => location.reload();
 }
 
-getBackend().then((backend) => {
-  backend.subscribe(() => render().catch(showFailure));
-  return render();
-}).catch(showFailure);
+let started = false;
+function start() {
+  if (started) return;
+  started = true;
+  getBackend().then((backend) => {
+    backend.subscribe(() => render().catch(showFailure));
+    return render();
+  }).catch(showFailure);
+}
+
+editorialNeeded().then((needed) => {
+  if (needed) return start();
+  /* Lecteur : HTML statique déjà correct, aucun PGlite. Si l’admin s’ouvre
+   * dans un autre onglet, on bascule alors sur le rendu local. */
+  document.documentElement.dataset.editorialReady = 'true';
+  window.addEventListener('storage', (event) => {
+    if (event.key === editorialFlagKey() && event.newValue) start();
+  });
+}).catch(start);
