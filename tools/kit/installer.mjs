@@ -16,13 +16,17 @@ import dns from 'node:dns/promises';
 import fs from 'node:fs';
 import path from 'node:path';
 import readline from 'node:readline';
-import { fileURLToPath } from 'node:url';
+import { fileURLToPath, pathToFileURL } from 'node:url';
 
 const KIT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const JOURNAL = path.join(KIT, 'journal');
 const STATE_FILE = path.join(JOURNAL, 'installation-kiosque.json');
 const CLI = path.join(KIT, 'packages', 'pipeline', 'src', 'cli.ts');
 const AUTO = process.env.KIOSQUE_REPONSES ? JSON.parse(fs.readFileSync(process.env.KIOSQUE_REPONSES, 'utf8')) : null;
+
+// Noyau commun avec le configurateur web : mêmes questions, mêmes défauts,
+// même validation, mêmes fichiers produits (packages/config-core).
+const K = await import(pathToFileURL(path.join(KIT, 'packages', 'config-core', 'kiosque-config.mjs')).href);
 
 class Pause extends Error {}
 
@@ -61,6 +65,7 @@ function nextLine() {
  */
 async function demander(cle, { question, aide, defaut, secret = false, choix }) {
   if (AUTO && cle in AUTO) return String(AUTO[cle]);
+  if (AUTO && defaut !== undefined) return String(defaut);
   out(`\n  ${question}`);
   if (aide) for (const l of aide.trim().split('\n')) out(`    │ ${l.trim()}`);
   if (choix) choix.forEach((c, i) => out(`      ${i + 1}. ${c}`));
@@ -192,16 +197,42 @@ const TYPES = [
 ];
 const CODES = ['mutualise', 'serveur', 'wordpress', 'local', 'plateforme'];
 
+/** Un kiosque-config.json exporté par le configurateur web, s'il y en a un. */
+function configExportee() {
+  for (const f of [path.join(KIT, K.FICHIER_EXPORT), path.join(JOURNAL, K.FICHIER_EXPORT)]) {
+    if (fs.existsSync(f)) return { fichier: f, config: K.importer(fs.readFileSync(f, 'utf8')) };
+  }
+  return null;
+}
+
 async function etape1(e) {
-  titre(1, 'Hébergement');
+  titre(1, 'Votre journal et son hébergement');
   const r = e.reponses;
-  r.nom = await demander('nom', { question: 'Nom du journal ?', aide: AIDE.nom, defaut: r.nom });
-  if (!r.nom) return pb('Le nom est requis.'), false;
+  const exp = configExportee();
+  if (exp && !r.configImportee) {
+    out(`  Configuration trouvée : ${exp.fichier} (« ${exp.config.name} »).`);
+    const s = await demander('utiliserExport', { question: 'L’utiliser ? (oui/non)', defaut: 'oui' });
+    if (/^o/i.test(s)) {
+      Object.assign(r, { nom: exp.config.name, etablissement: exp.config.institution, couleur: exp.config.accent, sections: exp.config.sections, configImportee: exp.fichier });
+    }
+  }
+  // Mêmes essentiels que le configurateur web (K.ESSENTIELS), même validation.
+  const cles = { name: 'nom', institution: 'etablissement', accent: 'couleur', sections: 'sections' };
+  for (const q of K.ESSENTIELS) {
+    const cle = cles[q.cle];
+    if (r.configImportee && r[cle]) continue;
+    const defaut = r[cle] ?? (q.cle === 'sections' ? K.SECTIONS_PROPOSEES.join(', ') : q.cle === 'accent' ? '#6c2163' : undefined);
+    let v = await demander(cle, { question: `${q.etiquette} ?${q.cle === 'sections' ? ' (séparées par des virgules)' : ''}`, aide: q.ou, defaut });
+    if (q.cle === 'sections') v = String(v).split(',').map((x) => x.trim()).filter(Boolean).join('\n');
+    const err = K.valider(q.cle, v);
+    if (err) return pb(err), false;
+    r[cle] = v;
+  }
   const c = await demander('type', { question: 'Où le site sera-t-il publié ? (numéro)', aide: AIDE.type, choix: TYPES, defaut: r.type ? String(CODES.indexOf(r.type) + 1) : undefined });
   const i = Number(c) - 1;
   if (!(i >= 0 && i < CODES.length)) return pb('Répondez par un numéro de 1 à 5.'), false;
   r.type = CODES[i];
-  ok(`${r.nom} — ${TYPES[i]}`);
+  ok(`${r.nom} (${r.etablissement}) — ${TYPES[i]}`);
   return true;
 }
 
@@ -288,11 +319,21 @@ function node(args) {
 }
 
 function personnaliser(r) {
-  // Insertion textuelle : on garde les commentaires pédagogiques du fichier.
-  const f = path.join(JOURNAL, 'content', 'publication.yml');
-  let y = fs.readFileSync(f, 'utf8');
-  y = y.replace(/^name:.*$/m, `name: ${JSON.stringify(r.nom)}`).replace(/^siteUrl:.*$/m, `siteUrl: ${r.adresse}`);
-  fs.writeFileSync(f, y);
+  // Même noyau que le configurateur web; remplacements ciblés pour garder
+  // les commentaires pédagogiques du gabarit.
+  const c = K.completer({ name: r.nom, institution: r.etablissement, accent: r.couleur, sections: r.sections, siteUrl: r.adresse });
+  const fp = path.join(JOURNAL, 'content', 'publication.yml');
+  const ft = path.join(JOURNAL, 'theme', 'tokens.css');
+  const res = K.appliquerAuGabarit({ publication: fs.readFileSync(fp, 'utf8'), tokens: fs.existsSync(ft) ? fs.readFileSync(ft, 'utf8') : '' }, c);
+  fs.writeFileSync(fp, res.publication);
+  if (res.tokens) fs.writeFileSync(ft, res.tokens);
+  const dir = path.join(JOURNAL, 'content', 'sections');
+  const voulues = K.lireSections(c.sections);
+  for (const s of voulues) {
+    const f = path.join(dir, `${s.slug}.yml`);
+    if (!fs.existsSync(f)) fs.writeFileSync(f, K.sectionYml(s));
+  }
+  ok(`Journal personnalisé : ${c.name}, ${voulues.length} section(s), couleur ${c.accent}.`);
 }
 
 async function etape4(e) {

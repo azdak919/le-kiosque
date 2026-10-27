@@ -29,17 +29,16 @@ test('configurer, rédiger, prévisualiser, publier, persister et exporter sans 
   test.setTimeout(240_000);
   const expectedMediaCount = demoSeedMediaCount();
   await page.goto('/autre-nom/configurer/');
-  await page.getByRole('button', { name: 'Commencer' }).click();
   await page.getByLabel('Nom du journal').fill('La Relève locale');
   await page.getByRole('button', { name: 'Continuer' }).click();
-  await page.getByRole('button', { name: 'Continuer' }).click();
   await page.locator('[data-key="accent"]').fill('#005a78');
+  await page.locator('section[data-step="2"] .avance > summary').click();
   await page.getByLabel('Typographie').selectOption('editorial-classic');
   await page.getByLabel('Logo facultatif').setInputFiles({ name: 'logo.svg', mimeType: 'image/svg+xml', buffer: Buffer.from('<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"><circle cx="10" cy="10" r="9" fill="#005a78"/></svg>') });
-  for (let click = 0; click < 7; click++) await page.getByRole('button', { name: 'Continuer' }).click();
-  await page.getByRole('button', { name: 'Voir les prochaines étapes' }).click();
-
-  await expect(page.getByRole('heading', { name: 'Votre prochaine étape est concrète.' })).toBeVisible();
+  await expect(page.locator('#preview-logo')).toBeVisible();
+  await page.getByRole('button', { name: 'Continuer' }).click();
+  await page.getByRole('button', { name: 'Terminer' }).click();
+  await expect(page.getByRole('heading', { name: 'C’est prêt.' })).toBeVisible();
   await page.getByRole('link', { name: 'Ouvrir /admin/' }).click();
   await expect(page.getByText('Mode démonstration local — les données sont conservées uniquement dans ce navigateur')).toBeVisible({ timeout: 45_000 });
   await expect(page.getByRole('heading', { name: 'Tableau de bord' })).toBeVisible({ timeout: 45_000 });
