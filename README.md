@@ -25,7 +25,9 @@ site, qui est le problème facile.
 > puis la section **« Registre officiel de livraison »** de
 > **[`AGENTS.md`](AGENTS.md)** (mission en cours et décisions de continuité).
 
-**État : démonstration locale PGlite.** La vitrine, Le Quorum, le configurateur
+**Démo en ligne : <https://azdak919.github.io/le-kiosque/>.**
+
+**État : jalon 4 livré, démonstration locale PGlite.** La vitrine, Le Quorum, le configurateur
 et une interface de rédaction persistante dans le navigateur fonctionnent sans
 compte ni serveur. Voir la [feuille de route](#feuille-de-route).
 
@@ -45,8 +47,9 @@ CMS au choix ──sync──► content/*.md + media/ ──build──► site
 Un backend qui meurt casse l'écriture, **jamais** la lecture. Tout le reste du
 projet découle de cette seule frontière :
 
-- **Vous n'êtes prisonnier de rien.** Markdown/Git par défaut ; WordPress,
-  Ghost, Superdesk ou Drupal si vous préférez. Le site ne change pas.
+- **Vous n'êtes prisonnier de rien.** Markdown/Git aujourd'hui ; l'interface
+  `ContentSource` est prévue pour WordPress, Ghost ou Drupal (jalon 5, pas
+  encore disponible). Le site ne change pas.
 - **Le site ne peut pas se vider tout seul.** Un quota dépassé ou un jeton
   expiré fait échouer `sync` bruyamment — le site publié reste intact.
 - **Les archives sont récupérables sans rien.** Du Markdown et des images dans
@@ -72,10 +75,16 @@ node packages/pipeline/src/cli.ts sync
 node packages/pipeline/src/cli.ts build
 ```
 
-Activez GitHub Pages (Settings → Pages → GitHub Actions) : le site est en ligne,
-gratuitement, sur `https://<organisation>.github.io/<depot>/`.
+Activez GitHub Pages (Settings → Pages → Source : **GitHub Actions**), puis
+relancez « Vérification » dans l'onglet Actions : le site est en ligne,
+gratuitement, sur `https://<organisation>.github.io/<depot>/`. Le sous-chemin
+`/<depot>` est détecté automatiquement par la publication GitHub Pages.
 
-Servi dans un sous-dossier ? Renseignez-le, sinon les liens pointent à côté :
+Diagnostic et passation : `kiosque doctor`, `kiosque adopt` (écrit
+`PASSATION.md`), `kiosque export` (archive portable) et `kiosque deploy-hint`.
+
+Servi dans un sous-dossier hors GitHub Pages ? Renseignez-le, sinon les liens
+pointent à côté :
 
 ```ts
 // kiosque.config.ts
@@ -126,7 +135,7 @@ packages/
   core/            modèle commun + contrats — zéro dépendance
   adapters/
     markdown/      adaptateur de référence
-    wordpress/     squelette (jalon 4)
+    wordpress/     squelette non branché (jalon 5)
   pipeline/        sync · build · verify · cms:config
   theme-radar/     identité éditoriale : jetons + gabarits
 template/          ce que vous éditez
@@ -149,7 +158,7 @@ et ne sont copiés que pour construire et tester la démonstration locale.
 | **2** | Sveltia CMS, statut éditorial, identifiants permanents | **fait** |
 | **3** | Vitrine, Le Quorum, configurateur et barre radio LE-RADAR | **fait** |
 | **Démo locale** | PGlite, administration navigateur, import/export et front vivant | **fait** |
-| 4 | `doctor`, `adopt`, passation, `export` | à venir |
+| **4** | `doctor`, `adopt` (PASSATION.md), `export`, `deploy-hint` | **fait** |
 | 5 | Adaptateur WordPress/Newspack | à venir |
 | 6 | Premier pilote avec une vraie équipe | à venir |
 

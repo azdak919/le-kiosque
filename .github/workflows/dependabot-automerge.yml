@@ -1,0 +1,45 @@
+name: Dependabot fusion auto
+# Fusionne une PR Dependabot MINEURE ou CORRECTIVE seulement quand la
+# Vérification (test + navigateur) est terminée et que tous les contrôles sont
+# verts. Une majeure n'est jamais fusionnée ici : la veille la signale.
+on:
+  workflow_run:
+    workflows: ["Vérification"]
+    types: [completed]
+permissions:
+  contents: write
+  pull-requests: write
+concurrency:
+  group: dependabot-automerge
+  cancel-in-progress: false
+jobs:
+  fusion:
+    if: github.event.workflow_run.conclusion == 'success' && github.event.workflow_run.actor.login == 'dependabot[bot]'
+    runs-on: ubuntu-24.04
+    steps:
+      - name: Fusionner si mineure ou corrective
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          REPO: ${{ github.repository }}
+          BRANCH: ${{ github.event.workflow_run.head_branch }}
+          SHA: ${{ github.event.workflow_run.head_sha }}
+        run: |
+          set -euo pipefail
+          pr=$(gh pr list -R "$REPO" --head "$BRANCH" --state open --json number,headRefOid --jq ".[] | select(.headRefOid==\"$SHA\") | .number")
+          [ -n "$pr" ] || { echo "Aucune PR ouverte pour $SHA"; exit 0; }
+          states=$(gh pr view "$pr" -R "$REPO" --json statusCheckRollup --jq '[.statusCheckRollup[] | (.conclusion // .state // "PENDING")] | unique | join(",")')
+          echo "Contrôles PR #$pr : $states"
+          if echo "$states" | grep -Eqv '^(SUCCESS|SKIPPED|NEUTRAL)(,(SUCCESS|SKIPPED|NEUTRAL))*$'; then
+            echo "Pas encore tout vert : on attend."; exit 0
+          fi
+          title=$(gh pr view "$pr" -R "$REPO" --json title --jq .title)
+          case "$BRANCH" in
+            *actions-mineures*|*npm-mineures*) kind=groupe ;;
+            *)
+              from=$(echo "$title" | sed -nE 's/.* from v?([0-9]+)\..* to v?([0-9]+)\..*/\1/p')
+              to=$(echo "$title" | sed -nE 's/.* from v?([0-9]+)\..* to v?([0-9]+)\..*/\2/p')
+              if [ -n "$from" ] && [ "$from" = "$to" ]; then kind=mineure; else kind=majeure; fi ;;
+          esac
+          echo "Type : $kind ($title)"
+          [ "$kind" != majeure ] || { echo "Majeure : reste ouverte pour la veille."; exit 0; }
+          gh pr merge "$pr" -R "$REPO" --squash --delete-branch

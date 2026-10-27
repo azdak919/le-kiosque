@@ -1,0 +1,61 @@
+name: Veille plateforme
+# Une seule issue « Veille plateforme (bot) » : mise à jour s'il y a des
+# alertes, fermée automatiquement quand tout redevient normal.
+on:
+  schedule:
+    - cron: '0 7 * * 3'   # mercredi ~3 h HAE
+  workflow_dispatch:
+permissions:
+  contents: read
+  issues: write
+  pull-requests: read
+  actions: read
+jobs:
+  veille:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+      - name: Examiner
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          REPO: ${{ github.repository }}
+        run: |
+          set -euo pipefail
+          : > alertes.md
+          # Workflows désactivés
+          gh api "repos/$REPO/actions/workflows" --jq '.workflows[] | select(.state!="active") | "- Workflow désactivé : \(.name) (\(.state))"' >> alertes.md || true
+          # Dernière Vérification sur main en échec
+          last=$(gh run list -R "$REPO" -w "Vérification" -b main -L 1 --json conclusion --jq '.[0].conclusion // ""')
+          [ "$last" = failure ] && echo "- La dernière Vérification sur main a échoué." >> alertes.md || true
+          # PR Dependabot ouvertes depuis plus de 30 jours (souvent des majeures)
+          limit=$(date -u -d '30 days ago' +%Y-%m-%dT%H:%M:%SZ)
+          gh pr list -R "$REPO" --author app/dependabot --state open --json number,title,createdAt \
+            --jq ".[] | select(.createdAt < \"$limit\") | \"- PR Dependabot à examiner (>30 j) : #\(.number) \(.title)\"" >> alertes.md || true
+          # Taille du dépôt (> 1 Go)
+          size=$(gh api "repos/$REPO" --jq .size)
+          [ "$size" -gt 1048576 ] && echo "- Dépôt volumineux : $((size/1024)) Mo." >> alertes.md || true
+          # Démo en ligne
+          code=$(curl -s -o /dev/null -w '%{http_code}' "https://${GITHUB_REPOSITORY_OWNER}.github.io/${REPO#*/}/" || echo 000)
+          [ "$code" = 200 ] || echo "- La démo en ligne répond $code." >> alertes.md
+          # Node utilisé par la CI : fin de vie ?
+          node_major=$(grep -ho "node-version: '[0-9]*'" .github/workflows/*.yml | grep -o '[0-9]\+' | sort -n | head -1)
+          eol=$(curl -s https://endoflife.date/api/nodejs/$node_major.json | jq -r '.eol // empty' || true)
+          if [ -n "$eol" ] && [ "$(date -u -d "$eol" +%s)" -lt "$(date -u -d '+60 days' +%s)" ]; then
+            echo "- Node $node_major arrive en fin de vie le $eol." >> alertes.md
+          fi
+          cat alertes.md
+      - name: Issue unique
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          REPO: ${{ github.repository }}
+        run: |
+          set -euo pipefail
+          title="Veille plateforme (bot)"
+          num=$(gh issue list -R "$REPO" --state open --search "\"$title\" in:title" --json number,title --jq ".[] | select(.title==\"$title\") | .number" | head -1)
+          if [ -s alertes.md ]; then
+            { echo "Relevé du $(date -u +%Y-%m-%d) :"; echo; cat alertes.md; } > corps.md
+            if [ -n "$num" ]; then gh issue edit "$num" -R "$REPO" --body-file corps.md
+            else gh issue create -R "$REPO" --title "$title" --body-file corps.md; fi
+          elif [ -n "$num" ]; then
+            gh issue close "$num" -R "$REPO" --comment "Tout est revenu à la normale."
+          fi
