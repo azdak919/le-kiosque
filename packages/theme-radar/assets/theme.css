@@ -3213,4 +3213,6 @@ a.masthead-sports__chip:focus-visible {
   .masthead-utility > .masthead-clock { min-width: 0; white-space: normal; }
   .masthead--illustrated.masthead--photo-ready .masthead-clock { flex-direction: column; align-items: flex-start; justify-self: start; padding: 3px 8px; line-height: 1.25; }
   .masthead--illustrated.masthead--photo-ready .masthead-clock time::before { content: none; }
+  .masthead-utility > .masthead-clock span, .masthead-utility > .masthead-clock time { white-space: normal; overflow-wrap: anywhere; }
+  .masthead-utility > .masthead-clock { flex-wrap: wrap; overflow: visible; }
 }
