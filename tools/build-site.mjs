@@ -171,6 +171,11 @@ await cp(
   path.join(siteDir, 'configurer/configurateur.js'),
   path.join(outDir, 'configurer/configurateur.js'),
 );
+// Noyau commun configurateur ↔ kit portable (même logique, un seul endroit).
+await cp(
+  path.join(repoRoot, 'packages/config-core/kiosque-config.mjs'),
+  path.join(outDir, 'configurer/kiosque-config.mjs'),
+);
 await writeFile(
   path.join(outDir, 'configurer', 'prefill.js'),
   `window.KIOSQUE_PREFILL = ${JSON.stringify(prefill(bundle)).replace(/</g, '\\u003c')};\n`,

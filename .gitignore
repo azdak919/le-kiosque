@@ -5,3 +5,5 @@ test-results/
 *.log
 .DS_Store
 examples/demo-journal/media/demo-library/match-report.json
+dist-kit/
+.cache/
