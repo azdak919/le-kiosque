@@ -43,7 +43,7 @@ jobs:
           if [ "$EVENT" != pull_request ]; then export BASE="$PAGES_BASE"; fi
           npm run site
       - if: github.event_name != 'pull_request'
-        uses: actions/upload-pages-artifact@v3
+        uses: actions/upload-pages-artifact@v5
         with:
           path: dist
 
@@ -90,4 +90,4 @@ jobs:
     steps:
       - name: Déployer GitHub Pages
         id: deployment
-        uses: actions/deploy-pages@v4
+        uses: actions/deploy-pages@v5
