@@ -5,115 +5,147 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>LE KIOSQUE — Publier aujourd’hui. Transmettre demain.</title>
   <meta name="description" content="Socle libre et portable pour les journaux étudiants.">
-  <link rel="stylesheet" href="{{BASE_PATH}}/assets/tokens.css">
-  <link rel="stylesheet" href="{{BASE_PATH}}/assets/theme.css">
-  <link rel="stylesheet" href="{{BASE_PATH}}/assets/vitrine.css">
+  <meta name="theme-color" content="#6c2163">
+  <link rel="stylesheet" href="{{BASE_PATH}}/assets/kiosque-ui.css">
 </head>
-<body class="vitrine">
+<body class="vitrine antialiased">
   <a class="skip-link" href="#contenu">Aller au contenu</a>
-  <header class="landing-head">
-    <div class="wrap landing-nav">
-      <a class="landing-brand" href="{{BASE_PATH}}/">LE KIOSQUE</a>
-      <nav aria-label="Navigation principale">
-        <a href="#fonctionnement">Fonctionnement</a>
-        <a href="#limites">Limites</a>
-        <a href="{{BASE_PATH}}/configurer/">Configurateur</a>
+
+  <header class="sticky top-0 z-40 border-b border-border/70 bg-background/80 backdrop-blur-md">
+    <div class="mx-auto flex h-16 max-w-6xl items-center justify-between gap-4 px-4 sm:px-6">
+      <a class="flex items-center gap-2.5 no-underline" href="{{BASE_PATH}}/">
+        <span class="grid size-8 place-items-center rounded-lg bg-primary text-sm font-bold text-primary-foreground" aria-hidden="true">K</span>
+        <span class="text-sm font-semibold tracking-[0.12em]">LE KIOSQUE</span>
+      </a>
+      <nav aria-label="Navigation principale" class="flex items-center gap-1">
+        <a class="hidden md:inline-flex h-9 items-center rounded-md px-3 text-sm font-medium text-muted-foreground hover:bg-muted hover:text-foreground" href="#fonctionnement">Fonctionnement</a>
+        <a class="hidden md:inline-flex h-9 items-center rounded-md px-3 text-sm font-medium text-muted-foreground hover:bg-muted hover:text-foreground" href="#options">Déployer</a>
+        <a class="hidden md:inline-flex h-9 items-center rounded-md px-3 text-sm font-medium text-muted-foreground hover:bg-muted hover:text-foreground" href="#limites">Limites</a>
+        <a class="hidden sm:inline-flex h-9 items-center rounded-md px-3 text-sm font-medium text-muted-foreground hover:bg-muted hover:text-foreground" href="https://github.com/azdak919/le-kiosque">GitHub</a>
+        <a class="btn" href="{{BASE_PATH}}/configurer/">Configurateur</a>
       </nav>
     </div>
   </header>
 
   <main id="contenu">
-    <section class="hero wrap">
-      <p class="kicker">Socle libre pour les médias étudiants</p>
-      <h1>Publier aujourd’hui.<br>Transmettre demain.</h1>
-      <p class="hero-acronym"><strong>KIOSQUE</strong> — Kit d’Infrastructure Ouverte, Souveraine et de Qualité pour les Usages Éditoriaux.</p>
-      <p class="hero-copy">Un journal étudiant ne devrait pas disparaître quand une cohorte gradue. KIOSQUE conserve les contenus dans des formats ouverts, au dépôt de l’équipe, afin que la relève puisse reprendre le fil.</p>
-      <div class="hero-actions">
-        <a class="button button-primary" href="{{BASE_PATH}}/demo/">Voir la démonstration</a>
-        <a class="button" href="{{BASE_PATH}}/configurer/">Configurer mon journal</a>
-        <a class="button button-quiet" href="https://github.com/azdak919/le-kiosque">Dépôt GitHub</a>
+    <section class="relative overflow-hidden">
+      <div class="pointer-events-none absolute inset-0 -z-10 bg-[radial-gradient(60rem_30rem_at_50%_-10%,color-mix(in_oklch,var(--primary)_14%,transparent),transparent)]"></div>
+      <div class="mx-auto max-w-6xl px-4 pt-16 pb-12 text-center sm:px-6 sm:pt-24">
+        <span class="badge" data-variant="outline">Logiciel libre · GPL-2.0 · Fait au Québec</span>
+        <h1 class="mx-auto mt-6 max-w-4xl text-4xl font-semibold tracking-tight text-balance sm:text-6xl">Publier aujourd’hui.<br><span class="text-primary">Transmettre demain.</span></h1>
+        <p class="mx-auto mt-6 max-w-2xl text-lg text-pretty text-muted-foreground">Un journal étudiant ne devrait pas disparaître quand une cohorte gradue. Le Kiosque garde vos articles dans des formats ouverts, au dépôt de l’équipe, pour que la relève reprenne le fil.</p>
+        <p class="mx-auto mt-3 max-w-2xl text-sm text-muted-foreground"><strong class="font-semibold text-foreground">KIOSQUE</strong> — Kit d’Infrastructure Ouverte, Souveraine et de Qualité pour les Usages Éditoriaux.</p>
+        <div class="mt-8 flex flex-wrap justify-center gap-3">
+          <a class="btn" data-size="lg" href="{{BASE_PATH}}/configurer/">Configurer mon journal →</a>
+          <a class="btn" data-size="lg" data-variant="outline" href="{{BASE_PATH}}/demo/">Voir la démonstration</a>
+        </div>
+        <p class="mt-4 text-xs text-muted-foreground">4 étapes, environ 2 minutes · aucun compte · rien ne quitte votre navigateur</p>
+      </div>
+      <div class="mx-auto max-w-6xl px-4 pb-20 sm:px-6">
+        <figure class="m-0 overflow-hidden rounded-2xl bg-card shadow-2xl ring-1 ring-foreground/10">
+          <div class="flex items-center gap-1.5 border-b border-border bg-muted/60 px-4 py-2.5" aria-hidden="true">
+            <span class="size-2.5 rounded-full bg-foreground/15"></span><span class="size-2.5 rounded-full bg-foreground/15"></span><span class="size-2.5 rounded-full bg-foreground/15"></span>
+            <span class="ml-3 truncate rounded-md bg-background px-3 py-0.5 text-xs text-muted-foreground">le-quorum.exemple.ca</span>
+          </div>
+          <a href="{{BASE_PATH}}/demo/" class="block">
+            <picture>
+              <source media="(max-width: 640px)" srcset="{{BASE_PATH}}/assets/apercu-demo-mobile.jpg">
+              <img class="block h-auto w-full" src="{{BASE_PATH}}/assets/apercu-demo.jpg" width="1280" height="800" alt="Page d’accueil du Quorum, journal étudiant fictif produit par le Kiosque : mât illustré, barre radio, à la une et en bref." loading="eager">
+            </picture>
+          </a>
+          <figcaption class="border-t border-border px-4 py-2 text-xs text-muted-foreground">Le Quorum, journal de démonstration entièrement fictif.</figcaption>
+        </figure>
       </div>
     </section>
 
-    <section class="problem section-band">
-      <div class="wrap split">
+    <section class="border-y border-border bg-muted/50">
+      <div class="mx-auto grid max-w-6xl gap-10 px-4 py-20 sm:px-6 md:grid-cols-[1fr_1.2fr]">
         <div>
-          <p class="section-label">Le problème</p>
-          <h2>Les archives partent trop souvent avec les accès.</h2>
+          <p class="text-sm font-semibold text-primary">Le problème</p>
+          <h2 class="mt-2 text-3xl font-semibold tracking-tight text-balance sm:text-4xl">Les archives partent trop souvent avec les accès.</h2>
         </div>
-        <div>
+        <div class="space-y-4 text-muted-foreground">
           <p>Un domaine expire. Le compte d’administration appartient à une personne qui a terminé ses études. Un CMS ferme. Dix ans d’articles deviennent alors une suite de liens morts.</p>
-          <p>KIOSQUE sépare l’écriture de la lecture : même si l’outil de rédaction tombe, le site et son archive continuent de se reconstruire depuis Git.</p>
+          <p>Le Kiosque sépare l’écriture de la lecture : même si l’outil de rédaction tombe, le site et son archive continuent de se reconstruire depuis Git.</p>
         </div>
       </div>
     </section>
 
-    <section id="fonctionnement" class="wrap landing-section">
-      <p class="section-label">Comment ça tient</p>
-      <h2>Le contenu d’abord, l’outil ensuite.</h2>
-      <div class="steps-grid">
-        <article><span>01</span><h3>Écrire</h3><p>L’équipe rédige en Markdown ou dans une interface d’administration facultative.</p></article>
-        <article><span>02</span><h3>Conserver</h3><p>Les articles et médias sont copiés dans un miroir portable, versionné dans Git.</p></article>
-        <article><span>03</span><h3>Construire</h3><p>Le site statique est produit uniquement depuis ce miroir, sans joindre le CMS.</p></article>
-        <article><span>04</span><h3>Transmettre</h3><p>Les accès, le domaine et la gouvernance passent à la cohorte suivante avec l’archive.</p></article>
+    <section id="fonctionnement" class="mx-auto max-w-6xl scroll-mt-20 px-4 py-20 sm:px-6">
+      <div class="max-w-2xl">
+        <p class="text-sm font-semibold text-primary">Comment ça tient</p>
+        <h2 class="mt-2 text-3xl font-semibold tracking-tight sm:text-4xl">Le contenu d’abord, l’outil ensuite.</h2>
       </div>
-      <div class="architecture" aria-label="Chemin du contenu">
-        <span>CMS au choix</span><b aria-hidden="true">→ sync →</b><span>Markdown + Git</span><b aria-hidden="true">→ build →</b><span>HTML statique</span>
+      <ol class="mt-10 grid list-none gap-4 p-0 sm:grid-cols-2 lg:grid-cols-4">
+        <li class="card" data-size="sm"><section><span class="kbd">01</span><h3 class="mt-3 text-base font-semibold">Écrire</h3><p class="mt-1 text-muted-foreground">L’équipe rédige en Markdown, dans l’administration intégrée ou dans WordPress.</p></section></li>
+        <li class="card" data-size="sm"><section><span class="kbd">02</span><h3 class="mt-3 text-base font-semibold">Conserver</h3><p class="mt-1 text-muted-foreground">Articles et médias sont copiés dans un miroir portable, versionné dans Git.</p></section></li>
+        <li class="card" data-size="sm"><section><span class="kbd">03</span><h3 class="mt-3 text-base font-semibold">Construire</h3><p class="mt-1 text-muted-foreground">Le site statique est produit uniquement depuis ce miroir, sans joindre le CMS.</p></section></li>
+        <li class="card" data-size="sm"><section><span class="kbd">04</span><h3 class="mt-3 text-base font-semibold">Transmettre</h3><p class="mt-1 text-muted-foreground">Accès, domaine et gouvernance passent à la cohorte suivante avec l’archive.</p></section></li>
+      </ol>
+      <div class="mt-8 flex flex-wrap items-center justify-center gap-2 rounded-xl border border-dashed border-border p-4 text-sm" aria-label="Chemin du contenu">
+        <span class="badge" data-variant="secondary">CMS au choix</span><span class="text-muted-foreground" aria-hidden="true">→ sync →</span><span class="badge">Markdown + Git</span><span class="text-muted-foreground" aria-hidden="true">→ build →</span><span class="badge" data-variant="secondary">HTML statique</span>
       </div>
     </section>
 
-    <section class="section-band">
-      <div class="wrap split relation">
+    <section id="options" class="scroll-mt-20 border-t border-border bg-muted/50">
+      <div class="mx-auto max-w-6xl px-4 py-20 sm:px-6">
+        <div class="max-w-2xl">
+          <p class="text-sm font-semibold text-primary">Trois façons de démarrer</p>
+          <h2 class="mt-2 text-3xl font-semibold tracking-tight sm:text-4xl">Une seule configuration, l’hébergement de votre choix.</h2>
+        </div>
+        <div class="mt-10 grid gap-4 md:grid-cols-3">
+          <article class="card"><header><h3>WordPress</h3><p>Extension « Le Kiosque » : téléversez-la, déposez votre fichier de configuration, c’est en ligne.</p></header><footer><span class="badge" data-variant="outline">Disponible</span></footer></article>
+          <article class="card"><header><h3>GitHub Pages</h3><p>Un dépôt à vous, un site statique reconstruit à chaque article. Aucun serveur à entretenir.</p></header><footer><span class="badge" data-variant="outline">Disponible</span></footer></article>
+          <article class="card"><header><h3>Kit portable</h3><p>Un dossier à copier sur une clé ou un poste du local du journal, avec installateur et guide imprimable.</p></header><footer><span class="badge" data-variant="outline">Disponible</span></footer></article>
+        </div>
+      </div>
+    </section>
+
+    <section class="mx-auto max-w-6xl px-4 py-20 sm:px-6">
+      <div class="grid gap-10 md:grid-cols-[1fr_1.2fr]">
         <div>
-          <p class="section-label">Deux projets, deux rôles</p>
-          <h2>KIOSQUE construit. LE-RADAR fait découvrir.</h2>
+          <p class="text-sm font-semibold text-primary">Deux projets, deux rôles</p>
+          <h2 class="mt-2 text-3xl font-semibold tracking-tight text-balance sm:text-4xl">Le Kiosque construit. LE-RADAR fait découvrir.</h2>
         </div>
-        <div>
-          <p><strong>LE KIOSQUE</strong> est le kit qu’un journal possède et déploie lui-même. Il n’héberge aucun journal.</p>
-          <p><strong>LE-RADAR</strong> est un agrégateur distinct qui aide à découvrir les médias étudiants. Sa barre radio peut être ajoutée au journal; elle demeure facultative et désactivable.</p>
-        </div>
-      </div>
-    </section>
-
-    <section class="wrap landing-section roadmap">
-      <p class="section-label">Socle et feuille de route</p>
-      <h2>Simple aujourd’hui, extensible demain.</h2>
-      <div class="roadmap-grid">
-        <article><p class="status available">Disponible</p><h3>Markdown + Git</h3><p>Deux dépendances, aucun framework, aucune compilation. Le résultat est du HTML, du CSS et du JavaScript statiques.</p></article>
-        <article><p class="status future">Feuille de route</p><h3>WordPress / Newspack</h3><p>Un adaptateur est prévu, mais il n’est pas fonctionnel aujourd’hui.</p></article>
-        <article><p class="status future">Feuille de route</p><h3>Import et passation</h3><p>Les outils d’adoption, de diagnostic et d’export complet arriveront dans de futurs jalons.</p></article>
-      </div>
-    </section>
-
-    <section class="demo-callout">
-      <div class="wrap split">
-        <div>
-          <p class="section-label">Le Quorum</p>
-          <h2>Un journal fictif, assez complet pour tout essayer.</h2>
-          <p>Parcourez ses sections, ses signatures, son flux et des articles de formats variés. Chaque fait, établissement et personnage est explicitement fictif.</p>
-        </div>
-        <div class="demo-links">
-          <a class="button button-primary" href="{{BASE_PATH}}/demo/">Ouvrir Le Quorum</a>
-          <a href="{{BASE_PATH}}/demo/admin/">Voir l’administration existante</a>
+        <div class="space-y-4 text-muted-foreground">
+          <p><strong class="text-foreground">LE KIOSQUE</strong> est le kit qu’un journal possède et déploie lui-même. Il n’héberge aucun journal.</p>
+          <p><strong class="text-foreground">LE-RADAR</strong> est un agrégateur distinct qui aide à découvrir les médias étudiants. Sa barre radio peut être ajoutée au journal; elle demeure facultative et désactivable.</p>
         </div>
       </div>
     </section>
 
-    <section id="limites" class="wrap landing-section limits">
-      <p class="section-label">En toute clarté</p>
-      <h2>Un socle expérimental, pas un service géré.</h2>
-      <ul>
-        <li><strong>KIOSQUE ne fournit pas l’hébergement.</strong> Chaque équipe reste responsable de son dépôt, de son domaine et de son hébergeur.</li>
-        <li>Le projet est expérimental et développé avec des ressources limitées.</li>
-        <li>L’accompagnement est bénévole et offert selon les disponibilités; aucun soutien permanent n’est promis.</li>
-        <li>Dans un fork, les Actions doivent être activées manuellement. GitHub Pages demande aussi une étape dans les paramètres et son déploiement prend un délai incompressible.</li>
+    <section class="px-4 sm:px-6">
+      <div class="mx-auto flex max-w-6xl flex-col items-start gap-6 rounded-2xl bg-primary px-6 py-12 text-primary-foreground sm:px-12 md:flex-row md:items-center md:justify-between">
+        <div class="max-w-xl">
+          <p class="text-sm font-semibold opacity-80">Le Quorum</p>
+          <h2 class="mt-2 text-3xl font-semibold tracking-tight">Un journal fictif, assez complet pour tout essayer.</h2>
+          <p class="mt-3 opacity-85">Sections, signatures, sports, météo, radio et articles de formats variés. Chaque fait, établissement et personnage est explicitement fictif.</p>
+        </div>
+        <div class="flex flex-wrap gap-3">
+          <a class="btn bg-background! text-foreground! hover:bg-background/90!" data-size="lg" href="{{BASE_PATH}}/demo/">Ouvrir Le Quorum</a>
+          <a class="btn border-primary-foreground/30! text-primary-foreground! hover:bg-primary-foreground/10!" data-size="lg" data-variant="ghost" href="{{BASE_PATH}}/admin/">Essayer l’administration</a>
+        </div>
+      </div>
+    </section>
+
+    <section id="limites" class="mx-auto max-w-3xl scroll-mt-20 px-4 py-20 sm:px-6">
+      <p class="text-sm font-semibold text-primary">En toute clarté</p>
+      <h2 class="mt-2 text-3xl font-semibold tracking-tight">Un socle expérimental, pas un service géré.</h2>
+      <ul class="mt-8 list-none space-y-3 p-0">
+        <li class="flex gap-3 rounded-lg border border-border p-4 text-sm"><span class="text-primary" aria-hidden="true">●</span><span><strong>Le Kiosque ne fournit pas l’hébergement.</strong> Chaque équipe reste responsable de son dépôt, de son domaine et de son hébergeur.</span></li>
+        <li class="flex gap-3 rounded-lg border border-border p-4 text-sm"><span class="text-primary" aria-hidden="true">●</span><span>Le projet est expérimental et développé avec des ressources limitées.</span></li>
+        <li class="flex gap-3 rounded-lg border border-border p-4 text-sm"><span class="text-primary" aria-hidden="true">●</span><span>L’accompagnement est bénévole et offert selon les disponibilités; aucun soutien permanent n’est promis.</span></li>
+        <li class="flex gap-3 rounded-lg border border-border p-4 text-sm"><span class="text-primary" aria-hidden="true">●</span><span>Dans un fork, les Actions doivent être activées manuellement. GitHub Pages demande aussi une étape dans les paramètres et son déploiement prend quelques minutes.</span></li>
       </ul>
-      <a class="text-link" href="{{BASE_PATH}}/configurer/">Commencer la configuration en 12 étapes →</a>
+      <a class="btn mt-8" data-variant="outline" href="{{BASE_PATH}}/configurer/">Commencer la configuration en 4 étapes →</a>
     </section>
   </main>
 
-  <footer class="landing-footer">
-    <div class="wrap"><strong>LE KIOSQUE</strong><span>GPL-2.0 · Projet libre et expérimental</span><a href="https://github.com/azdak919/le-kiosque">Code source</a></div>
+  <footer class="border-t border-border">
+    <div class="mx-auto flex max-w-6xl flex-wrap items-center justify-between gap-3 px-4 py-8 text-sm text-muted-foreground sm:px-6">
+      <span><strong class="text-foreground">LE KIOSQUE</strong> · GPL-2.0 · Projet libre et expérimental</span>
+      <span class="flex gap-4"><a class="hover:text-foreground" href="https://github.com/azdak919/le-kiosque">Code source</a><a class="hover:text-foreground" href="https://github.com/azdak919/le-kiosque/blob/main/THIRD_PARTY.md">Crédits</a></span>
+    </div>
   </footer>
 </body>
 </html>

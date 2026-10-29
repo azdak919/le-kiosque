@@ -1,0 +1,95 @@
+/* Vitrine et configurateur du Kiosque — Tailwind CSS v4 + Basecoat (MIT).
+   Source : ui/site.css ; compilé par `npm run ui` vers site/assets/kiosque-ui.css. */
+@import "tailwindcss" source(none);
+@source "../site";
+@import "./vendor/basecoat-subset.css";
+@import "./theme.css";
+
+.skip-link { @apply sr-only focus:not-sr-only focus:fixed focus:left-4 focus:top-4 focus:z-50 focus:rounded-md focus:bg-background focus:px-3 focus:py-2 focus:shadow-lg; }
+.sr-only { @apply sr-only; }
+
+/* ── Configurateur ─────────────────────────────────────────────── */
+.config-body { @apply bg-muted/60 min-h-dvh; }
+.config-head { @apply sticky top-0 z-30 grid grid-cols-[1fr_auto] sm:grid-cols-[1fr_auto_1fr] items-center gap-4 h-14 px-4 sm:px-6 border-b border-border bg-background/85 backdrop-blur; }
+.config-head > a { @apply inline-flex items-center gap-2 text-sm font-semibold no-underline; }
+.config-head > div { @apply hidden sm:flex flex-col items-center leading-tight; }
+.config-head > div strong { @apply text-sm font-semibold; }
+.config-head > div span { @apply text-xs text-muted-foreground; }
+.danger-link { @apply justify-self-end inline-flex h-8 items-center rounded-md px-2.5 text-sm font-medium text-destructive bg-transparent border-0 cursor-pointer hover:bg-destructive/10; }
+.config-layout--simple { @apply mx-auto max-w-7xl grid grid-cols-1 lg:grid-cols-[minmax(0,1fr)_22rem] gap-x-8 px-4 sm:px-6 pb-16; }
+.config-steps { @apply col-span-full flex gap-2 list-none m-0 mt-6 p-0 [counter-reset:step]; }
+.config-steps li { @apply flex-1 flex items-center justify-center lg:justify-start gap-2.5 rounded-lg border border-border bg-background px-3 py-2.5 text-[0px] lg:text-sm font-medium text-muted-foreground [counter-increment:step] transition-colors; }
+.config-steps li::before { content: counter(step); @apply grid size-6 shrink-0 place-items-center rounded-full bg-muted text-xs font-semibold text-muted-foreground; }
+.config-steps li.current { @apply border-primary/40 text-foreground ring-3 ring-primary/10; }
+.config-steps li.current::before { @apply bg-primary text-primary-foreground; }
+.config-steps li.done { @apply text-foreground; }
+.config-steps li.done::before { content: "✓"; @apply bg-emerald-600 text-white; }
+.config-main { @apply min-w-0 pt-6; }
+.example-banner { @apply m-0 mb-4 rounded-lg border border-border bg-background px-4 py-3 text-sm text-muted-foreground; }
+.example-banner strong { @apply text-foreground font-semibold; }
+#config-form { @apply rounded-xl bg-card ring-1 ring-foreground/10 shadow-sm overflow-hidden; }
+.config-step { @apply p-6 sm:p-10; }
+.step-count { @apply m-0 mb-2 text-xs font-semibold uppercase tracking-wider text-primary; }
+.config-step h1 { @apply m-0 mb-2 text-3xl sm:text-4xl font-semibold tracking-tight; }
+.lede { @apply text-base text-muted-foreground max-w-prose; }
+.fields { @apply grid gap-5 mt-6; }
+.fields.two-cols { @apply sm:grid-cols-2; }
+.fields label, .block-label { @apply grid gap-1.5 text-sm font-medium; }
+.ou { @apply block text-[0.8125rem] font-normal text-muted-foreground; }
+.config-body input:not([type=checkbox]):not([type=color]):not([type=file]), .config-body select {
+  @apply h-10 w-full min-w-0 rounded-md border border-input bg-background px-3 text-base sm:text-sm shadow-xs outline-none transition-[color,box-shadow] focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50 aria-invalid:border-destructive aria-invalid:ring-destructive/20;
+}
+.config-body select { @apply appearance-none pe-8 bg-[image:var(--chevron-down-icon-50)] bg-no-repeat bg-position-[center_right_0.75rem] bg-size-[1rem]; }
+.config-body input[type=file] { @apply w-full rounded-md border border-dashed border-input bg-muted/40 p-3 text-sm file:mr-3 file:h-8 file:rounded-md file:border file:border-border file:bg-background file:px-3 file:text-sm file:font-medium; }
+.config-body textarea { @apply w-full rounded-md border border-input bg-background px-3 py-2 font-mono text-sm shadow-xs outline-none focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50 resize-y; }
+.config-body input[type=checkbox] { @apply size-4 shrink-0 mt-0.5 accent-primary; }
+.color-field { @apply grid grid-cols-[3rem_1fr] gap-2; }
+.color-field input[type=color] { @apply h-10 w-12 rounded-md border border-input bg-background p-1 cursor-pointer; }
+.contrast { @apply rounded-md px-3 py-2 text-sm empty:hidden; }
+.contrast.pass { @apply bg-emerald-50 text-emerald-800 ring-1 ring-emerald-200; }
+.contrast.warn { @apply bg-amber-50 text-amber-900 ring-1 ring-amber-200; }
+.avance { @apply mt-6 rounded-lg border border-border px-4; }
+.avance > summary { @apply cursor-pointer py-3 text-sm font-medium marker:text-muted-foreground; }
+.avance > summary small { @apply font-normal text-muted-foreground; }
+.avance[open] { @apply pb-4; }
+.avance .fields { @apply mt-2; }
+.choice-card { @apply mt-3 flex gap-3 rounded-lg border border-border p-3.5 cursor-pointer transition-colors hover:bg-muted/50 has-[:checked]:border-primary/40 has-[:checked]:bg-accent/50; }
+.choice-card span { @apply block text-sm text-muted-foreground; }
+.choice-card strong { @apply block text-sm font-medium text-foreground mb-0.5; }
+.hint { @apply text-sm text-muted-foreground; }
+.step-error { @apply mt-4 rounded-md bg-destructive/10 px-3 py-2 text-sm text-destructive; }
+.config-controls { @apply flex items-center justify-between gap-3 border-t border-border bg-muted/30 px-6 sm:px-10 py-4; }
+.config-body form button:not(.btn), .finish-grid button {
+  @apply inline-flex h-9 items-center justify-center gap-1.5 rounded-md border border-border bg-background px-4 text-sm font-medium shadow-xs cursor-pointer transition-all hover:bg-muted disabled:pointer-events-none disabled:opacity-50;
+}
+.config-body .primary-action { @apply bg-primary! text-primary-foreground! border-transparent! hover:bg-primary/85!; }
+.finish-grid { @apply grid sm:grid-cols-3 gap-3 my-6; }
+.finish-grid article { @apply flex flex-col items-start gap-2 rounded-xl ring-1 ring-foreground/10 bg-card p-4; }
+.finish-grid strong { @apply text-sm font-semibold; }
+.finish-grid span { @apply text-[0.8125rem] text-muted-foreground flex-1; }
+.finish-grid a { @apply inline-flex h-9 items-center rounded-md border border-border px-4 text-sm font-medium no-underline hover:bg-muted; }
+.review-summary { @apply grid sm:grid-cols-2 gap-3; }
+.review-summary article { @apply rounded-lg bg-muted/60 p-4; }
+.review-summary h2 { @apply m-0 mb-1 text-sm font-semibold; }
+.review-summary p { @apply m-0 text-sm text-muted-foreground break-words; }
+.review-summary .warning { @apply text-amber-800; }
+.generated-files { @apply grid gap-3; }
+.file-card { @apply rounded-lg border border-border overflow-hidden; }
+.file-card header { @apply flex flex-wrap items-center justify-between gap-2 bg-muted px-3 py-2 text-sm; }
+.file-card pre { @apply m-0 max-h-56 overflow-auto bg-neutral-950 p-3 text-xs text-neutral-100; }
+.swatch { @apply inline-block size-3 rounded-sm align-[-1px]; }
+.config-apercu { @apply pt-6; }
+.config-apercu > p { @apply m-0 mb-2 text-xs font-semibold uppercase tracking-wider text-muted-foreground; }
+.live-preview { --preview-accent: #6c2163; @apply lg:sticky lg:top-20 overflow-hidden rounded-xl bg-white text-neutral-900 ring-1 ring-foreground/10 shadow-sm; }
+.live-preview > span { @apply block px-4 py-2 text-[0.6875rem] font-bold uppercase tracking-wide text-white; background: var(--preview-accent); }
+.live-preview .preview-mast { @apply flex items-center gap-3 px-5 pt-5 pb-1; }
+.live-preview .preview-mast img { @apply size-12 object-contain; }
+.live-preview .preview-mast strong { @apply font-serif text-3xl font-bold leading-none break-words; }
+.live-preview > em { @apply block min-h-4 px-5 pb-3 text-[0.8125rem] not-italic text-neutral-600 border-b-[3px] border-neutral-900; }
+.live-preview nav { @apply flex flex-wrap gap-x-3.5 gap-y-1 px-5 py-2 text-xs font-semibold border-b border-neutral-200; }
+.live-preview nav b { color: var(--preview-accent); }
+.live-preview article { @apply px-5 pt-6 pb-8; }
+.live-preview small { @apply text-xs font-bold uppercase; color: var(--preview-accent); }
+.live-preview h2 { @apply mt-2 mb-2 font-serif text-2xl font-bold leading-tight; }
+.live-preview article p { @apply text-sm text-neutral-600; }
+.finish-grid button, .finish-grid a { @apply h-auto! min-h-9 py-2 whitespace-normal text-left; }
