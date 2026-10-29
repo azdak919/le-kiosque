@@ -18,10 +18,9 @@
         <span class="text-sm font-semibold tracking-[0.12em]">LE KIOSQUE</span>
       </a>
       <nav aria-label="Navigation principale" class="flex items-center gap-1">
-        <a class="hidden md:inline-flex h-9 items-center rounded-md px-3 text-sm font-medium text-muted-foreground hover:bg-muted hover:text-foreground" href="#fonctionnement">Fonctionnement</a>
-        <a class="hidden md:inline-flex h-9 items-center rounded-md px-3 text-sm font-medium text-muted-foreground hover:bg-muted hover:text-foreground" href="#options">Déployer</a>
-        <a class="hidden sm:inline-flex h-9 items-center rounded-md px-3 text-sm font-medium text-muted-foreground hover:bg-muted hover:text-foreground" href="https://github.com/azdak919/le-kiosque">GitHub</a>
-        <a class="btn" href="{{BASE_PATH}}/configurer/">Configurateur</a>
+        <a class="hidden md:inline-flex h-9 items-center rounded-md px-3 text-sm font-medium text-muted-foreground hover:bg-muted hover:text-foreground" href="#fonctionnement">Comment ça marche</a>
+        <a class="hidden md:inline-flex h-9 items-center rounded-md px-3 text-sm font-medium text-muted-foreground hover:bg-muted hover:text-foreground" href="#options">Mettre en ligne</a>
+        <a class="btn" href="{{BASE_PATH}}/configurer/">Créer mon journal</a>
       </nav>
     </div>
   </header>
@@ -30,14 +29,14 @@
     <section class="relative overflow-hidden">
       <div class="pointer-events-none absolute inset-0 -z-10 bg-[radial-gradient(60rem_30rem_at_50%_-10%,color-mix(in_oklch,var(--primary)_14%,transparent),transparent)]"></div>
       <div class="mx-auto max-w-6xl px-4 pt-16 pb-12 text-center sm:px-6 sm:pt-24">
-        <span class="badge" data-variant="outline">Logiciel libre · GPL-2.0 · Fait au Québec</span>
+        <span class="badge" data-variant="outline">Gratuit et libre · Fait au Québec</span>
         <h1 class="mx-auto mt-6 max-w-4xl text-4xl font-semibold tracking-tight text-balance sm:text-6xl">Publier aujourd’hui.<br><span class="text-primary">Transmettre demain.</span></h1>
-        <p class="mx-auto mt-6 max-w-2xl text-lg text-pretty text-muted-foreground">Le journal étudiant clé en main : rédaction, site rapide et archives qui passent d’une cohorte à l’autre.</p>
+        <p class="mx-auto mt-6 max-w-2xl text-lg text-pretty text-muted-foreground">Le site de votre journal étudiant, prêt en quelques minutes. Vous écrivez, il se publie, et rien ne se perd quand votre cohorte part.</p>
         <div class="mt-8 flex flex-wrap justify-center gap-3">
           <a class="btn" data-size="lg" href="{{BASE_PATH}}/configurer/">Configurer mon journal →</a>
           <a class="btn" data-size="lg" data-variant="outline" href="{{BASE_PATH}}/demo/">Voir la démonstration</a>
         </div>
-        <p class="mt-4 text-xs text-muted-foreground">Vous hébergez votre journal ; vos données restent chez vous.</p>
+        <p class="mt-4 text-xs text-muted-foreground">Votre journal vous appartient : vos articles restent à vous.</p>
       </div>
       <div class="mx-auto max-w-6xl px-4 pb-20 sm:px-6">
         <figure class="m-0 overflow-hidden rounded-2xl bg-card shadow-2xl ring-1 ring-foreground/10">
@@ -48,7 +47,7 @@
           <a href="{{BASE_PATH}}/demo/" class="block">
             <picture>
               <source media="(max-width: 640px)" srcset="{{BASE_PATH}}/assets/apercu-demo-mobile.jpg">
-              <img class="block h-auto w-full" src="{{BASE_PATH}}/assets/apercu-demo.jpg" width="1280" height="800" alt="Page d’accueil du Quorum, journal étudiant fictif produit par le Kiosque : mât illustré, barre radio, à la une et en bref." loading="eager">
+              <img class="block h-auto w-full" src="{{BASE_PATH}}/assets/apercu-demo.jpg" width="1280" height="800" alt="Page d’accueil du Quorum, un journal étudiant inventé pour la démonstration." loading="eager">
             </picture>
           </a>
           <figcaption class="border-t border-border px-4 py-2 text-xs text-muted-foreground">Le Quorum, journal de démonstration.</figcaption>
@@ -58,30 +57,27 @@
 
     <section id="fonctionnement" class="mx-auto max-w-6xl scroll-mt-20 px-4 py-20 sm:px-6">
       <div class="max-w-2xl">
-        <p class="text-sm font-semibold text-primary">Fonctionnement</p>
-        <h2 class="mt-2 text-3xl font-semibold tracking-tight sm:text-4xl">Le contenu d’abord, l’outil ensuite.</h2>
+        <p class="text-sm font-semibold text-primary">Comment ça marche</p>
+        <h2 class="mt-2 text-3xl font-semibold tracking-tight sm:text-4xl">Quatre étapes, aucune connaissance technique.</h2>
       </div>
       <ol class="mt-10 grid list-none gap-4 p-0 sm:grid-cols-2 lg:grid-cols-4">
-        <li class="card" data-size="sm"><section><span class="kbd">01</span><h3 class="mt-3 text-base font-semibold">Écrire</h3><p class="mt-1 text-muted-foreground">L’équipe rédige en Markdown, dans l’administration intégrée ou dans WordPress.</p></section></li>
-        <li class="card" data-size="sm"><section><span class="kbd">02</span><h3 class="mt-3 text-base font-semibold">Conserver</h3><p class="mt-1 text-muted-foreground">Articles et médias sont copiés dans un miroir portable, versionné dans Git.</p></section></li>
-        <li class="card" data-size="sm"><section><span class="kbd">03</span><h3 class="mt-3 text-base font-semibold">Construire</h3><p class="mt-1 text-muted-foreground">Le site statique est produit uniquement depuis ce miroir, sans joindre le CMS.</p></section></li>
-        <li class="card" data-size="sm"><section><span class="kbd">04</span><h3 class="mt-3 text-base font-semibold">Transmettre</h3><p class="mt-1 text-muted-foreground">Accès, domaine et gouvernance passent à la cohorte suivante avec l’archive.</p></section></li>
+        <li class="card" data-size="sm"><section><span class="kbd">1</span><h3 class="mt-3 text-base font-semibold">Vous le personnalisez</h3><p class="mt-1 text-muted-foreground">Vous choisissez le nom, le logo et les couleurs de votre journal.</p></section></li>
+        <li class="card" data-size="sm"><section><span class="kbd">2</span><h3 class="mt-3 text-base font-semibold">Vous écrivez</h3><p class="mt-1 text-muted-foreground">Vous rédigez vos articles dans un éditeur simple, comme un document.</p></section></li>
+        <li class="card" data-size="sm"><section><span class="kbd">3</span><h3 class="mt-3 text-base font-semibold">C’est en ligne</h3><p class="mt-1 text-muted-foreground">Le journal se publie sur le Web tout seul, sur ordinateur comme sur téléphone.</p></section></li>
+        <li class="card" data-size="sm"><section><span class="kbd">4</span><h3 class="mt-3 text-base font-semibold">Rien ne se perd</h3><p class="mt-1 text-muted-foreground">Tous les numéros restent archivés pour la cohorte suivante.</p></section></li>
       </ol>
-      <div class="mt-8 flex flex-wrap items-center justify-center gap-2 rounded-xl border border-dashed border-border p-4 text-sm" aria-label="Chemin du contenu">
-        <span class="badge" data-variant="secondary">CMS au choix</span><span class="text-muted-foreground" aria-hidden="true">→ sync →</span><span class="badge">Markdown + Git</span><span class="text-muted-foreground" aria-hidden="true">→ build →</span><span class="badge" data-variant="secondary">HTML statique</span>
-      </div>
     </section>
 
     <section id="options" class="scroll-mt-20 border-t border-border bg-muted/50">
       <div class="mx-auto max-w-6xl px-4 py-20 sm:px-6">
         <div class="max-w-2xl">
-          <p class="text-sm font-semibold text-primary">Trois façons de démarrer</p>
-          <h2 class="mt-2 text-3xl font-semibold tracking-tight sm:text-4xl">Une seule configuration, l’hébergement de votre choix.</h2>
+          <p class="text-sm font-semibold text-primary">Trois façons de le mettre en ligne</p>
+          <h2 class="mt-2 text-3xl font-semibold tracking-tight sm:text-4xl">Choisissez ce qui est le plus simple pour votre équipe.</h2>
         </div>
         <div class="mt-10 grid gap-4 md:grid-cols-3">
-          <article class="card"><header><h3>WordPress</h3><p>Extension « Le Kiosque » : téléversez-la, déposez votre fichier de configuration, c’est en ligne.</p></header><footer><span class="badge" data-variant="outline">Disponible</span></footer></article>
-          <article class="card"><header><h3>GitHub Pages</h3><p>Un dépôt à vous, un site statique reconstruit à chaque article. Aucun serveur à entretenir.</p></header><footer><span class="badge" data-variant="outline">Disponible</span></footer></article>
-          <article class="card"><header><h3>Kit portable</h3><p>Un dossier à copier sur une clé ou un poste du local du journal, avec installateur et guide imprimable.</p></header><footer><span class="badge" data-variant="outline">Disponible</span></footer></article>
+          <article class="card"><header><h3>Sur le site WordPress de votre cégep</h3><p>Si votre association a déjà un site WordPress, vous y ajoutez Le Kiosque en quelques clics.</p></header><footer><span class="badge" data-variant="outline">Disponible</span></footer></article>
+          <article class="card"><header><h3>En ligne, gratuitement</h3><p>Vous créez un compte gratuit, et votre journal est en ligne. Rien à installer, rien à payer.</p></header><footer><span class="badge" data-variant="outline">Disponible</span></footer></article>
+          <article class="card"><header><h3>Sur une clé USB</h3><p>Tout le journal tient dans un dossier, avec un guide imprimé pour le local du journal.</p></header><footer><span class="badge" data-variant="outline">Disponible</span></footer></article>
         </div>
       </div>
     </section>
@@ -91,20 +87,27 @@
         <div class="max-w-xl">
           <p class="text-sm font-semibold opacity-80">Le Quorum</p>
           <h2 class="mt-2 text-3xl font-semibold tracking-tight">Tout essayer, en un clic.</h2>
-          <p class="mt-3 opacity-85">Sections, signatures, sports, météo, radio et articles de formats variés.</p>
+          <p class="mt-3 opacity-85">Un vrai journal étudiant, avec rubriques, sports, météo et radio. Ouvrez-le, ou essayez l’espace de rédaction.</p>
         </div>
         <div class="flex flex-wrap gap-3">
           <a class="btn bg-background! text-foreground! hover:bg-background/90!" data-size="lg" href="{{BASE_PATH}}/demo/">Ouvrir Le Quorum</a>
-          <a class="btn border-primary-foreground/30! text-primary-foreground! hover:bg-primary-foreground/10!" data-size="lg" data-variant="ghost" href="{{BASE_PATH}}/admin/">Essayer l’administration</a>
+          <a class="btn border-primary-foreground/30! text-primary-foreground! hover:bg-primary-foreground/10!" data-size="lg" data-variant="ghost" href="{{BASE_PATH}}/admin/">Essayer la rédaction</a>
         </div>
       </div>
     </section>
 
+    <section id="technique" class="mx-auto max-w-3xl scroll-mt-20 px-4 py-16 sm:px-6">
+      <details class="rounded-xl border border-border p-5 text-sm text-muted-foreground">
+        <summary class="cursor-pointer font-semibold text-foreground">Pour les responsables techniques</summary>
+        <p class="mt-3">Les articles sont écrits en Markdown et conservés dans un dépôt Git que l’équipe possède. Le site est produit en HTML statique, publiable sur GitHub Pages, avec une extension WordPress ou un kit portable. Code sous licence GPL-2.0, aucune dépendance à un service externe.</p>
+        <p class="mt-2"><a class="underline hover:text-foreground" href="https://github.com/azdak919/le-kiosque">Code source et documentation</a></p>
+      </details>
+    </section>
   </main>
 
   <footer class="border-t border-border">
     <div class="mx-auto flex max-w-6xl flex-wrap items-center justify-between gap-3 px-4 py-8 text-sm text-muted-foreground sm:px-6">
-      <span><strong class="text-foreground">LE KIOSQUE</strong> · GPL-2.0</span>
+      <span><strong class="text-foreground">LE KIOSQUE</strong> · Gratuit et libre</span>
       <span class="flex gap-4"><a class="hover:text-foreground" href="https://github.com/azdak919/le-kiosque">Code source</a><a class="hover:text-foreground" href="https://github.com/azdak919/le-kiosque/blob/main/THIRD_PARTY.md">Crédits</a></span>
     </div>
   </footer>
