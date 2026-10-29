@@ -40,7 +40,7 @@ test('configurer, rédiger, prévisualiser, publier, persister et exporter sans 
   await page.getByRole('button', { name: 'Terminer' }).click();
   await expect(page.getByRole('heading', { name: 'C’est prêt.' })).toBeVisible();
   await page.getByRole('link', { name: 'Ouvrir /admin/' }).click();
-  await expect(page.getByText('Mode démonstration local — les données sont conservées uniquement dans ce navigateur')).toBeVisible({ timeout: 45_000 });
+  await expect(page.getByText('Mode démonstration local — données conservées dans ce navigateur')).toBeVisible({ timeout: 45_000 });
   await expect(page.getByRole('heading', { name: 'Tableau de bord' })).toBeVisible({ timeout: 45_000 });
   await expect(page.locator('#publication-name')).toHaveText('La Relève locale');
 

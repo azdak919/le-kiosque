@@ -71,7 +71,7 @@ function statusLabel(status) {
 
 function dashboard() {
   const counts = Object.fromEntries(['draft', 'in-review', 'published'].map((status) => [status, bundle.articles.filter((item) => item.status === status).length]));
-  return `<section class="panel"><h2>Tableau de bord</h2><div class="notice demo-notice"><strong>Contenu de démonstration</strong> — remplacez ou supprimez ces articles avant la mise en production.</div>
+  return `<section class="panel"><h2>Tableau de bord</h2>
     <div class="grid stats"><article><h3>${counts.draft}</h3><p>Brouillons, invisibles du public.</p></article><article><h3>${counts['in-review']}</h3><p>Articles en révision, invisibles du public.</p></article><article><h3>${counts.published}</h3><p>Articles publiés dans le front end.</p></article><article><h3>${bundle.authors.length}</h3><p>Signatures éditoriales, sans compte ni mot de passe.</p></article></div>
     <div class="actions"><button class="primary" data-action="new-article">Créer un article</button><a class="button" href="${config.publicBasePath}/">Voir le front end</a></div>
     <h3 style="margin-top:2rem">Données d’exemple</h3><label><input id="demo-visible" type="checkbox" ${bundle.demoVisible !== false ? 'checked' : ''}> Afficher les exemples publiés dans le front end</label>

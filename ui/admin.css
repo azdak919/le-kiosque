@@ -60,8 +60,8 @@
 .admin-header h1 { @apply m-0 text-sm md:text-base font-semibold truncate; }
 .admin-header h1 .muted { @apply text-muted-foreground font-normal; }
 .admin-header a.btn { @apply shrink-0; }
-.local-warning { @apply mx-4 md:mx-8 mt-4 flex items-start gap-2 rounded-lg border border-amber-300/60 bg-amber-50 px-3 py-2 text-[0.8125rem] leading-snug text-amber-900; }
-.local-warning svg { @apply size-4 mt-0.5 shrink-0; }
+.local-warning { @apply mx-4 md:mx-8 mt-3 flex items-center gap-2 text-xs text-muted-foreground; }
+.local-warning svg { @apply size-3.5 shrink-0; }
 #admin-main { @apply w-full max-w-6xl px-4 md:px-8 py-6 md:py-8; }
 
 /* Contenu généré */
