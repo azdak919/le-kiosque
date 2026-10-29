@@ -1,0 +1,20 @@
+/* Jeton communs : Basecoat (MIT, github.com/hunvreus/basecoat) recoloré aux couleurs du Kiosque. */
+:root {
+  --radius: 0.625rem;
+  --primary: oklch(0.38 0.12 340);           /* prune Kiosque #6c2163 */
+  --primary-foreground: oklch(0.985 0 0);
+  --ring: oklch(0.55 0.13 340);
+  --background: oklch(0.995 0.002 340);
+  --muted: oklch(0.967 0.004 340);
+  --accent: oklch(0.96 0.015 340);
+  --accent-foreground: oklch(0.32 0.11 340);
+  --sidebar: oklch(0.985 0.003 340);
+  --sidebar-primary: oklch(0.38 0.12 340);
+}
+@theme inline {
+  --font-sans: "Inter", "Inter Variable", ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  --font-serif: "Fraunces", Georgia, "Times New Roman", serif;
+}
+html { -webkit-font-smoothing: antialiased; }
+body { @apply bg-background text-foreground font-sans; }
+:focus-visible { outline: 2px solid var(--ring); outline-offset: 2px; }

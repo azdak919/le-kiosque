@@ -272,3 +272,13 @@ on ne recrée pas de deuxième journal d’état.
   de l’agrégateur.
 - Le compteur historique des tests dans les anciens documents est indicatif;
   exécuter les commandes plutôt que lui faire confiance.
+
+## Interfaces d'outil : Tailwind CSS v4 + Basecoat (t377u, t378u)
+
+La vitrine (`site/index.html`), le configurateur (`site/configurer/`) et
+l'administration locale (`/admin/`) utilisent une seule base : Tailwind CSS v4
+et Basecoat (MIT, style shadcn/ui). Sources dans `ui/`, compilation par
+`npm run ui` (fichiers compilés versionnés, aucun build requis en CI). Ne pas
+écrire de CSS à la main dans les fichiers compilés. **Le produit fini** (thème
+`packages/theme-radar`, rendu du journal hérité de LE-RADAR) **n'utilise pas
+cette base et ne doit pas changer** avec elle. Crédits : `THIRD_PARTY.md`.

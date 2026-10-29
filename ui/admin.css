@@ -1,0 +1,135 @@
+/* Administration locale du Kiosque — Tailwind CSS v4 + Basecoat (MIT).
+   Source : ui/admin.css ; compilé par `npm run ui` vers
+   packages/theme-radar/assets/editorial/admin.css. Ne pas éditer le fichier compilé. */
+@import "tailwindcss" source(none);
+@source "../packages/theme-radar/src/local-admin.ts";
+@source "../packages/theme-radar/assets/editorial/admin.js";
+@import "./vendor/basecoat-subset.css";
+@import "./theme.css";
+
+@layer components {
+  /* Contrôles générés par admin.js : on reprend exactement les recettes Basecoat
+     (.btn outline / primary / destructive, .input, .textarea, select.select, .card). */
+  #admin-main button, .media-picker button, #admin-main .button {
+    @apply inline-flex shrink-0 items-center justify-center gap-1.5 whitespace-nowrap rounded-md border border-border bg-background px-3 h-9 text-sm font-medium shadow-xs transition-all cursor-pointer no-underline hover:bg-muted focus-visible:ring-[3px] focus-visible:ring-ring/50 disabled:pointer-events-none disabled:opacity-50 active:translate-y-px;
+  }
+  #admin-main button.primary, .media-picker button.primary, #admin-main .button.primary {
+    @apply bg-primary text-primary-foreground border-transparent hover:bg-primary/85;
+  }
+  #admin-main button.danger { @apply bg-destructive/10 text-destructive border-transparent hover:bg-destructive/20; }
+
+  #admin-main input:not([type=checkbox]):not([type=radio]):not([type=color]):not([type=range]),
+  .media-picker input:not([type=checkbox]):not([type=radio]),
+  #admin-main select, .media-picker select {
+    @apply h-9 w-full min-w-0 rounded-md border border-input bg-background px-2.5 py-1 text-sm shadow-xs transition-[color,box-shadow] outline-none focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50 file:h-7 file:border-0 file:bg-transparent file:text-sm file:font-medium;
+  }
+  #admin-main select, .media-picker select {
+    @apply appearance-none pe-8 bg-[image:var(--chevron-down-icon-50)] bg-no-repeat bg-position-[center_right_0.625rem] bg-size-[1rem];
+  }
+  #admin-main textarea {
+    @apply w-full rounded-md border border-input bg-background px-2.5 py-2 text-sm shadow-xs outline-none focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50;
+  }
+  #admin-main input[type=checkbox], #admin-main input[type=radio] { @apply size-4 accent-primary align-middle; }
+  #admin-main input[type=range] { @apply w-full accent-primary; }
+  #admin-main input[type=color] { @apply h-9 w-14 rounded-md border border-input bg-background p-1; }
+  #admin-main label { @apply text-sm; }
+  #admin-main h2 { @apply text-2xl font-semibold tracking-tight mb-4 mt-0; }
+  #admin-main h3 { @apply text-base font-semibold mt-6 mb-3; }
+  #admin-main fieldset { @apply rounded-lg border border-border p-4 m-0; }
+  #admin-main legend { @apply px-1 text-sm font-medium; }
+  #admin-main a { @apply text-primary underline-offset-4 hover:underline; }
+  #admin-main code { @apply rounded bg-muted px-1 py-0.5 text-[0.85em]; }
+}
+
+/* Coquille (local-admin.ts) */
+.admin-app { @apply min-h-dvh md:grid md:grid-cols-[15.5rem_minmax(0,1fr)]; }
+.admin-sidebar { @apply flex flex-col gap-1 border-b md:border-b-0 md:border-r border-border bg-sidebar px-2 md:px-3 py-2 md:py-4 md:sticky md:top-0 md:h-dvh; }
+.admin-brand { @apply hidden md:flex items-center gap-2.5 px-2 pb-4 mb-2 border-b border-border; }
+.admin-brand-mark { @apply grid size-8 place-items-center rounded-lg bg-primary text-primary-foreground text-sm font-bold; }
+.admin-brand strong { @apply block text-sm font-semibold leading-tight; }
+.admin-brand small { @apply block text-xs text-muted-foreground; }
+.admin-nav { @apply flex flex-row md:flex-col gap-1 md:gap-0.5 overflow-x-auto [scrollbar-width:none]; }
+.admin-nav button {
+  @apply flex shrink-0 whitespace-nowrap min-h-11 md:min-h-0 md:w-full items-center gap-2.5 rounded-md border-0 bg-transparent px-2.5 h-9 text-left text-sm font-medium text-muted-foreground cursor-pointer transition-colors hover:bg-muted hover:text-foreground;
+}
+.admin-nav button svg { @apply hidden md:block size-4 shrink-0; }
+.admin-nav button[aria-current="page"] { @apply bg-accent text-accent-foreground font-semibold; }
+.admin-sidebar-foot { @apply hidden md:block mt-auto rounded-lg border border-border bg-background p-3 text-xs text-muted-foreground leading-relaxed; }
+.admin-column { @apply min-w-0 flex flex-col; }
+.admin-header { @apply sticky top-0 z-20 flex items-center justify-between gap-3 border-b border-border bg-background/85 backdrop-blur px-4 md:px-8 h-14; }
+.admin-header h1 { @apply m-0 text-sm md:text-base font-semibold truncate; }
+.admin-header h1 .muted { @apply text-muted-foreground font-normal; }
+.admin-header a.btn { @apply shrink-0; }
+.local-warning { @apply mx-4 md:mx-8 mt-4 flex items-start gap-2 rounded-lg border border-amber-300/60 bg-amber-50 px-3 py-2 text-[0.8125rem] leading-snug text-amber-900; }
+.local-warning svg { @apply size-4 mt-0.5 shrink-0; }
+#admin-main { @apply w-full max-w-6xl px-4 md:px-8 py-6 md:py-8; }
+
+/* Contenu généré */
+.panel { @apply rounded-xl bg-card text-card-foreground ring-1 ring-foreground/10 shadow-xs p-5 md:p-6; }
+.panel + .panel { @apply mt-4; }
+.toolbar { @apply flex flex-wrap items-center justify-between gap-3 mb-5; }
+.toolbar h2 { @apply mb-0!; }
+.status-pill { @apply inline-flex h-5 items-center rounded-full border border-border bg-secondary px-2 text-xs font-medium text-secondary-foreground; }
+.status-published { @apply border-transparent bg-emerald-100 text-emerald-800; }
+.status-in-review { @apply border-transparent bg-amber-100 text-amber-900; }
+.entity-list { @apply list-none p-0 m-0 divide-y divide-border rounded-lg border border-border; }
+.entity-list li { @apply flex items-center justify-between gap-4 px-4 py-3 hover:bg-muted/50; }
+.entity-list li > div:first-child { @apply flex flex-wrap items-baseline gap-x-2 gap-y-1 min-w-0; }
+.entity-list strong { @apply font-medium; }
+.entity-list small { @apply block w-full text-xs text-muted-foreground; }
+.taxonomy-swatch { @apply inline-block size-3 rounded-full shrink-0 ring-1 ring-black/10; background: var(--c, var(--primary)); }
+.grid { @apply grid grid-cols-1 md:grid-cols-2 gap-4; }
+.field { @apply grid gap-1.5; }
+.field label, .field > span:first-child { @apply text-sm font-medium; }
+.full, .field.full { @apply md:col-span-2; }
+.field textarea { @apply min-h-32 resize-y; }
+.field textarea.body { @apply min-h-[22rem] font-mono; }
+.editor-shell { @apply rounded-lg border border-border p-3; }
+.editor-toolbar { @apply flex flex-wrap items-center gap-1.5 mb-3 pb-3 border-b border-border; }
+.editor-toolbar [data-html-tools] { display: contents; }
+.editor-toolbar button { @apply h-8! px-2.5! text-[0.8125rem]!; }
+.visual-editor { @apply min-h-[22rem] rounded-md border border-input bg-background p-4 leading-relaxed outline-none focus:ring-[3px] focus:ring-ring/50; }
+.visual-editor img { @apply max-w-full h-auto; }
+.visual-editor figure { @apply my-4; }
+.visual-editor figcaption { @apply text-sm text-muted-foreground; }
+.media-editor { @apply grid grid-cols-1 sm:grid-cols-2 gap-3; }
+.media-editor legend, .media-editor .media-quality, .media-editor > label:first-of-type { grid-column: 1 / -1; }
+.media-quality { @apply text-sm text-muted-foreground; }
+.media-filters { @apply grid grid-cols-1 md:grid-cols-[2fr_1fr] gap-3 my-4; }
+.media-filters label { @apply grid gap-1.5 text-sm font-medium; }
+.media-grid { @apply grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-4; }
+.media-card { @apply min-w-0 overflow-hidden rounded-xl bg-card ring-1 ring-foreground/10 shadow-xs transition-shadow hover:shadow-md; }
+.media-card > img { @apply block w-full aspect-video object-cover bg-muted; }
+.media-card-body { @apply p-4 text-sm; }
+.media-card-body h3 { @apply mt-0! mb-1! text-sm!; }
+.media-card-body p { @apply m-0 mb-1.5 text-muted-foreground; }
+.media-tags { @apply text-xs text-muted-foreground; }
+.media-picker { @apply w-[min(1040px,calc(100vw-2rem))] max-h-[calc(100dvh-2rem)] rounded-xl border-0 p-6 shadow-2xl ring-1 ring-foreground/10 bg-background text-foreground m-auto; }
+.media-picker::backdrop { @apply bg-black/50 backdrop-blur-[2px]; }
+.crop-previews { @apply grid grid-cols-1 md:grid-cols-[2fr_1.25fr_.75fr] gap-3 items-end mt-3; }
+.crop-preview { @apply m-0 min-w-0; }
+.crop-preview img { @apply block w-full h-36 object-cover rounded-md ring-1 ring-foreground/10; object-position: var(--crop-position, 50% 50%); }
+.crop-tablet img { @apply md:h-40; }
+.crop-mobile img { @apply md:h-44; }
+.crop-preview figcaption { @apply mt-1 text-xs text-muted-foreground; }
+.sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0,0,0,0); white-space: nowrap; border: 0; }
+.actions { @apply flex flex-wrap gap-2 mt-5; }
+.notice { @apply block rounded-lg border border-border bg-accent/60 px-4 py-3 text-sm mb-5; }
+.demo-notice { @apply border-red-200 bg-red-50 text-red-900; }
+.preview-frame { @apply mt-4 rounded-lg border border-border p-6; }
+.preview-frame h1 { @apply font-serif text-3xl; }
+.loading { @apply min-h-[60vh] grid place-content-center text-center gap-2 text-muted-foreground; }
+.loading h2 { @apply text-foreground!; }
+.danger-zone { @apply ring-red-200 mt-4; }
+.post-demo { @apply grid grid-cols-1 md:grid-cols-3 gap-4; }
+.post-demo article { @apply rounded-lg border border-border p-4; }
+/* Tableau de bord : statistiques en cartes */
+.stats { @apply grid grid-cols-2 lg:grid-cols-4 gap-3 mb-6; }
+.stats article { @apply rounded-xl ring-1 ring-foreground/10 bg-card p-4 shadow-xs; }
+.stats article h3 { @apply m-0! text-3xl! font-semibold tracking-tight tabular-nums; }
+.stats article p { @apply m-0 mt-1 text-xs text-muted-foreground leading-snug; }
+#toast { @apply fixed right-4 bottom-4 z-50 rounded-lg bg-foreground px-4 py-2.5 text-sm text-background shadow-lg opacity-0 pointer-events-none transition-opacity; }
+#toast.visible { @apply opacity-100; }
+.entity-list li > div:last-child { @apply flex shrink-0 flex-wrap justify-end gap-2; }
+#admin-main fieldset label { @apply flex items-center gap-2 py-0.5; }
+.toolbar p { @apply m-0 mt-1 text-sm text-muted-foreground; }
