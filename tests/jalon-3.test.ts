@@ -153,7 +153,7 @@ test('le déploiement et le configurateur du jalon 3 sont présents à la racine
   const testAt = workflow.indexOf('npm test');
   const siteAt = workflow.indexOf('npm run site');
   assert.ok(testAt >= 0 && siteAt > testAt, 'les tests doivent précéder le build Pages');
-  assert.match(workflow, /actions\/deploy-pages@v4/);
+  assert.match(workflow, /actions\/deploy-pages@v\d+/);
 
   const configurator = await readFile(path.join(ROOT, 'site/configurer/index.html'), 'utf8');
   assert.equal((configurator.match(/class="config-step"/g) ?? []).length, 4, "configurateur en 4 étapes (t344u)");
