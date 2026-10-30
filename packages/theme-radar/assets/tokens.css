@@ -47,8 +47,8 @@
   --wordmark-size: clamp(2.05rem, 6.8vw + 0.3rem, 4.25rem);
   --lead-title-size: clamp(1.55rem, 4.1vw + 0.15rem, 2.55rem);
   /* Fond barre radio = palette du journal (accent assombri, texte blanc AA). */
-  --tuner-session-base: color-mix(in srgb, var(--accent, #6c2163) 50%, #0d0a10);
-  --tuner-bg: color-mix(in srgb, var(--accent, #6c2163) 50%, #0d0a10);
+  --tuner-session-base: color-mix(in srgb, var(--accent, #6c2163) 22%, #14101a);
+  --tuner-bg: color-mix(in srgb, var(--accent, #6c2163) 22%, #14101a);
 }
 
 :root[data-typography="editorial-classic"] { --serif: Georgia, "Times New Roman", serif; --sans: system-ui, sans-serif; }

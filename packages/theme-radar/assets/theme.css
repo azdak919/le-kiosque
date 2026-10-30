@@ -334,7 +334,7 @@ body:has(.demo-banner) {
   z-index: 100;
   isolation: isolate;
   /* Même chrome que .tuner LE-RADAR : fond session, ombre, pas de filet. */
-  background: var(--tuner-session-base, color-mix(in srgb, var(--accent, #6c2163) 50%, #0d0a10));
+  background: var(--tuner-session-base, color-mix(in srgb, var(--accent, #6c2163) 22%, #14101a));
   border: 0;
   box-shadow: none;
   overflow: hidden;
@@ -419,7 +419,7 @@ body.with-radio .nav {
   /* Au-dessus du fil ; le bandeau démo sticky reste lisible (110). */
   z-index: 105;
   /* Hauteur fixée en JS (= baseH) ; fond = barre session, pas transparent. */
-  background: var(--tuner-session-base, color-mix(in srgb, var(--accent, #6c2163) 50%, #0d0a10));
+  background: var(--tuner-session-base, color-mix(in srgb, var(--accent, #6c2163) 22%, #14101a));
   box-shadow: none;
 }
 .radar-tuner iframe.is-vol-overlay {
@@ -1459,7 +1459,7 @@ body.with-radio .nav {
 }
 /* Jointure mât → radio : pas de filet clair (LE-RADAR). Classe posée au build. */
 body.with-radio .masthead--illustrated {
-  border-bottom-color: var(--tuner-session-base, color-mix(in srgb, var(--accent, #6c2163) 50%, #0d0a10));
+  border-bottom-color: var(--tuner-session-base, color-mix(in srgb, var(--accent, #6c2163) 22%, #14101a));
 }
 /*
  * Lettrage sur photo — multi-couches LE-RADAR (style.css wordmark-mark /
