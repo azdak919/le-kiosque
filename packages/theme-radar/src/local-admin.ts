@@ -33,7 +33,7 @@ export function localAdminPage(options: LocalAdminPageOptions): string {
   <div class="admin-column">
     <header class="admin-header"><h1><span class="muted">Rédaction de</span> <span id="publication-name">${esc(options.publicationName)}</span></h1><a class="btn" data-variant="outline" data-size="sm" href="${options.publicBasePath}/">Voir le journal ↗</a></header>
     <div class="local-warning" role="note"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4M12 8h.01"/></svg><span>Mode démonstration local — données conservées dans ce navigateur.</span></div>
-    <main id="admin-main"><div class="loading"><h2>Ouverture du journal local…</h2><p>PGlite initialise PostgreSQL dans ce navigateur.</p></div></main>
+    <main id="admin-main"><div class="loading"><h2>Ouverture du journal…</h2><p>Un instant, on prépare votre espace de rédaction.</p></div></main>
   </div>
 </div><div id="toast" role="status" aria-live="polite"></div>
 <script>window.KIOSQUE_EDITORIAL=${manifest};</script><script type="module" src="${options.assetsBase}/admin.js"></script>
