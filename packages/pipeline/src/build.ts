@@ -184,17 +184,49 @@ function renderBody(article: Article, basePath = ''): string {
   return rewriteBodyMediaUrls(raw, basePath);
 }
 
-function atomFeed(bundle: ContentBundle, articles: Article[], limit: number): string {
+/** Caractères interdits en XML 1.0 (ex. \x02 de césure collé depuis InDesign). */
+export function stripInvalidXml(text: string): string {
+  return String(text ?? '').replace(/[\u0000-\u0008\u000B\u000C\u000E-\u001F\uFFFE\uFFFF\u00AD]/g, '');
+}
+
+function xesc(text: string): string {
+  return esc(stripInvalidXml(text).replace(/[ \t\r\n]+/g, ' ').trim());
+}
+
+/** Titre d'entrée : « Média – Auteur : Titre » (auteur omis s'il manque ou s'il est le média). */
+export function feedEntryTitle(media: string, authors: string[], title: string, lang = 'fr'): string {
+  const norm = (x: string) => String(x || '').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/[^a-z0-9]+/g, ' ').trim();
+  const m = stripInvalidXml(media).replace(/\s+/g, ' ').trim();
+  let t = stripInvalidXml(title).replace(/\s+/g, ' ').trim();
+  if (m) {
+    const re = new RegExp(`^${m.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}\\s*[-–—:|·]\\s*`, 'i');
+    t = t.replace(re, '').trim() || t;
+  }
+  const masthead = /^(la |l )?(redaction|equipe( editoriale)?)$|^(the )?(editorial (team|board|staff)|staff|editors?|newsroom)$/;
+  const people = [...new Set(authors.map((a) => stripInvalidXml(a).trim()).filter((a) => a && norm(a) !== norm(m) && !masthead.test(norm(a))))];
+  const head = [m, people.join(', ')].filter(Boolean).join(' – ');
+  const colon = lang.startsWith('en') ? ': ' : '\u00A0: ';
+  return head ? `${head}${colon}${t}` : t;
+}
+
+export function atomFeed(bundle: ContentBundle, articles: Article[], limit: number): string {
   const pub = bundle.publication;
   const base = pub.siteUrl.replace(/\/+$/, '');
   const updated = articles.map((article) => article.updatedAt).sort().at(-1) ?? bundle.syncedAt;
 
-  const entries = articles
+  const seen = new Set<string>();
+  const unique = articles.filter((a) => {
+    const keys = [a.id, a.canonicalUrl, a.title.toLowerCase().replace(/\s+/g, ' ').trim()];
+    if (keys.some((k) => seen.has(k))) return false;
+    keys.forEach((k) => seen.add(k));
+    return true;
+  });
+  const entries = unique
     .slice(0, limit)
     .map((a) => {
-      const authors = a.authors
-        .map((s) => bundle.authors.find((x) => x.slug === s)?.name ?? s)
-        .map((n) => `    <author><name>${esc(n)}</name></author>`)
+      const names = a.authors.map((s) => bundle.authors.find((x) => x.slug === s)?.name ?? s);
+      const authors = (names.length ? names : [pub.name])
+        .map((n) => `    <author><name>${xesc(n)}</name></author>`)
         .join('\n');
       const leadUrl = a.lead
         ? (/^https?:\/\//.test(a.lead.src) ? a.lead.src : `${base}${a.lead.src}`)
@@ -207,20 +239,21 @@ function atomFeed(bundle: ContentBundle, articles: Article[], limit: number): st
         ? `\n    <media:content url="${esc(leadUrl)}" type="${esc(leadType)}" medium="image"/>`
         : '';
       return `  <entry>
-    <title>${esc(a.title)}</title>
+    <title>${xesc(feedEntryTitle(pub.name, names, a.title, pub.lang))}</title>
     <link href="${esc(a.canonicalUrl)}" rel="alternate" type="text/html"/>
     <id>urn:uuid:${esc(a.id)}</id>
     <updated>${esc(a.updatedAt)}</updated>
     <published>${esc(a.publishedAt ?? a.updatedAt)}</published>
 ${authors}
-    <summary type="text">${esc(a.excerpt)}</summary>${media}
+    <summary type="text">${xesc(a.excerpt)}</summary>${media}
+    <source><title>${xesc(pub.name)}</title><link href="${esc(base)}/"/></source>
   </entry>`;
     })
     .join('\n');
 
   return `<?xml version="1.0" encoding="utf-8"?>
 <feed xmlns="http://www.w3.org/2005/Atom" xmlns:media="http://search.yahoo.com/mrss/" xml:lang="${esc(pub.lang)}">
-  <title>${esc(pub.name)}</title>
+  <title>${xesc(pub.name)}</title>
   <subtitle>${esc(pub.tagline ?? pub.institution)}</subtitle>
   <link href="${esc(base)}/feed.xml" rel="self"/>
   <link href="${esc(base)}/"/>
