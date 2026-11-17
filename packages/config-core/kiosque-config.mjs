@@ -111,6 +111,9 @@ export function defauts(r = {}) {
     solitaire: true,
     users: '',
     authBaseUrl: '',
+    langue: 'fr-CA',
+    hebergement: 'pages',
+    quiPublie: '',
   };
 }
 
@@ -176,6 +179,8 @@ export function completer(r = {}) {
   if (!r.logoAlt) out.logoAlt = out.name;
   out.accent = normalizeHex(out.accent, '#6c2163');
   out.accentDark = normalizeHex(r.accentDark, couleurSombre(out.accent));
+  out.langue = out.langue === 'en-CA' ? 'en-CA' : 'fr-CA';
+  out.hebergement = out.hebergement === 'serveur' ? 'serveur' : 'pages';
   return out;
 }
 
@@ -201,7 +206,8 @@ export function publicationYml(c, { categories = [] } = {}) {
     `institution: ${yaml(c.institution)}`,
     `institutionType: ${yaml(c.institutionType)}`,
     `region: ${yaml(c.region)}`,
-    'lang: fr-CA',
+    `lang: ${yaml(c.langue || 'fr-CA')}`,
+    ...(c.quiPublie ? [`# Qui publie : ${yaml(c.quiPublie)}`] : []),
     `siteUrl: ${yaml(c.siteUrl)}`,
     `timeZone: ${yaml(c.timeZone)}`,
     'theme:',
@@ -275,6 +281,7 @@ export function kiosqueConfigTs(c) {
     "import type { KiosqueConfig } from './packages/pipeline/src/config.ts';",
     '',
     'const config: Partial<KiosqueConfig> = {',
+    `  // Hébergement : ${c.hebergement === 'serveur' ? 'leur serveur, pour le site entier' : 'pages seules'}. L'adaptateur reste markdown.`,
     "  source: { adapter: 'markdown', options: { root: new URL('.', import.meta.url).pathname } },",
     "  editorial: { mode: 'git-sveltia' },",
     '  deploy: {',
@@ -329,7 +336,9 @@ export function exporter(c) {
     journal: {
       nom: c.name, slug: c.slug, signature: c.tagline, etablissement: c.institution,
       typeEtablissement: c.institutionType, region: c.region, fondation: c.founded,
-      adresse: c.siteUrl, fuseau: c.timeZone, langue: 'fr-CA',
+      adresse: c.siteUrl, fuseau: c.timeZone, langue: c.langue || 'fr-CA',
+      hebergement: c.hebergement === 'serveur' ? 'serveur' : 'pages',
+      quiPublie: c.quiPublie || '',
     },
     apparence: { couleur: c.accent, couleurSombre: c.accentDark, typographie: c.typography, logo: c.logo?.src || null, logoAlt: c.logoAlt },
     sections: lireSections(c.sections).map(({ name, slug, description, order }) => ({ nom: name, slug, description, ordre: order })),
@@ -348,12 +357,82 @@ export function importer(json) {
   return completer({
     name: j.nom, slug: j.slug, tagline: j.signature, institution: j.etablissement,
     institutionType: j.typeEtablissement, region: j.region, founded: j.fondation,
-    siteUrl: j.adresse, timeZone: j.fuseau,
+    siteUrl: j.adresse, timeZone: j.fuseau, langue: j.langue, hebergement: j.hebergement, quiPublie: j.quiPublie,
     accent: a.couleur, accentDark: a.couleurSombre, typography: a.typographie, logoAlt: a.logoAlt,
     logo: a.logo ? { kind: 'image', src: a.logo, alt: a.logoAlt || j.nom } : null,
     sections: (d.sections || []).map((s) => [s.nom, s.slug, s.description || ''].join(' | ')).join('\n'),
     radioEnabled: o.radio, station: o.station, weatherEnabled: o.meteo, weatherLocalities: o.localites,
   });
+}
+
+const NOTE_ANNEES = 'Les années plus anciennes ne sont pas dans ce fichier. Une archive antérieure est supposée les contenir. Ce programme ne peut pas le vérifier.';
+
+function u16(view, offset) { return view.getUint16(offset, true); }
+function u32(view, offset) { return view.getUint32(offset, true); }
+
+/** ZIP stocké (méthode 0). null si le fichier n'est pas lisible ou qu'un chemin sort de l'archive. */
+function lireZipStocke(octets) {
+  const data = octets instanceof Uint8Array ? octets : new Uint8Array(octets ?? []);
+  if (data.byteLength < 22) return null;
+  const view = new DataView(data.buffer, data.byteOffset, data.byteLength);
+  const files = new Map();
+  let offset = 0;
+  while (offset + 30 <= data.byteLength) {
+    if (u32(view, offset) !== 0x04034b50) break;
+    const flags = u16(view, offset + 6);
+    const method = u16(view, offset + 8);
+    const size = u32(view, offset + 18);
+    const nameLength = u16(view, offset + 26);
+    const extra = u16(view, offset + 28);
+    const nameEnd = offset + 30 + nameLength;
+    if (nameEnd + extra > data.byteLength) return null;
+    const name = new TextDecoder().decode(data.subarray(offset + 30, nameEnd));
+    if (method !== 0 || (flags & 8) !== 0) return null;
+    if (!name || name.includes('..') || name.startsWith('/') || name.includes('\\') || name.includes('\0')) return null;
+    const start = nameEnd + extra;
+    const end = start + size;
+    if (end > data.byteLength) return null;
+    files.set(name, data.slice(start, end));
+    offset = end;
+  }
+  return files.size ? files : null;
+}
+
+/**
+ * Lit le manifeste d'une archive de journal (site ou session).
+ * Ne lève pas. N'affiche pas les adresses de auth/members.json.
+ * Les pages HTML se feuillettent; la remise en place lit Markdown, JSON et médias.
+ */
+export function lireArchive(octets) {
+  const refus = { ok: false, kind: null, session: null, excludedYears: [], articles: 0, message: 'Ce fichier n’est pas une archive de journal.' };
+  try {
+    const files = lireZipStocke(octets);
+    const raw = files?.get('manifest.json');
+    if (!raw) return refus;
+    const manifest = JSON.parse(new TextDecoder().decode(raw));
+    if (!manifest || (manifest.kind !== 'site' && manifest.kind !== 'session')) return refus;
+    const articles = [...files.keys()].filter((name) => name.startsWith('content/articles/') && name.endsWith('.md')).length;
+    const lecture = 'La remise en place lit le Markdown, le JSON et les médias. Les pages HTML servent à feuilleter.';
+    const membres = files.has('auth/members.json')
+      ? ' Des adresses de membres sont dans le fichier. Elles ne sont pas affichées et restent avec le journal.'
+      : '';
+    if (manifest.kind === 'session') {
+      const session = String(manifest.session ?? '');
+      return {
+        ok: true, kind: 'session', session, excludedYears: [], articles,
+        message: `Archive de la session ${session}. Articles seulement : ${articles}. Elle ne remplace pas les autres années. ${lecture}${membres}`,
+      };
+    }
+    const excludedYears = Array.isArray(manifest.excludedYears) ? manifest.excludedYears.filter((year) => Number.isInteger(year)) : [];
+    const absentes = excludedYears.length ? excludedYears.join(', ') : 'aucune';
+    const note = typeof manifest.note === 'string' && manifest.note.trim() ? manifest.note.trim() : NOTE_ANNEES;
+    return {
+      ok: true, kind: 'site', session: null, excludedYears, articles,
+      message: `Archive du site. Années absentes : ${absentes}. ${note} Articles en Markdown : ${articles}. ${lecture}${membres}`,
+    };
+  } catch {
+    return refus;
+  }
 }
 
 /**

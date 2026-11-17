@@ -19,6 +19,12 @@ const REGISTRY: Record<string, Loader> = {
     return new MarkdownSource() as unknown as ContentSource<never>;
   },
 
+  // Éteint dans le gabarit. sync le charge seulement si kiosque.config.ts le demande.
+  socle: async () => {
+    const { SocleSource } = await import('../../adapters/socle/src/index.ts');
+    return new SocleSource() as unknown as ContentSource<never>;
+  },
+
   // ── Jalon 4 : décommenter une fois l'adaptateur conforme au testkit ──
   // wordpress: async () => {
   //   const { WordPressSource } = await import('../../adapters/wordpress/src/index.ts');

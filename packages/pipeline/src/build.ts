@@ -43,6 +43,7 @@ import {
 } from '../../theme-radar/src/templates.ts';
 import { adminPage, unavailableExternalAdminPage } from '../../theme-radar/src/admin.ts';
 import { localAdminPage } from '../../theme-radar/src/local-admin.ts';
+import { updatePage } from '../../theme-radar/src/update-page.ts';
 import { renderCmsConfig } from './cms-config.ts';
 import { sanitizeHtml } from './sanitize.ts';
 import { normalizeBasePath, type KiosqueConfig } from './config.ts';
@@ -537,6 +538,17 @@ export async function build(options: BuildOptions): Promise<BuildResult> {
       config.editorial?.externalBackend ?? 'PocketBase',
     ), 'utf8');
   }
+  const kiosquePackage = JSON.parse(await readFile(new URL('../../../package.json', import.meta.url), 'utf8')) as { version: string };
+  await mkdir(path.join(outDir, 'admin', 'mise-a-jour'), { recursive: true });
+  await writeFile(path.join(outDir, 'admin', 'mise-a-jour', 'index.html'), updatePage({
+    lang: bundle.publication.lang,
+    publicationName: bundle.publication.name,
+    backHref: `${basePath}/admin/`,
+    lines: [
+      { id: 'socle', title: 'Socle', installed: '1.0.0', offered: null, notes: '' },
+      { id: 'kiosque', title: 'Kiosque', installed: kiosquePackage.version, offered: null, notes: '' },
+    ],
+  }), 'utf8');
   pages++;
 
   // Fichiers statiques du thème et médias du miroir. `admin/` est exclu : il a

@@ -65,6 +65,7 @@ export function adminPage(options: AdminPageOptions): string {
   <h1>Rédaction de ${esc(options.publicationName)}</h1>
   <div class="barre" aria-hidden="true"></div>
   <p id="message">Chargement de l’interface d’édition…</p>
+  <p><a href="${basePath}/admin/mise-a-jour/">Mise à jour</a></p>
 </div>
 
 <script src="${basePath}/admin/sveltia-cms.js"></script>

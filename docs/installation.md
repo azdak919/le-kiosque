@@ -5,6 +5,12 @@ domaine, ni compte d’administration. Chaque journal reste propriétaire et
 responsable de ces ressources. L’accompagnement est bénévole, selon les
 disponibilités.
 
+Le configurateur peut noter que le journal vit sur des pages seules, ou sur
+le serveur de l’équipe pour le site entier. Kiosque n’héberge ni l’un ni
+l’autre. L’adaptateur reste Markdown tant que l’équipe ne le branche pas.
+Une mise à jour ne repose pas le questionnaire. Le guide du serveur est
+[adopter le socle](https://github.com/azdak919/le-socle/blob/main/docs/adoption.md).
+
 ## Installation rapide
 
 1. Connectez-vous à GitHub et ouvrez le dépôt `azdak919/le-kiosque`.
@@ -15,7 +21,7 @@ disponibilités.
    journal**.
 4. Remplacez toutes les valeurs marquées « exemple fictif ». N’inscrivez jamais
    de mot de passe, jeton GitHub, clé privée ou autre secret.
-5. À l’étape 11, téléchargez l’archive ZIP et ouvrez votre dépôt avec le lien
+5. À la dernière étape, téléchargez l’archive ZIP et ouvrez votre dépôt avec le lien
    `github.dev` fourni. Déposez chaque fichier au chemin indiqué.
 6. Copiez le contenu utile de `template/` à la racine du nouveau dépôt, en
    particulier `.github/workflows/`, `content/auteurs/`, `content/articles/`,
