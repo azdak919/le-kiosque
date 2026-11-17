@@ -163,7 +163,22 @@ $('clear-data').addEventListener('click', () => {
   if (!window.confirm('Effacer toutes les réponses enregistrées dans ce navigateur?')) return;
   try { localStorage.removeItem(storageKey); } catch {}
   state = { ...initial }; step = 1; accentDarkManuel = false; saved = {};
+  const restore = $('restore-zip');
+  if (restore) restore.value = '';
+  const report = $('restore-report');
+  if (report) report.textContent = '';
   fillFields(); updatePreview(); showStep();
+});
+
+$('restore-zip')?.addEventListener('change', () => {
+  const file = $('restore-zip').files?.[0];
+  const report = $('restore-report');
+  if (!file) { report.textContent = ''; return; }
+  file.arrayBuffer().then((buf) => {
+    report.textContent = K.lireArchive(new Uint8Array(buf)).message;
+  }).catch(() => {
+    report.textContent = 'Ce fichier n’est pas une archive de journal.';
+  });
 });
 
 function download(name, content, type) {
@@ -179,10 +194,18 @@ function renderFinish() {
   const files = K.fichiersKiosque(c, { categories: prefill.categories || [], tags: prefill.tags || [] });
   const sections = K.lireSections(c.sections);
   const fictif = /quorum|d[ée]monstration|exemple|nom-utilisateur/i.test([c.name, c.institution, c.siteUrl].join(' '));
+  const langue = c.langue === 'en-CA' ? 'English' : 'Français';
+  const hebergement = c.hebergement === 'serveur'
+    ? 'Leur serveur, pour le site entier. L’adaptateur reste markdown.'
+    : 'Pages seules.';
   $('review-summary').innerHTML = [
     ['Journal', `${esc(c.name)}<br>${esc(c.institution)}`],
+    ['Langue', esc(langue)],
+    ['Hébergement', esc(hebergement)],
+    ['Qui publie', esc(c.quiPublie || 'Non indiqué')],
     ['Apparence', `<span class="swatch" style="background:${esc(c.accent)}"></span> ${esc(c.accent)} · sombre ${esc(c.accentDark)}${c.logo ? ' · logo' : ''}`],
     ['Sections', esc(sections.map((s) => s.name).join(', '))],
+    ['Mise à jour', 'Le questionnaire n’est pas repris. Kiosque n’héberge rien.'],
     ['À vérifier', fictif ? '<span class="warning">Des valeurs fictives restent : remplacez-les avant de publier.</span>' : 'Rien à signaler.'],
   ].map(([t, v]) => `<article><h2>${t}</h2><p>${v}</p></article>`).join('');
   $('generated-files').innerHTML = '<p class="hint">Fichiers produits :</p>' + files.map((f) => `<article class="file-card"><header><code>${esc(f.path)}</code></header><pre><code>${esc(f.content)}</code></pre></article>`).join('');

@@ -172,10 +172,11 @@ et ne sont copiés que pour construire et tester la démonstration locale.
 ## Ce que Le Kiosque fournit — et ce qu'il ne fournit pas
 
 **Disponible aujourd’hui :** le code libre, le gabarit Markdown/Git, la vitrine,
-Le Quorum, le configurateur et la démonstration éditoriale locale, la documentation d'installation et de
-reprise, les guides de passation, la procédure de restauration et la barre
-radio facultative. Les autres backends et outils de migration restent une
-feuille de route.
+Le Quorum, le configurateur et la démonstration éditoriale locale, la page
+Mise à jour (lignes Socle et Kiosque), l’adaptateur socle éteint dans le gabarit,
+la documentation d'installation et de reprise, les guides de passation, la
+procédure de restauration et la barre radio facultative. Les autres backends
+et outils de migration restent une feuille de route.
 
 **Chaque journal demeure responsable de :** son hébergement, son domaine, ses
 comptes d'administration, ses sauvegardes, sa sécurité, ses dépenses, et la

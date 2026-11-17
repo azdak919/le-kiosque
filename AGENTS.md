@@ -67,7 +67,9 @@ Un backend qui meurt casse l'écriture, **jamais** la lecture.
 **Si tu te surprends à vouloir appeler une API depuis `build`, arrête-toi.**
 C'est le signe que l'architecture est en train d'être contournée, et avec elle
 la seule garantie qui compte. `packages/pipeline/src/build.ts` n'importe aucun
-adaptateur : c'est vérifié par un test.
+adaptateur : c'est vérifié par un test. L'adaptateur `socle` est un client HTTP
+chargé par `sync` seulement si `kiosque.config.ts` le demande. Le serveur n'est
+pas dans ce dépôt.
 
 ---
 
@@ -153,6 +155,7 @@ packages/
   adapters/
     markdown/         adaptateur de référence (le miroir EST le backend)
       frontmatter.ts  lecture YAML + écriture par INSERTION TEXTUELLE
+    socle/            client HTTP vers le-socle, éteint dans le gabarit
     wordpress/        squelette non fonctionnel (jalon 5)
   pipeline/
     sync.ts           parle au CMS · fige les id · écrit le miroir
@@ -211,7 +214,7 @@ Ils ne sont pas committés, chargés depuis un CDN ou émis dans un build Git.
 ## Ce qu'on ne fait pas
 
 - Pas de CMS propriétaire.
-- Pas d'hébergement, pas d'OAuth maison, pas de backend.
+- Pas d'hébergement fourni par Kiosque, pas d'OAuth maison, pas de serveur dans ce dépôt. L'adaptateur `socle` est un client HTTP, éteint dans le gabarit. Le serveur est le dépôt `le-socle`.
 - **Aucune modification du dépôt `le-radar`** sans demande explicite.
 - Pas de renommage des identifiants techniques internes (`@kiosque/*`,
   `kiosque.config.ts`, commande `kiosque`) : la marque publique est
@@ -245,6 +248,7 @@ on ne recrée pas de deuxième journal d’état.
 | **fait** | Impression Ctrl+P d’un article individuel | `@media print` dans `theme.css` + `body.is-article-page` : masque mât photo, radio, nav, En bref, tags et footer chrome ; garde titre, méta, photo lead (si présente) et corps. Critère : Ctrl+P sur `/articles/…` = une page lisible, pas un scrape de l’UI. |
 | **fait** | Banque photo démo + algo stock LE-RADAR | `packages/stock-photo` porte le scoring Openverse/Commons de LE-RADAR ; `tools/seed-demo-photos.mjs` élargit la banque locale ; `tools/match-article-photos.mjs` teste/applique ; admin « Suggérer » classe la banque selon le contenu. |
 | **fait** | Jalon 4 — doctor, adopt, export miroir | `kiosque doctor` (diagnostic local sans réseau), `kiosque adopt` (checklist PASSATION.md), `kiosque export` (archive portable) et `kiosque deploy-hint` (guide publication, zéro hébergement fourni). Aucun backend ni OAuth. |
+| **fait** | Adaptateur socle, éteint | `packages/adapters/socle` est chargé par `sync` seulement si la config le demande. Le gabarit et la démo restent `adapter: 'markdown'`. `build.ts` n'importe ni l'adaptateur ni `le-socle`. `admin/mise-a-jour/` a deux lignes, Socle et Kiosque. Le serveur vit dans `le-socle`. |
 | **fait** | Kit portable (clé USB / Drive) | `npm run kit` → `dist-kit/le-kiosque-kit.{zip,tar.gz}` : gabarit, plateforme, Node embarqué (Linux, macOS, Windows), site d’exemple, installateur en 5 étapes validées (`tools/kit/installer.mjs`) : SFTP/FTP/FTPS via curl ou sftp du système, dossier local, paquet Netlify/Cloudflare. Pause/reprise dans `journal/installation-kiosque.json`, jamais de mot de passe. Testé contre nginx + OpenSSH + vsftpd locaux. Reste : test sur un vrai hébergeur, Windows réel. |
 | **bloqué par produit/opérations** | Fédération LE-RADAR, API distante, stockage, rôles et DAM | Ne commencer qu’après définition des responsabilités d’authentification, d’exploitation et de stockage. |
 

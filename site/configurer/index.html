@@ -32,6 +32,7 @@
           <div class="fields">
             <label>Nom du journal <small class="ou">Tel qu’il doit apparaître en haut du site.</small><input data-key="name" autocomplete="organization" required></label>
             <label>Établissement <small class="ou">Le nom officiel du cégep, de l’université ou de l’école.</small><input data-key="institution" required></label>
+            <label>Langue <select data-key="langue"><option value="fr-CA">Français</option><option value="en-CA">English</option></select></label>
           </div>
           <details class="avance">
             <summary>Réglages avancés <small>(facultatif : signature, adresse, région…)</small></summary>
@@ -83,7 +84,15 @@
         <section class="config-step" data-step="4" hidden>
           <p class="step-count">Étape 4 sur 4</p>
           <h1>C’est prêt.</h1>
-          <p class="lede">Choisissez où votre journal vivra. Les deux fichiers viennent de la même configuration.</p>
+          <p class="lede">Choisissez où votre journal vivra. Les deux fichiers viennent de la même configuration. Une mise à jour ne repose pas ces questions.</p>
+          <div class="fields">
+            <label>Où le journal est hébergé <small class="ou">Kiosque n’héberge rien. « Leur serveur » note la réponse; l’adaptateur reste markdown.</small>
+              <select data-key="hebergement"><option value="pages">Pages seules, sans serveur</option><option value="serveur">Leur serveur, pour le site entier</option></select>
+            </label>
+            <label>Qui publie <small class="ou">Un nom ou un rôle. Pas de mot de passe, pas de jeton.</small><input data-key="quiPublie" autocomplete="off"></label>
+          </div>
+          <label class="block-label">Restaurer à partir d’une sauvegarde <small class="ou">Facultatif. Le fichier reste dans ce navigateur. Les pages HTML servent à feuilleter.</small><input id="restore-zip" type="file" accept="application/zip,.zip"></label>
+          <p id="restore-report" role="status"></p>
           <div class="finish-grid finish-grid--3">
             <article><strong>WordPress</strong><span>Extension « Le Kiosque » : Extensions → Ajouter → Téléverser, puis déposez ce fichier et cliquez « Configurer ».</span><button type="button" id="download-wp" class="primary-action">Télécharger kiosque-config.json</button></article>
             <article><strong>GitHub Pages ou kit portable</strong><span>Les fichiers du journal, à déposer dans votre dépôt ou dans le dossier <code>journal/</code> du kit.</span><button type="button" id="download-zip">Télécharger l’archive .zip</button></article>
