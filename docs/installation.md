@@ -11,7 +11,7 @@ paquet complet (site et rédaction dans un seul ZIP) sur un hébergement PHP
 l'hébergement PHP et le site sur GitHub Pages, sans terminal. Cette page couvre le reste : un journal qui vit
 **seulement dans GitHub**, en Markdown, et les réglages communs aux deux
 chemins (Pages, domaine, sauvegardes, passation). Le guide du serveur est
-[adopter le socle](https://github.com/azdak919/le-socle/blob/main/docs/adoption.md).
+[adopter Le Socle](https://github.com/azdak919/le-socle/blob/main/docs/adoption.md).
 
 ## Installation rapide (Markdown seul, sans hébergement)
 
@@ -111,18 +111,18 @@ hébergé ailleurs : hébergement PHP (voir le [guide étudiant](guide-etudiant.
 serveur Node, ou Worker Cloudflare sur D1 (ligne de commande obligatoire).
 
 1. Le configurateur l’écrit pour vous (étape « C’est prêt », « Dans le socle ») :
-   `source: { adapter: 'socle', options: { baseUrl: 'https://<adresse du socle>' } }`
+   `source: { adapter: 'socle', options: { baseUrl: 'https://<adresse de Le Socle>' } }`
    et `editorial: { mode: 'external' }` dans `kiosque.config.ts`.
-2. On écrit dans l’admin du socle (`https://<adresse du socle>/redaction/`).
+2. On écrit dans l’admin du socle (`https://<adresse de Le Socle>/admin/`).
 3. Le workflow **Publier le journal** lance `kiosque sync` : il lit les
-   articles publiés du socle (`/v1/editorial/snapshot`) et les écrit dans
+   articles publiés de Le Socle (`/v1/editorial/snapshot`) et les écrit dans
    `content/` en Markdown, chaque fichier marqué `miroir: socle`. Le dépôt
-   garde donc toujours une copie complète, lisible sans le socle.
+   garde donc toujours une copie complète, lisible sans Le Socle.
 4. `kiosque build` construit le site depuis ce miroir, comme d’habitude.
 
-Un article retiré du socle quitte le miroir à la synchronisation complète
+Un article retiré de Le Socle quitte le miroir à la synchronisation complète
 suivante ; un fichier écrit à la main dans `content/` n’est jamais retiré.
-Si le socle ne répond pas, le site reste en ligne, tel qu’il était.
+Si Le Socle ne répond pas, le site reste en ligne, tel qu’il était.
 
 ## Domaine personnalisé
 

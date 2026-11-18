@@ -31,22 +31,29 @@ un dépôt Git ? C'est le chemin B, plus bas (section B).
 
 Adresse fixe, toujours la dernière version, sans compte GitHub (nouveautés sur
 <https://github.com/azdak919/le-kiosque/releases/latest>). Décompressez
-`kiosque-journal.zip` : vous obtenez un dossier `journal/`.
+`kiosque-journal.zip` : les fichiers du journal sont à la racine du ZIP
+(`index.php`, `admin/`, `site/`, `php/`, `donnees/`, `.htaccess`…).
 
 ## 3. Le déposer chez l'hébergeur
 
 Avec le gestionnaire de fichiers de l'hébergeur (ou FTP/SFTP), envoyez le
-dossier `journal/` **tel quel** dans votre espace web, par exemple
-`public_html/journal/` (ou `www/journal/`). Gardez les fichiers cachés
-(`.htaccess`, `.user.ini`). Si le gestionnaire sait décompresser, envoyez le
-ZIP et choisissez **Extraire** : c'est plus rapide.
+**contenu** du ZIP à la racine de votre espace web, par exemple `public_html/`
+(ou `www/`). Gardez les fichiers cachés (`.htaccess`, `.user.ini`). Si une
+page d'accueil de l'hébergeur s'y trouve déjà, remplacez-la. Si le
+gestionnaire sait décompresser, envoyez le ZIP et choisissez **Extraire** :
+c'est plus rapide.
 
-Le journal sera à `https://<votre-site>/journal/`, la rédaction à
-`https://<votre-site>/journal/redaction/`.
+Le journal sera à `https://<votre-site>/`, la rédaction à
+`https://<votre-site>/admin/`.
+
+Pour l'installer dans un sous-dossier (par exemple `public_html/journal/`),
+déposez les mêmes fichiers dans ce dossier : le programme détecte le préfixe
+tout seul, sans casser les liens. L'adresse devient alors
+`https://<votre-site>/journal/`, et la rédaction `https://<votre-site>/journal/admin/`.
 
 ## 4. L'assistant d'installation
 
-Ouvrez `https://<votre-site>/journal/redaction/`. La première visite affiche
+Ouvrez `https://<votre-site>/admin/`. La première visite affiche
 **Installer le journal** :
 
 - **Le journal** : nom, établissement, organisme responsable (par exemple
@@ -123,7 +130,7 @@ La même page restaure une archive.
 **Mise à jour** (administrateur) → **Vérifier s'il y a une nouvelle
 version**. S'il y en a une, la page montre les nouveautés et le bouton
 **Mettre à jour vers la version …**. Avant d'installer, le journal garde une
-copie du programme et de la base dans `journal/donnees/mises-a-jour/` ; les
+copie du programme et de la base dans `donnees/mises-a-jour/` ; les
 articles, les photos et les comptes ne sont pas touchés. Si l'installation
 casse en route, la version d'avant est remise toute seule.
 
@@ -132,8 +139,8 @@ sauvegarde, sans perdre les articles écrits depuis.
 
 Si l'hébergeur bloque les connexions sortantes (le bouton dit alors
 « Vérification impossible »), la page donne la marche à la main : sauvegarde,
-téléchargement du dernier paquet, dossier `journal/` envoyé par-dessus
-l'ancien **sans remplacer `donnees/`**.
+téléchargement du dernier paquet, fichiers envoyés par-dessus
+les anciens **sans remplacer `donnees/`**.
 
 ## 9. Passation entre cohortes
 
@@ -147,7 +154,7 @@ l'ancien **sans remplacer `donnees/`**.
 
 | Symptôme | Cause probable |
 |---|---|
-| `/journal/redaction/` donne 404 ou 500 | `.htaccess` non envoyé, ou PHP < 8.1 sans SQLite |
+| `/admin/` donne 404 ou 500 | `.htaccess` non envoyé, ou PHP < 8.1 sans SQLite |
 | Le site dit « Journal en préparation » | l'assistant d'installation n'a pas encore été rempli |
 | « trop d'essais » à la connexion | 10 essais ratés : attendre 15 minutes |
 | « Vérification impossible » sur Mise à jour | l'hébergeur bloque les connexions sortantes : marche à la main (section 8) |
@@ -195,9 +202,9 @@ N'utilisez pas « Fork » : GitHub y coupe les Actions.
    obtenez un dossier `socle/`.
 2. Avec le gestionnaire de fichiers de l'hébergeur (ou FTP), envoyez le dossier
    `socle/` **tel quel** dans votre espace web, par exemple
-   `public_html/journal/socle/`. Gardez les fichiers cachés (`.htaccess`,
+   `public_html/socle/`. Gardez les fichiers cachés (`.htaccess`,
    `.user.ini`).
-3. Ouvrez `https://<votre-site>/journal/socle/redaction/`. La première visite
+3. Ouvrez `https://<votre-site>/socle/admin/`. La première visite
    affiche l'assistant d'installation (section 4) : remplissez au moins le nom
    et le **compte administrateur** (votre courriel et un mot de passe d'au
    moins 10 caractères). Notez-le dans le gestionnaire de mots de passe de
@@ -207,7 +214,7 @@ Ce formulaire ne s'affiche qu'une fois : ensuite, seuls les comptes existants
 se connectent. Les données (base SQLite, photos) vont dans `socle/donnees/`,
 protégé contre la lecture publique.
 
-Notez l'**adresse du socle** : `https://<votre-site>/journal/socle`.
+Notez l'**adresse de Le Socle** : `https://<votre-site>/socle`.
 
 ## B3. Configurer le journal
 
@@ -216,8 +223,8 @@ Notez l'**adresse du socle** : `https://<votre-site>/journal/socle`.
    établissement, couleurs, logo, sections, radio (facultative). Rien n'est
    prérempli : ce qui est vide reste vide.
 3. Étape **C'est prêt** :
-   - Où s'écrivent les articles : **Dans le socle — recommandé** ;
-   - Adresse du socle : celle notée à l'étape B2 ;
+   - Où s'écrivent les articles : **Dans Le Socle — recommandé** ;
+   - Adresse de Le Socle : celle notée à l'étape B2 ;
    - Dépôt GitHub : `organisation/nom-du-depot` ;
    - Adresse du site public : laissez la valeur déduite du dépôt, sauf
      domaine à vous ;
@@ -228,7 +235,7 @@ Notez l'**adresse du socle** : `https://<votre-site>/journal/socle`.
 4. La liste **À vérifier** dit ce qui manque. Quand elle affiche
    « Tout est prêt. », téléchargez :
    - **1. Fichiers du dépôt** (un ZIP) ;
-   - **2. Réglages du socle** (`kiosque-config.json`).
+   - **2. Réglages de Le Socle** (`kiosque-config.json`).
 
 Vos réponses restent dans ce navigateur : vous pouvez revenir corriger sans
 tout ressaisir.
@@ -245,7 +252,7 @@ tout ressaisir.
 
 ## B5. Régler la rédaction
 
-1. Dans l'admin du socle : **Configuration → Importer le fichier du
+1. Dans l'admin de Le Socle : **Configuration → Importer le fichier du
    configurateur** et choisissez `kiosque-config.json`. Vérifiez l'adresse du site et l'organisme responsable,
    puis **Enregistrer** (une seule fois suffit).
 2. **Auteurs → Équipe : comptes et rôles** ajoute les comptes de l'équipe
@@ -285,7 +292,7 @@ sauvegarde JSON**).
 
 ## B9. Passation entre cohortes
 
-- Deux administrateurs au moins, dans le socle et dans l'organisation GitHub.
+- Deux administrateurs au moins, dans Le Socle et dans l'organisation GitHub.
 - Téléchargez une sauvegarde chaque fin de session.
 - Remplissez `OWNERS.md` : propriétaire du dépôt, accès à l'hébergement,
   domaine et date d'expiration.
@@ -296,7 +303,7 @@ sauvegarde JSON**).
   commande**. Il faut l'outil `wrangler`, créer une base D1 et protéger
   l'admin avec Cloudflare Access (Zero Trust), car la connexion par mot de
   passe dépasse le temps de calcul du forfait gratuit. Guide :
-  [adopter le socle](https://github.com/azdak919/le-socle/blob/main/docs/adoption.md).
+  [adopter Le Socle](https://github.com/azdak919/le-socle/blob/main/docs/adoption.md).
 - **Serveur Node** (VPS, serveur du département) : même guide.
 - **Sans hébergement du tout** : le journal peut vivre seulement dans GitHub
   (articles en Markdown), voir [installation.md](installation.md). L'équipe
@@ -306,8 +313,8 @@ sauvegarde JSON**).
 
 | Symptôme | Cause probable |
 |---|---|
-| `/journal/socle/redaction/` donne 404 ou 500 | `.htaccess` non envoyé, ou PHP < 8.1 sans SQLite |
-| Le site est vide ou sans photos | adresse du socle absente de `kiosque.config.ts` (refaire l'étape B3) |
+| `/socle/admin/` donne 404 ou 500 | `.htaccess` non envoyé, ou PHP < 8.1 sans SQLite |
+| Le site est vide ou sans photos | adresse de Le Socle absente de `kiosque.config.ts` (refaire l'étape B3) |
 | Le site affiche la page d'accueil du Kiosque | Pages non activé (étape B1.3) ou workflow pas encore passé |
 | « trop d'essais » à la connexion | 10 essais ratés : attendre 15 minutes |
 | `git push` refusé | faire `git pull` d'abord (voir section B7) |
