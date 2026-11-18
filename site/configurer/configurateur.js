@@ -27,7 +27,8 @@ const initial = K.completer({
   institution: '',
   accent: pub.accent || '#6c2163',
   accentDark: pub.accentDark,
-  sections: K.SECTIONS_PROPOSEES.join('\n'),
+  // Les sections proposées restent un exemple (placeholder) : rien n'est gardé sans qu'on l'écrive.
+  sections: '',
   demoContent: false,
 });
 
@@ -66,7 +67,7 @@ function updatePreview() {
   const c = K.completer(state);
   const prev = $('live-preview');
   prev.style.setProperty('--preview-accent', c.accent);
-  $('preview-name').textContent = c.name;
+  $('preview-name').textContent = c.name || 'Nom du journal';
   $('preview-institution').textContent = state.institution || 'Établissement';
   $('preview-tagline').textContent = c.tagline || '';
   const sections = K.lireSections(state.sections);
@@ -114,7 +115,7 @@ for (const f of fields) {
   const onInput = () => {
     const k = actualKey(f.dataset.key);
     state[k] = f.type === 'checkbox' ? f.checked : f.value;
-    if (k === 'name') { if (!saved.slug) state.slug = K.slugify(state.name); state.logoAlt = state.name; }
+    if (k === 'name') showExamples();
     if (k === 'accentDark') accentDarkManuel = true;
     if (k === 'accent' && !accentDarkManuel) state.accentDark = K.couleurSombre(state.accent);
     fillFields();
@@ -125,6 +126,19 @@ for (const f of fields) {
   f.addEventListener('input', onInput);
   f.addEventListener('change', onInput);
 }
+
+// Le nom court et le texte alternatif suivent le nom en exemple pâle ; vides, ils en sont déduits.
+function showExamples() {
+  form.querySelector('[data-key="slug"]').placeholder = state.name ? K.slugify(state.name) : 'la-vigie';
+  form.querySelector('[data-key="logoAlt"]').placeholder = state.name || 'La Vigie';
+}
+$('config-sections').placeholder = K.SECTIONS_PROPOSEES.join('\n');
+$('sections-proposees').addEventListener('click', () => {
+  if (String(state.sections || '').trim() && !window.confirm('Remplacer les sections déjà écrites par les sections proposées?')) return;
+  state.sections = K.SECTIONS_PROPOSEES.join('\n');
+  fillFields(); updatePreview(); showErrors([]); save();
+});
+showExamples();
 
 const logoInput = $('config-logo');
 logoInput.addEventListener('change', () => {
