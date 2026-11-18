@@ -59,10 +59,21 @@ async function refresh() {
   document.getElementById('publication-name').textContent = bundle.publication.name;
 }
 
+const VIEWS = ['dashboard', 'articles', 'media', 'authors', 'taxonomies', 'settings', 'exports'];
+
 function setView(next) {
-  view = next;
-  document.querySelectorAll('[data-view]').forEach((button) => button.setAttribute('aria-current', button.dataset.view === view ? 'page' : 'false'));
-  render();
+  view = VIEWS.includes(next) ? next : 'dashboard';
+  document.querySelectorAll('.admin-nav [data-view]').forEach((link) => {
+    if (link.dataset.view === view) link.setAttribute('aria-current', 'page');
+    else link.removeAttribute('aria-current');
+  });
+  // L'adresse garde l'écran : un rechargement ou un lien depuis la page
+  // Mise à jour (/admin/#articles) revient au même endroit.
+  if (location.hash.slice(1) !== view) history.replaceState(null, '', view === 'dashboard' ? location.pathname : `#${view}`);
+  // Avant l'ouverture de la base, on retient seulement l'écran demandé :
+  // le rendu arrive dès que les données sont là (un clic trop tôt laissait
+  // l'admin figée sur « Ouverture du journal… »).
+  if (bundle) render();
 }
 
 function statusLabel(status) {
@@ -529,7 +540,13 @@ function render() {
   }
 }
 
-document.querySelectorAll('[data-view]').forEach((button) => button.addEventListener('click', () => setView(button.dataset.view)));
+document.querySelectorAll('.admin-nav [data-view]').forEach((link) => link.addEventListener('click', (event) => {
+  event.preventDefault();
+  setView(link.dataset.view);
+  main.focus({ preventScroll: true });
+}));
+window.addEventListener('hashchange', () => setView(location.hash.slice(1)));
+setView(location.hash.slice(1));
 
 try {
   backend = await getBackend();
