@@ -5,13 +5,14 @@ domaine, ni compte d’administration. Chaque journal reste propriétaire et
 responsable de ces ressources. L’accompagnement est bénévole, selon les
 disponibilités.
 
-Le configurateur peut noter que le journal vit sur des pages seules, ou sur
-le serveur de l’équipe pour le site entier. Kiosque n’héberge ni l’un ni
-l’autre. L’adaptateur reste Markdown tant que l’équipe ne le branche pas.
-Une mise à jour ne repose pas le questionnaire. Le guide du serveur est
+**Le chemin recommandé est le [guide étudiant](guide-etudiant.md)** : rédaction
+sur un hébergement PHP (serveur du cégep ou hébergeur mutualisé), site sur
+GitHub Pages, sans terminal. Cette page couvre le reste : un journal qui vit
+**seulement dans GitHub**, en Markdown, et les réglages communs aux deux
+chemins (Pages, domaine, sauvegardes, passation). Le guide du serveur est
 [adopter le socle](https://github.com/azdak919/le-socle/blob/main/docs/adoption.md).
 
-## Installation rapide
+## Installation rapide (Markdown seul, sans hébergement)
 
 1. Connectez-vous à GitHub et ouvrez le dépôt `azdak919/le-kiosque`.
 2. Choisissez **Use this template**, puis **Create a new repository**. Cette
@@ -21,12 +22,12 @@ Une mise à jour ne repose pas le questionnaire. Le guide du serveur est
    journal**.
 4. Remplacez toutes les valeurs marquées « exemple fictif ». N’inscrivez jamais
    de mot de passe, jeton GitHub, clé privée ou autre secret.
-5. À la dernière étape, téléchargez l’archive ZIP et ouvrez votre dépôt avec le lien
-   `github.dev` fourni. Déposez chaque fichier au chemin indiqué.
-6. Copiez le contenu utile de `template/` à la racine du nouveau dépôt, en
-   particulier `.github/workflows/`, `content/auteurs/`, `content/articles/`,
-   `media/` et les fichiers de passation. Les fichiers produits par le
-   configurateur remplacent les exemples de même nom.
+5. À l’étape « C’est prêt », choisissez **Dans GitHub, en fichiers Markdown**. À la
+   dernière étape, téléchargez **Fichiers du dépôt**, puis, dans votre dépôt,
+   **Add file → Upload files** : glissez le contenu du ZIP décompressé.
+6. Pour partir des exemples, copiez aussi `template/content/auteurs/`,
+   `template/content/articles/` et `template/media/` à la racine ; sinon
+   ajoutez votre premier article avec `AJOUTER-UN-ARTICLE.md`.
 7. Enregistrez les changements dans GitHub.
 
 Le configurateur peut d’abord ouvrir le **mode démonstration local** à
@@ -105,11 +106,12 @@ LE-RADAR les acceptera. Aucun changement du dépôt LE-RADAR n’est requis.
 
 Le site peut rester sur GitHub Pages pendant que la rédaction vit dans un
 [socle](https://github.com/azdak919/le-socle/blob/main/docs/adoption.md)
-hébergé ailleurs (serveur Node, hébergement PHP, ou Worker Cloudflare sur D1).
+hébergé ailleurs : hébergement PHP (voir le [guide étudiant](guide-etudiant.md)),
+serveur Node, ou Worker Cloudflare sur D1 (ligne de commande obligatoire).
 
-1. Dans `kiosque.config.ts`, la source devient
+1. Le configurateur l’écrit pour vous (étape « C’est prêt », « Dans le socle ») :
    `source: { adapter: 'socle', options: { baseUrl: 'https://<adresse du socle>' } }`
-   et `editorial: { mode: 'external' }`.
+   et `editorial: { mode: 'external' }` dans `kiosque.config.ts`.
 2. On écrit dans l’admin du socle (`https://<adresse du socle>/redaction/`).
 3. Le workflow **Publier le journal** lance `kiosque sync` : il lit les
    articles publiés du socle (`/v1/editorial/snapshot`) et les écrit dans
