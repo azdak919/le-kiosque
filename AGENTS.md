@@ -37,7 +37,7 @@ checks CI verts (`test`) → **merge + delete branch**.
 
 ## Le projet en trois phrases
 
-**LE KIOSQUE** est un socle libre pour les journaux étudiants. Il existe parce
+**LE KIOSQUE** est une plateforme libre pour les journaux étudiants. Il existe parce
 qu'un journal étudiant meurt rarement par manque de talent : il meurt quand le
 domaine expire, que le compte d'administration appartient à quelqu'un qui a
 gradué, et que dix ans d'archives partent avec.

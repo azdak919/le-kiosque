@@ -2,7 +2,7 @@
   "name": "kiosque",
   "version": "0.2.1",
   "private": true,
-  "description": "Le Kiosque — socle libre pour les journaux étudiants",
+  "description": "Le Kiosque — plateforme libre pour les journaux étudiants",
   "license": "GPL-2.0-only",
   "type": "module",
   "bin": {
