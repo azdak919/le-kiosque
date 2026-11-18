@@ -239,15 +239,18 @@ function join(parts) {
   let o = 0; for (const p of parts) { out.set(p, o); o += p.length; }
   return out;
 }
+// 1er janvier 1980 : la date zéro d'un ZIP n'existe pas (mois 0) et inquiète certains outils.
+const DOS_DATE = (1 << 5) | 1;
+
 function zipStore(files) {
   const enc = new TextEncoder();
   const local = [], central = [];
   let offset = 0;
   for (const f of files) {
     const name = enc.encode(f.path), data = f.bytes || enc.encode(f.content), sum = crc32(data);
-    const h = new Uint8Array([80, 75, 3, 4, ...word(20), ...word(0x800), ...word(0), ...word(0), ...word(0), ...dword(sum), ...dword(data.length), ...dword(data.length), ...word(name.length), ...word(0)]);
+    const h = new Uint8Array([80, 75, 3, 4, ...word(20), ...word(0x800), ...word(0), ...word(0), ...word(DOS_DATE), ...dword(sum), ...dword(data.length), ...dword(data.length), ...word(name.length), ...word(0)]);
     local.push(h, name, data);
-    central.push(new Uint8Array([80, 75, 1, 2, ...word(20), ...word(20), ...word(0x800), ...word(0), ...word(0), ...word(0), ...dword(sum), ...dword(data.length), ...dword(data.length), ...word(name.length), ...word(0), ...word(0), ...word(0), ...word(0), ...dword(0), ...dword(offset)]), name);
+    central.push(new Uint8Array([80, 75, 1, 2, ...word(20), ...word(20), ...word(0x800), ...word(0), ...word(0), ...word(DOS_DATE), ...dword(sum), ...dword(data.length), ...dword(data.length), ...word(name.length), ...word(0), ...word(0), ...word(0), ...word(0), ...dword(0), ...dword(offset)]), name);
     offset += h.length + name.length + data.length;
   }
   const L = join(local), C = join(central);
