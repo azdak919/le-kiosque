@@ -29,5 +29,7 @@ test('notes du paquet : versions et deux parties pour la page Mise à jour', () 
   assert.match(notes, /## Site Web du journal \(Kiosque 0\.2\.2\)\n- Version 0\.2\.2/);
   assert.match(notes, /## Espace de rédaction \(socle 1\.2\.3\)\n- Restauration en deux temps\./);
   assert.match(notes, /https:\/\/github\.com\/a\/b\/releases\/latest\/download\/kiosque-journal\.zip/);
+  assert.match(notes, /https:\/\/votre-journal\.com\/redaction\//);
+  assert.doesNotMatch(notes, /public_html\/journal\//);
   assert.match(notesPaquet({ kiosque: '0.2.2', socle: '1.2.3', kiosqueLog: '', socleLog: '', depot: 'a/b' }), /Corrections sans changement visible/);
 });
