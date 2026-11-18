@@ -232,9 +232,9 @@ function depot(c) {
 export function publicationYml(c, { categories = [] } = {}) {
   const repo = depot(c);
   const users = lireUtilisateurs(c.users);
-  const contact = c.contact || users.find((u) => u.email)?.email || 'redaction@journal-exemple.invalid';
+  const contact = c.contact || users.find((u) => u.email)?.email || '';
+  // Seulement de vraies adresses : un contact inventé ferait croire que la relève est assurée.
   const releve = users.filter((u) => u.email).slice(0, 2).map((u) => u.email);
-  while (releve.length < 2) releve.push(`releve-${releve.length + 1}@journal-exemple.invalid`);
   const localites = String(c.weatherLocalities || '').split(',').map((s) => s.trim()).filter(Boolean).slice(0, 4);
   return [
     '# Valeurs produites par le configurateur KIOSQUE (packages/config-core).',
@@ -272,13 +272,11 @@ export function publicationYml(c, { categories = [] } = {}) {
     `founded: ${yaml(c.founded)}`,
     'license: CC-BY-SA-4.0',
     'governance:',
-    `  owner: ${yaml(repo.owner)}`,
+    `  owner: ${yaml(c.repository ? repo.owner : "")}`,
     `  stewardEntity: ${yaml(c.institution)}`,
     `  contact: ${yaml(contact)}`,
     `  repo: ${yaml(c.repository ? `https://github.com/${repo.owner}/${repo.repo}` : '')}`,
-    '  recoveryContacts:',
-    `    - ${yaml(releve[0])}`,
-    `    - ${yaml(releve[1])}`,
+    ...(releve.length ? ['  recoveryContacts:', ...releve.map((r) => `    - ${yaml(r)}`)] : ['  recoveryContacts: []']),
     '',
   ].join('\n');
 }
