@@ -204,3 +204,32 @@ test('la page Mise à jour garde la coquille de l’admin et y ramène', async (
   await expect(page).toHaveURL(/\/admin\/#articles$/);
   await expect(page.getByRole('heading', { name: 'Articles', level: 2 })).toBeVisible({ timeout: 60_000 });
 });
+
+test('l’éditeur programme et archive un article', async ({ page }) => {
+  test.setTimeout(120_000);
+  await page.goto('/autre-nom/admin/#articles');
+  await expect(page.getByRole('heading', { name: 'Articles', level: 2 })).toBeVisible({ timeout: 60_000 });
+  await page.getByRole('button', { name: 'Nouvel article' }).click();
+  await page.getByLabel('Titre').fill('Article programmé');
+  await page.getByLabel('Identifiant URL').fill('article-programme');
+  await page.getByLabel('Résumé').fill('Sortira demain.');
+  await page.locator('input[name="authors"]').first().check();
+  await expect(page.locator('[data-scheduled-field]')).toBeHidden();
+  await page.getByLabel('Statut').selectOption('scheduled');
+  await expect(page.locator('[data-scheduled-field]')).toBeVisible();
+  // Une heure passée est refusée.
+  await page.getByLabel('Programmer pour').fill('2020-01-01T08:00');
+  await page.getByRole('button', { name: 'Enregistrer', exact: true }).click();
+  await expect(page.locator('#toast')).toContainText('déjà passée');
+  const demain = new Date(Date.now() + 24 * 3600_000);
+  const local = new Date(demain.getTime() - demain.getTimezoneOffset() * 60_000).toISOString().slice(0, 16);
+  await page.getByLabel('Programmer pour').fill(local);
+  await page.getByRole('button', { name: 'Enregistrer', exact: true }).click();
+  const row = page.locator('.entity-list li', { hasText: 'Article programmé' });
+  await expect(row).toContainText('Programmé');
+  await row.getByRole('button', { name: 'Modifier' }).click();
+  await expect(page.getByLabel('Statut')).toHaveValue('scheduled');
+  await page.getByLabel('Statut').selectOption('archived');
+  await page.getByRole('button', { name: 'Enregistrer', exact: true }).click();
+  await expect(page.locator('.entity-list li', { hasText: 'Article programmé' })).toContainText('Archivé');
+});
