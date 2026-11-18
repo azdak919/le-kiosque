@@ -523,6 +523,9 @@ export class MarkdownSource implements ContentSource<MarkdownConfig> {
           })()
         : undefined,
       founded: str(raw.founded),
+      social: raw.social && typeof raw.social === 'object'
+        ? Object.fromEntries(Object.entries(raw.social as Record<string, unknown>).map(([key, value]) => [key, str(value)]).filter(([, value]) => value))
+        : undefined,
       governance: {
         owner: str(governance.owner) ?? '',
         stewardEntity: str(governance.stewardEntity),

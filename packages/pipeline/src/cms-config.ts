@@ -17,6 +17,7 @@
 
 import { stringify } from 'yaml';
 
+import { SOCIAL_NETWORKS } from '../../theme-radar/src/social.js';
 import { CMS_STATUSES, type ContentBundle, type Publication } from '../../core/src/model.ts';
 import { normalizeBasePath, type KiosqueConfig } from './config.ts';
 
@@ -221,6 +222,10 @@ export function buildCmsConfig(options: CmsConfigOptions): Record<string, unknow
             ] },
             { name: 'founded', label: 'Année de fondation', widget: 'string', required: false },
             { name: 'license', label: 'Licence', widget: 'string', required: false },
+            { name: 'social', label: 'Réseaux sociaux', widget: 'object', required: false, collapsed: true, hint: 'Adresse complète de chaque page ; un réseau laissé vide n’est pas affiché.', fields: SOCIAL_NETWORKS.map((network) => ({
+              name: network.id, label: network.name, widget: 'string', required: false, hint: `Exemple : ${network.example}`,
+              ...(network.pattern ? { pattern: [`^${network.pattern}$`, network.error] } : {}),
+            })) },
             { name: 'governance', label: 'Gouvernance', widget: 'object', fields: [
               { name: 'owner', label: 'Organisation propriétaire', widget: 'string' },
               { name: 'stewardEntity', label: 'Entité permanente', widget: 'string', required: false },
