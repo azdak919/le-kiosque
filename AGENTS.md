@@ -20,8 +20,8 @@ ou `VisualCode/GIT-AND-TEST-SAFETY.md`.
 **Interdit** : commit/push non testé sur `main`.  
 **Obligatoire** : branche `fix|feat|chore/...` → tests locaux verts → push → **PR** →
 checks CI verts (`test`) → **merge + delete branch**.  
-**Push ≠ livré** : avertir l’humain avec  
-`gh pr merge <N> --merge --delete-branch` si la clôture n’est pas encore faite.  
+**Fusion en local** : `git merge --no-ff` (ou squash local) signé `Azdak <azdak-qc@proton.me>` avec `Signed-off-by`, simple push de `main` (jamais de force push), puis suppression de la branche. Pas de fusion sur le site de GitHub : elle remplacerait l’auteur.  
+**Push ≠ livré** : avertir l’humain si la clôture n’est pas encore faite.  
 **LE-RADAR UI/CSS** : `npm run check` + Playwright (au minimum mât/smoke) avant push.
 **Worktree** : ne jamais versionner `node_modules`, même comme lien vers un autre clone. Relire `git status` avant `git add -A`.
 
