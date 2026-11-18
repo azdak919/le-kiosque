@@ -12,6 +12,7 @@ permissions:
   actions: read
 jobs:
   veille:
+    if: github.repository == 'azdak919/le-kiosque'
     runs-on: ubuntu-24.04
     steps:
       - uses: actions/checkout@v7

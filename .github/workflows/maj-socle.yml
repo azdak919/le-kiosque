@@ -1,11 +1,14 @@
 # Mise à jour du socle (l'admin de rédaction et son serveur).
 #
 # Le socle est épinglé sur un commit précis dans package.json. Ce workflow
-# propose le dernier commit du socle sous forme de PULL REQUEST :
-#   - la fusionner applique la mise à jour (un clic) ;
-#   - avant, il écrit la sauvegarde sauvegardes/socle-<avant>-vers-<après>.json ;
-#   - revenir : bouton « Revert » de la PR, ou relancer ce workflow avec le
-#     commit d'avant (noté dans la sauvegarde et dans la PR).
+# prépare la nouvelle version sur une branche, puis la propose :
+#   - si GitHub permet aux workflows d'ouvrir une pull request, elle s'ouvre ;
+#   - sinon (réglage par défaut de GitHub), une issue « Mise à jour du socle
+#     disponible » donne le lien : un clic sur « Create pull request », puis
+#     « Merge » applique la mise à jour.
+# Avant, il écrit la sauvegarde sauvegardes/socle-<avant>-vers-<après>.json.
+# Revenir : bouton « Revert » de la pull request, ou relancer ce workflow avec
+# le commit d'avant (noté dans la sauvegarde).
 # Votre contenu (content/, media/, theme/tokens.css, kiosque.config.ts) n'est
 # jamais touché. Rien n'est poussé de force.
 
@@ -24,9 +27,11 @@ on:
 permissions:
   contents: write
   pull-requests: write
+  issues: write
 
 jobs:
   proposer:
+    if: github.repository != 'azdak919/le-kiosque'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -52,10 +57,11 @@ jobs:
       - name: Vérifier que le journal se construit
         if: steps.maj.outputs.change == 'true'
         run: npm run kiosque -- build
-      - name: Ouvrir la pull request
+      - name: Proposer la mise à jour
         if: steps.maj.outputs.change == 'true'
         env:
           GH_TOKEN: ${{ github.token }}
+          REPO: ${{ github.repository }}
           CIBLE: ${{ steps.cible.outputs.commit }}
           AVANT: ${{ steps.maj.outputs.from }}
           SAUVEGARDE: ${{ steps.maj.outputs.backup }}
@@ -69,13 +75,13 @@ jobs:
           git add package.json package-lock.json "$SAUVEGARDE"
           git commit -m "Socle : ${AVANT:0:7} → ${CIBLE:0:7}"
           git push origin "$branche"
-          gh pr create --base main --head "$branche" \
-            --title "Mise à jour du socle (${CIBLE:0:7})" \
-            --body "Nouvelle version du socle (l'admin de rédaction).
-
-          - Avant : \`${AVANT}\`
-          - Après : \`${CIBLE}\`
-          - Sauvegarde : \`${SAUVEGARDE}\`
-
-          **Appliquer** : fusionner cette PR. **Revenir** : bouton « Revert », ou relancer « Mise à jour du socle » avec le commit d'avant.
-          Votre contenu n'est pas touché."
+          printf '%s\n' \
+            "Nouvelle version du socle (l'admin de rédaction)." \
+            "" \
+            "- Avant : \`${AVANT}\`" \
+            "- Après : \`${CIBLE}\`" \
+            "- Sauvegarde : \`${SAUVEGARDE}\`" \
+            "" \
+            "**Appliquer** : fusionner. **Revenir** : bouton « Revert », ou relancer « Mise à jour du socle » avec le commit d'avant." \
+            "Votre contenu n'est pas touché." > corps.md
+          bash tools/proposer-maj.sh "$branche" "Mise à jour du socle (${CIBLE:0:7})" corps.md

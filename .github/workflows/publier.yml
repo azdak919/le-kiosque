@@ -29,8 +29,12 @@ concurrency:
   group: publication
   cancel-in-progress: false
 
+# Ce fichier vit à la racine du dépôt du Kiosque, mais ne tourne que dans un
+# journal créé avec « Use this template » : le dépôt amont publie sa vitrine
+# par « Vérification », un journal ne publie que lui-même.
 jobs:
   publier:
+    if: github.repository != 'azdak919/le-kiosque'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -77,6 +81,7 @@ jobs:
           path: dist
 
   deployer:
+    if: github.repository != 'azdak919/le-kiosque'
     needs: publier
     runs-on: ubuntu-latest
     environment:

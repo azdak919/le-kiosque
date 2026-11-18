@@ -239,7 +239,25 @@ test('le build démo écrit la page Mise à jour et l’admin y mène', async (t
 });
 
 test('la mise à jour de plateforme du gabarit vise le vrai dépôt amont', async () => {
-  const workflow = await readFile(path.join(ROOT, 'template/.github/workflows/maj-plateforme.yml'), 'utf8');
+  const workflow = await readFile(path.join(ROOT, '.github/workflows/maj-plateforme.yml'), 'utf8');
   assert.match(workflow, /https:\/\/github\.com\/azdak919\/le-kiosque\.git/);
   assert.doesNotMatch(workflow, /github\.com\/kiosque\/kiosque/);
+});
+
+test('un journal créé depuis le gabarit ne publie que lui-même', async () => {
+  const dir = path.join(ROOT, '.github/workflows');
+  const amont = ['verification.yml', 'veille.yml', 'dependabot-automerge.yml'];
+  const journal = ['publier.yml', 'maj-socle.yml', 'maj-plateforme.yml'];
+  for (const name of amont) {
+    const wf = await readFile(path.join(dir, name), 'utf8');
+    assert.match(wf, /github\.repository == 'azdak919\/le-kiosque'/, `${name} ne tourne que dans le dépôt amont`);
+  }
+  for (const name of journal) {
+    const wf = await readFile(path.join(dir, name), 'utf8');
+    assert.match(wf, /github\.repository != 'azdak919\/le-kiosque'/, `${name} ne tourne que dans un journal`);
+    assert.doesNotMatch(wf, /--force/, `${name} ne pousse jamais de force`);
+  }
+  const plateforme = await readFile(path.join(dir, 'maj-plateforme.yml'), 'utf8');
+  assert.doesNotMatch(plateforme, /git merge upstream/, 'un dépôt « Use this template » ne partage pas d’historique avec l’amont');
+  assert.match(plateforme, /maj-plateforme\.sh/);
 });

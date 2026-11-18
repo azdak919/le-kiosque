@@ -14,7 +14,7 @@ concurrency:
   cancel-in-progress: false
 jobs:
   fusion:
-    if: github.event.workflow_run.conclusion == 'success' && github.event.workflow_run.actor.login == 'dependabot[bot]'
+    if: github.repository == 'azdak919/le-kiosque' && github.event.workflow_run.conclusion == 'success' && github.event.workflow_run.actor.login == 'dependabot[bot]'
     runs-on: ubuntu-24.04
     steps:
       - name: Fusionner si mineure ou corrective
