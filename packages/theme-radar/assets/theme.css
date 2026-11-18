@@ -579,7 +579,7 @@ body.with-radio .nav {
 .news-list { margin-top: 4px; }
 
 /* Les cartes de liste vivent exclusivement dans source-view.css : même
-   contrat LE-RADAR pour le build statique et le navigateur PGlite. */
+   contrat LE-RADAR pour le build statique et le démo navigateur. */
 
 /* ─────────────── PAGE D'ARTICLE ─────────────── */
 

@@ -1,5 +1,5 @@
 /**
- * Fraîcheur scores (focus-group B) — miroir de src/sports-freshness.ts pour la démo PGlite.
+ * Fraîcheur scores (focus-group B) — miroir de src/sports-freshness.ts pour la démo navigateur.
  */
 
 function parseGameDay(gameOrDate) {

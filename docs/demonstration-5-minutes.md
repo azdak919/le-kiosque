@@ -4,7 +4,7 @@
 
 1. Activez GitHub Pages sur le dépôt et vérifiez que le workflow Pages est vert.
 2. Ouvrez dans trois onglets la vitrine, `/demo/` et `/configurer/`. Le premier
-   chargement PGlite télécharge environ 17 Mio de ressources locales.
+   chargement de l’admin télécharge la base sql.js, moins de 1 Mio.
 3. Gardez la page GitHub du dépôt ouverte sur le bouton **Use this template**.
 
 ## 0:00 — Le problème

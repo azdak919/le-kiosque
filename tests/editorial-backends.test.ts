@@ -39,8 +39,8 @@ test('PocketBase est un point d’extension explicite, sans connexion distante',
   await assert.rejects(() => backend.init({ basePath: '', publicationSlug: 'test' }), /option future/);
 });
 
-test('le build PGlite est autonome et le build Git/Sveltia en est exempt', async (t) => {
-  const demoOut = await mkdtemp(path.join(os.tmpdir(), 'kiosque-pglite-'));
+test('le build de la démo (sql.js) est autonome, sans PGlite, et le build Git/Sveltia en est exempt', async (t) => {
+  const demoOut = await mkdtemp(path.join(os.tmpdir(), 'kiosque-demo-'));
   const gitOut = await mkdtemp(path.join(os.tmpdir(), 'kiosque-git-'));
   t.after(() => Promise.all([rm(demoOut, { recursive: true, force: true }), rm(gitOut, { recursive: true, force: true })]));
   const bundle = await demoBundle();
@@ -50,8 +50,9 @@ test('le build PGlite est autonome et le build Git/Sveltia en est exempt', async
   const home = await readFile(path.join(demoOut, 'index.html'), 'utf8');
   assert.match(admin, /Mode démonstration local/);
   assert.match(home, /KIOSQUE_EDITORIAL/);
-  assert.ok((await stat(path.join(demoOut, 'assets/editorial/pglite/pglite.wasm'))).size > 1_000_000);
-  assert.ok((await stat(path.join(demoOut, 'assets/editorial/pglite/pglite.data'))).size > 1_000_000);
+  assert.ok((await stat(path.join(demoOut, 'assets/editorial/sql-wasm.wasm'))).size > 500_000);
+  assert.ok((await stat(path.join(demoOut, 'assets/editorial/sql-wasm.js'))).size > 10_000);
+  await assert.rejects(() => stat(path.join(demoOut, 'assets/editorial/pglite')), 'PGlite est retiré');
   assert.doesNotMatch(admin + home, /cdn\.jsdelivr|unpkg\.com|fonts\.googleapis/);
 
   await build({ config: { root: DEMO, source: { adapter: 'markdown' }, editorial: { mode: 'git-sveltia' } }, bundle, outDir: gitOut, logger: silent });
@@ -59,5 +60,5 @@ test('le build PGlite est autonome et le build Git/Sveltia en est exempt', async
   await assert.rejects(() => stat(path.join(gitOut, 'media/demo-library')));
   const gitAdmin = await readFile(path.join(gitOut, 'admin/index.html'), 'utf8');
   assert.match(gitAdmin, /sveltia-cms\.js/);
-  assert.doesNotMatch(gitAdmin, /PGlite|demo-pglite/);
+  assert.doesNotMatch(gitAdmin, /PGlite|demo-pglite|sql-wasm|demo-navigateur/);
 });

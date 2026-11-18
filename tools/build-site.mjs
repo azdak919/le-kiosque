@@ -166,7 +166,7 @@ await writeFile(path.join(outDir, 'admin', 'mise-a-jour', 'index.html'), updateP
 await writeFile(path.join(outDir, 'demo', 'admin', 'mise-a-jour', 'index.html'), `<!doctype html><html lang="fr"><head><meta charset="utf-8"><meta name="robots" content="noindex"><meta http-equiv="refresh" content="0;url=${withBase(basePath, '/admin/mise-a-jour/')}"><link rel="canonical" href="${withBase(basePath, '/admin/mise-a-jour/')}"><title>Page déplacée</title></head><body><p><a href="${withBase(basePath, '/admin/mise-a-jour/')}">Ouvrir la page Mise à jour</a></p></body></html>`, 'utf8');
 
 // GitHub Pages sert ce fichier pour une URL créée après le build. Le front
-// PGlite remplace ce 404 seulement si la route appartient au journal.
+// La démo remplace ce 404 seulement si la route appartient au journal.
 const demoFallback = await readFile(path.join(outDir, 'demo', 'index.html'), 'utf8');
 await writeFile(path.join(outDir, '404.html'), demoFallback.replace(/<main id="contenu">[\s\S]*?<\/main>/, '<main id="contenu"><div class="wrap wire"><h1>Page introuvable</h1><p>Cette adresse ne correspond à aucune page du journal.</p></div></main>'), 'utf8');
 

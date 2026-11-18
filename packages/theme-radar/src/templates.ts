@@ -40,7 +40,7 @@ export interface RenderContext {
   demoNotice?: string;
   /** Année de génération, pour le pied de page. */
   buildYear: number;
-  /** Active uniquement pour la démonstration éditoriale PGlite. */
+  /** Active uniquement pour la démonstration éditoriale navigateur. */
   editorial?: {
     mode: 'demo-local';
     assetsBase: string;
@@ -697,7 +697,7 @@ export function articleCard(article: Article, ctx: RenderContext, variant: boole
     section: section?.name,
     color: section?.color || categoryColor,
     href: safeUrl(href),
-    /* SPA démo PGlite : ne pas recharger le bandeau ni l’iframe radio. */
+    /* SPA démo navigateur : ne pas recharger le bandeau ni l’iframe radio. */
     linkAttributes: ctx.editorial ? 'data-editorial-link' : '',
     title: article.title,
     excerpt: article.excerpt,

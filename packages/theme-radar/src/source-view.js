@@ -2,7 +2,7 @@
  * Port contrôlé du bloc « source individuelle » de LE-RADAR.
  *
  * Ce module est volontairement sans dépendance de framework : il est appelé
- * par la génération statique TypeScript et par la démonstration PGlite dans
+ * par la génération statique TypeScript et par la démonstration navigateur dans
  * le navigateur. Une seule structure HTML pilote donc les deux rendus.
  *
  * Référence : LE-RADAR, app.js (createArticle / partitionSourceFeed) et

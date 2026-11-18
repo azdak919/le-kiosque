@@ -17,7 +17,7 @@ const config: Partial<KiosqueConfig> = {
     },
   },
 
-  // Cette racine est la démonstration Le Quorum : sa banque photo et PGlite
+  // Cette racine est la démonstration Le Quorum : sa banque photo et la base sql.js
   // ne sont jamais copiés dans un déploiement `git-sveltia` standard.
   editorial: { mode: 'demo-local' },
 

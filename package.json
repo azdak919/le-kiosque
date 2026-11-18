@@ -30,12 +30,11 @@
     "node": ">=22.18"
   },
   "dependencies": {
-    "le-socle": "github:azdak919/le-socle#51353b12aac357b303a17f952773b8c1621b6a45",
+    "le-socle": "github:azdak919/le-socle#bd7938a6b385c26d9646225baf42de2bf776d03b",
     "marked": "^18.2.0",
     "yaml": "^2.9.1"
   },
   "devDependencies": {
-    "@electric-sql/pglite": "0.5.16",
     "@playwright/test": "1.65.1",
     "@tailwindcss/cli": "4.3.5",
     "basecoat-css": "1.1.0",

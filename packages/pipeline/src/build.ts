@@ -52,43 +52,22 @@ import { readIndex } from './mirror.ts';
 const THEME_ASSETS = path.resolve(
   fileURLToPath(new URL('../../theme-radar/assets', import.meta.url)),
 );
-const PGLITE_DIST = path.resolve(fileURLToPath(new URL('../../../node_modules/@electric-sql/pglite/dist', import.meta.url)));
 const MARKED_BROWSER = path.resolve(fileURLToPath(new URL('../../../node_modules/marked/lib/marked.esm.js', import.meta.url)));
-
-async function copyPgliteModule(entry: string, sourceRoot: string, targetRoot: string, seen = new Set<string>()): Promise<void> {
-  const relative = path.relative(sourceRoot, entry);
-  if (seen.has(relative)) return;
-  seen.add(relative);
-  const code = await readFile(entry, 'utf8').catch(() => {
-    throw new Error(`Ressource PGlite absente : ${relative}. Relancer « npm ci » avant le build.`);
-  });
-  const target = path.join(targetRoot, relative);
-  await mkdir(path.dirname(target), { recursive: true });
-  await writeFile(target, code, 'utf8');
-  const references = [...code.matchAll(/(?:from\s*|import\s*)[(']*["'](\.{1,2}\/[^"']+\.js)["']/g)].map((match) => match[1]);
-  for (const reference of references) await copyPgliteModule(path.resolve(path.dirname(entry), reference), sourceRoot, targetRoot, seen);
-}
 
 async function copyDemoRuntime(outDir: string): Promise<void> {
   const editorialDir = path.join(outDir, 'assets', 'editorial');
-  const pgliteDir = path.join(editorialDir, 'pglite');
+  await mkdir(editorialDir, { recursive: true });
   // Le même noyau de carte est exécuté par les gabarits statiques et par la
-  // démo PGlite. Il vit côté thème, puis est copié explicitement dans le
+  // démo en mode navigateur. Il vit côté thème, puis est copié explicitement dans le
   // runtime navigateur — jamais recopié à la main dans render.js.
   await cp(path.resolve(THEME_ASSETS, '..', 'src', 'source-view.js'), path.join(editorialDir, 'source-view.js'));
   await cp(path.resolve(THEME_ASSETS, '..', 'src', 'radio.js'), path.join(editorialDir, 'radio.js'));
-  await copyPgliteModule(path.join(PGLITE_DIST, 'index.js'), PGLITE_DIST, pgliteDir);
-  await copyPgliteModule(path.join(PGLITE_DIST, 'worker', 'index.js'), PGLITE_DIST, pgliteDir);
-  for (const file of ['pglite.wasm', 'pglite.data', 'initdb.wasm']) {
-    await cp(path.join(PGLITE_DIST, file), path.join(pgliteDir, file)).catch(() => {
-      throw new Error(`Ressource PGlite absente : ${file}. Relancer « npm ci » avant le build.`);
-    });
-  }
   await cp(MARKED_BROWSER, path.join(editorialDir, 'marked.esm.js')).catch(() => {
     throw new Error('Module navigateur marked absent. Relancer « npm ci » avant le build.');
   });
   // L'admin de rédaction vient du socle (dépendance versionnée `le-socle`) :
-  // elle se développe là-bas, à un seul endroit. Le Kiosque n'en garde pas de
+  // elle se développe là-bas, à un seul endroit, avec la base de la démo
+  // (sql.js, MIT : sql-wasm.js et sql-wasm.wasm). Le Kiosque n'en garde pas de
   // copie. marked reste celui du Kiosque (même version, aussi lu par front.js).
   for (const file of SOCLE_ADMIN_ASSETS) {
     if (file === 'marked.esm.js') continue;
@@ -588,7 +567,7 @@ export async function build(options: BuildOptions): Promise<BuildResult> {
   if (editorialMode === 'demo-local') {
     await copyDemoRuntime(outDir);
     await writeFile(path.join(outDir, 'assets', 'editorial', 'seed.json'), JSON.stringify({
-      // Bump version when demo authors/media/articles change so PGlite
+      // Bump version when demo authors/media/articles change so the browser demo
       // re-hydrates unmodified demo rows (portraits, lead photos, etc.).
       format: 'kiosque-demo-seed', version: 26,
       publication: { ...bundle.publication, theme: { ...bundle.publication.theme, typography: bundle.publication.theme.typography ?? 'modern-accessible' } },

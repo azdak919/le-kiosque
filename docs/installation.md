@@ -130,7 +130,7 @@ renouvelle et ne garantit aucun domaine.
 - GitHub Pages doit être activé dans les paramètres du dépôt.
 - Les Actions doivent être activées à la main dans un fork.
 - Une page statique ne peut pas enregistrer dans GitHub sans authentification.
-- Le mode PGlite n’est ni une authentification, ni une rédaction collaborative,
+- Le mode démo locale (sql.js) n’est ni une authentification, ni une rédaction collaborative,
   ni une sauvegarde distante, ni une publication GitHub automatique.
 - La publication GitHub Pages a un délai incompressible.
 - WordPress/Newspack et les autres backends sont une feuille de route, pas des
