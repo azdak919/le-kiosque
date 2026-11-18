@@ -1,6 +1,7 @@
 # Journal
 
 ## Non publié
+- Socle épinglé sur fd6f5cd : licence des photos d'article gardée, un auteur ne se voit plus proposer « Publié ».
 - Mât : un logo-emblème (rond, carré) est suivi du nom du journal au lieu de le remplacer ; un logo large (nom dessiné) le remplace toujours. Taille lue dans le fichier, aucun réglage.
 - Cartes de la une : la licence de la photo suit le crédit, comme dans l'article.
 
