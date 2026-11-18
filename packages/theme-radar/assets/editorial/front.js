@@ -101,7 +101,9 @@ function showFailure(error) {
     notice.className = 'editorial-failure';
     document.body.prepend(notice);
   }
-  notice.innerHTML = `<strong>Les données locales ne peuvent pas être ouvertes.</strong> Le journal statique reste disponible. <button type="button">Réessayer</button>`;
+  notice.innerHTML = config?.mode === 'socle-vivant'
+    ? `<strong>Le journal ne répond pas pour l’instant.</strong> Réessayez dans un moment. <button type="button">Réessayer</button>`
+    : `<strong>Les données locales ne peuvent pas être ouvertes.</strong> Le journal statique reste disponible. <button type="button">Réessayer</button>`;
   notice.querySelector('button').onclick = () => location.reload();
 }
 

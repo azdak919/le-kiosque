@@ -42,7 +42,7 @@ export interface RenderContext {
   buildYear: number;
   /** Active uniquement pour la démonstration éditoriale navigateur. */
   editorial?: {
-    mode: 'demo-local';
+    mode: 'demo-local' | 'socle-vivant';
     assetsBase: string;
     seedUrl: string;
     databaseKey: string;
@@ -701,7 +701,7 @@ function mastheadTools(ctx: RenderContext, current?: string): string {
       : ''}
     <div class="masthead-tools">
       ${button(homeHref, 'Accueil', icon('home', assetsBase), 'masthead-home', current === homeHref)}
-      ${button(asset('/feed.xml', ctx), 'Flux RSS', icon('rss', assetsBase), 'masthead-rss')}
+      ${ctx.editorial?.mode === 'socle-vivant' ? '' : button(asset('/feed.xml', ctx), 'Flux RSS', icon('rss', assetsBase), 'masthead-rss')}
       ${tools?.pomodoro !== false ? button('https://le-radar.ca/pomo/', 'Pomodoro', emojiIcon(assetsBase, 'tomato.png'), 'masthead-pomo') : ''}
       ${tools?.solitaire !== false ? button('https://le-radar.ca/solitaire/', 'Solitaire', emojiIcon(assetsBase, 'playing-cards.png'), 'masthead-solitaire') : ''}
       <button type="button" id="theme-toggle" class="masthead-tool theme-toggle" aria-label="Passer en mode sombre" title="Passer en mode sombre">${icon('sun', assetsBase)}${icon('moon', assetsBase)}</button>
@@ -850,7 +850,7 @@ export function page(content: string, options: PageOptions, ctx: RenderContext):
   }
 <meta name="twitter:card" content="${options.image ? 'summary_large_image' : 'summary'}">
 
-<link rel="alternate" type="application/atom+xml" title="${esc(pub.name)}" href="${asset('/feed.xml', ctx)}">
+${ctx.editorial?.mode === 'socle-vivant' ? '' : `<link rel="alternate" type="application/atom+xml" title="${esc(pub.name)}" href="${asset('/feed.xml', ctx)}">`}
 <link rel="stylesheet" href="${asset('/assets/tokens.css', ctx)}">
 <link rel="stylesheet" href="${asset('/assets/theme.css', ctx)}">
 <link rel="stylesheet" href="${asset('/assets/source-view.css', ctx)}">
@@ -900,13 +900,13 @@ ${content}
     <nav class="site-foot__nav" aria-label="Sections">
       ${footerNavHtml(nav, { current: options.current, editorial })}
     </nav>
-    <nav class="site-foot__links" aria-label="Liens de pied de page">
+    ${ctx.editorial?.mode === 'socle-vivant' ? '' : `<nav class="site-foot__links" aria-label="Liens de pied de page">
       <a href="${asset('/feed.xml', ctx)}">Flux RSS</a>
       <span class="site-foot__sep" aria-hidden="true">·</span>
       <a href="${asset('/archives/', ctx)}"${editorial ? ' data-editorial-link' : ''}>Archives</a>
       <span class="site-foot__sep" aria-hidden="true">·</span>
       <a href="${asset('/plan-du-site/', ctx)}"${editorial ? ' data-editorial-link' : ''}>Plan du site</a>
-    </nav>
+    </nav>`}
     <div class="site-foot__credit">
       ${
         pub.governance.contact
@@ -918,7 +918,7 @@ ${content}
             : ''
       }
       ${pub.license ? `<p class="site-foot__legal">Contenus sous licence ${esc(pub.license)}, sauf mention contraire.</p>` : ''}
-      <p class="site-foot__built">Site statique produit par <a href="https://github.com/azdak919/le-kiosque" rel="noopener">Le Kiosque</a> — socle libre pour les journaux étudiants. © ${ctx.buildYear}</p>
+      <p class="site-foot__built">${ctx.editorial?.mode === 'socle-vivant' ? 'Site' : 'Site statique'} produit par <a href="https://github.com/azdak919/le-kiosque" rel="noopener">Le Kiosque</a> — socle libre pour les journaux étudiants. © ${ctx.buildYear}</p>
     </div>
   </div>
 </footer>
@@ -977,7 +977,10 @@ ${content}
   </div>
 </div>
 <script src="${asset('/assets/kiosque.js', ctx)}" defer></script>
-${ctx.editorial ? `<script>window.KIOSQUE_EDITORIAL=${JSON.stringify({ mode: 'demo-local', publicBasePath: ctx.basePath, adminBasePath: `${ctx.basePath}/admin`, assetsBase: ctx.editorial.assetsBase, seedUrl: ctx.editorial.seedUrl, publicationSlug: pub.slug, databaseKey: ctx.editorial.databaseKey }).replace(/</g, '\\u003c')};</script>
+${ctx.editorial ? `<script>window.KIOSQUE_EDITORIAL=${JSON.stringify(ctx.editorial.mode === 'socle-vivant'
+  // Paquet complet : le socle PHP de la même installation remet le sous-dossier dans ces chemins.
+  ? { mode: 'socle-vivant', apiBase: ctx.basePath, publicBasePath: ctx.basePath, adminBasePath: `${ctx.basePath}/redaction`, assetsBase: ctx.editorial.assetsBase }
+  : { mode: 'demo-local', publicBasePath: ctx.basePath, adminBasePath: `${ctx.basePath}/admin`, assetsBase: ctx.editorial.assetsBase, seedUrl: ctx.editorial.seedUrl, publicationSlug: pub.slug, databaseKey: ctx.editorial.databaseKey }).replace(/</g, '\\u003c')};</script>
 <script type="module" src="${ctx.editorial.assetsBase}/front.js"></script>` : ''}
 </body>
 </html>

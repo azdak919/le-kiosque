@@ -260,7 +260,7 @@ test('le build démo écrit la page Mise à jour et l’admin y mène', async (t
   const admin = await readFile(path.join(outDir, 'admin/index.html'), 'utf8');
   assert.match(page, /Socle/);
   assert.match(page, /Kiosque/);
-  assert.match(page, /1\.0\.0/);
+  assert.match(page, /data-installed="socle">\d+\.\d+\.\d+</, "la version du socle épinglé est affichée");
   assert.match(page, /Aucune version proposée/);
   assert.match(admin, /href="\/admin\/mise-a-jour\/"/);
   assert.match(admin, /Tableau de bord/);

@@ -18,7 +18,7 @@ import type {
   Tag,
 } from './model.ts';
 
-export type EditorialMode = 'demo-local' | 'git-sveltia' | 'external';
+export type EditorialMode = 'demo-local' | 'socle-vivant' | 'git-sveltia' | 'external';
 export type EditorialAudience = 'public' | 'editorial';
 export type EditorialEntityKind =
   | 'article'

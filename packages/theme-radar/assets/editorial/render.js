@@ -410,6 +410,21 @@ export function applyBranding(bundle, base) {
     else node.textContent = publication.name;
   });
   document.querySelectorAll('.masthead-tagline').forEach((node) => { node.textContent = publication.tagline || ''; });
+  // Pied de page : le site vivant du paquet complet part d'une coquille sans nom.
+  document.querySelectorAll('.site-foot__wordmark').forEach((node) => { node.textContent = publication.name || ''; });
+  document.querySelectorAll('.site-foot__signature').forEach((node) => {
+    node.textContent = `${publication.institution || ''}${publication.founded ? ` · depuis ${publication.founded}` : ''}${publication.tagline ? ` — ${publication.tagline}` : ''}`;
+  });
+  document.querySelectorAll('.site-foot__credit').forEach((credit) => {
+    credit.querySelectorAll('.site-foot__contact, .site-foot__legal').forEach((node) => node.remove());
+    const contact = publication.governance?.contact;
+    const steward = publication.governance?.stewardEntity;
+    const lines = [];
+    if (contact) lines.push(`<p class="site-foot__contact"><a href="mailto:${esc(contact)}">${esc(contact)}</a>${steward ? ` · ${esc(steward)}` : ''}</p>`);
+    else if (steward) lines.push(`<p class="site-foot__contact">${esc(steward)}</p>`);
+    if (publication.license) lines.push(`<p class="site-foot__legal">Contenus sous licence ${esc(publication.license)}, sauf mention contraire.</p>`);
+    credit.insertAdjacentHTML('afterbegin', lines.join(''));
+  });
   document.querySelectorAll('.masthead-meta > span').forEach((node) => { node.textContent = publication.institution || ''; });
   const masthead = document.querySelector('.masthead');
   const backgrounds = publication.masthead?.backgrounds;
