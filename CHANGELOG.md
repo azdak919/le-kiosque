@@ -2,6 +2,7 @@
 
 ## Non publié
 
+- Dépôt : un lien `node_modules` (vers une machine de travail) avait été versionné par erreur. Il est retiré, et `.gitignore` ignore maintenant `node_modules` qu’il soit un dossier ou un lien.
 - Barre radio native : le journal sert son propre lecteur (un `<audio>` lisible sans JavaScript, habillé par le thème) au lieu de l’iframe de le-radar.ca. Bande pleine largeur alignée sur la colonne, bouton lecture/arrêt, volume mémorisé (bureau), état en direct, émission en cours ou à venir quand LE-RADAR répond. Un direct arrêté coupe vraiment le flux. Une station hors du répertoire se décrit par `radio.stream` (https), `name`, `frequency` et `website` ; sans flux https, la barre n’apparaît pas.
 - Page Mise à jour intégrée à l’administration : même barre latérale, mêmes cartes, entrée active. Elle explique comment une mise à jour arrive vraiment (pull request de plateforme pour le Kiosque, page du socle pour le Socle) et dit, dans la démo, que le bouton ne fait qu’une simulation dans ce navigateur. La vitrine a maintenant sa page `/admin/mise-a-jour/` (le lien menait à un 404).
 - Admin : la navigation est faite de vrais liens (`/admin/#articles`). Un clic avant l’ouverture de la base ne fige plus l’écran sur « Ouverture du journal… », et un rechargement garde l’écran.
