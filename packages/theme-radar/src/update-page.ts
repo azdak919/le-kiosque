@@ -24,6 +24,10 @@ export interface UpdateLine {
   installed: string;
   offered: string | null;
   notes: string;
+  /** Commit épinglé (socle). */
+  commit?: string | null;
+  /** Lien qui propose la nouvelle version en un clic (workflow GitHub du journal). */
+  actionHref?: string | null;
 }
 
 export function updatePage(options: {
@@ -48,7 +52,7 @@ export function updatePage(options: {
     ? {
       title: 'Mise à jour',
       lede: 'Deux pièces se mettent à jour séparément : le Socle, qui garde les données de la rédaction, et le Kiosque, qui construit le journal.',
-      roles: { socle: 'Le serveur d’écriture : articles, photos, comptes, relecture.', kiosque: 'Le site, l’administration et le configurateur.' },
+      roles: { socle: 'L’admin de rédaction et son serveur : articles, photos, comptes, relecture.', kiosque: 'Le site, l’administration et le configurateur.' },
       installed: 'Version en place',
       offered: 'Version proposée',
       none: 'Aucune version proposée.',
@@ -61,9 +65,10 @@ export function updatePage(options: {
       how: 'Comment une mise à jour arrive',
       steps: [
         'Kiosque : chaque semaine, le dépôt du journal reçoit une pull request « Mise à jour de la plateforme ». La fusionner applique la mise à jour ; le bouton « Revert » de GitHub la retire.',
+        'Socle (l’admin de rédaction) : le bouton « Proposer la dernière version du socle » lance le workflow « Mise à jour du socle » du dépôt. Il écrit une sauvegarde (le commit d’avant), puis ouvre une pull request. La fusionner applique la mise à jour ; « Revert », ou relancer le workflow avec le commit d’avant, revient en arrière.',
         options.socleUrl
-          ? `Socle : ouvrez la <a href="${esc(options.socleUrl.replace(/\/+$/, ''))}/admin/mise-a-jour">page Mise à jour de votre socle</a>. Elle sauvegarde le programme avant d’appliquer et garde un bouton pour revenir.`
-          : 'Socle : si votre journal a un socle, sa propre page /admin/mise-a-jour sauvegarde le programme avant d’appliquer et garde un bouton pour revenir. Sans socle, rien à faire.',
+          ? `Socle sur un serveur : ouvrez la <a href="${esc(options.socleUrl.replace(/\/+$/, ''))}/admin/mise-a-jour">page Mise à jour de votre socle</a>. Elle sauvegarde le programme avant d’appliquer et garde un bouton pour revenir.`
+          : 'Socle sur un serveur : si votre journal a un socle, sa propre page /admin/mise-a-jour sauvegarde le programme avant d’appliquer et garde un bouton pour revenir. Sans socle, rien à faire.',
         'Rien n’est poussé de force : une mise à jour est proposée, vous l’acceptez ou vous l’ignorez.',
       ],
       stay: demo
@@ -73,11 +78,13 @@ export function updatePage(options: {
       noteStatic: 'Cette page est statique : elle décrit l’état au moment de la dernière publication.',
       majorWait: 'Une majeure attend un oui de plus. La version en place reste.',
       ok: demo ? 'Mise à jour simulée dans ce navigateur. Le contenu du journal n’a pas été réécrit.' : 'La mise à jour a réussi. Le contenu du journal n’a pas été réécrit.',
+      commit: 'Commit épinglé',
+      propose: 'Proposer la dernière version du socle',
     }
     : {
       title: 'Update',
       lede: 'Two pieces update separately: the Socle, which keeps the newsroom data, and the Kiosque, which builds the journal.',
-      roles: { socle: 'The writing server: articles, photos, accounts, review.', kiosque: 'The site, the admin and the configurator.' },
+      roles: { socle: 'The editorial admin and its server: articles, photos, accounts, review.', kiosque: 'The site, the admin and the configurator.' },
       installed: 'Installed version',
       offered: 'Offered version',
       none: 'No offered version.',
@@ -90,6 +97,7 @@ export function updatePage(options: {
       how: 'How an update arrives',
       steps: [
         'Kiosque: every week, the journal repository receives a “platform update” pull request. Merging applies it; GitHub’s “Revert” button removes it.',
+        'Socle (the editorial admin): the “Offer the latest socle” button runs the repository’s “Mise à jour du socle” workflow. It writes a backup (the previous commit), then opens a pull request. Merging applies it; “Revert”, or running the workflow again with the previous commit, goes back.',
         options.socleUrl
           ? `Socle: open the <a href="${esc(options.socleUrl.replace(/\/+$/, ''))}/admin/mise-a-jour">update page of your socle</a>. It backs up the program first and keeps a way back.`
           : 'Socle: if your journal has a socle, its own /admin/mise-a-jour page backs up the program first and keeps a way back.',
@@ -100,6 +108,8 @@ export function updatePage(options: {
       noteStatic: 'This page is static: it describes the state at the last publication.',
       majorWait: 'A major version waits for another yes. The installed version stays.',
       ok: 'The update succeeded. The journal content was not rewritten.',
+      commit: 'Pinned commit',
+      propose: 'Offer the latest socle',
     };
   const data = JSON.stringify(options.lines).replace(/</g, '\\u003c');
   const blocks = options.lines.map((line) => {
@@ -107,7 +117,9 @@ export function updatePage(options: {
     const offer = line.offered
       ? `<dt>${copy.offered}</dt><dd>${esc(line.offered)}</dd></dl>${line.notes ? `<p class="notes">${esc(line.notes)}</p>` : ''}<p class="update-boundary">${copy.backup} : ${esc(line.id)}-${esc(line.installed)}-vers-${esc(line.offered)}.json. ${copy.boundary}</p>`
       : `</dl><p class="notes">${copy.none}</p>`;
-    return `<article class="update-line" data-line="${esc(line.id)}"><header><div><h3>${esc(line.title)}</h3><p class="role">${copy.roles[line.id] ?? ''}</p></div><span class="update-badge" data-state="${state}">${line.offered ? copy.available : copy.current}</span></header><dl><dt>${copy.installed}</dt><dd><span data-installed="${esc(line.id)}">${esc(line.installed)}</span></dd>${offer}</article>`;
+    const pin = line.commit ? `<dt>${copy.commit}</dt><dd><code>${esc(line.commit.slice(0, 7))}</code></dd>` : '';
+    const action = line.actionHref && !demo ? `<p class="noprint"><a class="button primary" data-propose="${esc(line.id)}" href="${esc(line.actionHref)}" rel="noopener">${copy.propose}</a></p>` : '';
+    return `<article class="update-line" data-line="${esc(line.id)}"><header><div><h3>${esc(line.title)}</h3><p class="role">${copy.roles[line.id] ?? ''}</p></div><span class="update-badge" data-state="${state}">${line.offered ? copy.available : copy.current}</span></header><dl><dt>${copy.installed}</dt><dd><span data-installed="${esc(line.id)}">${esc(line.installed)}</span></dd>${pin}${offer}${action}</article>`;
   }).join('\n');
   const main = `<section class="panel">
 <h2>${copy.title}</h2>

@@ -16,6 +16,17 @@ const SOCLE_ROOT = path.dirname(require.resolve('le-socle/package.json'));
 /** Version du socle installée avec ce Kiosque (`package.json` de `le-socle`). */
 export const SOCLE_VERSION: string = JSON.parse(readFileSync(path.join(SOCLE_ROOT, 'package.json'), 'utf8')).version;
 
+/** Commit du socle épinglé dans le package.json du Kiosque (ou du journal). */
+export const SOCLE_COMMIT: string | null = (() => {
+  const pkg = JSON.parse(readFileSync(new URL('../../../package.json', import.meta.url), 'utf8')) as { dependencies?: Record<string, string> };
+  return /#([0-9a-f]{40})$/.exec(pkg.dependencies?.['le-socle'] ?? '')?.[1] ?? null;
+})();
+
+/** Page GitHub du workflow « Mise à jour du socle » d'un dépôt `owner/repo`. */
+export function socleUpdateAction(repo: string): string | null {
+  return /^[\w.-]+\/[\w.-]+$/.test(repo) && repo !== 'organisation/depot' ? `https://github.com/${repo}/actions/workflows/maj-socle.yml` : null;
+}
+
 /** Fichiers de l'admin fournis par le socle. */
 export const SOCLE_ADMIN_ASSETS: readonly string[] = ADMIN_ASSETS;
 
