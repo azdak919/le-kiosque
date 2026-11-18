@@ -31,23 +31,26 @@ un dépôt Git ? C'est le chemin B, plus bas (section B).
 
 Adresse fixe, toujours la dernière version, sans compte GitHub (nouveautés sur
 <https://github.com/azdak919/le-kiosque/releases/latest>). Décompressez
-`kiosque-journal.zip` : les fichiers du journal sont à la racine du ZIP
-(`index.php`, `admin/`, `site/`, `php/`, `donnees/`, `.htaccess`…).
+`kiosque-journal.zip` : le ZIP contient un dossier `kiosque-journal/`
+(avec `index.php`, `admin/`, `site/`, `php/`, `donnees/`, `.htaccess`, et le
+fichier `INSTALLER-A-LA-RACINE.txt`). C’est le contenu de ce dossier qu’il
+faut déposer, pas le dossier lui-même.
 
 ## 3. Le déposer chez l'hébergeur
 
-Avec le gestionnaire de fichiers de l'hébergeur (ou FTP/SFTP), envoyez le
-**contenu** du ZIP à la racine de votre espace web, par exemple `public_html/`
-(ou `www/`). Gardez les fichiers cachés (`.htaccess`, `.user.ini`). Si une
-page d'accueil de l'hébergeur s'y trouve déjà, remplacez-la. Si le
-gestionnaire sait décompresser, envoyez le ZIP et choisissez **Extraire** :
-c'est plus rapide.
+Avec le gestionnaire de fichiers de l'hébergeur (ou FTP/SFTP), décompressez
+le ZIP, puis envoyez le **contenu** du dossier `kiosque-journal/` à la racine
+de votre espace web, par exemple `public_html/` (ou `www/`). N’envoyez pas le
+dossier `kiosque-journal/` lui-même. Gardez les fichiers cachés (`.htaccess`,
+`.user.ini`). Si une page d'accueil de l'hébergeur s'y trouve déjà, remplacez-la.
+Si le gestionnaire sait décompresser, envoyez le ZIP, choisissez **Extraire**,
+puis déplacez le contenu du dossier obtenu d’un niveau vers le haut.
 
 Le journal sera à `https://<votre-site>/`, la rédaction à
 `https://<votre-site>/redaction/`.
 
 Pour l'installer dans un sous-dossier (par exemple `public_html/journal/`),
-déposez les mêmes fichiers dans ce dossier : le programme détecte le préfixe
+déposez le contenu du dossier `kiosque-journal/` dans ce dossier : le programme détecte le préfixe
 tout seul, sans casser les liens. L'adresse devient alors
 `https://<votre-site>/journal/`, et la rédaction `https://<votre-site>/journal/redaction/`.
 

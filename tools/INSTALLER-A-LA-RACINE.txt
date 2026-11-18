@@ -1,0 +1,5 @@
+Ce dossier s'installe à la racine du site. Déposez son contenu (pas le dossier
+lui-même) à la racine de votre espace Web, par exemple dans public_html/ ou
+www/, avec les fichiers cachés (.htaccess, .user.ini). Si une page d'accueil
+de l'hébergeur s'y trouve déjà, remplacez-la. Un sous-dossier reste possible :
+déposez alors le même contenu dans ce dossier.

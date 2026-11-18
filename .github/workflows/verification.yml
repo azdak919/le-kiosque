@@ -34,6 +34,8 @@ jobs:
           node-version: '22'
           cache: npm
       - run: npm ci
+      - name: PHP (installateur 0.2.1)
+        run: sudo apt-get update && sudo apt-get install -y php-cli
       - run: npm test
       # On prend le sous-chemin que GitHub Pages annonce, sans rien configurer.
       - if: github.event_name != 'pull_request'
