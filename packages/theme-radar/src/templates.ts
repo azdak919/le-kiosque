@@ -24,6 +24,7 @@ import {
 } from '../../core/src/model.ts';
 import { renderSourceArticle } from './source-view.js';
 import { radioBarHtml } from './radio.js';
+import { socialNavHtml } from './social.js';
 import { pruneSportsPayload } from './sports-freshness.js';
 
 export interface RenderContext {
@@ -912,6 +913,7 @@ ${demoBannerHtml(ctx.demoNotice)}
       </div>
       <div class="masthead-meta">
         <span>${esc(masthead.institution)}</span>
+        ${socialNavHtml(pub.social, pub.name, 'masthead-social')}
       </div>
     </div>
   </div>
@@ -936,6 +938,7 @@ ${content}
     <div class="site-foot__brand">
       <p class="site-foot__wordmark">${esc(pub.name)}</p>
       <p class="site-foot__signature"${footSignature(pub) ? '' : ' hidden'}>${esc(footSignature(pub))}</p>
+      ${socialNavHtml(pub.social, pub.name, 'site-foot__social')}
     </div>
     <nav class="site-foot__nav" aria-label="Sections, pied de page">
       ${footerNavHtml(nav, { current: options.current, editorial })}

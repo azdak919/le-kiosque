@@ -425,6 +425,11 @@ export interface Publication {
     leadEyebrow?: string;
   };
   founded?: string;
+  /**
+   * Réseaux sociaux du journal (adresses complètes ; courriel pour `email`).
+   * Affichés en icônes au mât et au pied de page ; un réseau vide n’apparaît pas.
+   */
+  social?: Partial<Record<'facebook' | 'instagram' | 'x' | 'bluesky' | 'mastodon' | 'tiktok' | 'youtube' | 'linkedin' | 'threads' | 'email', string>>;
   governance: Governance;
   license?: string;
 }

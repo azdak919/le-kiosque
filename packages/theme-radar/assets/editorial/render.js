@@ -1,6 +1,7 @@
 import { renderSourceArticle } from './source-view.js';
 import { radioSlotElement, radioStation } from './radio.js';
 import { pruneSportsPayload } from './sports-freshness.js';
+import { socialNavHtml } from './social.js';
 
 const ESCAPES = { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' };
 export const esc = (value) => String(value ?? '').replace(/[&<>"']/g, (character) => ESCAPES[character]);
@@ -451,6 +452,11 @@ export function applyBranding(bundle, base) {
     credit.insertAdjacentHTML('afterbegin', lines.join(''));
   });
   document.querySelectorAll('.masthead-meta > span').forEach((node) => { node.textContent = publication.institution || ''; });
+  // Réseaux sociaux : au mât et au pied de page, un réseau vide n'est pas affiché.
+  document.querySelectorAll('.masthead-meta, .site-foot__brand').forEach((host) => {
+    host.querySelectorAll(':scope > .social-links').forEach((node) => node.remove());
+    host.insertAdjacentHTML('beforeend', socialNavHtml(publication.social, publication.name, host.classList.contains('masthead-meta') ? 'masthead-social' : 'site-foot__social'));
+  });
   const masthead = document.querySelector('.masthead');
   const backgrounds = publication.masthead?.backgrounds;
   const images = backgrounds?.enabled === false ? [] : (backgrounds?.images || []);

@@ -63,6 +63,7 @@ async function copyDemoRuntime(outDir: string, live = false): Promise<void> {
   // runtime navigateur — jamais recopié à la main dans render.js.
   await cp(path.resolve(THEME_ASSETS, '..', 'src', 'source-view.js'), path.join(editorialDir, 'source-view.js'));
   await cp(path.resolve(THEME_ASSETS, '..', 'src', 'radio.js'), path.join(editorialDir, 'radio.js'));
+  await cp(path.resolve(THEME_ASSETS, '..', 'src', 'social.js'), path.join(editorialDir, 'social.js'));
   await cp(MARKED_BROWSER, path.join(editorialDir, 'marked.esm.js')).catch(() => {
     throw new Error('Module navigateur marked absent. Relancer « npm ci » avant le build.');
   });
