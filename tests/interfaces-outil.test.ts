@@ -13,8 +13,10 @@ test('vitrine et configurateur chargent kiosque-ui.css, pas le thème du journal
   assert.match(css, /\.btn/);
 });
 
-test('l’administration compilée vient de ui/admin.css et les crédits sont présents', async () => {
-  const css = await readFile('packages/theme-radar/assets/editorial/admin.css', 'utf8');
+test('l’administration vient du socle (dépendance versionnée) et les crédits sont présents', async () => {
+  const css = await readFile('node_modules/le-socle/admin/assets/admin.css', 'utf8');
+  await assert.rejects(() => readFile('packages/theme-radar/assets/editorial/admin.js', 'utf8'), 'plus de copie de l’admin dans le Kiosque');
+  await assert.rejects(() => readFile('ui/admin.css', 'utf8'));
   assert.match(css, /\.admin-sidebar/);
   const credits = await readFile('THIRD_PARTY.md', 'utf8');
   assert.match(credits, /Basecoat/);

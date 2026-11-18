@@ -42,7 +42,7 @@ import {
   type RenderContext,
 } from '../../theme-radar/src/templates.ts';
 import { adminPage, unavailableExternalAdminPage } from '../../theme-radar/src/admin.ts';
-import { localAdminPage } from '../../theme-radar/src/local-admin.ts';
+import { localAdminPage, SOCLE_ADMIN_ASSETS, SOCLE_VERSION, socleAdminAsset } from '../../theme-radar/src/local-admin.ts';
 import { updatePage } from '../../theme-radar/src/update-page.ts';
 import { renderCmsConfig } from './cms-config.ts';
 import { sanitizeHtml } from './sanitize.ts';
@@ -87,6 +87,15 @@ async function copyDemoRuntime(outDir: string): Promise<void> {
   await cp(MARKED_BROWSER, path.join(editorialDir, 'marked.esm.js')).catch(() => {
     throw new Error('Module navigateur marked absent. Relancer « npm ci » avant le build.');
   });
+  // L'admin de rédaction vient du socle (dépendance versionnée `le-socle`) :
+  // elle se développe là-bas, à un seul endroit. Le Kiosque n'en garde pas de
+  // copie. marked reste celui du Kiosque (même version, aussi lu par front.js).
+  for (const file of SOCLE_ADMIN_ASSETS) {
+    if (file === 'marked.esm.js') continue;
+    await cp(socleAdminAsset(file), path.join(editorialDir, file)).catch(() => {
+      throw new Error(`Admin du socle absente : ${file}. Relancer « npm ci » avant le build.`);
+    });
+  }
 }
 
 export interface BuildOptions {
@@ -545,7 +554,7 @@ export async function build(options: BuildOptions): Promise<BuildResult> {
   // modes : sa feuille est copiée à part, car `assets/editorial/` n'existe
   // qu'en démonstration locale.
   await mkdir(path.join(outDir, 'assets'), { recursive: true });
-  await cp(path.join(THEME_ASSETS, 'editorial', 'admin.css'), path.join(outDir, 'assets', 'kiosque-admin.css'));
+  await cp(socleAdminAsset('admin.css'), path.join(outDir, 'assets', 'kiosque-admin.css'));
   const socleUrl = config.source.adapter === 'socle' && typeof config.source.options?.baseUrl === 'string'
     ? config.source.options.baseUrl
     : undefined;
@@ -559,7 +568,7 @@ export async function build(options: BuildOptions): Promise<BuildResult> {
     mode: editorialMode,
     socleUrl,
     lines: [
-      { id: 'socle', title: 'Socle', installed: '1.0.0', offered: null, notes: '' },
+      { id: 'socle', title: 'Socle', installed: SOCLE_VERSION, offered: null, notes: '' },
       { id: 'kiosque', title: 'Kiosque', installed: kiosquePackage.version, offered: null, notes: '' },
     ],
   }), 'utf8');

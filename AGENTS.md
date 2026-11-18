@@ -106,11 +106,20 @@ compile pas. Donc : pas d'`enum`, pas de `namespace`, pas de propriétés de
 paramètre (`constructor(private x)`). Utilise des types union et des `const`
 objects. *Un fichier qui viole ça plante au chargement, pas au build.*
 
-**Deux dépendances de production, `yaml` et `marked`.** PGlite et Playwright
+**Trois dépendances de production, `yaml`, `marked` et `le-socle`.** `le-socle` est épinglé sur un commit précis (`github:azdak919/le-socle#<sha>`) : c'est lui qui fournit l'admin de rédaction. PGlite et Playwright
 sont des dépendances de développement verrouillées : PGlite est copié seulement
 dans une sortie `demo-local`, Playwright ne sert qu’aux tests. N'en ajoute pas sans
 raison forte. Chaque dépendance est une dette de survie : le projet doit se
 reconstruire dans dix ans.
+
+**L'admin de rédaction se développe dans le socle, pas ici.** Les écrans
+(articles, photos, auteurs, rubriques, configuration), le client
+`/v1/redaction/`, la démo PGlite (`demo-backend.js`, `runtime.js`) et leur
+feuille vivent dans `le-socle/admin/`. Le build les copie dans
+`assets/editorial/`. Pour les changer : une pull request dans le socle, puis
+mettre à jour le commit épinglé dans `package.json` (`npm install
+le-socle@github:azdak919/le-socle#<sha>`). Ne jamais recopier ces fichiers dans
+le Kiosque.
 
 **La sortie est du HTML/CSS/JS statique pur.** Elle doit se servir depuis
 n'importe quoi, y compris une clé USB. Pas de framework, pas de bundler.
@@ -172,7 +181,8 @@ packages/
     LE-RADAR-SOURCE-VIEW.json  révision de référence et adaptations admises
     src/admin.ts       page /admin
     assets/admin/      Sveltia CMS figé (2 Mo, MIT)
-    assets/editorial/  PGlite local, administration, rendu et exports navigateur
+    assets/editorial/  rendu de la démo (front.js, render.js) ; l'admin vient du socle
+    src/local-admin.ts branche l'admin du socle (`le-socle/admin/`) sur le build
 template/             ce que les équipes clonent
 examples/demo-journal/  Le Quorum — journal de démonstration
 tools/vendor-cms.mjs  fige Sveltia dans le dépôt
@@ -254,7 +264,7 @@ on ne recrée pas de deuxième journal d’état.
 | **fait** | Impression Ctrl+P d’un article individuel | `@media print` dans `theme.css` + `body.is-article-page` : masque mât photo, radio, nav, En bref, tags et footer chrome ; garde titre, méta, photo lead (si présente) et corps. Critère : Ctrl+P sur `/articles/…` = une page lisible, pas un scrape de l’UI. |
 | **fait** | Banque photo démo + algo stock LE-RADAR | `packages/stock-photo` porte le scoring Openverse/Commons de LE-RADAR ; `tools/seed-demo-photos.mjs` élargit la banque locale ; `tools/match-article-photos.mjs` teste/applique ; admin « Suggérer » classe la banque selon le contenu. |
 | **fait** | Jalon 4 — doctor, adopt, export miroir | `kiosque doctor` (diagnostic local sans réseau), `kiosque adopt` (checklist PASSATION.md), `kiosque export` (archive portable) et `kiosque deploy-hint` (guide publication, zéro hébergement fourni). Aucun backend ni OAuth. |
-| **fait** | Adaptateur socle, éteint | `packages/adapters/socle` est chargé par `sync` seulement si la config le demande. Le gabarit et la démo restent `adapter: 'markdown'`. `build.ts` n'importe ni l'adaptateur ni `le-socle`. `admin/mise-a-jour/` a deux lignes, Socle et Kiosque, dans la coquille de l’admin (`adminShell` de `local-admin.ts`, feuille copiée en `assets/kiosque-admin.css` dans tous les modes). Elle n’appelle pas le réseau. La navigation de l’admin est faite de liens `/admin/#vue`. Le serveur vit dans `le-socle`. |
+| **fait** | Adaptateur socle, éteint | `packages/adapters/socle` est chargé par `sync` seulement si la config le demande. Le gabarit et la démo restent `adapter: 'markdown'`. `build.ts` n'importe pas l'adaptateur, et du socle seulement l'admin (`le-socle/admin/`, par `local-admin.ts`), jamais son serveur. `admin/mise-a-jour/` a deux lignes, Socle (version de la dépendance installée) et Kiosque, dans la coquille de l’admin (`adminShell` du socle, feuille copiée en `assets/kiosque-admin.css` dans tous les modes). Elle n’appelle pas le réseau. La navigation de l’admin est faite de liens `/admin/#vue`. Le serveur vit dans `le-socle`. |
 | **fait** | Kit portable (clé USB / Drive) | `npm run kit` → `dist-kit/le-kiosque-kit.{zip,tar.gz}` : gabarit, plateforme, Node embarqué (Linux, macOS, Windows), site d’exemple, installateur en 5 étapes validées (`tools/kit/installer.mjs`) : SFTP/FTP/FTPS via curl ou sftp du système, dossier local, paquet Netlify/Cloudflare. Pause/reprise dans `journal/installation-kiosque.json`, jamais de mot de passe. Testé contre nginx + OpenSSH + vsftpd locaux. Reste : test sur un vrai hébergeur, Windows réel. |
 | **bloqué par produit/opérations** | Fédération LE-RADAR, API distante, stockage, rôles et DAM | Ne commencer qu’après définition des responsabilités d’authentification, d’exploitation et de stockage. |
 

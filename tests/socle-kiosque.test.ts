@@ -72,10 +72,16 @@ function join(parts: Uint8Array[]): Uint8Array {
   return out;
 }
 
-test('build n’importe ni un adaptateur ni le-socle ; le gabarit reste markdown', async () => {
+test('build n’importe ni un adaptateur ni le serveur du socle ; le gabarit reste markdown', async () => {
   const buildSrc = await readFile(path.join(ROOT, 'packages/pipeline/src/build.ts'), 'utf8');
   assert.doesNotMatch(buildSrc, /adapters\//);
-  assert.doesNotMatch(buildSrc, /le-socle/);
+  // Du socle, le build ne prend que l'admin (page et fichiers), copiée dans
+  // le site : aucun journal ne dépend d'un serveur pour être lu.
+  const bridge = await readFile(path.join(ROOT, 'packages/theme-radar/src/local-admin.ts'), 'utf8');
+  for (const source of [buildSrc, bridge]) {
+    assert.doesNotMatch(source, /le-socle\/src|from 'le-socle'/);
+    for (const [, spec] of source.matchAll(/from '(le-socle[^']*)'/g)) assert.match(spec, /^le-socle\/admin\//);
+  }
   const template = await readFile(path.join(ROOT, 'template/kiosque.config.ts'), 'utf8');
   const demo = await readFile(path.join(ROOT, 'examples/demo-journal/kiosque.config.ts'), 'utf8');
   assert.doesNotMatch(template, /adapter:\s*'socle'/);
