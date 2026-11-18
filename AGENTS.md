@@ -210,6 +210,11 @@ stocke `/media/…` et c'est le thème qui préfixe au rendu. L'inclure produira
 `pglite.data` sont copiés depuis `node_modules` pendant un build `demo-local`.
 Ils ne sont pas committés, chargés depuis un CDN ou émis dans un build Git.
 
+**Statuts de la démo.** La base PGlite accepte `draft`, `in-review`,
+`scheduled`, `published` et `archived` (schéma 2 ; `#migrate` remplace la
+contrainte d'une base de schéma 1). Un article programmé dont l'heure est
+passée sort comme publié dans la lecture publique ; la base garde `scheduled`.
+
 ---
 
 ## Ce qu'on ne fait pas

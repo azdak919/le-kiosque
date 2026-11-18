@@ -78,7 +78,9 @@ function updatePreview() {
   $('preview-kicker').textContent = sections[0]?.name || 'À la une';
   const logo = $('preview-logo');
   logo.hidden = !state.logo?.src;
-  if (state.logo?.src) { logo.src = state.logo.src; logo.alt = c.logoAlt; }
+  // Sans logo, l'image n'a pas d'adresse du tout : un logo retiré ne reste
+  // pas affiché en cache, et aucun lecteur ne voit d'image cassée.
+  if (state.logo?.src) { logo.src = state.logo.src; logo.alt = c.logoAlt; } else { logo.removeAttribute('src'); logo.alt = ''; }
   const white = K.contraste(c.accent, '#ffffff');
   const dark = K.contraste(c.accent, '#16181c');
   const best = Math.max(white, dark);

@@ -78,13 +78,13 @@ function setView(next) {
 }
 
 function statusLabel(status) {
-  return { draft: 'Brouillon', 'in-review': 'En révision', published: 'Publié' }[status] || status;
+  return { draft: 'Brouillon', 'in-review': 'En révision', scheduled: 'Programmé', published: 'Publié', archived: 'Archivé', retracted: 'Retiré' }[status] || status;
 }
 
 function dashboard() {
-  const counts = Object.fromEntries(['draft', 'in-review', 'published'].map((status) => [status, bundle.articles.filter((item) => item.status === status).length]));
+  const counts = Object.fromEntries(['draft', 'in-review', 'scheduled', 'published'].map((status) => [status, bundle.articles.filter((item) => item.status === status).length]));
   return `<section class="panel"><h2>Tableau de bord</h2>
-    <div class="grid stats"><article><h3>${counts.draft}</h3><p>Brouillons, invisibles du public.</p></article><article><h3>${counts['in-review']}</h3><p>Articles en révision, invisibles du public.</p></article><article><h3>${counts.published}</h3><p>Articles publiés dans le front end.</p></article><article><h3>${bundle.authors.length}</h3><p>Signatures éditoriales, sans compte ni mot de passe.</p></article></div>
+    <div class="grid stats"><article><h3>${counts.draft}</h3><p>Brouillons, invisibles du public.</p></article><article><h3>${counts['in-review']}</h3><p>Articles en révision, invisibles du public.</p></article><article><h3>${counts.published}</h3><p>Articles publiés dans le front end.</p></article>${counts.scheduled ? `<article><h3>${counts.scheduled}</h3><p>Articles programmés, publiés à leur heure.</p></article>` : ''}<article><h3>${bundle.authors.length}</h3><p>Signatures éditoriales, sans compte ni mot de passe.</p></article></div>
     <div class="actions"><button class="primary" data-action="new-article">Créer un article</button><a class="button" href="${config.publicBasePath}/">Voir le front end</a></div>
     <h3 style="margin-top:2rem">Données d’exemple</h3><label><input id="demo-visible" type="checkbox" ${bundle.demoVisible !== false ? 'checked' : ''}> Afficher les exemples publiés dans le front end</label>
     <div class="actions"><button data-action="remove-demo">Supprimer les exemples non modifiés</button><button data-action="reset-demo">Restaurer Le Quorum</button></div>
@@ -243,7 +243,8 @@ function articleEditor(article) {
     <input type="hidden" name="id" value="${esc(current.id)}"><div class="field"><label for="article-title">Titre</label><input id="article-title" name="title" required value="${esc(current.title)}"></div><div class="field"><label for="article-slug">Identifiant URL</label><input id="article-slug" name="slug" required value="${esc(current.slug)}"></div>
     <div class="field full"><label for="article-excerpt">Résumé</label><textarea id="article-excerpt" name="excerpt" required>${esc(current.excerpt)}</textarea></div>
     <div class="field"><label for="article-section">Section</label><select id="article-section" name="section">${bundle.taxonomies.sections.map((item) => `<option value="${esc(item.slug)}" ${item.slug === current.section ? 'selected' : ''}>${esc(item.name)}</option>`).join('')}</select></div>
-    <div class="field"><label for="article-status">Statut</label><select id="article-status" name="status"><option value="draft" ${current.status === 'draft' ? 'selected' : ''}>Brouillon</option><option value="in-review" ${current.status === 'in-review' ? 'selected' : ''}>En révision</option><option value="published" ${current.status === 'published' ? 'selected' : ''}>Publié</option></select></div>
+    <div class="field"><label for="article-status">Statut</label><select id="article-status" name="status"><option value="draft" ${current.status === 'draft' ? 'selected' : ''}>Brouillon</option><option value="in-review" ${current.status === 'in-review' ? 'selected' : ''}>En révision</option><option value="scheduled" ${current.status === 'scheduled' ? 'selected' : ''}>Programmé</option><option value="published" ${current.status === 'published' ? 'selected' : ''}>Publié</option><option value="archived" ${current.status === 'archived' ? 'selected' : ''}>Archivé</option></select><small>Programmé : publié tout seul à l’heure choisie. Archivé : la page reste, l’article quitte les listes.</small></div>
+    <div class="field" data-scheduled-field ${current.status === 'scheduled' ? '' : 'hidden'}><label for="article-scheduled-at">Programmer pour</label><input id="article-scheduled-at" name="scheduledAt" type="datetime-local" value="${esc(localDateTime(current.scheduledAt))}"></div>
     <div class="field full"><label for="article-published-at">Date et heure de publication</label><input id="article-published-at" name="publishedAt" type="datetime-local" value="${esc(localDateTime(current.publishedAt))}"><small>L’heure locale exacte sera conservée avec son fuseau et transmise au flux de LE-RADAR.</small></div>
     <fieldset class="field"><legend>Auteurs</legend>${bundle.authors.map((author) => `<label><input type="checkbox" name="authors" value="${esc(author.slug)}" ${current.authors.includes(author.slug) ? 'checked' : ''}> ${esc(author.name)}</label>`).join('')}</fieldset>
     <fieldset class="field"><legend>Catégories</legend>${bundle.taxonomies.categories.map((item) => `<label><input type="checkbox" name="categories" value="${esc(item.slug)}" ${current.categories.includes(item.slug) ? 'checked' : ''}> ${esc(item.name)}</label>`).join('')}</fieldset>
@@ -260,6 +261,8 @@ function articleEditor(article) {
   const body = document.getElementById('article-body');
   const visual = document.getElementById('article-visual');
   const articleForm = document.getElementById('article-form');
+  const scheduledField = articleForm.querySelector('[data-scheduled-field]');
+  articleForm.elements.status.addEventListener('change', () => { scheduledField.hidden = articleForm.elements.status.value !== 'scheduled'; });
   const refreshLeadCrop = () => {
     const x = Number(articleForm.elements.leadFocalX.value), y = Number(articleForm.elements.leadFocalY.value);
     articleForm.querySelector('.crop-previews')?.style.setProperty('--crop-position', `${x}% ${y}%`);
@@ -359,12 +362,20 @@ function articleEditor(article) {
       }
     }
     if (form.get('status') === 'published' && lead && !lead.alt.trim()) { notify('La description de la photo principale est obligatoire.'); return; }
+    let scheduledAt = current.status === 'scheduled' ? current.scheduledAt : undefined;
+    if (form.get('status') === 'scheduled') {
+      const requested = form.get('scheduledAt');
+      if (!requested) { notify('Choisissez la date et l’heure de publication programmée.'); return; }
+      scheduledAt = new Date(requested).toISOString();
+      if (Date.parse(scheduledAt) <= Date.now()) { notify('L’heure programmée est déjà passée : choisissez Publié, ou une heure à venir.', 5000); return; }
+    } else scheduledAt = undefined;
     const requestedPublication = form.get('publishedAt');
     const enteredPublication = requestedPublication ? new Date(requestedPublication).toISOString() : undefined;
     const saved = {
-      ...current, id: form.get('id'), title: form.get('title').trim(), slug: slugify(form.get('slug')), excerpt: form.get('excerpt').trim(), section: form.get('section'), status: form.get('status'), authors: form.getAll('authors'), categories: form.getAll('categories'), tags: form.getAll('tags'), body: { format: format.value, raw: body.value }, lead, media: current.media, publishedAt: enteredPublication || (form.get('status') === 'published' ? (current.publishedAt || new Date().toISOString()) : current.publishedAt), updatedAt: new Date().toISOString(), canonicalUrl: `${bundle.publication.siteUrl.replace(/\/$/, '')}/articles/${slugify(form.get('slug'))}/`, source: current.source || source('article', form.get('id')),
+      ...current, id: form.get('id'), title: form.get('title').trim(), slug: slugify(form.get('slug')), excerpt: form.get('excerpt').trim(), section: form.get('section'), status: form.get('status'), authors: form.getAll('authors'), categories: form.getAll('categories'), tags: form.getAll('tags'), body: { format: format.value, raw: body.value }, lead, media: current.media, publishedAt: enteredPublication || (['published', 'archived'].includes(form.get('status')) ? (current.publishedAt || new Date().toISOString()) : current.publishedAt), scheduledAt, updatedAt: new Date().toISOString(), canonicalUrl: `${bundle.publication.siteUrl.replace(/\/$/, '')}/articles/${slugify(form.get('slug'))}/`, source: current.source || source('article', form.get('id')),
     };
-    await backend.save('article', saved); await refresh(); notify(`Article enregistré.${autoStockNote}`); setView('articles');
+    try { await backend.save('article', saved); } catch (error) { notify(error.message, 6000); return; }
+    await refresh(); notify(`Article enregistré.${autoStockNote}`); setView('articles');
   });
   main.querySelector('[data-action="preview"]').addEventListener('click', () => {
     if (editorMode === 'visual' && format.value === 'html') body.value = sanitizePreview(visual.innerHTML);
