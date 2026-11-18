@@ -124,8 +124,9 @@ test('demo et template reçoivent le même theme.css / kiosque.js (packages/them
   assert.match(tplHome, /data-nav-shell/);
   assert.match(demoHome, /data-nav-toggle/, 'bouton Toutes les rubriques');
   assert.match(tplHome, /data-nav-toggle/);
-  assert.match(demoHome, /wire-title">Le fil</, 'démo Quorum : libellé focus-group');
-  assert.match(tplHome, /wire-title">À la une</, 'template : fallback tant que labels absents');
+  assert.match(demoHome, /wire-title">Le fil étudiant</, 'démo : titre du fil');
+  assert.match(tplHome, /wire-title">Le fil étudiant</, 'template : « Le fil étudiant » par défaut, « À la une » réservé à la manchette');
+  assert.doesNotMatch(tplHome, /wire-title">À la une</, 'pas de « À la une » en double');
 
   // Équipe : portraits + intro lisible ; seed de la démo versionné pour re-sync.
   const demoAuthors = await readFile(path.join(demo.out, 'auteurs/index.html'), 'utf8');

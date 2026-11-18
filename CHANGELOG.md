@@ -1,6 +1,7 @@
 # Journal
 
 ## Non publié
+- Site : le titre de l’accueil devient « Le fil étudiant » (il répétait « À la une », déjà la pastille de la manchette) ; « À la une » reste réservé à l’article mis en avant. Pied de page : l’organisme responsable n’est plus répété quand il porte le nom du journal, plus de tiret orphelin quand l’établissement manque, « logiciel libre » au lieu de « socle libre », et la navigation du pied de page a son propre nom pour les lecteurs d’écran.
 - Configurateur : chaque champ à écrire montre un exemple en gris pâle (« La Vigie », « Cégep de Sainte-Foy », « redaction@exemple.ca »…) qui n’est jamais gardé ; les champs obligatoires le disent. Les sections ne sont plus préremplies : les sections proposées sont l’exemple, et un bouton « Partir des sections proposées » les reprend d’un clic ; sans section, l’étape le signale. Le nom ne recopie plus en douce le nom court ni le texte alternatif (ils en sont déduits s’ils restent vides). L’aperçu dit « Nom du journal » tant que le nom est vide.
 - Version 0.2.0 (première Release du paquet complet). Socle épinglé à 1.2.1 (586c99d) : assistant d’installation, mise à jour en un clic, courriel de l’administrateur privé.
 - Paquet complet publié à chaque étiquette vX.Y.Z (workflow « Paquet complet », seulement dans le dépôt du Kiosque) : https://github.com/azdak919/le-kiosque/releases/latest/download/kiosque-journal.zip, lisible sans compte. `paquet.json` porte la version, le dépôt et le nom du fichier : la page Mise à jour de chaque journal installé s’en sert pour la mise à jour en un clic.
