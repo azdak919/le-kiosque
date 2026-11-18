@@ -67,8 +67,8 @@ export function updatePage(options: {
         'Kiosque : chaque semaine, le dépôt du journal reçoit une pull request « Mise à jour de la plateforme ». La fusionner applique la mise à jour ; le bouton « Revert » de GitHub la retire.',
         'Socle (l’admin de rédaction) : le bouton « Proposer la dernière version du socle » lance le workflow « Mise à jour du socle » du dépôt. Il écrit une sauvegarde (le commit d’avant), puis ouvre une pull request. La fusionner applique la mise à jour ; « Revert », ou relancer le workflow avec le commit d’avant, revient en arrière.',
         options.socleUrl
-          ? `Socle sur un serveur : ouvrez la <a href="${esc(options.socleUrl.replace(/\/+$/, ''))}/admin/mise-a-jour">page Mise à jour de votre socle</a>. Elle sauvegarde le programme avant d’appliquer et garde un bouton pour revenir.`
-          : 'Socle sur un serveur : si votre journal a un socle, sa propre page /admin/mise-a-jour sauvegarde le programme avant d’appliquer et garde un bouton pour revenir. Sans socle, rien à faire.',
+          ? `Socle sur un serveur : ouvrez la <a href="${esc(options.socleUrl.replace(/\/+$/, ''))}/admin/mise-a-jour">page Mise à jour de votre socle</a>. Elle sauvegarde le programme avant d’appliquer et garde un bouton pour revenir. Sur un hébergement PHP : <a href="https://github.com/azdak919/le-socle/releases/latest/download/le-socle-php.zip">dernière version du paquet</a>, à envoyer par-dessus l’ancien dossier sans remplacer donnees/.`
+          : 'Socle sur un serveur : si votre journal a un socle, sa propre page /admin/mise-a-jour sauvegarde le programme avant d’appliquer et garde un bouton pour revenir. Sur un hébergement PHP : <a href="https://github.com/azdak919/le-socle/releases/latest/download/le-socle-php.zip">dernière version du paquet</a>, à envoyer par-dessus l’ancien dossier sans remplacer donnees/. Sans socle, rien à faire.',
         'Rien n’est poussé de force : une mise à jour est proposée, vous l’acceptez ou vous l’ignorez.',
       ],
       stay: demo
@@ -99,7 +99,7 @@ export function updatePage(options: {
         'Kiosque: every week, the journal repository receives a “platform update” pull request. Merging applies it; GitHub’s “Revert” button removes it.',
         'Socle (the editorial admin): the “Offer the latest socle” button runs the repository’s “Mise à jour du socle” workflow. It writes a backup (the previous commit), then opens a pull request. Merging applies it; “Revert”, or running the workflow again with the previous commit, goes back.',
         options.socleUrl
-          ? `Socle: open the <a href="${esc(options.socleUrl.replace(/\/+$/, ''))}/admin/mise-a-jour">update page of your socle</a>. It backs up the program first and keeps a way back.`
+          ? `Socle: open the <a href="${esc(options.socleUrl.replace(/\/+$/, ''))}/admin/mise-a-jour">update page of your socle</a>. It backs up the program first and keeps a way back. On PHP hosting: <a href="https://github.com/azdak919/le-socle/releases/latest/download/le-socle-php.zip">latest package</a>, uploaded over the old folder without replacing donnees/.`
           : 'Socle: if your journal has a socle, its own /admin/mise-a-jour page backs up the program first and keeps a way back.',
         'Nothing is forced: an update is offered, you accept it or ignore it.',
       ],

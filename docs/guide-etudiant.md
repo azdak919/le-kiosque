@@ -36,11 +36,10 @@ N'utilisez pas « Fork » : GitHub y coupe les Actions.
 
 ## 2. Installer la rédaction sur l'hébergement
 
-1. Ouvrez <https://github.com/azdak919/le-socle/actions/workflows/verification.yml>,
-   cliquez sur la dernière exécution réussie de la branche `main`, puis, en bas,
-   sur l'artefact **le-socle-php** (il faut être connecté à GitHub). Le fichier
-   téléchargé contient `le-socle-php.zip` : décompressez-le, vous obtenez un
-   dossier `socle/`.
+1. Téléchargez le paquet de la rédaction : <https://github.com/azdak919/le-socle/releases/latest/download/le-socle-php.zip>
+   (adresse fixe, toujours la dernière version, sans compte GitHub ; les
+   nouveautés sont sur <https://github.com/azdak919/le-socle/releases/latest>). Décompressez `le-socle-php.zip` : vous
+   obtenez un dossier `socle/`.
 2. Avec le gestionnaire de fichiers de l'hébergeur (ou FTP), envoyez le dossier
    `socle/` **tel quel** dans votre espace web, par exemple
    `public_html/journal/socle/`. Gardez les fichiers cachés (`.htaccess`,
@@ -131,8 +130,10 @@ Chaque lundi, GitHub vérifie s'il existe une nouvelle version. Si oui, une
 cliquez **Create pull request**, puis **Merge pull request**. Rien à régler.
 Pour revenir en arrière : bouton **Revert** de la pull request.
 
-La rédaction installée sur l'hébergement se met à jour en renvoyant le
-nouveau dossier `socle/` par-dessus l'ancien **sans toucher à `donnees/`**.
+La rédaction installée sur l'hébergement se met à jour en retéléchargeant
+<https://github.com/azdak919/le-socle/releases/latest/download/le-socle-php.zip> et en renvoyant le nouveau dossier `socle/` par-dessus l'ancien
+**sans toucher à `donnees/`**. La page **Mise à jour** de la rédaction donne
+le même lien.
 Faites d'abord une sauvegarde (**Exporter et poursuivre → Télécharger la
 sauvegarde JSON**).
 

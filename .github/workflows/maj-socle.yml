@@ -83,5 +83,7 @@ jobs:
             "- Sauvegarde : \`${SAUVEGARDE}\`" \
             "" \
             "**Appliquer** : fusionner. **Revenir** : bouton « Revert », ou relancer « Mise à jour du socle » avec le commit d'avant." \
-            "Votre contenu n'est pas touché." > corps.md
+            "Votre contenu n'est pas touché." \
+            "" \
+            "**Rédaction installée sur un hébergement PHP** : faites une sauvegarde, téléchargez https://github.com/azdak919/le-socle/releases/latest/download/le-socle-php.zip et envoyez le dossier socle/ par-dessus l'ancien, sans remplacer donnees/." > corps.md
           bash tools/proposer-maj.sh "$branche" "Mise à jour du socle (${CIBLE:0:7})" corps.md
