@@ -81,7 +81,7 @@ function truncateExcerpt(value, role) {
 
 function imageMarkup(image, role) {
   if (!image?.src) return '';
-  const credit = [image.caption, image.credit && `Photo : ${image.credit}`].filter(Boolean).map(escapeSourceViewHtml).join(' — ');
+  const credit = [image.caption, image.credit && `Photo : ${image.credit}${image.license ? ` (${image.license})` : ''}`].filter(Boolean).map(escapeSourceViewHtml).join(' — ');
   const loading = role === 'lead' ? 'eager' : 'lazy';
   /*
    * Attributs width/height : utiles pour la une (réserve CLS au 16:9).

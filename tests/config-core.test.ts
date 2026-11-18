@@ -49,3 +49,13 @@ test('le configurateur web et le kit importent le même noyau', async () => {
   assert.match(kit, /config-core', 'kiosque-config\.mjs'/);
   assert.match(kit, /K\.ESSENTIELS/);
 });
+
+test('fiche du journal : aucune adresse inventée pour la relève ni le contact', () => {
+  const c = K.completer({ name: 'La Vigie', institution: 'Cégep X', accent: '#005a78', sections: 'Actualités' });
+  const yml = K.publicationYml(c);
+  assert.doesNotMatch(yml, /journal-exemple\.invalid/);
+  assert.match(yml, /recoveryContacts: \[\]/);
+  assert.doesNotMatch(yml, /nom-utilisateur/);
+  const avec = K.publicationYml({ ...c, contact: 'redaction@vigie.example' });
+  assert.match(avec, /contact: "redaction@vigie\.example"/);
+});

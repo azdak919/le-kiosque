@@ -745,6 +745,7 @@ export function articleCard(article: Article, ctx: RenderContext, variant: boole
       alt: article.lead.alt,
       caption: article.lead.caption,
       credit: article.lead.credit,
+      license: article.lead.license,
       focalPoint: article.lead.focalPoint,
       width: article.lead.width,
       height: article.lead.height,

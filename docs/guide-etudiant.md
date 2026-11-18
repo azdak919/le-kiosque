@@ -105,7 +105,8 @@ tout ressaisir.
 1. **Articles → Nouvel article** : titre, chapeau, texte (l'éditeur visuel
    enregistre ce que vous voyez), section, signature(s).
 2. **Photo** : placez le curseur à l'endroit voulu et insérez l'image. Le
-   **crédit** et la **licence** sont obligatoires. Pour des photos libres,
+   **crédit** est obligatoire ; inscrivez toujours la **licence** à côté
+   (le site l'affiche avec le crédit). Pour des photos libres,
    prenez-les sur <https://commons.wikimedia.org> : la page de chaque fichier
    donne l'auteur (crédit) et la licence (ex. CC BY-SA 4.0) à recopier tels
    quels.
@@ -163,3 +164,4 @@ sauvegarde JSON**).
 | Le site affiche la page d'accueil du Kiosque | Pages non activé (étape 1.3) ou workflow pas encore passé |
 | « trop d'essais » à la connexion | 10 essais ratés : attendre 15 minutes |
 | `git push` refusé | faire `git pull` d'abord (voir section 7) |
+| Des pull requests « Bump … » apparaissent | Dependabot, hérité du gabarit, propose des mises à jour d'outils : fermez-les sans crainte, les vraies mises à jour arrivent par l'issue « Mise à jour disponible » (section 8) |
