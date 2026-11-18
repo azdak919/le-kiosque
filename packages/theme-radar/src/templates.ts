@@ -65,6 +65,18 @@ function clampPercent(value: number | undefined): number {
   return Number.isFinite(value) ? Math.min(100, Math.max(0, value!)) : 50;
 }
 
+/** Ligne sous le nom dans le pied de page, sans tiret orphelin quand un morceau manque. */
+function footSignature(pub: { institution?: string; founded?: string; tagline?: string }): string {
+  const where = [pub.institution, pub.founded ? `depuis ${pub.founded}` : ''].filter(Boolean).join(' · ');
+  return [where, pub.tagline].filter(Boolean).join(' — ');
+}
+
+/** L'organisme responsable, sauf s'il répète le nom du journal déjà affiché. */
+function footSteward(pub: { name?: string; governance: { stewardEntity?: string } }): string {
+  const steward = String(pub.governance.stewardEntity || '').trim();
+  return steward && steward !== String(pub.name || '').trim() ? steward : '';
+}
+
 export function mastheadOptions(publication: Publication): MastheadOptions {
   const images = publication.masthead?.backgrounds?.enabled === false
     ? [] : (publication.masthead?.backgrounds?.images ?? []);
@@ -895,9 +907,9 @@ ${content}
   <div class="wrap">
     <div class="site-foot__brand">
       <p class="site-foot__wordmark">${esc(pub.name)}</p>
-      <p class="site-foot__signature">${esc(pub.institution)}${pub.founded ? ` · depuis ${esc(pub.founded)}` : ''}${pub.tagline ? ` — ${esc(pub.tagline)}` : ''}</p>
+      <p class="site-foot__signature"${footSignature(pub) ? '' : ' hidden'}>${esc(footSignature(pub))}</p>
     </div>
-    <nav class="site-foot__nav" aria-label="Sections">
+    <nav class="site-foot__nav" aria-label="Sections, pied de page">
       ${footerNavHtml(nav, { current: options.current, editorial })}
     </nav>
     ${ctx.editorial?.mode === 'socle-vivant' ? '' : `<nav class="site-foot__links" aria-label="Liens de pied de page">
@@ -911,14 +923,14 @@ ${content}
       ${
         pub.governance.contact
           ? `<p class="site-foot__contact"><a href="mailto:${esc(pub.governance.contact)}">${esc(pub.governance.contact)}</a>${
-              pub.governance.stewardEntity ? ` · ${esc(pub.governance.stewardEntity)}` : ''
+              footSteward(pub) ? ` · ${esc(footSteward(pub))}` : ''
             }</p>`
-          : pub.governance.stewardEntity
-            ? `<p class="site-foot__contact">${esc(pub.governance.stewardEntity)}</p>`
+          : footSteward(pub)
+            ? `<p class="site-foot__contact">${esc(footSteward(pub))}</p>`
             : ''
       }
       ${pub.license ? `<p class="site-foot__legal">Contenus sous licence ${esc(pub.license)}, sauf mention contraire.</p>` : ''}
-      <p class="site-foot__built">${ctx.editorial?.mode === 'socle-vivant' ? 'Site' : 'Site statique'} produit par <a href="https://github.com/azdak919/le-kiosque" rel="noopener">Le Kiosque</a> — socle libre pour les journaux étudiants. © ${ctx.buildYear}</p>
+      <p class="site-foot__built">${ctx.editorial?.mode === 'socle-vivant' ? 'Site' : 'Site statique'} produit par <a href="https://github.com/azdak919/le-kiosque" rel="noopener">Le Kiosque</a>, logiciel libre pour les journaux étudiants. © ${ctx.buildYear}</p>
     </div>
   </div>
 </footer>
@@ -1029,7 +1041,7 @@ export function magazineFeedHtml(
 }
 
 export function homePage(articles: Article[], ctx: RenderContext): string {
-  const wireTitle = ctx.publication.labels?.wireTitle || 'À la une';
+  const wireTitle = ctx.publication.labels?.wireTitle || 'Le fil étudiant';
   return page(
     `<div class="wrap wire">
       <div class="wire-head">

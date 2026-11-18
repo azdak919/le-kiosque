@@ -22,7 +22,7 @@ theme:
 # Libellés d’interface — verdict focus-group/decisions/le-kiosque-wire-title.json
 # wireTitle = en-tête de la page d’accueil ; leadEyebrow = pastille sur la manchette.
 labels:
-  wireTitle: Le fil
+  wireTitle: Le fil étudiant
   leadEyebrow: À la une
 
 masthead:

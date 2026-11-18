@@ -117,7 +117,7 @@ export function renderRoute(bundle, base, pathname, renderBody) {
   const parts = route ? route.split('/') : [];
   const published = bundle.articles.filter((article) => article.status === 'published');
   if (!parts.length) {
-    const wireTitle = bundle.publication.labels?.wireTitle || 'À la une';
+    const wireTitle = bundle.publication.labels?.wireTitle || 'Le fil étudiant';
     return {
       title: `${bundle.publication.name} — ${bundle.publication.tagline || bundle.publication.institution}`,
       html: `<div class="wrap wire"><div class="wire-head"><h1 class="wire-title">${esc(wireTitle)}</h1><span class="wire-status">${published.length} article${published.length > 1 ? 's' : ''}</span></div>${magazineFeedHtml(published, bundle, base, wireTitle, 'Aucun article publié pour le moment.')}</div>`,
@@ -413,12 +413,16 @@ export function applyBranding(bundle, base) {
   // Pied de page : le site vivant du paquet complet part d'une coquille sans nom.
   document.querySelectorAll('.site-foot__wordmark').forEach((node) => { node.textContent = publication.name || ''; });
   document.querySelectorAll('.site-foot__signature').forEach((node) => {
-    node.textContent = `${publication.institution || ''}${publication.founded ? ` · depuis ${publication.founded}` : ''}${publication.tagline ? ` — ${publication.tagline}` : ''}`;
+    const where = [publication.institution, publication.founded ? `depuis ${publication.founded}` : ''].filter(Boolean).join(' · ');
+    node.textContent = [where, publication.tagline].filter(Boolean).join(' — ');
+    node.hidden = !node.textContent;
   });
   document.querySelectorAll('.site-foot__credit').forEach((credit) => {
     credit.querySelectorAll('.site-foot__contact, .site-foot__legal').forEach((node) => node.remove());
     const contact = publication.governance?.contact;
-    const steward = publication.governance?.stewardEntity;
+    // L'organisme responsable n'est pas répété s'il porte le nom du journal (déjà en tête du pied de page).
+    const rawSteward = publication.governance?.stewardEntity;
+    const steward = rawSteward && rawSteward.trim() !== String(publication.name || '').trim() ? rawSteward : '';
     const lines = [];
     if (contact) lines.push(`<p class="site-foot__contact"><a href="mailto:${esc(contact)}">${esc(contact)}</a>${steward ? ` · ${esc(steward)}` : ''}</p>`);
     else if (steward) lines.push(`<p class="site-foot__contact">${esc(steward)}</p>`);
