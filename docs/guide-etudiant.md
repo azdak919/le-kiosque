@@ -164,4 +164,3 @@ sauvegarde JSON**).
 | Le site affiche la page d'accueil du Kiosque | Pages non activé (étape 1.3) ou workflow pas encore passé |
 | « trop d'essais » à la connexion | 10 essais ratés : attendre 15 minutes |
 | `git push` refusé | faire `git pull` d'abord (voir section 7) |
-| Des pull requests « Bump … » apparaissent | Dependabot, hérité du gabarit, propose des mises à jour d'outils : fermez-les sans crainte, les vraies mises à jour arrivent par l'issue « Mise à jour disponible » (section 8) |
