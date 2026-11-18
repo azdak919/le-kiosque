@@ -53,7 +53,7 @@ test('demoContent=false masque tous les articles fictifs sans les supprimer du m
   await assert.rejects(() => readdir(path.join(out, 'articles')));
 });
 
-test('la barre radio suit le contrat sombre et reste masquée avant la confirmation de LE-RADAR', async (t) => {
+test('la barre radio est un lecteur natif du journal, lisible sans script ni iframe', async (t) => {
   const out = await mkdtemp(path.join(os.tmpdir(), 'kiosque-radio-'));
   t.after(() => rm(out, { recursive: true, force: true }));
 
@@ -66,15 +66,27 @@ test('la barre radio suit le contrat sombre et reste masquée avant la confirmat
   const home = await readFile(path.join(out, 'index.html'), 'utf8');
   const client = await readFile(path.join(out, 'assets/kiosque.js'), 'utf8');
   const theme = await readFile(path.join(out, 'assets/theme.css'), 'utf8');
-  assert.match(home, /<radar-tuner/);
-  assert.match(home, /data-src="https:\/\/le-radar\.ca\/tuner-embed\.html\?station=chyz&amp;surface=kiosque-v1"/);
-  assert.match(home, /data-state="loading"/, 'coque radio peinte dès le 1er paint (pas de [hidden])');
-  assert.ok(!home.includes('<iframe'), 'l’iframe doit être créée par le composant client');
-  assert.match(client, /message\.protocol !== 1 \|\| message\.surface !== 'kiosque-v1'/);
-  assert.match(client, /frame\.loading = 'eager'/, 'chargement eager pour recevoir le postMessage ready');
-  assert.match(theme, /min-height:\s*68px/, 'hauteur coque radio réservée');
-  assert.match(theme, /\[data-state="loading"\] iframe/, 'iframe invisible pendant le chargement');
+  assert.match(home, /<section class="kiosque-radio"[^>]*data-station="chyz"/);
+  assert.match(home, /data-stream="https:\/\/ecoutez\.chyz\.ca\/proxy\/chyz\/stream"/);
+  // Sans JavaScript : le lecteur natif du navigateur, sans préchargement.
+  assert.match(home, /<audio class="kiosque-radio__audio" controls preload="none" src="https:\/\/ecoutez\.chyz\.ca/);
+  assert.ok(!home.includes('<iframe'), 'plus aucune iframe radio');
+  assert.ok(!home.includes('tuner-embed'), 'plus de dépendance à l’embed de le-radar.ca');
+  assert.ok(!home.includes('<radar-tuner'));
+  assert.match(client, /function enhanceRadio\(host\)/);
+  assert.match(client, /audio\.removeAttribute\('src'\)/, 'un direct en pause coupe vraiment le flux');
+  assert.match(theme, /\.kiosque-radio \{[^}]*position: sticky/);
   assert.match(home, /href="\/depot-renomme\/assets\/theme\.css"/);
+});
+
+test('une station sans flux https ne montre pas de barre muette', async () => {
+  const { radioBarHtml, resolveStation } = await import('../packages/theme-radar/src/radio.js');
+  assert.equal(resolveStation({ enabled: true, station: 'station-exemple' }), null);
+  assert.equal(radioBarHtml({ enabled: true, station: 'chyz', }).includes('CHYZ 94,3 FM'), true);
+  assert.equal(resolveStation({ enabled: true, stream: 'http://non-securise.invalid/flux' }), null);
+  const custom = resolveStation({ enabled: true, station: 'campus', stream: 'https://radio.invalid/flux', name: 'Radio Campus', frequency: '88,1 FM' });
+  assert.equal(custom?.name, 'Radio Campus');
+  assert.equal(resolveStation({ enabled: false, station: 'chyz' }), null);
 });
 
 test('la vitrine expose le bandeau illustré, les outils et la composition magazine', async (t) => {

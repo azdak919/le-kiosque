@@ -11,7 +11,7 @@ const paires = [
   ['.masthead-clock', '.masthead-tools'],
   ['.masthead-status', '.masthead-tools'],
   ['.masthead-weather', '.masthead-sports'],
-  ['.radar-tuner', '.nav-wrap'],
+  ['.kiosque-radio', '.nav-wrap'],
 ];
 
 for (const theme of ['light', 'dark']) for (const largeur of largeurs) {
@@ -103,7 +103,7 @@ for (const theme of ['light', 'dark']) for (const largeur of [360, 390, 430]) {
       });
       const sep = [...document.querySelectorAll('.site-foot__sep')].filter((e) => e.getBoundingClientRect().width > 0).length;
       return { vw: innerWidth, horloge: r('.masthead-clock'), titre: r('.masthead-top'), outils, rangee: r('.masthead-tools'),
-        radio: r('.radar-tuner'), meteo: r('.masthead-weather-dock .weather-chip'), sports: r('.masthead-weather-dock .sports-chip'),
+        radio: r('.kiosque-radio'), meteo: r('.masthead-weather-dock .weather-chip'), sports: r('.masthead-weather-dock .sports-chip'),
         coupe: [...document.querySelectorAll('.masthead-clock, .masthead-weather-dock .weather-chip__name')].some((e) => e.scrollWidth > e.clientWidth + 1),
         sep, hscroll: document.documentElement.scrollWidth > innerWidth + 1 };
     });
@@ -131,3 +131,18 @@ for (const theme of ['light', 'dark']) for (const largeur of [360, 390, 430]) {
     await ctx.close();
   });
 }
+
+test('la barre radio est native : pas d’iframe, lecture et arrêt au clavier', async ({ page }) => {
+  await page.goto('/autre-nom/demo/');
+  const bar = page.locator('.kiosque-radio');
+  await expect(bar).toHaveClass(/is-enhanced/);
+  await expect(page.locator('iframe')).toHaveCount(0);
+  const play = bar.locator('.kiosque-radio__play');
+  await expect(play).toHaveAttribute('aria-pressed', 'false');
+  await play.focus();
+  await page.keyboard.press('Enter');
+  await expect(play).toHaveAttribute('aria-pressed', 'true');
+  await page.keyboard.press('Enter');
+  await expect(play).toHaveAttribute('aria-pressed', 'false');
+  await expect(bar.locator('audio')).not.toHaveAttribute('src', /./);
+});

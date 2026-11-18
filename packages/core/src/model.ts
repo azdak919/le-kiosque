@@ -391,10 +391,19 @@ export interface Publication {
     overlayStrength?: number;
     textAlignment?: 'left' | 'center' | 'right';
   };
-  /** Barre d'écoute facultative de LE-RADAR. */
+  /**
+   * Barre radio native du journal (lecteur <audio>, sans iframe).
+   * `station` : identifiant du répertoire LE-RADAR (chyz, cism, ckut, cjlo,
+   * cfak, choq). Une autre station se décrit par `stream` (https), `name`,
+   * `frequency` et `website`. Sans flux https connu, la barre n'apparaît pas.
+   */
   radio?: {
     enabled?: boolean;
     station?: string;
+    stream?: string;
+    name?: string;
+    frequency?: string;
+    website?: string;
     theme?: 'auto' | 'light' | 'dark';
     position?: 'top' | 'bottom';
   };
