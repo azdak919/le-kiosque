@@ -235,6 +235,36 @@ async function readArticleImage(file, details = {}) {
   return { id: crypto.randomUUID(), kind: 'image', src: data, alt: details.alt || '', caption: details.caption || '', credit: details.credit || '', license: details.license || '', mime: file.type, checksum, ...dimensions, source: source('media', file.name) };
 }
 
+function askForm({ title, fields, submitLabel }) {
+  return new Promise((resolve) => {
+    const dialog = document.createElement('dialog');
+    dialog.className = 'media-picker';
+    dialog.style.width = 'min(28rem, calc(100vw - 2rem))';
+    let settled = false;
+    const finish = (value) => {
+      if (settled) return;
+      settled = true;
+      dialog.close();
+      resolve(value);
+    };
+    const inputs = fields.map((field) => `<div class="field"><label for="ask-${esc(field.name)}">${esc(field.label)}</label><input id="ask-${esc(field.name)}" name="${esc(field.name)}" type="text" ${field.required ? 'required' : ''} value="${esc(field.value || '')}" placeholder="${esc(field.placeholder || '')}"></div>`).join('');
+    dialog.innerHTML = `<form class="grid"><h2>${esc(title)}</h2>${inputs}<div class="actions full"><button class="primary" type="submit">${esc(submitLabel)}</button><button type="button" data-cancel>Annuler</button></div></form>`;
+    main.appendChild(dialog);
+    dialog.querySelector('form').onsubmit = (event) => {
+      event.preventDefault();
+      const data = new FormData(event.currentTarget);
+      const result = {};
+      for (const field of fields) result[field.name] = String(data.get(field.name) || '').trim();
+      finish(result);
+    };
+    dialog.querySelector('[data-cancel]').onclick = () => finish(null);
+    dialog.addEventListener('cancel', (event) => { event.preventDefault(); finish(null); });
+    dialog.addEventListener('close', () => dialog.remove());
+    dialog.showModal();
+    dialog.querySelector('input')?.focus();
+  });
+}
+
 function articleEditor(article) {
   const current = article || {
     id: crypto.randomUUID(), slug: '', title: '', excerpt: '', subtitle: '', dek: '', authors: [], section: bundle.taxonomies.sections[0]?.slug || '', categories: [], tags: [], lang: bundle.publication.lang || 'fr-CA', status: 'draft', body: { format: 'markdown', raw: '' }, media: [], publication: bundle.publication.slug, updatedAt: new Date().toISOString(), canonicalUrl: '', source: source('article', 'local'),
@@ -307,12 +337,32 @@ function articleEditor(article) {
   };
   main.querySelectorAll('[data-editor-mode]').forEach((button) => button.onclick = () => syncEditor(button.dataset.editorMode));
   format.onchange = () => { if (editorMode === 'visual') syncEditor('source'); syncEditor(format.value === 'html' ? 'visual' : 'source'); };
-  main.querySelectorAll('[data-command]').forEach((button) => button.onclick = () => { visual.focus(); const value = button.dataset.command === 'createLink' ? prompt('Adresse du lien (https://…)') : button.dataset.value || null; if (value !== null) document.execCommand(button.dataset.command, false, value); });
+  main.querySelectorAll('[data-command]').forEach((button) => button.onclick = async () => {
+    visual.focus();
+    const selection = document.getSelection();
+    const range = selection?.rangeCount ? selection.getRangeAt(0).cloneRange() : null;
+    let value = button.dataset.value || null;
+    if (button.dataset.command === 'createLink') {
+      const answer = await askForm({ title: 'Adresse du lien', submitLabel: 'Insérer', fields: [{ name: 'href', label: 'Adresse', placeholder: 'https://…', required: true }] });
+      if (!answer?.href) return;
+      value = answer.href;
+      visual.focus();
+      if (range) {
+        const next = document.getSelection();
+        next.removeAllRanges();
+        next.addRange(range);
+      }
+    }
+    if (value !== null) document.execCommand(button.dataset.command, false, value);
+  });
   document.getElementById('article-inline-file').onchange = async (event) => {
-    const file = event.target.files[0]; if (!file) return;
-    const alt = prompt('Décrivez ce que montre la photo.'); if (!alt?.trim()) { notify('Description obligatoire.'); return; }
+    const file = event.target.files[0];
+    event.target.value = '';
+    if (!file) return;
+    const answer = await askForm({ title: 'Photo dans le texte', submitLabel: 'Ajouter', fields: [{ name: 'alt', label: 'Ce que montre la photo', required: true }, { name: 'credit', label: 'Crédit photo, facultatif' }] });
+    if (!answer?.alt) { notify('Description obligatoire.'); return; }
     try {
-      const media = await readArticleImage(file, { alt: alt.trim(), credit: prompt('Crédit photo (facultatif)') || '' });
+      const media = await readArticleImage(file, { alt: answer.alt, credit: answer.credit || '' });
       current.media.push(media);
       if (format.value === 'html') {
         syncEditor('visual'); visual.focus(); document.execCommand('insertHTML', false, `<figure><img src="${media.src}" alt="${esc(media.alt)}"><figcaption>${esc(media.credit ? `Photo : ${media.credit}` : '')}</figcaption></figure>`);
@@ -383,6 +433,7 @@ function articleEditor(article) {
     document.getElementById('article-preview').innerHTML = `<article class="preview-frame"><p class="status-pill">Prévisualisation privée</p><h1>${esc(title.value)}</h1>${html}</article>`;
   });
   syncEditor(editorMode);
+  main.querySelector('[data-action="articles"]').onclick = () => setView('articles');
 }
 
 function authors() {
@@ -393,14 +444,55 @@ function authorEditor(author) {
   const current = author || { id: crypto.randomUUID(), name: '', slug: '', role: '', editorialRole: 'auteur', bio: '', cohort: '', active: true, source: source('author', 'local') };
   main.innerHTML = `<section class="panel"><h2>${author ? 'Modifier' : 'Créer'} une signature</h2><form id="author-form" class="grid"><div class="field"><label>Nom<input name="name" required value="${esc(current.name)}"></label></div><div class="field"><label>Identifiant URL<input name="slug" required value="${esc(current.slug)}"></label></div><div class="field"><label>Fonction affichée<input name="role" value="${esc(current.role || '')}"></label></div><div class="field"><label>Rôle informatif<select name="editorialRole"><option>auteur</option><option ${current.editorialRole === 'reviseur' ? 'selected' : ''}>reviseur</option><option ${current.editorialRole === 'editeur' ? 'selected' : ''}>editeur</option></select></label></div><div class="field full"><label>Biographie<textarea name="bio">${esc(current.bio || '')}</textarea></label></div><div class="actions full"><button class="primary">Enregistrer</button><button type="button" data-action="authors">Annuler</button></div></form></section>`;
   main.querySelector('form').onsubmit = async (event) => { event.preventDefault(); const data = new FormData(event.currentTarget); await backend.save('author', { ...current, name: data.get('name').trim(), slug: slugify(data.get('slug')), role: data.get('role').trim(), editorialRole: data.get('editorialRole'), bio: data.get('bio').trim() }); await refresh(); notify('Signature enregistrée.'); setView('authors'); };
+  main.querySelector('[data-action="authors"]').onclick = () => setView('authors');
 }
 
 function taxonomies() {
-  const swatch = (item) => item.color
-    ? `<span class="taxonomy-swatch" style="--c:${esc(item.color)}" title="${esc(item.color)}"></span>`
-    : '';
-  const group = (title, kind, values, withColor = false) => `<section><div class="toolbar"><h3>${title}</h3><button data-add-taxonomy="${kind}">Ajouter</button></div><p class="media-quality">${withColor ? 'Chaque rubrique peut avoir sa propre couleur d’étiquette (pastille sur les cartes), distincte de la couleur de marque du journal.' : ''}</p><ul class="entity-list">${values.map((item) => `<li><div>${swatch(item)}<strong>${esc(item.name)}</strong><small>/${esc(item.slug)}${item.color ? ` · ${esc(item.color)}` : ''}</small></div><div><button data-edit-taxonomy="${kind}:${esc(item.id)}">Modifier</button> <button class="danger" data-delete-taxonomy="${kind}:${esc(item.id)}">Supprimer</button></div></li>`).join('')}</ul></section>`;
+  const group = (title, kind, values, withColor = false) => `<section><div class="toolbar"><h3>${title}</h3><button data-add-taxonomy="${kind}">Ajouter</button></div><p class="media-quality">${withColor ? 'La couleur se choisit dans la liste. Modifier sert au nom. Sans pastille propre, l’étiquette suit la couleur de marque du journal.' : ''}</p><ul class="entity-list">${values.map((item) => {
+    const picker = withColor
+      ? `<label style="display:inline-flex;align-self:center"><span class="sr-only">Couleur de ${esc(item.name)}</span><input type="color" data-taxonomy-color="${kind}:${esc(item.id)}" value="${esc(colorInputValue(item.color || bundle.publication.theme?.accent))}"></label>`
+      : '';
+    return `<li><div>${picker}<strong>${esc(item.name)}</strong><small data-taxonomy-code>/${esc(item.slug)}${item.color ? ` · ${esc(item.color)}` : withColor ? ' · couleur du journal' : ''}</small></div><div><button data-edit-taxonomy="${kind}:${esc(item.id)}">Modifier</button> <button class="danger" data-delete-taxonomy="${kind}:${esc(item.id)}">Supprimer</button></div></li>`;
+  }).join('')}</ul></section>`;
   return `<section class="panel"><h2>Structure éditoriale</h2>${group('Sections', 'section', bundle.taxonomies.sections, true)}${group('Catégories', 'category', bundle.taxonomies.categories, true)}${group('Mots-clés', 'tag', bundle.taxonomies.tags, false)}</section>`;
+}
+
+function colorInputValue(value) {
+  const raw = String(value || '').trim();
+  if (/^#[0-9a-fA-F]{6}$/.test(raw)) return raw;
+  if (/^#[0-9a-fA-F]{3}$/.test(raw)) return `#${raw.slice(1).split('').map((digit) => digit + digit).join('')}`;
+  return '#6c2163';
+}
+
+function taxonomyEditor(kind, current) {
+  const withColor = kind === 'section' || kind === 'category';
+  const label = kind === 'section' ? 'une section' : kind === 'category' ? 'une catégorie' : 'un mot-clé';
+  const color = colorInputValue(current?.color);
+  main.innerHTML = `<section class="panel"><h2>${current ? 'Modifier' : 'Ajouter'} ${label}</h2><form id="taxonomy-form" class="grid"><div class="field"><label for="taxonomy-name">Nom</label><input id="taxonomy-name" name="name" required value="${esc(current?.name || '')}"></div>${withColor ? `<div class="field"><label><input name="ownColor" type="checkbox" ${current?.color ? 'checked' : ''}> Pastille de cette couleur</label><label for="taxonomy-color">Couleur</label><input id="taxonomy-color" name="color" type="color" value="${esc(color)}"></div><p class="media-quality full">Sans pastille propre, l’étiquette suit la couleur de marque du journal.</p>` : ''}<div class="actions full"><button class="primary" type="submit">Enregistrer</button><button type="button" data-action="taxonomies">Annuler</button></div></form></section>`;
+  main.querySelector('[data-action="taxonomies"]').onclick = () => setView('taxonomies');
+  document.getElementById('taxonomy-form').onsubmit = async (event) => {
+    event.preventDefault();
+    const data = new FormData(event.currentTarget);
+    const name = String(data.get('name') || '').trim();
+    if (!name) return;
+    let color;
+    if (withColor && data.has('ownColor')) {
+      color = colorInputValue(data.get('color'));
+    }
+    const next = {
+      ...current,
+      id: current?.id || crypto.randomUUID(),
+      name,
+      slug: current?.slug || slugify(name),
+      order: current?.order ?? (kind === 'section' ? bundle.taxonomies.sections.length + 1 : undefined),
+    };
+    if (color) next.color = color;
+    else delete next.color;
+    await backend.save(kind, next);
+    await refresh();
+    notify(current ? 'Entrée enregistrée.' : 'Entrée ajoutée.');
+    setView('taxonomies');
+  };
 }
 
 function settings() {
@@ -478,44 +570,29 @@ function render() {
     };
   }
   if (view === 'taxonomies') {
-    main.querySelectorAll('[data-add-taxonomy]').forEach((button) => button.onclick = async () => {
-      const name = prompt('Nom');
-      if (!name) return;
-      const kind = button.dataset.addTaxonomy;
-      let color;
-      if (kind === 'section' || kind === 'category') {
-        color = prompt('Couleur d’étiquette (hex, ex. #0b5cab) — laisser vide pour la couleur de marque', '#6c2163') || undefined;
-        if (color && !/^#[0-9a-fA-F]{3,8}$/.test(color.trim())) { notify('Couleur invalide.'); return; }
-        color = color?.trim();
-      }
-      await backend.save(kind, {
-        id: crypto.randomUUID(),
-        name,
-        slug: slugify(name),
-        order: kind === 'section' ? bundle.taxonomies.sections.length + 1 : undefined,
-        color,
-      });
-      await refresh();
-      render();
-    });
-    main.querySelectorAll('[data-edit-taxonomy]').forEach((button) => button.onclick = async () => {
+    main.querySelectorAll('[data-add-taxonomy]').forEach((button) => button.onclick = () => taxonomyEditor(button.dataset.addTaxonomy));
+    main.querySelectorAll('[data-edit-taxonomy]').forEach((button) => button.onclick = () => {
       const [kind, id] = button.dataset.editTaxonomy.split(':');
       const values = kind === 'section' ? bundle.taxonomies.sections : kind === 'category' ? bundle.taxonomies.categories : bundle.taxonomies.tags;
-      const current = values.find((item) => item.id === id);
-      const name = prompt('Nom', current.name);
-      if (!name) return;
-      let color = current.color;
-      if (kind === 'section' || kind === 'category') {
-        const next = prompt('Couleur d’étiquette (hex) — vide pour retirer', current.color || '');
-        if (next === null) return;
-        if (next.trim() && !/^#[0-9a-fA-F]{3,8}$/.test(next.trim())) { notify('Couleur invalide.'); return; }
-        color = next.trim() || undefined;
-      }
-      await backend.save(kind, { ...current, name, slug: current.slug, color });
-      await refresh();
-      render();
+      taxonomyEditor(kind, values.find((item) => item.id === id));
     });
     main.querySelectorAll('[data-delete-taxonomy]').forEach((button) => button.onclick = async () => { const [kind, id] = button.dataset.deleteTaxonomy.split(':'); if (!confirm('Supprimer cette entrée?')) return; await backend.remove(kind, id); await refresh(); render(); });
+    main.querySelectorAll('[data-taxonomy-color]').forEach((input) => input.addEventListener('change', async () => {
+      const [kind, id] = input.dataset.taxonomyColor.split(':');
+      const values = kind === 'section' ? bundle.taxonomies.sections : bundle.taxonomies.categories;
+      const current = values.find((item) => item.id === id);
+      if (!current) return;
+      const color = colorInputValue(input.value);
+      try {
+        await backend.save(kind, { ...current, color });
+        await refresh();
+        const code = input.closest('li')?.querySelector('[data-taxonomy-code]');
+        if (code) code.textContent = `/${current.slug} · ${color}`;
+        notify('Couleur enregistrée.');
+      } catch (error) {
+        notify(error?.message || 'La couleur n’a pas été enregistrée.');
+      }
+    }));
   }
   if (view === 'media') bindMediaFilters(main);
   if (view === 'settings') {
