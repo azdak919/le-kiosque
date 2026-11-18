@@ -15,6 +15,7 @@ import { build } from '../packages/pipeline/src/build.ts';
 import { normalizeBasePath, withBase } from '../packages/pipeline/src/config.ts';
 import { readSharedMediaManifest } from '../packages/pipeline/src/shared-media.ts';
 import { localAdminPage } from '../packages/theme-radar/src/local-admin.ts';
+import { updatePage } from '../packages/theme-radar/src/update-page.ts';
 
 const repoRoot = path.resolve(fileURLToPath(new URL('..', import.meta.url)));
 const outDir = path.join(repoRoot, 'dist');
@@ -144,6 +145,25 @@ await writeFile(path.join(outDir, 'admin', 'index.html'), localAdminPage({
   databaseKey: demoDatabaseKey(demoBundle.publication.slug),
 }), 'utf8');
 await writeFile(path.join(outDir, 'demo', 'admin', 'index.html'), `<!doctype html><html lang="fr"><head><meta charset="utf-8"><meta name="robots" content="noindex"><meta http-equiv="refresh" content="0;url=${withBase(basePath, '/admin/')}"><link rel="canonical" href="${withBase(basePath, '/admin/')}"><title>Administration déplacée</title></head><body><p><a href="${withBase(basePath, '/admin/')}">Ouvrir l’administration locale</a></p></body></html>`, 'utf8');
+
+// La page Mise à jour suit l'admin à la racine : sans elle, le lien de la
+// barre latérale menait à un 404. L'ancienne adresse sous /demo/ redirige.
+const kiosqueVersion = JSON.parse(await readFile(path.join(repoRoot, 'package.json'), 'utf8')).version;
+await mkdir(path.join(outDir, 'admin', 'mise-a-jour'), { recursive: true });
+await writeFile(path.join(outDir, 'admin', 'mise-a-jour', 'index.html'), updatePage({
+  lang: demoBundle.publication.lang,
+  publicationName: demoBundle.publication.name,
+  backHref: withBase(basePath, '/admin/'),
+  adminBasePath: normalizeBasePath(`${basePath}/admin`),
+  publicBasePath: demoBase,
+  cssHref: `${demoBase}/assets/editorial/admin.css`,
+  mode: 'demo-local',
+  lines: [
+    { id: 'socle', title: 'Socle', installed: '1.0.0', offered: null, notes: '' },
+    { id: 'kiosque', title: 'Kiosque', installed: kiosqueVersion, offered: null, notes: '' },
+  ],
+}), 'utf8');
+await writeFile(path.join(outDir, 'demo', 'admin', 'mise-a-jour', 'index.html'), `<!doctype html><html lang="fr"><head><meta charset="utf-8"><meta name="robots" content="noindex"><meta http-equiv="refresh" content="0;url=${withBase(basePath, '/admin/mise-a-jour/')}"><link rel="canonical" href="${withBase(basePath, '/admin/mise-a-jour/')}"><title>Page déplacée</title></head><body><p><a href="${withBase(basePath, '/admin/mise-a-jour/')}">Ouvrir la page Mise à jour</a></p></body></html>`, 'utf8');
 
 // GitHub Pages sert ce fichier pour une URL créée après le build. Le front
 // PGlite remplace ce 404 seulement si la route appartient au journal.

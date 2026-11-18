@@ -49,11 +49,11 @@
 .admin-brand strong { @apply block text-sm font-semibold leading-tight; }
 .admin-brand small { @apply block text-xs text-muted-foreground; }
 .admin-nav { @apply flex flex-row md:flex-col gap-1 md:gap-0.5 overflow-x-auto [scrollbar-width:none]; }
-.admin-nav button {
-  @apply flex shrink-0 whitespace-nowrap min-h-11 md:min-h-0 md:w-full items-center gap-2.5 rounded-md border-0 bg-transparent px-2.5 h-9 text-left text-sm font-medium text-muted-foreground cursor-pointer transition-colors hover:bg-muted hover:text-foreground;
+.admin-nav button, .admin-nav a {
+  @apply no-underline flex shrink-0 whitespace-nowrap min-h-11 md:min-h-0 md:w-full items-center gap-2.5 rounded-md border-0 bg-transparent px-2.5 h-9 text-left text-sm font-medium text-muted-foreground cursor-pointer transition-colors hover:bg-muted hover:text-foreground;
 }
-.admin-nav button svg { @apply hidden md:block size-4 shrink-0; }
-.admin-nav button[aria-current="page"] { @apply bg-accent text-accent-foreground font-semibold; }
+.admin-nav button svg, .admin-nav a svg { @apply hidden md:block size-4 shrink-0; }
+.admin-nav button[aria-current="page"], .admin-nav a[aria-current="page"] { @apply bg-accent text-accent-foreground font-semibold; }
 .admin-sidebar-foot { @apply hidden md:block mt-auto rounded-lg border border-border bg-background p-3 text-xs text-muted-foreground leading-relaxed; }
 .admin-column { @apply min-w-0 flex flex-col; }
 .admin-header { @apply sticky top-0 z-20 flex items-center justify-between gap-3 border-b border-border bg-background/85 backdrop-blur px-4 md:px-8 h-14; }
@@ -133,3 +133,26 @@
 .entity-list li > div:last-child { @apply flex shrink-0 flex-wrap justify-end gap-2; }
 #admin-main fieldset label { @apply flex items-center gap-2 py-0.5; }
 .toolbar p { @apply m-0 mt-1 text-sm text-muted-foreground; }
+
+/* Lien d'évitement et page Mise à jour (update-page.ts) */
+.admin-skip { @apply sr-only focus:not-sr-only focus:fixed focus:left-4 focus:top-4 focus:z-50 focus:rounded-md focus:bg-background focus:px-3 focus:py-2 focus:shadow-lg; }
+.update-lines { @apply grid gap-4 md:grid-cols-2; }
+.update-line { @apply rounded-xl border border-border bg-card p-5 shadow-xs; }
+.update-line header { @apply flex items-start justify-between gap-3; }
+.update-line h3 { @apply m-0 text-base font-semibold; }
+.update-line .role { @apply m-0 mt-1 text-sm text-muted-foreground; }
+.update-badge { @apply inline-flex shrink-0 items-center rounded-full border border-border px-2.5 py-0.5 text-xs font-medium text-muted-foreground; }
+.update-badge[data-state="offered"] { @apply border-transparent bg-primary text-primary-foreground; }
+.update-badge[data-state="current"] { @apply border-transparent bg-emerald-50 text-emerald-800 ring-1 ring-emerald-200; }
+.update-line dl { @apply mt-4 mb-0 grid grid-cols-[auto_1fr] gap-x-4 gap-y-1.5 text-sm; }
+.update-line dt { @apply text-muted-foreground; }
+.update-line dd { @apply m-0 font-medium tabular-nums; }
+.update-line .notes { @apply mt-3 mb-0 text-sm; }
+.update-steps { @apply mt-6 rounded-xl border border-border bg-muted/40 p-5; }
+.update-steps h3 { @apply mt-0; }
+.update-steps ol { @apply m-0 grid gap-2 ps-5 text-sm leading-relaxed; }
+.update-boundary { @apply mt-4 text-xs text-muted-foreground; }
+.update-form { @apply mt-6 flex flex-wrap items-center gap-3; }
+.update-form .major { @apply m-0 w-full; }
+.update-form [role="status"] { @apply m-0 text-sm font-medium; }
+#admin-main .lede { @apply mt-0 mb-5 max-w-prose text-sm text-muted-foreground; }
