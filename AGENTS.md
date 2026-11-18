@@ -142,6 +142,7 @@ cause, ne désactive pas le test.
 | **Brouillons invisibles** | `model.ts` → `isListed` / `hasPublicPage` | Un article non publié n'apparaît **nulle part** : ni fil, ni section, ni auteur, ni RSS, ni sitemap, ni JSON-LD — et **aucune page** n'est émise à son URL. |
 | **Identifiants permanents** | `frontmatter.ts` → `freezeId` | L'`id` d'un article est inscrit dans le front-matter et ne change plus jamais. Sans lui, renommer un fichier crée un doublon. |
 | **`basePath`** | `config.ts` → `normalizeBasePath` | Un fork est servi sur `<org>.github.io/<depot>/`. Tout chemin racine non préfixé casse le site. |
+| **Miroir d’un backend distant** | `mirror-write.ts` → `writeRemoteMirror` | Pour un backend autre que Markdown, `sync` écrit `content/` en Markdown, chaque fichier marqué `miroir: <backend>`. Une synchronisation complète ne retire que les fichiers marqués de ce backend ; un fichier écrit à la main reste. Test : `tests/miroir-distant.test.ts` (aller-retour sur la démo). |
 | **Miroir portable** | `content/` + `media/` | `npm ci && kiosque build` doit reconstruire le site **sans aucun secret, compte ni CMS**. C'est la propriété qui fait vivre un journal au-delà de ses fondateurs. |
 
 **Deux notions de visibilité, à ne pas confondre :**

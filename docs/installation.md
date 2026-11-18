@@ -101,6 +101,26 @@ encore le paramètre `station`, et la synchronisation du thème est limitée à 
 même origine. KIOSQUE émet déjà les paramètres; ils seront pris en compte quand
 LE-RADAR les acceptera. Aucun changement du dépôt LE-RADAR n’est requis.
 
+## Site sur GitHub Pages, socle à part
+
+Le site peut rester sur GitHub Pages pendant que la rédaction vit dans un
+[socle](https://github.com/azdak919/le-socle/blob/main/docs/adoption.md)
+hébergé ailleurs (serveur Node, hébergement PHP, ou Worker Cloudflare sur D1).
+
+1. Dans `kiosque.config.ts`, la source devient
+   `source: { adapter: 'socle', options: { baseUrl: 'https://<adresse du socle>' } }`
+   et `editorial: { mode: 'external' }`.
+2. On écrit dans l’admin du socle (`https://<adresse du socle>/redaction/`).
+3. Le workflow **Publier le journal** lance `kiosque sync` : il lit les
+   articles publiés du socle (`/v1/editorial/snapshot`) et les écrit dans
+   `content/` en Markdown, chaque fichier marqué `miroir: socle`. Le dépôt
+   garde donc toujours une copie complète, lisible sans le socle.
+4. `kiosque build` construit le site depuis ce miroir, comme d’habitude.
+
+Un article retiré du socle quitte le miroir à la synchronisation complète
+suivante ; un fichier écrit à la main dans `content/` n’est jamais retiré.
+Si le socle ne répond pas, le site reste en ligne, tel qu’il était.
+
 ## Domaine personnalisé
 
 Achetez ou obtenez le domaine auprès du fournisseur choisi par votre équipe,
