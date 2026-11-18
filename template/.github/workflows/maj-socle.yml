@@ -1,0 +1,81 @@
+# Mise à jour du socle (l'admin de rédaction et son serveur).
+#
+# Le socle est épinglé sur un commit précis dans package.json. Ce workflow
+# propose le dernier commit du socle sous forme de PULL REQUEST :
+#   - la fusionner applique la mise à jour (un clic) ;
+#   - avant, il écrit la sauvegarde sauvegardes/socle-<avant>-vers-<après>.json ;
+#   - revenir : bouton « Revert » de la PR, ou relancer ce workflow avec le
+#     commit d'avant (noté dans la sauvegarde et dans la PR).
+# Votre contenu (content/, media/, theme/tokens.css, kiosque.config.ts) n'est
+# jamais touché. Rien n'est poussé de force.
+
+name: Mise à jour du socle
+
+on:
+  schedule:
+    - cron: '0 9 * * 1'
+  workflow_dispatch:
+    inputs:
+      commit:
+        description: "Commit du socle à épingler (vide : le dernier). Pour revenir, le commit d'avant."
+        required: false
+        default: ''
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  proposer:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Choisir le commit
+        id: cible
+        env:
+          DEMANDE: ${{ inputs.commit }}
+        run: |
+          set -euo pipefail
+          if [ -n "${DEMANDE:-}" ]; then cible="$DEMANDE"
+          else cible=$(git ls-remote https://github.com/azdak919/le-socle.git refs/heads/main | cut -f1); fi
+          echo "commit=$cible" >> "$GITHUB_OUTPUT"
+      - name: Sauvegarder puis épingler
+        id: maj
+        env:
+          CIBLE: ${{ steps.cible.outputs.commit }}
+        run: |
+          npm ci --ignore-scripts
+          node tools/maj-socle.mjs "$CIBLE"
+      - name: Vérifier que le journal se construit
+        if: steps.maj.outputs.change == 'true'
+        run: npm run kiosque -- build
+      - name: Ouvrir la pull request
+        if: steps.maj.outputs.change == 'true'
+        env:
+          GH_TOKEN: ${{ github.token }}
+          CIBLE: ${{ steps.cible.outputs.commit }}
+          AVANT: ${{ steps.maj.outputs.from }}
+          SAUVEGARDE: ${{ steps.maj.outputs.backup }}
+        run: |
+          set -euo pipefail
+          branche="maj-socle-${CIBLE:0:7}"
+          if git ls-remote --exit-code origin "refs/heads/$branche" >/dev/null; then echo "Déjà proposée."; exit 0; fi
+          git config user.name  "kiosque-bot"
+          git config user.email "kiosque-bot@users.noreply.github.com"
+          git checkout -b "$branche"
+          git add package.json package-lock.json "$SAUVEGARDE"
+          git commit -m "Socle : ${AVANT:0:7} → ${CIBLE:0:7}"
+          git push origin "$branche"
+          gh pr create --base main --head "$branche" \
+            --title "Mise à jour du socle (${CIBLE:0:7})" \
+            --body "Nouvelle version du socle (l'admin de rédaction).
+
+          - Avant : \`${AVANT}\`
+          - Après : \`${CIBLE}\`
+          - Sauvegarde : \`${SAUVEGARDE}\`
+
+          **Appliquer** : fusionner cette PR. **Revenir** : bouton « Revert », ou relancer « Mise à jour du socle » avec le commit d'avant.
+          Votre contenu n'est pas touché."

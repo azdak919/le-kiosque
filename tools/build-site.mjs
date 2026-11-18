@@ -14,7 +14,7 @@ import { createSourceContext } from '../packages/core/src/source.ts';
 import { build } from '../packages/pipeline/src/build.ts';
 import { normalizeBasePath, withBase } from '../packages/pipeline/src/config.ts';
 import { readSharedMediaManifest } from '../packages/pipeline/src/shared-media.ts';
-import { localAdminPage, SOCLE_VERSION } from '../packages/theme-radar/src/local-admin.ts';
+import { localAdminPage, SOCLE_COMMIT, SOCLE_VERSION } from '../packages/theme-radar/src/local-admin.ts';
 import { updatePage } from '../packages/theme-radar/src/update-page.ts';
 
 const repoRoot = path.resolve(fileURLToPath(new URL('..', import.meta.url)));
@@ -159,7 +159,7 @@ await writeFile(path.join(outDir, 'admin', 'mise-a-jour', 'index.html'), updateP
   cssHref: `${demoBase}/assets/editorial/admin.css`,
   mode: 'demo-local',
   lines: [
-    { id: 'socle', title: 'Socle', installed: SOCLE_VERSION, offered: null, notes: '' },
+    { id: 'socle', title: 'Socle', installed: SOCLE_VERSION, offered: null, notes: '', commit: SOCLE_COMMIT },
     { id: 'kiosque', title: 'Kiosque', installed: kiosqueVersion, offered: null, notes: '' },
   ],
 }), 'utf8');

@@ -42,9 +42,9 @@ import {
   type RenderContext,
 } from '../../theme-radar/src/templates.ts';
 import { adminPage, unavailableExternalAdminPage } from '../../theme-radar/src/admin.ts';
-import { localAdminPage, SOCLE_ADMIN_ASSETS, SOCLE_VERSION, socleAdminAsset } from '../../theme-radar/src/local-admin.ts';
+import { localAdminPage, SOCLE_ADMIN_ASSETS, SOCLE_COMMIT, SOCLE_VERSION, socleAdminAsset, socleUpdateAction } from '../../theme-radar/src/local-admin.ts';
 import { updatePage } from '../../theme-radar/src/update-page.ts';
-import { renderCmsConfig } from './cms-config.ts';
+import { renderCmsConfig, repoSlug } from './cms-config.ts';
 import { sanitizeHtml } from './sanitize.ts';
 import { normalizeBasePath, type KiosqueConfig } from './config.ts';
 import { readIndex } from './mirror.ts';
@@ -568,7 +568,7 @@ export async function build(options: BuildOptions): Promise<BuildResult> {
     mode: editorialMode,
     socleUrl,
     lines: [
-      { id: 'socle', title: 'Socle', installed: SOCLE_VERSION, offered: null, notes: '' },
+      { id: 'socle', title: 'Socle', installed: SOCLE_VERSION, offered: null, notes: '', commit: SOCLE_COMMIT, actionHref: socleUpdateAction(repoSlug(bundle.publication)) },
       { id: 'kiosque', title: 'Kiosque', installed: kiosquePackage.version, offered: null, notes: '' },
     ],
   }), 'utf8');
