@@ -91,16 +91,19 @@ export function defauts(r = {}) {
     institutionType: 'cegep',
     region: 'Québec',
     founded: String(new Date().getFullYear()),
-    siteUrl: 'https://journal-exemple.invalid',
+    siteUrl: '',
     timeZone: 'America/Toronto',
     accentDark: couleurSombre(r.accent),
     typography: 'modern-accessible',
     logoAlt: name,
     logo: null,
-    repository: 'nom-utilisateur/le-journal',
+    repository: '',
+    contact: '',
+    socleUrl: '',
+    noindex: false,
     deployment: 'github-pages',
     cname: '',
-    demoContent: true,
+    demoContent: false,
     startEmpty: false,
     radioEnabled: true,
     station: '',
@@ -112,7 +115,7 @@ export function defauts(r = {}) {
     users: '',
     authBaseUrl: '',
     langue: 'fr-CA',
-    hebergement: 'pages',
+    hebergement: 'serveur',
     quiPublie: '',
   };
 }
@@ -180,8 +183,43 @@ export function completer(r = {}) {
   out.accent = normalizeHex(out.accent, '#6c2163');
   out.accentDark = normalizeHex(r.accentDark, couleurSombre(out.accent));
   out.langue = out.langue === 'en-CA' ? 'en-CA' : 'fr-CA';
-  out.hebergement = out.hebergement === 'serveur' ? 'serveur' : 'pages';
+  out.hebergement = out.hebergement === 'pages' ? 'pages' : 'serveur';
+  // Adresse du site déduite du dépôt pour GitHub Pages : plus d'adresse
+  // fictive cachée qui casse la publication.
+  if (!r.siteUrl) out.siteUrl = adresseDeduite(out);
+  out.socleUrl = String(out.socleUrl || '').trim().replace(/\/+$/, '');
   return out;
+}
+
+/** https://propriétaire.github.io/dépôt, ou le domaine personnalisé. */
+export function adresseDeduite(c) {
+  if (c.deployment === 'custom-domain' && c.cname) return `https://${String(c.cname).replace(/^https?:\/\//, '').replace(/\/+$/, '')}`;
+  const m = /^([^/\s]+)\/([^/\s]+)$/.exec(String(c.repository || '').trim());
+  return m ? `https://${m[1].toLowerCase()}.github.io/${m[2]}` : '';
+}
+
+/** Ce qu'il reste à faire avant de publier, en mots simples. Vide = prêt. */
+export function aVerifier(c) {
+  const out = [];
+  if (!/^([^/\s]+)\/([^/\s]+)$/.test(String(c.repository || '').trim()) && c.deployment !== 'custom-domain') out.push('Indiquez le dépôt GitHub (propriétaire/dépôt) : il donne l’adresse du site.');
+  if (valider('siteUrl', c.siteUrl) || /\.invalid\b|journal-exemple/.test(String(c.siteUrl))) out.push('L’adresse du site n’est pas une vraie adresse.');
+  if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(String(c.contact || '')) && !lireUtilisateurs(c.users).some((u) => u.email)) out.push('Indiquez le courriel de la rédaction (il figure dans la fiche du journal).');
+  if (c.demoContent && !c.startEmpty) out.push('Les articles d’exemple seront publiés avec votre journal : décochez « Garder les articles fictifs » pour un vrai journal.');
+  if (/quorum|d[ée]monstration|nom-utilisateur/i.test([c.name, c.institution, c.repository].join(' '))) out.push('Le nom ou l’établissement est encore celui de la démonstration.');
+  if (c.hebergement === 'serveur' && c.socleUrl && valider('siteUrl', c.socleUrl)) out.push('L’adresse du socle doit commencer par https://');
+  return out;
+}
+
+const EXT_LOGO = { 'image/png': 'png', 'image/jpeg': 'jpg', 'image/webp': 'webp', 'image/svg+xml': 'svg' };
+
+/** Le logo `data:` du configurateur, prêt à poser en fichier dans media/. */
+export function fichierLogo(c) {
+  const m = /^data:(image\/(?:png|jpeg|webp|svg\+xml));base64,(.+)$/.exec(String(c.logo?.src || ''));
+  if (!m) return null;
+  const binaire = typeof atob === 'function' ? atob(m[2]) : Buffer.from(m[2], 'base64').toString('binary');
+  const bytes = new Uint8Array(binaire.length);
+  for (let i = 0; i < binaire.length; i++) bytes[i] = binaire.charCodeAt(i);
+  return { path: `media/logo.${EXT_LOGO[m[1]]}`, src: `/media/logo.${EXT_LOGO[m[1]]}`, bytes };
 }
 
 const yaml = (v) => JSON.stringify(String(v ?? ''));
@@ -194,7 +232,7 @@ function depot(c) {
 export function publicationYml(c, { categories = [] } = {}) {
   const repo = depot(c);
   const users = lireUtilisateurs(c.users);
-  const contact = users.find((u) => u.email)?.email || 'redaction@journal-exemple.invalid';
+  const contact = c.contact || users.find((u) => u.email)?.email || 'redaction@journal-exemple.invalid';
   const releve = users.filter((u) => u.email).slice(0, 2).map((u) => u.email);
   while (releve.length < 2) releve.push(`releve-${releve.length + 1}@journal-exemple.invalid`);
   const localites = String(c.weatherLocalities || '').split(',').map((s) => s.trim()).filter(Boolean).slice(0, 4);
@@ -210,6 +248,8 @@ export function publicationYml(c, { categories = [] } = {}) {
     ...(c.quiPublie ? [`# Qui publie : ${yaml(c.quiPublie)}`] : []),
     `siteUrl: ${yaml(c.siteUrl)}`,
     `timeZone: ${yaml(c.timeZone)}`,
+    ...(c.noindex ? ['noindex: true'] : []),
+    ...(fichierLogo(c) ? ['logo:', `  src: ${yaml(fichierLogo(c).src)}`, `  alt: ${yaml(c.logoAlt || c.name)}`] : []),
     'theme:',
     `  accent: ${yaml(c.accent)}`,
     `  accentDark: ${yaml(c.accentDark)}`,
@@ -235,7 +275,7 @@ export function publicationYml(c, { categories = [] } = {}) {
     `  owner: ${yaml(repo.owner)}`,
     `  stewardEntity: ${yaml(c.institution)}`,
     `  contact: ${yaml(contact)}`,
-    `  repo: ${yaml(`https://github.com/${repo.owner}/${repo.repo}`)}`,
+    `  repo: ${yaml(c.repository ? `https://github.com/${repo.owner}/${repo.repo}` : '')}`,
     '  recoveryContacts:',
     `    - ${yaml(releve[0])}`,
     `    - ${yaml(releve[1])}`,
@@ -277,13 +317,22 @@ export function sectionYml(s) {
 
 export function kiosqueConfigTs(c) {
   const base = c.deployment === 'github-pages' ? `/${depot(c).repo}` : '';
+  const socle = c.hebergement === 'serveur' && /^https?:\/\//.test(String(c.socleUrl || ''));
   return [
     "import type { KiosqueConfig } from './packages/pipeline/src/config.ts';",
     '',
     'const config: Partial<KiosqueConfig> = {',
-    `  // Hébergement : ${c.hebergement === 'serveur' ? 'leur serveur, pour le site entier' : 'pages seules'}. L'adaptateur reste markdown.`,
-    "  source: { adapter: 'markdown', options: { root: new URL('.', import.meta.url).pathname } },",
-    "  editorial: { mode: 'git-sveltia' },",
+    ...(socle
+      ? [
+          '  // Les articles s’écrivent dans le socle (serveur du journal) ; le site est publié par GitHub.',
+          `  source: { adapter: 'socle', options: { baseUrl: ${JSON.stringify(c.socleUrl)} } },`,
+          "  editorial: { mode: 'external' },",
+        ]
+      : [
+          '  // Les articles sont des fichiers Markdown dans ce dépôt.',
+          "  source: { adapter: 'markdown', options: { root: new URL('.', import.meta.url).pathname } },",
+          "  editorial: { mode: 'git-sveltia' },",
+        ]),
     '  deploy: {',
     `    basePath: ${JSON.stringify(base)},`,
     ...(c.deployment === 'custom-domain' && c.cname ? [`    cname: ${JSON.stringify(c.cname)},`] : []),
@@ -299,8 +348,11 @@ export function kiosqueConfigTs(c) {
 }
 
 /** Les fichiers du journal Kiosque (GitHub, kit portable). */
-export function fichiersKiosque(c, { categories = [], tags = [] } = {}) {
+export function fichiersKiosque(c, { categories, tags = [] } = {}) {
   const sections = lireSections(c.sections);
+  // Les catégories suivent les sections du journal, pas celles de la démonstration.
+  if (!categories) categories = sections.map((s) => ({ name: s.name, slug: s.slug }));
+  const logo = fichierLogo(c);
   const tax = (liste) => (liste.length ? liste.map((x) => `  - name: ${yaml(x.name)}\n    slug: ${yaml(x.slug)}`) : ['  []']);
   return [
     { path: 'kiosque.config.ts', content: kiosqueConfigTs(c) },
@@ -309,6 +361,7 @@ export function fichiersKiosque(c, { categories = [], tags = [] } = {}) {
     { path: 'theme/tokens.css', content: tokensCss(c) },
     { path: FICHIER_EXPORT, content: `${JSON.stringify(exporter(c), null, 2)}\n` },
     ...sections.map((s) => ({ path: `content/sections/${s.slug}.yml`, content: sectionYml(s) })),
+    ...(logo ? [{ path: logo.path, bytes: logo.bytes }] : []),
   ];
 }
 
@@ -344,7 +397,21 @@ export function exporter(c) {
     sections: lireSections(c.sections).map(({ name, slug, description, order }) => ({ nom: name, slug, description, ordre: order })),
     pages: PAGES,
     roles: ROLES,
-    options: { radio: Boolean(c.radioEnabled), station: c.station || '', meteo: Boolean(c.weatherEnabled), localites: c.weatherLocalities || '' },
+    options: { radio: Boolean(c.radioEnabled), station: c.station || '', meteo: Boolean(c.weatherEnabled), localites: c.weatherLocalities || '', noindex: Boolean(c.noindex) },
+    gouvernance: gouvernance(c),
+    ...(c.socleUrl ? { socle: { adresse: c.socleUrl } } : {}),
+  };
+}
+
+function gouvernance(c) {
+  const users = lireUtilisateurs(c.users);
+  const repo = depot(c);
+  return {
+    proprietaire: c.repository ? repo.owner : '',
+    organisme: c.institution || '',
+    contact: c.contact || users.find((u) => u.email)?.email || '',
+    depot: c.repository ? `https://github.com/${repo.owner}/${repo.repo}` : '',
+    contactsRecuperation: users.filter((u) => u.email).slice(0, 2).map((u) => u.email),
   };
 }
 
@@ -353,7 +420,8 @@ export function importer(json) {
   const d = typeof json === 'string' ? JSON.parse(json) : json;
   if (!d || d.format !== FORMAT) throw new Error('Ce fichier n’est pas un kiosque-config.json.');
   if (d.version > VERSION) throw new Error(`Version ${d.version} trop récente pour cet outil (≤ ${VERSION}).`);
-  const j = d.journal || {}, a = d.apparence || {}, o = d.options || {};
+  const j = d.journal || {}, a = d.apparence || {}, o = d.options || {}, g = d.gouvernance || {};
+  const depotImporte = /github\.com\/([^/\s]+\/[^/\s]+?)(?:\.git)?\/?$/.exec(String(g.depot || ''))?.[1];
   return completer({
     name: j.nom, slug: j.slug, tagline: j.signature, institution: j.etablissement,
     institutionType: j.typeEtablissement, region: j.region, founded: j.fondation,
@@ -362,6 +430,7 @@ export function importer(json) {
     logo: a.logo ? { kind: 'image', src: a.logo, alt: a.logoAlt || j.nom } : null,
     sections: (d.sections || []).map((s) => [s.nom, s.slug, s.description || ''].join(' | ')).join('\n'),
     radioEnabled: o.radio, station: o.station, weatherEnabled: o.meteo, weatherLocalities: o.localites,
+    noindex: o.noindex, contact: g.contact, repository: depotImporte, socleUrl: d.socle?.adresse,
   });
 }
 
