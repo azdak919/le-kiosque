@@ -2105,114 +2105,140 @@
 
   window.KiosqueFocusSportsTeam = focusSportsTeamFromUrl;
 
-  // ── Barre radio LE-RADAR ───────────────────────────────────────────────
-  // Coque sombre réservée dès le HTML (data-state=loading, min-height 68).
-  // L’iframe charge en eager ; à ready on passe data-state=ready (opacity 1).
-  // En cas de panne / unavailable → data-state=gone (collapse), pas de pop.
-  function initRadarTuner() {
-    if (!('customElements' in window) || customElements.get('radar-tuner')) return;
+  // ── Barre radio native ─────────────────────────────────────────────────
+  // Le HTML (radio.js) porte un <audio controls> utilisable sans script.
+  // Ici, on le remplace par les commandes du thème : lecture/pause, volume
+  // mémorisé, état (chargement, en direct, erreur). L’émission en cours et une
+  // adresse de flux plus récente viennent de LE-RADAR quand il répond ; s’il
+  // ne répond pas, le journal joue son flux tel quel.
+  var RADIO_VOLUME_KEY = 'kiosque-radio-volume';
+  var radioDirectory = null;
 
-    function RadarTuner() { return Reflect.construct(HTMLElement, [], RadarTuner); }
-    RadarTuner.prototype = Object.create(HTMLElement.prototype);
-    RadarTuner.prototype.constructor = RadarTuner;
-    Object.setPrototypeOf(RadarTuner, HTMLElement);
+  function radioFetchJson(url) {
+    if (!url || typeof fetch !== 'function') return Promise.resolve(null);
+    var ctrl = typeof AbortController === 'function' ? new AbortController() : null;
+    var timer = ctrl ? setTimeout(function () { ctrl.abort(); }, 5000) : 0;
+    return fetch(url, { cache: 'no-cache', signal: ctrl ? ctrl.signal : undefined })
+      .then(function (r) { return r.ok ? r.json() : null; })
+      .catch(function () { return null; })
+      .then(function (data) { clearTimeout(timer); return data; });
+  }
 
-    RadarTuner.prototype.connectedCallback = function () {
-      var host = this;
-      if (host.dataset.tunerBound === '1') return;
-      host.dataset.tunerBound = '1';
-      var loaded = false;
-      var timeout;
-      function markGone() {
-        host.dataset.state = 'gone';
-        host.setAttribute('aria-busy', 'false');
-        host.hidden = true;
-        /* Retrait différé : laisse le CSS collapser sans flash intermédiaire. */
-        window.setTimeout(function () {
-          if (host.isConnected && host.dataset.state === 'gone') host.remove();
-        }, 50);
-      }
-      function load() {
-        if (loaded) return;
-        loaded = true;
-        var src = host.getAttribute('data-src') || host.dataset.src;
-        if (!src) {
-          markGone();
-          return;
-        }
-        if (!host.dataset.state) host.dataset.state = 'loading';
-        host.setAttribute('aria-busy', 'true');
-        host.hidden = false;
-        var frame = host.querySelector('iframe');
-        if (!frame) {
-          frame = document.createElement('iframe');
-          frame.title = 'Barre d’écoute de LE-RADAR';
-          frame.loading = 'eager';
-          frame.allow = 'autoplay';
-          frame.src = src;
-          host.appendChild(frame);
-        }
-        timeout = setTimeout(function () { markGone(); }, 6500);
-        window.addEventListener('message', function (event) {
-          if (event.source !== frame.contentWindow || event.origin !== 'https://le-radar.ca') return;
-          var message = event.data;
-          if (!message || message.type !== 'radar-embed' || message.protocol !== 1 || message.surface !== 'kiosque-v1') return;
-          if (message.ready && message.available === false) {
-            clearTimeout(timeout);
-            markGone();
-            return;
-          }
-          var height = Number(message.height);
-          if (Number.isFinite(height) && height >= 40 && height <= 500) {
-            var h = Math.round(height);
-            /* Première hauteur idle (≤72) = base barre (68 desktop / 62 mobile embed). */
-            if (!frame.dataset.baseH && h <= 72) frame.dataset.baseH = String(h);
-            var baseH = Number(frame.dataset.baseH) || 68;
-            /*
-             * Popover volume : plafonner la hauteur hôte à la barre, PUIS
-             * agrandir l’iframe. Fond session conservé (pas transparent) :
-             * l’hôte ne dépasse pas baseH, donc pas de bandeau sous la bulle,
-             * et plus de bande / halo parasite.
-             */
-            if (h > baseH + 4) {
-              host.style.height = baseH + 'px';
-              host.style.zIndex = '105';
-              host.style.overflow = 'visible';
-              host.style.background = '';
-              host.style.boxShadow = '0 8px 24px -14px rgba(0, 0, 0, 0.78)';
-              frame.classList.add('is-vol-overlay');
-              frame.style.background = 'transparent';
-              frame.style.marginBottom = (baseH - h) + 'px';
-              frame.style.height = h + 'px';
-            } else {
-              frame.classList.remove('is-vol-overlay');
-              frame.style.marginBottom = '';
-              frame.style.background = '';
-              frame.style.height = h + 'px';
-              host.style.height = '';
-              host.style.zIndex = '';
-              host.style.overflow = '';
-              host.style.background = '';
-              host.style.boxShadow = '';
-            }
-          }
-          if (message.ready && message.available === true) {
-            clearTimeout(timeout);
-            var fallback = host.querySelector('a');
-            if (fallback) fallback.remove();
-            host.hidden = false;
-            host.dataset.state = 'ready';
-            host.setAttribute('aria-busy', 'false');
-            if (!frame.dataset.baseH) {
-              frame.dataset.baseH = String(frame.offsetHeight || 68);
-            }
+  function radioShowText(entry) {
+    if (!entry) return '';
+    var cur = entry.current;
+    if (cur && cur.title) return 'En ondes : ' + cur.title + (cur.start && cur.end ? ' (' + cur.start + '–' + cur.end + ')' : '');
+    if (entry.showTitle) return 'En ondes : ' + entry.showTitle;
+    if (entry.track) return 'En ondes : ' + entry.track;
+    var next = entry.next;
+    if (next && next.title) return 'À venir : ' + next.title + (next.start ? ' à ' + next.start.replace(':', ' h ') : '');
+    return '';
+  }
+
+  function enhanceRadio(host) {
+    if (!host || host.dataset.radioBound === '1') return;
+    host.dataset.radioBound = '1';
+    var audio = host.querySelector('audio');
+    var play = host.querySelector('.kiosque-radio__play');
+    var volumeWrap = host.querySelector('.kiosque-radio__volume');
+    var volume = host.querySelector('[data-radio-volume]');
+    var status = host.querySelector('[data-radio-status]');
+    var show = host.querySelector('[data-radio-show]');
+    if (!audio || !play) return;
+    var stream = host.dataset.stream || audio.getAttribute('src') || '';
+    var retried = false;
+    // Hors lecture, pas de connexion au flux : preload=none et pas de src
+    // tant que la personne n’a pas appuyé sur Lecture.
+    audio.removeAttribute('src');
+    audio.controls = false;
+    play.hidden = false;
+    if (volumeWrap) volumeWrap.hidden = false;
+    host.classList.add('is-enhanced');
+
+    var saved = NaN;
+    try { var stored = localStorage.getItem(RADIO_VOLUME_KEY); if (stored !== null && stored !== '') saved = Number(stored); } catch (_) { /* stockage bloqué */ }
+    if (volume) {
+      if (Number.isFinite(saved) && saved >= 0 && saved <= 100) volume.value = String(saved);
+      audio.volume = Number(volume.value) / 100;
+      volume.addEventListener('input', function () {
+        audio.volume = Number(volume.value) / 100;
+        audio.muted = audio.volume === 0;
+        try { localStorage.setItem(RADIO_VOLUME_KEY, volume.value); } catch (_) { /* stockage bloqué */ }
+      });
+    }
+
+    function setState(state, text) {
+      host.dataset.state = state;
+      var playing = state === 'playing' || state === 'loading';
+      play.setAttribute('aria-pressed', playing ? 'true' : 'false');
+      var name = (host.querySelector('.kiosque-radio__name strong') || {}).textContent || 'la radio';
+      play.setAttribute('aria-label', (playing ? 'Arrêter ' : 'Écouter ') + name);
+      if (status) status.textContent = text;
+    }
+
+    function start() {
+      if (!audio.getAttribute('src')) audio.src = stream;
+      setState('loading', 'Connexion…');
+      var p = audio.play();
+      if (p && typeof p.catch === 'function') p.catch(function () { /* l’événement error s’en charge */ });
+    }
+
+    function stop() {
+      audio.pause();
+      // Couper vraiment le flux : un direct en pause continue sinon de
+      // télécharger en arrière-plan.
+      audio.removeAttribute('src');
+      audio.load();
+      setState('idle', 'Radio étudiante');
+    }
+
+    play.addEventListener('click', function () {
+      if (host.dataset.state === 'playing' || host.dataset.state === 'loading') stop();
+      else start();
+    });
+    audio.addEventListener('playing', function () { setState('playing', 'En direct'); });
+    audio.addEventListener('waiting', function () { if (host.dataset.state === 'playing') setState('loading', 'Mise en mémoire…'); });
+    audio.addEventListener('error', function () {
+      if (host.dataset.state === 'idle') return;
+      // Une seule nouvelle tentative, avec l’adresse la plus récente que
+      // LE-RADAR connaît pour cette station (les flux changent d’adresse).
+      if (!retried && host.dataset.directory) {
+        retried = true;
+        setState('loading', 'Nouvelle tentative…');
+        (radioDirectory || (radioDirectory = radioFetchJson(host.dataset.directory))).then(function (list) {
+          var match = Array.isArray(list) ? list.filter(function (s) { return s && s.id === host.dataset.station; })[0] : null;
+          if (match && /^https:\/\//.test(match.stream || '') && match.stream !== stream) {
+            stream = match.stream;
+            audio.src = stream;
+            audio.play().catch(function () {});
+          } else {
+            setState('error', 'Flux indisponible');
           }
         });
+        return;
       }
-      load();
-    };
+      setState('error', 'Flux indisponible');
+    });
 
-    customElements.define('radar-tuner', RadarTuner);
+    if (show && host.dataset.nowplaying) {
+      var refresh = function () {
+        radioFetchJson(host.dataset.nowplaying).then(function (data) {
+          var entry = data && data.stations ? data.stations[host.dataset.station] : null;
+          var text = radioShowText(entry);
+          show.textContent = text;
+          show.hidden = !text;
+        });
+      };
+      refresh();
+      setInterval(function () { if (!document.hidden) refresh(); }, 120000);
+    }
+    setState('idle', 'Radio étudiante');
+  }
+
+  function initRadarTuner() {
+    window.KiosqueRadio = { enhance: enhanceRadio };
+    var bars = document.querySelectorAll('.kiosque-radio');
+    for (var i = 0; i < bars.length; i++) enhanceRadio(bars[i]);
   }
 
   function initMastheadStatusDock() {

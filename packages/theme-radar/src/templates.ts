@@ -23,6 +23,7 @@ import {
   type Taxonomies,
 } from '../../core/src/model.ts';
 import { renderSourceArticle } from './source-view.js';
+import { radioBarHtml } from './radio.js';
 import { pruneSportsPayload } from './sports-freshness.js';
 
 export interface RenderContext {
@@ -166,17 +167,8 @@ function sectionName(slug: string | undefined, ctx: RenderContext): Section | un
 }
 
 function radioTuner(ctx: RenderContext): string {
-  const radio = ctx.publication.radio;
-  if (!radio || radio.enabled === false) return '';
-  const params = new URLSearchParams();
-  if (radio.station) params.set('station', radio.station);
-  params.set('surface', 'kiosque-v1');
-  const src = `https://le-radar.ca/tuner-embed.html?${params.toString()}`;
-  /* data-state=loading : coque peinte dès le 1er paint (pas de [hidden] → pas de
-   * saut de layout ni de « pop » à l’arrivée du postMessage ready). */
-  return `<radar-tuner class="radar-tuner" data-src="${esc(src)}" data-surface="kiosque-v1" data-state="loading" aria-busy="true">
-  <a href="https://le-radar.ca/" rel="noopener">Écouter LE-RADAR</a>
-</radar-tuner>`;
+  // Lecteur natif du journal (radio.js) : plus d'iframe de le-radar.ca.
+  return radioBarHtml(ctx.publication.radio);
 }
 
 /** Emplacement sous le tuner pour dock météo + sports mobile (rempli en JS). */

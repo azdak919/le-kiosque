@@ -1,4 +1,5 @@
 import { renderSourceArticle } from './source-view.js';
+import { radioBarHtml, resolveStation } from './radio.js';
 import { pruneSportsPayload } from './sports-freshness.js';
 
 const ESCAPES = { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' };
@@ -523,64 +524,28 @@ export function applyBranding(bundle, base) {
     const sep = '<span class="site-foot__sep" aria-hidden="true">·</span>';
     footNav.innerHTML = navItems.map(navLink).join(sep);
   }
-  document.body.classList.toggle('with-radio', Boolean(publication.radio && publication.radio.enabled !== false));
+  document.body.classList.toggle('with-radio', Boolean(resolveStation(publication.radio)));
   syncRadarTuner(publication.radio);
 }
 
 /**
- * URL d’embed radio — même ordre de paramètres que templates.ts
- * (station puis surface) pour ne pas détruire l’iframe au branding PGlite.
- */
-function radioEmbedSrc(radio) {
-  const params = new URLSearchParams();
-  if (radio?.station) params.set('station', radio.station);
-  params.set('surface', 'kiosque-v1');
-  return `https://le-radar.ca/tuner-embed.html?${params}`;
-}
-
-/** Compare deux URLs d’embed en ignorant l’ordre des query params. */
-function sameRadioEmbedSrc(a, b) {
-  if (!a || !b) return false;
-  if (a === b) return true;
-  try {
-    const ua = new URL(a, 'https://le-radar.ca');
-    const ub = new URL(b, 'https://le-radar.ca');
-    if (ua.origin !== ub.origin || ua.pathname !== ub.pathname) return false;
-    const keys = new Set([...ua.searchParams.keys(), ...ub.searchParams.keys()]);
-    for (const key of keys) {
-      if (ua.searchParams.get(key) !== ub.searchParams.get(key)) return false;
-    }
-    return true;
-  } catch {
-    return false;
-  }
-}
-
-/**
- * Préserve l’élément <radar-tuner> et son iframe (écoute en cours, volume)
- * tant que la station / surface est équivalente. Un simple écart d’ordre
- * de query (?station&surface vs ?surface&station) ne doit pas remonter.
+ * Garde la barre radio vivante (écoute en cours, volume) tant que la station
+ * et son flux ne changent pas ; sinon, la remplace par le même HTML que le
+ * build statique (radio.js) et demande à kiosque.js de l’habiller.
  */
 function syncRadarTuner(radio) {
-  let current = document.querySelector('radar-tuner');
-  if (!radio || radio.enabled === false) {
+  const current = document.querySelector('.kiosque-radio');
+  const station = resolveStation(radio);
+  if (!station) {
     current?.remove();
     return;
   }
-  const src = radioEmbedSrc(radio);
-  const currentSrc = current?.getAttribute('data-src') || current?.dataset?.src || '';
-  if (current && sameRadioEmbedSrc(currentSrc, src)) {
-    /* Garder l’iframe vivante ; normaliser data-src sans recharger. */
-    if (currentSrc !== src) current.setAttribute('data-src', src);
-    return;
-  }
-  current?.remove();
-  const tuner = document.createElement('radar-tuner');
-  tuner.className = 'radar-tuner';
-  tuner.setAttribute('data-src', src);
-  tuner.dataset.surface = 'kiosque-v1';
-  tuner.dataset.state = 'loading';
-  tuner.setAttribute('aria-busy', 'true');
-  tuner.innerHTML = '<a href="https://le-radar.ca/" rel="noopener">Écouter LE-RADAR</a>';
-  document.querySelector('header')?.after(tuner);
+  if (current && current.dataset.station === station.id && current.dataset.stream === station.stream) return;
+  const template = document.createElement('template');
+  template.innerHTML = radioBarHtml(radio);
+  const next = template.content.firstElementChild;
+  if (!next) return;
+  if (current) current.replaceWith(next);
+  else document.querySelector('header')?.after(next);
+  window.KiosqueRadio?.enhance(next);
 }

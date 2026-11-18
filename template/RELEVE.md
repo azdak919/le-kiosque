@@ -74,7 +74,7 @@ Avant de partir :
    c'est irrécupérable.
 3. **Remplissez ce fichier**, même partiellement. Une note honnête vaut mieux
    qu'un modèle vide.
-4. **Prévenez [Le Kiosque](https://github.com/kiosque/kiosque/issues)** : le
+4. **Prévenez [Le Kiosque](https://github.com/azdak919/le-kiosque/issues)** : le
    journal restera dans l'annuaire, marqué en sommeil, et quelqu'un pourra le
    reprendre.
 

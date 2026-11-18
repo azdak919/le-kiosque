@@ -23,6 +23,7 @@ checks CI verts (`test`) → **merge + delete branch**.
 **Push ≠ livré** : avertir l’humain avec  
 `gh pr merge <N> --merge --delete-branch` si la clôture n’est pas encore faite.  
 **LE-RADAR UI/CSS** : `npm run check` + Playwright (au minimum mât/smoke) avant push.
+**Worktree** : ne jamais versionner `node_modules`, même comme lien vers un autre clone. Relire `git status` avant `git add -A`.
 
 ### Photos = crédit photographe (comme les articles ont des signatures)
 
@@ -242,13 +243,13 @@ on ne recrée pas de deuxième journal d’état.
 
 | État | Chantier | Décision, critères et suites |
 |---|---|---|
-| **fait** | Jalon 3 — vitrine, Le Quorum et administration locale | Le build statique, le mode `demo-local` PGlite, la banque média locale, les points focaux, la barre radio et les validations correspondantes sont livrés. PGlite reste exclu des builds Git/Sveltia. |
+| **fait** | Jalon 3 — vitrine, Le Quorum et administration locale | Le build statique, le mode `demo-local` PGlite, la banque média locale, les points focaux, la barre radio et les validations correspondantes sont livrés. La barre radio est native depuis le 18 novembre 2026 : `packages/theme-radar/src/radio.js` (répertoire des stations, HTML partagé build + démo) et `enhanceRadio` dans `kiosque.js`. Aucune iframe ; LE-RADAR ne sert qu’à l’émission en cours et à une adresse de flux plus récente, en option. PGlite reste exclu des builds Git/Sveltia. |
 | **fait** | Modèle éditorial de source individuelle | `source-view.js` est le noyau unique appelé par `templates.ts` et `assets/editorial/render.js`; `source-view.css` porte les mesures/rôles de LE-RADAR. La démonstration ne possède plus de carte concurrente. |
 | **à surveiller** | Synchronisation LE-RADAR → LE-KIOSQUE | LE-RADAR est la référence du modèle de carte seulement. Avant de faire évoluer ce modèle dans LE-KIOSQUE, exécuter `npm run radar:reference:check -- --from=../le-radar`, examiner les écarts, puis actualiser le manifeste avec les adaptations réellement nécessaires. Les empreintes portent seulement sur `partitionSourceFeed`, `createArticle` et leurs CSS : une évolution du lecteur radio ne déclenche donc pas une fausse migration. Le build ne dépend jamais du dépôt voisin. |
 | **fait** | Impression Ctrl+P d’un article individuel | `@media print` dans `theme.css` + `body.is-article-page` : masque mât photo, radio, nav, En bref, tags et footer chrome ; garde titre, méta, photo lead (si présente) et corps. Critère : Ctrl+P sur `/articles/…` = une page lisible, pas un scrape de l’UI. |
 | **fait** | Banque photo démo + algo stock LE-RADAR | `packages/stock-photo` porte le scoring Openverse/Commons de LE-RADAR ; `tools/seed-demo-photos.mjs` élargit la banque locale ; `tools/match-article-photos.mjs` teste/applique ; admin « Suggérer » classe la banque selon le contenu. |
 | **fait** | Jalon 4 — doctor, adopt, export miroir | `kiosque doctor` (diagnostic local sans réseau), `kiosque adopt` (checklist PASSATION.md), `kiosque export` (archive portable) et `kiosque deploy-hint` (guide publication, zéro hébergement fourni). Aucun backend ni OAuth. |
-| **fait** | Adaptateur socle, éteint | `packages/adapters/socle` est chargé par `sync` seulement si la config le demande. Le gabarit et la démo restent `adapter: 'markdown'`. `build.ts` n'importe ni l'adaptateur ni `le-socle`. `admin/mise-a-jour/` a deux lignes, Socle et Kiosque. Le serveur vit dans `le-socle`. |
+| **fait** | Adaptateur socle, éteint | `packages/adapters/socle` est chargé par `sync` seulement si la config le demande. Le gabarit et la démo restent `adapter: 'markdown'`. `build.ts` n'importe ni l'adaptateur ni `le-socle`. `admin/mise-a-jour/` a deux lignes, Socle et Kiosque, dans la coquille de l’admin (`adminShell` de `local-admin.ts`, feuille copiée en `assets/kiosque-admin.css` dans tous les modes). Elle n’appelle pas le réseau. La navigation de l’admin est faite de liens `/admin/#vue`. Le serveur vit dans `le-socle`. |
 | **fait** | Kit portable (clé USB / Drive) | `npm run kit` → `dist-kit/le-kiosque-kit.{zip,tar.gz}` : gabarit, plateforme, Node embarqué (Linux, macOS, Windows), site d’exemple, installateur en 5 étapes validées (`tools/kit/installer.mjs`) : SFTP/FTP/FTPS via curl ou sftp du système, dossier local, paquet Netlify/Cloudflare. Pause/reprise dans `journal/installation-kiosque.json`, jamais de mot de passe. Testé contre nginx + OpenSSH + vsftpd locaux. Reste : test sur un vrai hébergeur, Windows réel. |
 | **bloqué par produit/opérations** | Fédération LE-RADAR, API distante, stockage, rôles et DAM | Ne commencer qu’après définition des responsabilités d’authentification, d’exploitation et de stockage. |
 

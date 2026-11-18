@@ -223,4 +223,17 @@ test('le build démo écrit la page Mise à jour et l’admin y mène', async (t
   assert.match(page, /Aucune version proposée/);
   assert.match(admin, /href="\/admin\/mise-a-jour\/"/);
   assert.match(admin, /Tableau de bord/);
+  // Même coquille que l'admin : barre latérale, feuille admin, entrée active.
+  assert.match(page, /class="admin-sidebar"/);
+  assert.match(page, /href="\/assets\/kiosque-admin\.css"/);
+  assert.match(page, /data-nav="update" aria-current="page"/);
+  assert.match(page, /href="\/admin\/#articles"/);
+  assert.match(page, /pull request « Mise à jour de la plateforme »/);
+  await readFile(path.join(outDir, 'assets/kiosque-admin.css'), 'utf8');
+});
+
+test('la mise à jour de plateforme du gabarit vise le vrai dépôt amont', async () => {
+  const workflow = await readFile(path.join(ROOT, 'template/.github/workflows/maj-plateforme.yml'), 'utf8');
+  assert.match(workflow, /https:\/\/github\.com\/azdak919\/le-kiosque\.git/);
+  assert.doesNotMatch(workflow, /github\.com\/kiosque\/kiosque/);
 });

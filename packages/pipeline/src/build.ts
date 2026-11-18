@@ -76,6 +76,7 @@ async function copyDemoRuntime(outDir: string): Promise<void> {
   // démo PGlite. Il vit côté thème, puis est copié explicitement dans le
   // runtime navigateur — jamais recopié à la main dans render.js.
   await cp(path.resolve(THEME_ASSETS, '..', 'src', 'source-view.js'), path.join(editorialDir, 'source-view.js'));
+  await cp(path.resolve(THEME_ASSETS, '..', 'src', 'radio.js'), path.join(editorialDir, 'radio.js'));
   await copyPgliteModule(path.join(PGLITE_DIST, 'index.js'), PGLITE_DIST, pgliteDir);
   await copyPgliteModule(path.join(PGLITE_DIST, 'worker', 'index.js'), PGLITE_DIST, pgliteDir);
   for (const file of ['pglite.wasm', 'pglite.data', 'initdb.wasm']) {
@@ -260,7 +261,7 @@ ${authors}
   <link href="${esc(base)}/"/>
   <id>${esc(base)}/</id>
   <updated>${esc(updated)}</updated>
-  <generator uri="https://github.com/kiosque/kiosque">Le Kiosque</generator>
+  <generator uri="https://github.com/azdak919/le-kiosque">Le Kiosque</generator>
 ${entries}
 </feed>
 `;
@@ -540,10 +541,23 @@ export async function build(options: BuildOptions): Promise<BuildResult> {
   }
   const kiosquePackage = JSON.parse(await readFile(new URL('../../../package.json', import.meta.url), 'utf8')) as { version: string };
   await mkdir(path.join(outDir, 'admin', 'mise-a-jour'), { recursive: true });
+  // La page Mise à jour porte la même coquille que l'admin, dans tous les
+  // modes : sa feuille est copiée à part, car `assets/editorial/` n'existe
+  // qu'en démonstration locale.
+  await mkdir(path.join(outDir, 'assets'), { recursive: true });
+  await cp(path.join(THEME_ASSETS, 'editorial', 'admin.css'), path.join(outDir, 'assets', 'kiosque-admin.css'));
+  const socleUrl = config.source.adapter === 'socle' && typeof config.source.options?.baseUrl === 'string'
+    ? config.source.options.baseUrl
+    : undefined;
   await writeFile(path.join(outDir, 'admin', 'mise-a-jour', 'index.html'), updatePage({
     lang: bundle.publication.lang,
     publicationName: bundle.publication.name,
     backHref: `${basePath}/admin/`,
+    adminBasePath: `${basePath}/admin`,
+    publicBasePath: basePath,
+    cssHref: `${basePath}/assets/kiosque-admin.css`,
+    mode: editorialMode,
+    socleUrl,
     lines: [
       { id: 'socle', title: 'Socle', installed: '1.0.0', offered: null, notes: '' },
       { id: 'kiosque', title: 'Kiosque', installed: kiosquePackage.version, offered: null, notes: '' },

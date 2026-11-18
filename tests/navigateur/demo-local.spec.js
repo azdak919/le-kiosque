@@ -44,12 +44,12 @@ test('configurer, rédiger, prévisualiser, publier, persister et exporter sans 
   await expect(page.getByRole('heading', { name: 'Tableau de bord' })).toBeVisible({ timeout: 45_000 });
   await expect(page.locator('#publication-name')).toHaveText('La Relève locale');
 
-  await page.getByRole('button', { name: 'Photos' }).click();
+  await page.locator('.admin-nav').getByRole('link', { name: 'Photos', exact: true }).click();
   // Banque démo = seed (pas un entier magique 50/51).
   await expect(page.locator('.media-card')).toHaveCount(expectedMediaCount);
   await page.getByLabel('Rechercher un établissement, un campus ou un mot-clé').fill('Jonquière');
   await expect(page.locator('.media-card:visible')).toHaveCount(2);
-  await page.getByRole('button', { name: 'Tableau de bord' }).click();
+  await page.locator('.admin-nav').getByRole('link', { name: 'Tableau de bord', exact: true }).click();
 
   await page.getByRole('button', { name: 'Créer un article' }).click();
   await page.getByLabel('Titre').fill('Un article créé dans le navigateur');
@@ -102,26 +102,26 @@ test('configurer, rédiger, prévisualiser, publier, persister et exporter sans 
   await front.waitForFunction(() => document.documentElement.dataset.editorialReady === 'true', null, { timeout: 45_000 });
   await expect(front.getByRole('heading', { level: 1, name: 'Un article local mis à jour' })).toBeVisible();
 
-  await page.getByRole('button', { name: 'Tableau de bord' }).click();
+  await page.locator('.admin-nav').getByRole('link', { name: 'Tableau de bord', exact: true }).click();
   await page.getByLabel('Afficher les exemples publiés dans le front end').uncheck();
   await expect(front.getByText('La radio de campus souffle ses cinquante bougies')).toHaveCount(0);
   await expect(front.getByRole('heading', { level: 1, name: 'Un article local mis à jour' })).toBeVisible();
   page.once('dialog', (dialog) => dialog.accept());
   await page.getByRole('button', { name: 'Supprimer les exemples non modifiés' }).click();
-  await page.getByRole('button', { name: 'Articles' }).click();
+  await page.locator('.admin-nav').getByRole('link', { name: 'Articles', exact: true }).click();
   await expect(page.getByText('Exemple local')).toHaveCount(0);
   await expect(page.getByText('Un article local mis à jour')).toBeVisible();
-  await page.getByRole('button', { name: 'Tableau de bord' }).click();
+  await page.locator('.admin-nav').getByRole('link', { name: 'Tableau de bord', exact: true }).click();
   page.once('dialog', (dialog) => dialog.accept());
   await page.getByRole('button', { name: 'Restaurer Le Quorum' }).click();
   // Import banque + PGlite : long en CI. Le toast (#toast) est éphémère (CSS/timing) —
   // attendre le bouton redevenu utilisable puis les exemples en liste.
   await expect(page.getByRole('button', { name: 'Restaurer Le Quorum' })).toBeEnabled({ timeout: 90_000 });
   await expect(page.locator('#publication-name')).toHaveText('La Relève locale');
-  await page.getByRole('button', { name: 'Articles' }).click();
+  await page.locator('.admin-nav').getByRole('link', { name: 'Articles', exact: true }).click();
   await expect(page.getByText('Exemple local').first()).toBeVisible({ timeout: 60_000 });
 
-  await page.getByRole('button', { name: 'Configuration' }).click();
+  await page.locator('.admin-nav').getByRole('link', { name: 'Configuration', exact: true }).click();
   await page.getByRole('button', { name: 'Choisir une photo' }).click();
   const mastheadPicker = page.locator('.media-picker');
   await mastheadPicker.getByLabel('Rechercher un établissement, un campus ou un mot-clé').fill('McGill');
@@ -131,7 +131,7 @@ test('configurer, rédiger, prévisualiser, publier, persister et exporter sans 
   await page.getByRole('button', { name: 'Enregistrer' }).click();
   await expect(front.locator('.masthead-background')).toHaveAttribute('src', /mcgill-(roddick|campus|arts)\.jpg/);
 
-  await page.getByRole('button', { name: 'Exporter et poursuivre' }).click();
+  await page.locator('.admin-nav').getByRole('link', { name: 'Exporter et poursuivre', exact: true }).click();
   const jsonEvent = page.waitForEvent('download');
   await page.getByRole('button', { name: 'Télécharger la sauvegarde JSON' }).click();
   const jsonDownload = await jsonEvent;
@@ -154,7 +154,7 @@ test('configurer, rédiger, prévisualiser, publier, persister et exporter sans 
   await page.getByRole('button', { name: 'Réinitialiser Le Quorum' }).click();
   // Reset complet + rechargement PGlite de la banque démo : long sur CI.
   await expect(page.getByRole('heading', { name: 'Tableau de bord' })).toBeVisible({ timeout: 60_000 });
-  await page.getByRole('button', { name: 'Exporter et poursuivre' }).click();
+  await page.locator('.admin-nav').getByRole('link', { name: 'Exporter et poursuivre', exact: true }).click();
   const chooser = page.waitForEvent('filechooser');
   await page.getByRole('button', { name: 'Importer une sauvegarde' }).click();
   // Le handler de fichier est asynchrone : attendre explicitement le dialogue
@@ -163,9 +163,9 @@ test('configurer, rédiger, prévisualiser, publier, persister et exporter sans 
   await (await chooser).setFiles(jsonPath);
   await importDialog.then((dialog) => dialog.accept());
   await expect(page.getByRole('heading', { name: 'Tableau de bord' })).toBeVisible({ timeout: 60_000 });
-  await page.getByRole('button', { name: 'Articles' }).click();
+  await page.locator('.admin-nav').getByRole('link', { name: 'Articles', exact: true }).click();
   await expect(page.getByText('Un article local mis à jour')).toBeVisible({ timeout: 30_000 });
-  await page.getByRole('button', { name: 'Configuration' }).click();
+  await page.locator('.admin-nav').getByRole('link', { name: 'Configuration', exact: true }).click();
   await expect(page.locator('#masthead-crop-preview img').first()).toHaveAttribute('src', /mcgill-(roddick|campus|arts)\.jpg/, { timeout: 30_000 });
 });
 
@@ -187,4 +187,20 @@ test('un lecteur de la démo ne télécharge pas PGlite (réservé à /admin/)',
   await page.waitForTimeout(1500);
   expect(pglite).toEqual([]);
   await ctx.close();
+});
+
+test('la page Mise à jour garde la coquille de l’admin et y ramène', async ({ page }) => {
+  await page.goto('/autre-nom/admin/');
+  // Un clic avant l’ouverture de la base ne doit plus figer l’admin.
+  await page.locator('.admin-nav').getByRole('link', { name: 'Photos', exact: true }).click();
+  await expect(page.getByRole('heading', { name: 'Photos', level: 2 })).toBeVisible({ timeout: 60_000 });
+  await expect(page).toHaveURL(/\/admin\/#media$/);
+  await page.locator('.admin-nav').getByRole('link', { name: 'Mise à jour' }).click();
+  await expect(page).toHaveURL(/\/autre-nom\/admin\/mise-a-jour\/$/);
+  await expect(page.getByRole('heading', { name: 'Mise à jour', level: 2 })).toBeVisible();
+  await expect(page.locator('.admin-nav [aria-current="page"]')).toHaveText('Mise à jour');
+  await expect(page.locator('.update-line')).toHaveCount(2);
+  await page.locator('.admin-nav').getByRole('link', { name: 'Articles', exact: true }).click();
+  await expect(page).toHaveURL(/\/admin\/#articles$/);
+  await expect(page.getByRole('heading', { name: 'Articles', level: 2 })).toBeVisible({ timeout: 60_000 });
 });
