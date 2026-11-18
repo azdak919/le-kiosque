@@ -94,6 +94,7 @@ function articleCard(article, bundle, base, variant = 'tail') {
       alt: lead.alt || '',
       caption: lead.caption,
       credit: lead.credit,
+      license: lead.license,
       focalPoint: lead.focalPoint,
       width: lead.width,
       height: lead.height,
@@ -119,8 +120,8 @@ export function renderRoute(bundle, base, pathname, renderBody) {
   if (!parts.length) {
     const wireTitle = bundle.publication.labels?.wireTitle || 'Le fil étudiant';
     return {
-      title: `${bundle.publication.name} — ${bundle.publication.tagline || bundle.publication.institution}`,
-      html: `<div class="wrap wire"><div class="wire-head"><h1 class="wire-title">${esc(wireTitle)}</h1><span class="wire-status">${published.length} article${published.length > 1 ? 's' : ''}</span></div>${magazineFeedHtml(published, bundle, base, wireTitle, 'Aucun article publié pour le moment.')}</div>`,
+      title: [bundle.publication.name, bundle.publication.tagline || bundle.publication.institution].filter(Boolean).join(' — '),
+      html: `<div class="wrap wire"><div class="wire-head"><h1 class="wire-title">${esc(wireTitle)}</h1>${published.length ? `<span class="wire-status">${published.length} article${published.length > 1 ? 's' : ''}</span>` : ''}</div>${magazineFeedHtml(published, bundle, base, wireTitle, 'Aucun article publié pour le moment.')}</div>`,
     };
   }
   if (parts[0] === 'articles' && parts[1]) {
@@ -341,7 +342,7 @@ export function renderRoute(bundle, base, pathname, renderBody) {
     const articles = published.filter((article) => Array.isArray(article[definition.field]) ? article[definition.field].includes(entity.slug) : article[definition.field] === entity.slug);
     return {
       title: `${entity.name} — ${bundle.publication.name}`,
-      html: `<div class="wrap wire"><div class="wire-head"><h1 class="wire-title">${esc(entity.name)}</h1><span class="wire-status">${articles.length} article${articles.length > 1 ? 's' : ''}</span></div>${entity.description ? `<p class="section-intro">${esc(entity.description)}</p>` : ''}${magazineFeedHtml(articles, bundle, base, entity.name, definition.empty)}</div>`,
+      html: `<div class="wrap wire"><div class="wire-head"><h1 class="wire-title">${esc(entity.name)}</h1>${articles.length ? `<span class="wire-status">${articles.length} article${articles.length > 1 ? 's' : ''}</span>` : ''}</div>${entity.description ? `<p class="section-intro">${esc(entity.description)}</p>` : ''}${magazineFeedHtml(articles, bundle, base, entity.name, definition.empty)}</div>`,
     };
   }
   if (parts[0] === 'auteurs') {
@@ -399,6 +400,25 @@ export function renderRoute(bundle, base, pathname, renderBody) {
   return null;
 }
 
+/** Années du droit d'auteur : l'année courante, ou « fondation–année courante » (comme templates.ts). */
+export function footYears(founded, year) {
+  const start = Number(/\d{4}/.exec(String(founded ?? ''))?.[0]);
+  return start && start < year ? `${start}–${year}` : String(year);
+}
+
+/** Licence des contenus : « Tous droits réservés. » par défaut, CC BY-NC-ND 4.0 avec son lien. */
+export function footRights(license) {
+  const value = String(license ?? '').trim();
+  if (!value || /^tous droits réservés\.?$/i.test(value)) return 'Tous droits réservés.';
+  if (/by-nc-nd/i.test(value)) return 'Contenus sous licence <a href="https://creativecommons.org/licenses/by-nc-nd/4.0/deed.fr" rel="license noopener">CC BY-NC-ND 4.0</a>.';
+  return `Contenus sous licence ${esc(value)}.`;
+}
+
+export function footCopyright(publication, year) {
+  const name = String(publication.name ?? '').trim();
+  return `© ${footYears(publication.founded, year)}${name ? ` ${esc(name)}` : ''}. ${footRights(publication.license)}`;
+}
+
 export function applyBranding(bundle, base) {
   const publication = bundle.publication;
   document.documentElement.style.setProperty('--accent', publication.theme?.accent || '#6c2163');
@@ -406,8 +426,9 @@ export function applyBranding(bundle, base) {
   document.querySelectorAll('.wordmark a').forEach((node) => {
     node.href = `${base}/`;
     const logo = safeMediaUrl(publication.logo?.src);
+    // Le logo remplace le nom écrit ; sans logo, le nom en grand (comme templates.ts).
     if (logo) node.innerHTML = `<img class="publication-logo" src="${esc(logo)}" alt="${esc(publication.logo.alt || publication.name)}">`;
-    else node.textContent = publication.name;
+    else node.innerHTML = `<span class="wordmark-name">${esc(publication.name)}</span>`;
   });
   document.querySelectorAll('.masthead-tagline').forEach((node) => { node.textContent = publication.tagline || ''; });
   // Pied de page : le site vivant du paquet complet part d'une coquille sans nom.
@@ -422,11 +443,11 @@ export function applyBranding(bundle, base) {
     const contact = publication.governance?.contact;
     // L'organisme responsable n'est pas répété s'il porte le nom du journal (déjà en tête du pied de page).
     const rawSteward = publication.governance?.stewardEntity;
-    const steward = rawSteward && rawSteward.trim() !== String(publication.name || '').trim() ? rawSteward : '';
+    const steward = rawSteward && ![String(publication.name || '').trim(), String(publication.institution || '').trim()].includes(rawSteward.trim()) ? rawSteward : '';
     const lines = [];
     if (contact) lines.push(`<p class="site-foot__contact"><a href="mailto:${esc(contact)}">${esc(contact)}</a>${steward ? ` · ${esc(steward)}` : ''}</p>`);
     else if (steward) lines.push(`<p class="site-foot__contact">${esc(steward)}</p>`);
-    if (publication.license) lines.push(`<p class="site-foot__legal">Contenus sous licence ${esc(publication.license)}, sauf mention contraire.</p>`);
+    lines.push(`<p class="site-foot__legal">${footCopyright(publication, new Date().getFullYear())}</p>`);
     credit.insertAdjacentHTML('afterbegin', lines.join(''));
   });
   document.querySelectorAll('.masthead-meta > span').forEach((node) => { node.textContent = publication.institution || ''; });

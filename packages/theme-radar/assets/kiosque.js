@@ -1275,14 +1275,17 @@
     }
   }
 
-  /** Appelé après applyBranding (front éditorial) pour peindre la puce sports. */
+  /** Appelé après applyBranding (front éditorial) pour peindre sports et météo. */
   function refreshMastheadStatus() {
     initMastheadSports();
+    initMastheadWeather();
     syncMastheadWeatherDock();
   }
   try {
     window.KiosqueRefreshMasthead = refreshMastheadStatus;
   } catch (_) {}
+
+  var weatherPaintGen = 0;
 
   function initMastheadWeather() {
     var host = document.querySelector('[data-weather-localities]');
@@ -1295,6 +1298,13 @@
         .slice(0, 4);
     } catch (_) {}
     if (!localities.length) return;
+    /* En mode socle-vivant, applyBranding pose les localités après le premier
+       init : KiosqueRefreshMasthead doit pouvoir relancer le fetch. Déjà
+       peint pour les mêmes localités → ne pas empiler les puces. */
+    var key = localities.map(function (loc) { return loc.name; }).join('|');
+    if (host.dataset.weatherReady === key && host.querySelector('.weather-chip, .masthead-weather__city')) return;
+    var gen = ++weatherPaintGen;
+    host.dataset.weatherReady = key;
     var meteoBase = host.dataset.meteoconsBase || '';
     if (!meteoBase) {
       var tokens = document.querySelector('link[href*="tokens.css"]');
@@ -1347,6 +1357,8 @@
       try { localStorage.setItem(cacheKey, JSON.stringify({ savedAt: Date.now(), value: value })); } catch (_) {}
       return value;
     })).then(function (values) {
+      if (gen !== weatherPaintGen) return;
+      host.querySelectorAll('.weather-chip, .masthead-weather__city').forEach(function (node) { node.remove(); });
       values.forEach(function (value) {
         // Lien principal = Environnement Canada ; MétéoMédia associé (title + data-).
         var href = value.envcan || value.meteomedia || '#';
@@ -1409,6 +1421,8 @@
       });
       syncMastheadWeatherDock();
     }).catch(function () {
+      if (gen !== weatherPaintGen) return;
+      delete host.dataset.weatherReady;
       host.remove();
       var dock = document.getElementById('masthead-weather-dock');
       if (dock && !dock.childNodes.length) dock.hidden = true;

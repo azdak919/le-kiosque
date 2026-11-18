@@ -71,10 +71,39 @@ function footSignature(pub: { institution?: string; founded?: string; tagline?: 
   return [where, pub.tagline].filter(Boolean).join(' — ');
 }
 
-/** L'organisme responsable, sauf s'il répète le nom du journal déjà affiché. */
-function footSteward(pub: { name?: string; governance: { stewardEntity?: string } }): string {
+/** Licence CC proposée dans la configuration (sinon : « Tous droits réservés »). */
+const CC_BY_NC_ND_URL = 'https://creativecommons.org/licenses/by-nc-nd/4.0/deed.fr';
+
+/** Années du droit d'auteur : l'année courante, ou « fondation–année courante ». */
+export function footYears(founded: string | undefined, year: number): string {
+  const start = Number(/\d{4}/.exec(String(founded ?? ''))?.[0]);
+  return start && start < year ? `${start}–${year}` : String(year);
+}
+
+/** Licence des contenus du journal, en HTML : « Tous droits réservés. » par défaut. */
+export function footRights(license: string | undefined): string {
+  const value = String(license ?? '').trim();
+  if (!value || /^tous droits réservés\.?$/i.test(value)) return 'Tous droits réservés.';
+  if (/by-nc-nd/i.test(value)) return `Contenus sous licence <a href="${CC_BY_NC_ND_URL}" rel="license noopener">CC BY-NC-ND 4.0</a>.`;
+  return `Contenus sous licence ${esc(value)}.`;
+}
+
+/** Première ligne du bas de page : « © 2026 La Vigie. Tous droits réservés. » */
+export function footCopyright(pub: { name?: string; founded?: string; license?: string }, year: number): string {
+  const name = String(pub.name ?? '').trim();
+  return `© ${footYears(pub.founded, year)}${name ? ` ${esc(name)}` : ''}. ${footRights(pub.license)}`;
+}
+
+/** Page de présentation du Kiosque, liée au bas de chaque page publique (seul endroit à changer). */
+export const KIOSQUE_SITE_URL = 'https://azdak919.github.io/le-kiosque/';
+
+const POWERED_BY = `Propulsé par <a href="${KIOSQUE_SITE_URL}" rel="noopener">Le Kiosque</a>, plateforme libre sous licence GPL pour les journaux étudiants.`;
+
+/** L'organisme responsable, sauf s'il répète ce que le pied de page dit déjà. */
+function footSteward(pub: { name?: string; institution?: string; governance: { stewardEntity?: string } }): string {
   const steward = String(pub.governance.stewardEntity || '').trim();
-  return steward && steward !== String(pub.name || '').trim() ? steward : '';
+  // Ni le nom du journal ni l'établissement, déjà écrits juste au-dessus.
+  return steward && steward !== String(pub.name || '').trim() && steward !== String(pub.institution || '').trim() ? steward : '';
 }
 
 export function mastheadOptions(publication: Publication): MastheadOptions {
@@ -186,17 +215,16 @@ function darkAccent(color: string): string {
 }
 
 /**
- * Logo du mât. Un logo large (un nom dessiné) remplace le nom ; un emblème
- * (presque carré : moins de 1,8 fois plus large que haut) l'accompagne.
+ * Mât : sans logo, le nom du journal en grand, en caractères de titre de
+ * journal ; avec un logo (SVG ou image), le logo remplace le nom écrit
+ * (son texte alternatif porte le nom). Jamais les deux.
  */
-function wordmarkInner(masthead: { name: string; logo?: { src: string; width?: number; height?: number } }, ctx: RenderContext): string {
-  if (!masthead.logo) return esc(masthead.name);
+function wordmarkInner(masthead: { name: string; logo?: { src: string; alt?: string; width?: number; height?: number } }, ctx: RenderContext): string {
+  if (!masthead.logo) return `<span class="wordmark-name">${esc(masthead.name)}</span>`;
   const { width, height } = masthead.logo;
-  const emblem = Boolean(width && height && width / height < 1.8);
+  const size = width && height ? ` width="${width}" height="${height}"` : '';
   const src = safeUrl(asset(masthead.logo.src, ctx));
-  return emblem
-    ? `<span class="wordmark-with-logo"><img class="publication-logo publication-logo--emblem" src="${src}" alt="" width="${width}" height="${height}"><span class="wordmark-name">${esc(masthead.name)}</span></span>`
-    : `<img class="publication-logo" src="${src}" alt="${esc(masthead.name)}">`;
+  return `<img class="publication-logo" src="${src}" alt="${esc(masthead.logo.alt || masthead.name)}"${size}>`;
 }
 
 /** « Photo : Nom (CC BY-SA 4.0) », licence liée quand on a son adresse. */
@@ -929,8 +957,8 @@ ${content}
             ? `<p class="site-foot__contact">${esc(footSteward(pub))}</p>`
             : ''
       }
-      ${pub.license ? `<p class="site-foot__legal">Contenus sous licence ${esc(pub.license)}, sauf mention contraire.</p>` : ''}
-      <p class="site-foot__built">${ctx.editorial?.mode === 'socle-vivant' ? 'Site' : 'Site statique'} produit par <a href="https://github.com/azdak919/le-kiosque" rel="noopener">Le Kiosque</a>, logiciel libre pour les journaux étudiants. © ${ctx.buildYear}</p>
+      <p class="site-foot__legal">${footCopyright(pub, ctx.buildYear)}</p>
+      <p class="site-foot__built">${POWERED_BY}</p>
     </div>
   </div>
 </footer>
@@ -1046,7 +1074,7 @@ export function homePage(articles: Article[], ctx: RenderContext): string {
     `<div class="wrap wire">
       <div class="wire-head">
         <h1 class="wire-title">${esc(wireTitle)}</h1>
-        <span class="wire-status">${articles.length} article${articles.length > 1 ? 's' : ''}</span>
+        ${articles.length ? `<span class="wire-status">${articles.length} article${articles.length > 1 ? 's' : ''}</span>` : ''}
       </div>
       ${magazineFeedHtml(articles, ctx, {
         heroLabel: wireTitle,
@@ -1054,7 +1082,7 @@ export function homePage(articles: Article[], ctx: RenderContext): string {
       })}
     </div>`,
     {
-      title: `${ctx.publication.name} — ${ctx.publication.tagline ?? ctx.publication.institution}`,
+      title: [ctx.publication.name, ctx.publication.tagline || ctx.publication.institution].filter(Boolean).join(' — '),
       canonical: `${ctx.publication.siteUrl}/`,
       current: asset('/', ctx),
     },
@@ -1217,7 +1245,7 @@ export function sectionPage(section: Section, articles: Article[], ctx: RenderCo
     `<div class="wrap wire">
       <div class="wire-head">
         <h1 class="wire-title">${esc(section.name)}</h1>
-        <span class="wire-status">${articles.length} article${articles.length > 1 ? 's' : ''}</span>
+        ${articles.length ? `<span class="wire-status">${articles.length} article${articles.length > 1 ? 's' : ''}</span>` : ''}
       </div>
       ${section.description ? `<p class="section-intro">${esc(section.description)}</p>` : ''}
       ${magazineFeedHtml(articles, ctx, {
@@ -1241,7 +1269,7 @@ export function categoryPage(category: { slug: string; name: string; description
     `<div class="wrap wire">
       <div class="wire-head">
         <h1 class="wire-title">${esc(category.name)}</h1>
-        <span class="wire-status">${articles.length} article${articles.length > 1 ? 's' : ''}</span>
+        ${articles.length ? `<span class="wire-status">${articles.length} article${articles.length > 1 ? 's' : ''}</span>` : ''}
       </div>
       ${category.description ? `<p class="section-intro">${esc(category.description)}</p>` : ''}
       ${magazineFeedHtml(articles, ctx, {
