@@ -139,7 +139,7 @@ test('configurer, rédiger, prévisualiser, publier, persister et exporter sans 
   await page.getByRole('button', { name: 'Enregistrer' }).click();
   await expect(front.locator('.masthead-background')).toHaveAttribute('src', /mcgill-(roddick|campus|arts)\.jpg/);
 
-  await page.locator('.admin-nav').getByRole('link', { name: 'Exporter et poursuivre', exact: true }).click();
+  await page.locator('.admin-nav').getByRole('link', { name: 'Exporter', exact: true }).click();
   const jsonEvent = page.waitForEvent('download');
   await page.getByRole('button', { name: 'Télécharger la sauvegarde JSON' }).click();
   const jsonDownload = await jsonEvent;
@@ -162,7 +162,7 @@ test('configurer, rédiger, prévisualiser, publier, persister et exporter sans 
   await page.getByRole('button', { name: 'Réinitialiser Le Quorum' }).click();
   // Reset complet + rechargement sql.js de la banque démo : long sur CI.
   await expect(page.getByRole('heading', { name: 'Tableau de bord' })).toBeVisible({ timeout: 60_000 });
-  await page.locator('.admin-nav').getByRole('link', { name: 'Exporter et poursuivre', exact: true }).click();
+  await page.locator('.admin-nav').getByRole('link', { name: 'Exporter', exact: true }).click();
   const chooser = page.waitForEvent('filechooser');
   await page.getByRole('button', { name: 'Importer une sauvegarde' }).click();
   // Le handler de fichier est asynchrone : attendre explicitement le dialogue
