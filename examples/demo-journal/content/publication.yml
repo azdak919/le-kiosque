@@ -564,7 +564,7 @@ masthead:
   overlayStrength: 0.38
   textAlignment: left
 
-# Station de campus à afficher dans la barre radio (jalon 3).
+# Station de campus de la barre radio native (répertoire LE-RADAR : chyz).
 radio:
   enabled: true
   station: chyz

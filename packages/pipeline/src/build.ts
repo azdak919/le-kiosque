@@ -76,6 +76,7 @@ async function copyDemoRuntime(outDir: string): Promise<void> {
   // démo PGlite. Il vit côté thème, puis est copié explicitement dans le
   // runtime navigateur — jamais recopié à la main dans render.js.
   await cp(path.resolve(THEME_ASSETS, '..', 'src', 'source-view.js'), path.join(editorialDir, 'source-view.js'));
+  await cp(path.resolve(THEME_ASSETS, '..', 'src', 'radio.js'), path.join(editorialDir, 'radio.js'));
   await copyPgliteModule(path.join(PGLITE_DIST, 'index.js'), PGLITE_DIST, pgliteDir);
   await copyPgliteModule(path.join(PGLITE_DIST, 'worker', 'index.js'), PGLITE_DIST, pgliteDir);
   for (const file of ['pglite.wasm', 'pglite.data', 'initdb.wasm']) {

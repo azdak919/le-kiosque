@@ -11,6 +11,7 @@ n'en dépend pas.
 | [Tailwind CSS](https://github.com/tailwindlabs/tailwindcss) v4 © Tailwind Labs | MIT | Compilation des feuilles ci-dessus (`npm run ui`) | dépendance de développement |
 | [AstroWind](https://github.com/arthelokyo/astrowind) © arthelokyo | MIT | Inspiration de structure pour la vitrine (en-tête, héros, sections, appel à l'action). Aucun code copié. | `site/index.html` |
 | [Sveltia CMS](https://github.com/sveltia/sveltia-cms) | MIT | CMS facultatif | `packages/theme-radar/assets/admin/` (voir `SVELTIA-LICENSE.txt`) |
+| Répertoire des radios étudiantes de [LE-RADAR](https://github.com/azdak919/le-radar) (`radios.json`, relevé du 17 novembre 2026) | même auteur | Noms, fréquences, sites et flux des six stations | `packages/theme-radar/src/radio.js` |
 | [PGlite](https://github.com/electric-sql/pglite) © ElectricSQL | Apache-2.0 | PostgreSQL dans le navigateur, chargé seulement par `/admin/` | dépendance |
 
 Les textes de licence MIT de Basecoat et Tailwind CSS sont fournis avec leurs

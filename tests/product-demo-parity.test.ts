@@ -102,7 +102,7 @@ test('demo et template reçoivent le même theme.css / kiosque.js (packages/them
   assert.match(demoJs, /setMastheadWeatherDocked/, 'dock météo mobile');
   assert.match(demoJs, /initMastheadSports/, 'puce sports mât');
   assert.match(demoJs, /initNavCollapse/, 'nav collapse + peek');
-  assert.match(demoJs, /is-vol-overlay/, 'volume popover sans poussée layout');
+  assert.match(demoJs, /function enhanceRadio/, 'barre radio native, sans iframe ni popover');
   assert.match(demoCss, /masthead-weather-dock/, 'styles dock météo');
   assert.match(demoCss, /\.sports-chip/, 'styles puce sports');
   assert.match(demoCss, /\.nav-shell\.has-overflow/, 'styles nav peek');

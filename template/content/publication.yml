@@ -41,7 +41,14 @@ masthead:
     pomodoro: true
     solitaire: true
 
-# Barre sombre facultative de LE-RADAR.ca, sous le mât.
+# Barre radio sous le mât : un lecteur audio servi par le journal lui-même.
+# station : chyz, cism, ckut, cjlo, cfak ou choq (répertoire de LE-RADAR).
+# Pour une autre station, donnez son flux https :
+#   stream: https://exemple.ca/flux
+#   name: Radio du campus
+#   frequency: 88,1 FM
+#   website: https://exemple.ca/
+# Sans flux connu, la barre n'apparaît pas.
 radio:
   enabled: true
   station: station-exemple
