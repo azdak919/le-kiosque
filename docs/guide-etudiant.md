@@ -53,14 +53,16 @@ Ouvrez `https://<votre-site>/journal/redaction/`. La première visite affiche
   l'association étudiante), courriel de la rédaction (affiché sur le site),
   signature, sections (séparées par des virgules) ;
 - **Apparence** : couleur principale, logo (facultatif, 500 ko au plus) ;
-- **Options** : radio étudiante (oui ou non, puis la station) et **Cacher le
+- **Options** : radio étudiante (oui ou non, puis la station), **Cacher le
   journal des moteurs de recherche** (cochée : gardez-la tant que c'est un
-  essai) ;
+  essai) et **Afficher le bandeau « Journal étudiant fictif »** (pour un
+  exercice ou une démonstration) ;
 - **Compte administrateur** : votre courriel et un mot de passe d'au moins
   10 caractères (ce courriel n'est pas affiché sur le site). Notez le mot de
   passe dans le gestionnaire de mots de passe de l'équipe.
 
-**Installer le journal** ouvre la rédaction. Le site public prend tout de
+**Installer le journal** ouvre la rédaction ; attendez le message « Le journal
+est installé » avant de fermer l'onglet (les sections s'écrivent à ce moment). Le site public prend tout de
 suite le nom, le logo, les couleurs et les sections. Tout se change ensuite
 dans **Configuration**. L'assistant ne s'affiche qu'une fois : ensuite, seuls
 les comptes existants se connectent. Les données (base SQLite, photos) vont
@@ -111,7 +113,8 @@ voit sous les articles ; une signature n'est pas un compte.
 ## 7. Sauvegarde
 
 **Sauvegarde → Télécharger la sauvegarde complète** (administrateur) : un ZIP
-avec les articles, les photos, l'équipe et les réglages. Faites-le chaque fin
+avec les articles, les photos, les signatures, les sections, l'équipe (sans les
+mots de passe) et les réglages. Il s'ouvre comme n'importe quel ZIP. Faites-le chaque fin
 de session et avant toute opération délicate, et gardez-le hors du serveur.
 La même page restaure une archive.
 
