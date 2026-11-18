@@ -1,0 +1,38 @@
+# Bouton « Publier une version » (Actions → Publier une version → Run workflow).
+# Vérifie que la CI est verte sur main, que package.json et CHANGELOG.md
+# portent le numéro tapé, pose l'étiquette vX.Y.Z et lance la Release.
+# Ne tourne que dans le dépôt du Kiosque, jamais dans un journal créé depuis ce modèle.
+# Voir RELEASING.md.
+name: Publier une version
+
+on:
+  workflow_dispatch:
+    inputs:
+      version:
+        description: "Numéro à publier, tel qu'il est dans package.json (ex. 0.2.2)"
+        required: true
+
+permissions:
+  contents: write
+  actions: write
+  checks: read
+
+concurrency:
+  group: publier-version
+
+jobs:
+  publier-version:
+    if: github.repository == 'azdak919/le-kiosque'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+          fetch-depth: 0
+      - name: Contrôles, étiquette et Release
+        env:
+          GH_TOKEN: ${{ github.token }}
+          TAPEE: ${{ inputs.version }}
+          REQUIS: test navigateur
+          RELEASE_WORKFLOW: paquet.yml
+        run: .github/scripts/publier-version.sh

@@ -1,0 +1,31 @@
+# Tient l'issue « Prochaine version » à jour à chaque fusion dans main :
+# liste des PR fusionnées depuis la dernière étiquette et avis quand des
+# changements visibles attendent d'être publiés. Voir RELEASING.md.
+name: Prochaine version
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  issues: write
+
+concurrency:
+  group: prochaine-version
+  cancel-in-progress: true
+
+jobs:
+  liste:
+    if: github.repository == 'azdak919/le-kiosque'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Changements non publiés
+        env:
+          GH_TOKEN: ${{ github.token }}
+          VISIBLES: site packages tools/paquet-complet.mjs examples package.json package-lock.json
+        run: .github/scripts/prochaine-version.sh
