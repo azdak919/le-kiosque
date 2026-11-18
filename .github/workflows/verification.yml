@@ -18,9 +18,14 @@ concurrency:
 # Check requis pour merger dans main (branch protection / ruleset) :
 # le job s’appelle « test » — ne pas le renommer sans mettre à jour
 # VisualCode/GIT-AND-TEST-SAFETY.md §9 et la protection GitHub.
+#
+# Ce workflow publie la VITRINE du Kiosque et Le Quorum. Il ne tourne que dans
+# le dépôt amont : un journal créé avec « Use this template » ne publie que
+# lui-même, par « Publier le journal » (publier.yml).
 jobs:
   test:
     name: test
+    if: github.repository == 'azdak919/le-kiosque'
     runs-on: ubuntu-24.04
     steps:
       - uses: actions/checkout@v7
@@ -30,8 +35,7 @@ jobs:
           cache: npm
       - run: npm ci
       - run: npm test
-      # Un dépôt créé avec « Use this template » porte un autre nom : on prend
-      # le sous-chemin que GitHub Pages annonce, sans rien configurer.
+      # On prend le sous-chemin que GitHub Pages annonce, sans rien configurer.
       - if: github.event_name != 'pull_request'
         id: pages
         uses: actions/configure-pages@v6

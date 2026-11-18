@@ -62,11 +62,15 @@ test('sans sauvegarde possible, rien ne change', () => {
 });
 
 test('le workflow propose une pull request, sans force ni réécriture', () => {
-  const wf = readFileSync('template/.github/workflows/maj-socle.yml', 'utf8');
+  const wf = readFileSync('.github/workflows/maj-socle.yml', 'utf8');
   assert.match(wf, /workflow_dispatch:/);
   assert.match(wf, /node tools\/maj-socle\.mjs "\$CIBLE"/, 'le commit demandé passe par une variable, pas dans le script');
-  assert.match(wf, /gh pr create/);
+  assert.match(wf, /tools\/proposer-maj\.sh/);
   assert.doesNotMatch(wf, /--force|-f origin|gh pr merge/);
+  const proposer = readFileSync('tools/proposer-maj.sh', 'utf8');
+  assert.match(proposer, /gh pr create/);
+  assert.match(proposer, /gh issue create/, 'si GitHub interdit la pull request, une issue donne le lien en un clic');
+  assert.match(proposer, /compare\/main\.\.\./);
   assert.match(wf, /npm run kiosque -- build/, 'le journal doit se construire avant la proposition');
 });
 

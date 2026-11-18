@@ -1,0 +1,101 @@
+# Mises à jour de la plateforme Le Kiosque.
+#
+# Personne ne peut écrire dans votre dépôt — pas même l'équipe du Kiosque.
+# Ce workflow va chercher les améliorations en amont et vous les propose sous
+# forme de PULL REQUEST. Vous la lisez, vous la mergez, ou vous l'ignorez.
+# Votre journal ne dépend de personne.
+#
+# Pourquoi ça ne crée presque jamais de conflit : l'amont ne touche JAMAIS aux
+# fichiers qui vous appartiennent.
+#
+#   À VOUS, jamais modifié par l'amont :
+#     content/  media/  theme/tokens.css  kiosque.config.ts  OWNERS.md
+#
+#   À LA PLATEFORME, ne pas modifier à la main :
+#     packages/  tools/  .github/workflows/
+#
+# Si vous devez absolument modifier un fichier de plateforme, notez-le dans
+# OWNERS.md : la personne qui reprendra le journal saura pourquoi la mise à
+# jour coince.
+
+name: Mise à jour de la plateforme
+
+on:
+  schedule:
+    # Lundi 8 h UTC, une fois par semaine. Assez souvent pour ne pas dériver,
+    # assez rare pour ne pas être du bruit.
+    - cron: '0 8 * * 1'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  pull-requests: write
+  issues: write
+
+jobs:
+  proposer:
+    if: github.repository != 'azdak919/le-kiosque'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Récupérer l'amont
+        id: amont
+        run: |
+          git remote add upstream https://github.com/azdak919/le-kiosque.git 2>/dev/null || true
+          git fetch upstream main
+          echo "sha=$(git rev-parse --short=7 upstream/main)" >> "$GITHUB_OUTPUT"
+
+      # Une branche par version de l'amont : jamais de push forcé. Si elle
+      # existe déjà, la proposition est déjà faite.
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Préparer la branche de mise à jour
+        id: branche
+        env:
+          GH_TOKEN: ${{ github.token }}
+          SHA: ${{ steps.amont.outputs.sha }}
+        run: |
+          set -euo pipefail
+          branche="maj-plateforme-$SHA"
+          echo "nom=$branche" >> "$GITHUB_OUTPUT"
+          if git ls-remote --exit-code origin "refs/heads/$branche" >/dev/null; then
+            echo "change=false" >> "$GITHUB_OUTPUT"; echo "Déjà proposée."; exit 0
+          fi
+          git checkout -b "$branche"
+          # Le script de l'amont, pas une copie locale peut-être ancienne.
+          git show upstream/main:tools/maj-plateforme.sh > /tmp/maj-plateforme.sh
+          bash /tmp/maj-plateforme.sh upstream/main
+          if git diff --cached --quiet; then echo "Déjà à jour — rien à proposer."; exit 0; fi
+          git config user.name  "kiosque-bot"
+          git config user.email "kiosque-bot@users.noreply.github.com"
+          git commit -qm "Mise à jour de la plateforme Le Kiosque ($SHA)"
+          git push origin "$branche"
+
+      - name: Proposer la mise à jour
+        if: steps.branche.outputs.change == 'true'
+        env:
+          GH_TOKEN: ${{ github.token }}
+          REPO: ${{ github.repository }}
+          BRANCHE: ${{ steps.branche.outputs.nom }}
+          WORKFLOWS: ${{ steps.branche.outputs.workflows }}
+        run: |
+          set -euo pipefail
+          printf '%s\n' \
+            "Des améliorations sont disponibles en amont (corrections, accessibilité, sécurité)." \
+            "" \
+            "**Avant de fusionner**" \
+            "1. Vérifiez que la publication du journal passe ci-dessous." \
+            "2. Si quelque chose vous déplaît : fermez simplement la proposition. Rien ne casse." \
+            "" \
+            "Votre contenu (content/, media/, theme/, kiosque.config.ts) n'est jamais modifié par cette mise à jour." \
+            "" \
+            "_Proposition automatique — aucune obligation de l'accepter._" > corps.md
+          if [ -n "${WORKFLOWS// /}" ]; then
+            printf '\n%s\n%s\n' "**À faire à la main** : GitHub interdit à un workflow de modifier un workflow. Ces fichiers ont changé chez Le Kiosque ; recopiez-les depuis https://github.com/azdak919/le-kiosque/tree/main/.github/workflows :" "$WORKFLOWS" >> corps.md
+          fi
+          bash tools/proposer-maj.sh "$BRANCHE" "Mise à jour de la plateforme Le Kiosque" corps.md
