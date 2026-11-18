@@ -98,6 +98,8 @@ a { color: inherit; }
 }
 .wordmark a { text-decoration: none; color: inherit; }
 .publication-logo { display: block; max-width: min(320px, 70vw); max-height: 82px; width: auto; height: auto; }
+.wordmark-with-logo { display: inline-flex; align-items: center; gap: 0.45em; }
+.publication-logo--emblem { height: 1.6em; max-height: 82px; width: auto; flex: none; }
 .masthead-tagline {
   font-size: 0.82rem;
   color: var(--muted);
