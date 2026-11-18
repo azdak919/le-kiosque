@@ -1,6 +1,7 @@
 # Journal
 
 ## Non publié
+- Paquet complet (premier morceau) : `node tools/paquet-complet.mjs` fabrique `dist/kiosque-journal.zip`, un dossier `journal/` à déposer chez un hébergeur PHP. Il contient la rédaction du socle et le site du journal en mode `socle-vivant` : une coquille Kiosque (thème, mât, menus, radio) qui se dessine dans le navigateur à partir des articles publiés du socle de la même installation ; nom, logo, couleurs et sections viennent de la rédaction, sans reconstruire le site. Pied de page mis à jour depuis la fiche du journal (aussi en démo). Pas de flux RSS ni d’archives statiques dans ce mode. Socle épinglé à 786279a.
 - Paquet PHP du socle : le guide, le configurateur, la page Mise à jour et la proposition « Mise à jour du socle » renvoient à la Release à adresse fixe (https://github.com/azdak919/le-socle/releases/latest/download/le-socle-php.zip), lisible sans compte, au lieu d'un fichier de CI.
 - Un journal créé avec « Use this template » ne reçoit plus de propositions Dependabot : la première publication retire `.github/dependabot.yml`, et une proposition déjà ouverte est refermée automatiquement. Le dépôt du Kiosque garde Dependabot et sa fusion automatique. Le guide ne demande plus de les fermer.
 - Proposition de mise à jour : elle ne demande plus de « vérifier la publication ci-dessous » (aucun test ne tourne sur une pull request de journal) ; elle dit de regarder « Publier le journal » après la fusion, et comment revenir en arrière.

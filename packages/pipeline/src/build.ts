@@ -55,7 +55,7 @@ const THEME_ASSETS = path.resolve(
 );
 const MARKED_BROWSER = path.resolve(fileURLToPath(new URL('../../../node_modules/marked/lib/marked.esm.js', import.meta.url)));
 
-async function copyDemoRuntime(outDir: string): Promise<void> {
+async function copyDemoRuntime(outDir: string, live = false): Promise<void> {
   const editorialDir = path.join(outDir, 'assets', 'editorial');
   await mkdir(editorialDir, { recursive: true });
   // Le même noyau de carte est exécuté par les gabarits statiques et par la
@@ -72,6 +72,8 @@ async function copyDemoRuntime(outDir: string): Promise<void> {
   // copie. marked reste celui du Kiosque (même version, aussi lu par front.js).
   for (const file of SOCLE_ADMIN_ASSETS) {
     if (file === 'marked.esm.js') continue;
+    // Site vivant du paquet complet : ni base de démonstration ni sql.js.
+    if (live && /^sql-wasm|^sqljs-db|^demo-backend/.test(file)) continue;
     await cp(socleAdminAsset(file), path.join(editorialDir, file)).catch(() => {
       throw new Error(`Admin du socle absente : ${file}. Relancer « npm ci » avant le build.`);
     });
@@ -285,6 +287,8 @@ export async function build(options: BuildOptions): Promise<BuildResult> {
   const log = options.logger ?? { info: () => {}, warn: () => {} };
   const basePath = normalizeBasePath(config.deploy?.basePath);
   const editorialMode = config.editorial?.mode ?? 'git-sveltia';
+  const live = editorialMode === 'socle-vivant';
+  const browserRendered = editorialMode === 'demo-local' || live;
   const editorialAssetsBase = `${basePath}/assets/editorial`;
   const databaseKey = `kiosque-${basePath.replace(/[^a-z0-9]+/gi, '-') || 'root'}-${bundle.publication.slug}`;
   // Un logo-emblème (carré, rond) ne dit pas le nom : le gabarit l'écrit à côté.
@@ -293,7 +297,7 @@ export async function build(options: BuildOptions): Promise<BuildResult> {
     const size = await readFile(path.join(config.root, logo.src)).then((bytes) => imageSize(bytes)).catch(() => null);
     if (size) bundle.publication.logo = { ...logo, ...size };
   }
-  const publicationForRender = editorialMode === 'demo-local' ? bundle.publication : {
+  const publicationForRender = browserRendered ? bundle.publication : {
     ...bundle.publication,
     masthead: bundle.publication.masthead ? {
       ...bundle.publication.masthead,
@@ -331,8 +335,8 @@ export async function build(options: BuildOptions): Promise<BuildResult> {
     authorsBySlug: new Map(bundle.authors.map((a) => [a.slug, a])),
     demoNotice: config.demoNotice,
     buildYear: new Date().getUTCFullYear(),
-    editorial: editorialMode === 'demo-local' ? {
-      mode: 'demo-local',
+    editorial: browserRendered ? {
+      mode: live ? 'socle-vivant' : 'demo-local',
       assetsBase: editorialAssetsBase,
       seedUrl: `${editorialAssetsBase}/seed.json`,
       databaseKey,
@@ -345,7 +349,7 @@ export async function build(options: BuildOptions): Promise<BuildResult> {
 
   // Accueil
   await emit(outDir, '/', homePage(listed, ctx));
-  if (editorialMode === 'demo-local') {
+  if (browserRendered) {
     await writeFile(
       path.join(outDir, '404.html'),
       homePage(listed, ctx).replace(
@@ -573,10 +577,15 @@ export async function build(options: BuildOptions): Promise<BuildResult> {
     filter: (src) => {
       const name = path.basename(src);
       if (name === 'admin') return false;
-      if (editorialMode !== 'demo-local' && name === 'editorial') return false;
+      if (!browserRendered && name === 'editorial') return false;
       return true;
     },
   });
+  if (live) {
+    await copyDemoRuntime(outDir, true);
+    // Le socle PHP reconnaît le site vivant à ce fichier (coquille pour les adresses d'article).
+    await writeFile(path.join(outDir, 'kiosque-vivant.json'), `${JSON.stringify({ format: 'kiosque-vivant', version: 1 })}\n`, 'utf8');
+  }
   if (editorialMode === 'demo-local') {
     await copyDemoRuntime(outDir);
     await writeFile(path.join(outDir, 'assets', 'editorial', 'seed.json'), JSON.stringify({

@@ -47,7 +47,8 @@ export interface KiosqueConfig {
 
   /** Interface de rédaction proposée par le site généré. */
   editorial?: {
-    mode: 'demo-local' | 'git-sveltia' | 'external';
+    /** 'socle-vivant' : paquet complet, le site se dessine depuis le socle de la même installation. */
+    mode: 'demo-local' | 'socle-vivant' | 'git-sveltia' | 'external';
     /** Réservé aux intégrations futures, par exemple PocketBase. */
     externalBackend?: string;
   };

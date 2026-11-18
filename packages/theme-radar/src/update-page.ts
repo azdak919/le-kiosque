@@ -39,7 +39,7 @@ export function updatePage(options: {
   adminBasePath?: string;
   publicBasePath?: string;
   cssHref?: string;
-  mode?: 'demo-local' | 'git-sveltia' | 'external';
+  mode?: 'demo-local' | 'socle-vivant' | 'git-sveltia' | 'external';
   /** Origine du socle du journal, s'il en a un. Pas un secret. */
   socleUrl?: string;
 }): string {
