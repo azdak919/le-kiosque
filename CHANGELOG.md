@@ -1,6 +1,7 @@
 # Journal
 
 ## Non publié
+- Proposition de mise à jour : elle ne demande plus de « vérifier la publication ci-dessous » (aucun test ne tourne sur une pull request de journal) ; elle dit de regarder « Publier le journal » après la fusion, et comment revenir en arrière.
 - Mises à jour dans un journal : l'issue « Mise à jour disponible » s'ouvre enfin (gh visait le dépôt amont, ajouté comme « upstream », et GitHub refusait).
 - Socle épinglé sur fd6f5cd : licence des photos d'article gardée, un auteur ne se voit plus proposer « Publié ».
 - Mât : un logo-emblème (rond, carré) est suivi du nom du journal au lieu de le remplacer ; un logo large (nom dessiné) le remplace toujours. Taille lue dans le fichier, aucun réglage.
