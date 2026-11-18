@@ -1,7 +1,7 @@
 # Journal
 
 ## Non publié
-- Le paquet complet se dépose à la racine du domaine (votre-journal.com), plus dans un dossier `journal/`. Un sous-dossier reste possible : le préfixe est détecté tout seul, sans liens cassés. L’espace de rédaction est à `/admin/`. Guides, assistant et `docs/hebergeur-gratuit.md` mis à jour. Dans les textes visibles, on écrit « Le Socle ».
+- Le paquet complet se dépose à la racine du domaine (votre-journal.com), plus dans un dossier `journal/`. Un sous-dossier reste possible : le préfixe est détecté tout seul, sans liens cassés. L’espace de rédaction reste à `/redaction/` ; `/admin` y redirige. Guides, assistant et `docs/hebergeur-gratuit.md` mis à jour. Dans les textes visibles, on écrit « Le Socle ».
 - Site vivant (paquet complet) : le bouton RSS, les archives, le plan du site, la recherche (`/recherche/?q=`) et la revue à imprimer (`/revue/`) sont servis comme sur un site construit. Le bouton RSS est masqué si le journal est caché des moteurs (le flux reste disponible). La page « Au tableau » et son lien n’apparaissent que si des équipes sont enregistrées. Boutons de partage sans pistage sur les articles (copier le lien, courriel, Bluesky, Mastodon, Facebook, X).
 
 - Météo du mât, paquet complet : après l’enregistrement des localités dans Configuration, la température s’affiche. Le premier dessin du site vivant se faisait trop tôt, avant que la rédaction n’ait fourni la ville.

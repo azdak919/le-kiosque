@@ -1022,7 +1022,7 @@ ${content}
 <script src="${asset('/assets/kiosque.js', ctx)}" defer></script>
 ${ctx.editorial ? `<script>window.KIOSQUE_EDITORIAL=${JSON.stringify(ctx.editorial.mode === 'socle-vivant'
   // Paquet complet : le socle PHP de la même installation remet le sous-dossier dans ces chemins.
-  ? { mode: 'socle-vivant', apiBase: ctx.basePath, publicBasePath: ctx.basePath, adminBasePath: `${ctx.basePath}/admin`, assetsBase: ctx.editorial.assetsBase }
+  ? { mode: 'socle-vivant', apiBase: ctx.basePath, publicBasePath: ctx.basePath, adminBasePath: `${ctx.basePath}/redaction`, assetsBase: ctx.editorial.assetsBase }
   : { mode: 'demo-local', publicBasePath: ctx.basePath, adminBasePath: `${ctx.basePath}/admin`, assetsBase: ctx.editorial.assetsBase, seedUrl: ctx.editorial.seedUrl, publicationSlug: pub.slug, databaseKey: ctx.editorial.databaseKey }).replace(/</g, '\\u003c')};</script>
 <script type="module" src="${ctx.editorial.assetsBase}/front.js"></script>` : ''}
 </body>

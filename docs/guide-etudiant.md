@@ -44,16 +44,16 @@ gestionnaire sait décompresser, envoyez le ZIP et choisissez **Extraire** :
 c'est plus rapide.
 
 Le journal sera à `https://<votre-site>/`, la rédaction à
-`https://<votre-site>/admin/`.
+`https://<votre-site>/redaction/`.
 
 Pour l'installer dans un sous-dossier (par exemple `public_html/journal/`),
 déposez les mêmes fichiers dans ce dossier : le programme détecte le préfixe
 tout seul, sans casser les liens. L'adresse devient alors
-`https://<votre-site>/journal/`, et la rédaction `https://<votre-site>/journal/admin/`.
+`https://<votre-site>/journal/`, et la rédaction `https://<votre-site>/journal/redaction/`.
 
 ## 4. L'assistant d'installation
 
-Ouvrez `https://<votre-site>/admin/`. La première visite affiche
+Ouvrez `https://<votre-site>/redaction/`. La première visite affiche
 **Installer le journal** :
 
 - **Le journal** : nom, établissement, organisme responsable (par exemple
@@ -154,7 +154,7 @@ les anciens **sans remplacer `donnees/`**.
 
 | Symptôme | Cause probable |
 |---|---|
-| `/admin/` donne 404 ou 500 | `.htaccess` non envoyé, ou PHP < 8.1 sans SQLite |
+| `/redaction/` donne 404 ou 500 | `.htaccess` non envoyé, ou PHP < 8.1 sans SQLite |
 | Le site dit « Journal en préparation » | l'assistant d'installation n'a pas encore été rempli |
 | « trop d'essais » à la connexion | 10 essais ratés : attendre 15 minutes |
 | « Vérification impossible » sur Mise à jour | l'hébergeur bloque les connexions sortantes : marche à la main (section 8) |
@@ -204,7 +204,7 @@ N'utilisez pas « Fork » : GitHub y coupe les Actions.
    `socle/` **tel quel** dans votre espace web, par exemple
    `public_html/socle/`. Gardez les fichiers cachés (`.htaccess`,
    `.user.ini`).
-3. Ouvrez `https://<votre-site>/socle/admin/`. La première visite
+3. Ouvrez `https://<votre-site>/socle/redaction/`. La première visite
    affiche l'assistant d'installation (section 4) : remplissez au moins le nom
    et le **compte administrateur** (votre courriel et un mot de passe d'au
    moins 10 caractères). Notez-le dans le gestionnaire de mots de passe de
@@ -313,7 +313,7 @@ sauvegarde JSON**).
 
 | Symptôme | Cause probable |
 |---|---|
-| `/socle/admin/` donne 404 ou 500 | `.htaccess` non envoyé, ou PHP < 8.1 sans SQLite |
+| `/socle/redaction/` donne 404 ou 500 | `.htaccess` non envoyé, ou PHP < 8.1 sans SQLite |
 | Le site est vide ou sans photos | adresse de Le Socle absente de `kiosque.config.ts` (refaire l'étape B3) |
 | Le site affiche la page d'accueil du Kiosque | Pages non activé (étape B1.3) ou workflow pas encore passé |
 | « trop d'essais » à la connexion | 10 essais ratés : attendre 15 minutes |

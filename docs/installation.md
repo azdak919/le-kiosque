@@ -113,7 +113,7 @@ serveur Node, ou Worker Cloudflare sur D1 (ligne de commande obligatoire).
 1. Le configurateur l’écrit pour vous (étape « C’est prêt », « Dans le socle ») :
    `source: { adapter: 'socle', options: { baseUrl: 'https://<adresse de Le Socle>' } }`
    et `editorial: { mode: 'external' }` dans `kiosque.config.ts`.
-2. On écrit dans l’admin du socle (`https://<adresse de Le Socle>/admin/`).
+2. On écrit dans l’admin du socle (`https://<adresse de Le Socle>/redaction/`).
 3. Le workflow **Publier le journal** lance `kiosque sync` : il lit les
    articles publiés de Le Socle (`/v1/editorial/snapshot`) et les écrit dans
    `content/` en Markdown, chaque fichier marqué `miroir: socle`. Le dépôt

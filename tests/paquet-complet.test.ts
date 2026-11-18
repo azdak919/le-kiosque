@@ -33,7 +33,7 @@ test('paquet complet : site vivant + rédaction à la racine du ZIP', () => {
   assert.match(home, /"mode":"socle-vivant"/);
   assert.doesNotMatch(home, /lequorum|Saint-Louis/);
   const lisezmoi = read('LISEZMOI.txt');
-  assert.match(lisezmoi, /\/admin\//);
+  assert.match(lisezmoi, /\/redaction\//);
   assert.doesNotMatch(lisezmoi, /public_html\/journal\/|www\/journal\//);
   const paquet = JSON.parse(read('paquet.json'));
   assert.equal(paquet.fichier, 'kiosque-journal.zip');

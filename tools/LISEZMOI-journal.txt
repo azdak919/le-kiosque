@@ -10,7 +10,7 @@ LE KIOSQUE — paquet complet d'un journal étudiant (site du journal + rédacti
    l'hébergeur s'y trouve déjà (index.html), remplacez-la. Pour installer dans un
    sous-dossier, déposez les mêmes fichiers dans ce dossier : le programme détecte
    le préfixe tout seul, sans casser les liens.
-3. Ouvrez tout de suite https://votre-journal.com/admin/ et remplissez l'assistant
+3. Ouvrez tout de suite https://votre-journal.com/redaction/ et remplissez l'assistant
    d'installation : nom du journal, couleur, logo, sections, options et compte
    administrateur (courriel + mot de passe de 10 caractères ou plus).
    Tant que ce compte n'existe pas, la première personne qui ouvre la page peut le créer.

@@ -57,7 +57,7 @@ GitHub n'a pas besoin de le joindre.
    `ssh-phare-essai.alwaysdata.net`, port 22, dans `www/`.) Pour installer dans un
    sous-dossier, créez ce dossier et déposez-y les mêmes fichiers : le programme
    détecte le préfixe tout seul, sans casser les liens.
-5. **Tout de suite**, ouvrez `https://phare-essai.alwaysdata.net/admin/` et
+5. **Tout de suite**, ouvrez `https://phare-essai.alwaysdata.net/redaction/` et
    remplissez l'assistant d'installation (guide, section 4) : tant qu'il n'est
    pas rempli, la première personne qui ouvre la page peut créer le compte
    administrateur. Gardez **Cacher le journal des moteurs de recherche**
@@ -80,7 +80,7 @@ GitHub n'a pas besoin de le joindre.
    **Fichiers**, entrez dans `httpdocs/`.
 3. **Téléverser** `kiosque-journal.zip`, puis sur le fichier : **Extraire les
    fichiers**. Les fichiers du journal sont dans `httpdocs/` (à la racine du site).
-4. Ouvrez `https://<nom>.helioho.st/admin/` et remplissez l'assistant.
+4. Ouvrez `https://<nom>.helioho.st/redaction/` et remplissez l'assistant.
 
 ## InfinityFree, pas à pas
 
@@ -90,6 +90,6 @@ GitHub n'a pas besoin de le joindre.
 2. **File Manager** → dossier `htdocs/` → envoyez le contenu du ZIP
    décompressé (ou le ZIP, puis **Extract** s'il est proposé), à la racine
    de `htdocs/`.
-3. Ouvrez `https://<sous-domaine>/admin/` et remplissez l'assistant. Si la
+3. Ouvrez `https://<sous-domaine>/redaction/` et remplissez l'assistant. Si la
    page Mise à jour dit « Vérification impossible », suivez la marche à la
    main qu'elle affiche.
