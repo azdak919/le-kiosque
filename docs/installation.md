@@ -5,9 +5,10 @@ domaine, ni compte d’administration. Chaque journal reste propriétaire et
 responsable de ces ressources. L’accompagnement est bénévole, selon les
 disponibilités.
 
-**Le chemin recommandé est le [guide étudiant](guide-etudiant.md)** : rédaction
-sur un hébergement PHP (serveur du cégep ou hébergeur mutualisé), site sur
-GitHub Pages, sans terminal. Cette page couvre le reste : un journal qui vit
+**Le chemin recommandé est le [guide étudiant](guide-etudiant.md)** : le
+paquet complet (site et rédaction dans un seul ZIP) sur un hébergement PHP
+(serveur du cégep ou hébergeur mutualisé), ou, chemin B, la rédaction sur
+l'hébergement PHP et le site sur GitHub Pages, sans terminal. Cette page couvre le reste : un journal qui vit
 **seulement dans GitHub**, en Markdown, et les réglages communs aux deux
 chemins (Pages, domaine, sauvegardes, passation). Le guide du serveur est
 [adopter le socle](https://github.com/azdak919/le-socle/blob/main/docs/adoption.md).

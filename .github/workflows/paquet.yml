@@ -1,0 +1,65 @@
+# Paquet complet d'un journal (site + rédaction), un ZIP par version.
+#
+# Une étiquette vX.Y.Z poussée sur main construit dist/kiosque-journal.zip et
+# le joint à une Release GitHub. Adresse fixe, sans compte GitHub :
+#   https://github.com/azdak919/le-kiosque/releases/latest/download/kiosque-journal.zip
+# La page Mise à jour de chaque journal installé lit cette Release (sans
+# serveur central). Relancer à la main refait la Release d'une étiquette.
+# Un journal créé depuis ce modèle ne publie rien : la tâche ne tourne que
+# dans le dépôt du Kiosque.
+name: Paquet complet
+
+on:
+  push:
+    tags: ['v*']
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: "Étiquette à (re)publier, par exemple v0.2.0"
+        required: true
+
+permissions:
+  contents: write
+
+jobs:
+  paquet:
+    if: github.repository == 'azdak919/le-kiosque'
+    runs-on: ubuntu-latest
+    env:
+      TAG: ${{ inputs.tag || github.ref_name }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ env.TAG }}
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+      - run: npm ci
+      - name: Version et étiquette concordent
+        run: |
+          version=$(node -p "require('./package.json').version")
+          [ "v$version" = "$TAG" ] || { echo "::error::package.json dit $version, l'étiquette dit $TAG"; exit 1; }
+      - name: Construire le paquet complet
+        run: node tools/paquet-complet.mjs
+      - name: Publier la Release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          socle=$(node -p "require('./node_modules/le-socle/package.json').version")
+          printf '%s\n' \
+            "Paquet complet d'un journal : **kiosque-journal.zip** (site du journal + rédaction : articles, photos, rôles, sauvegardes, mises à jour). Socle $socle." \
+            "" \
+            "Première installation : décompressez, envoyez le dossier \`journal/\` dans votre espace web PHP (par exemple \`public_html/journal/\`), puis ouvrez \`…/journal/redaction/\` : l'assistant d'installation demande le nom, le logo, les couleurs et le compte administrateur." \
+            "" \
+            "Mise à jour : page **Mise à jour** de la rédaction, en un clic (sauvegarde et retour arrière compris)." \
+            "" \
+            "Guide : https://github.com/${{ github.repository }}/blob/main/docs/guide-etudiant.md" \
+            "" \
+            "Adresse fixe de la dernière version : https://github.com/${{ github.repository }}/releases/latest/download/kiosque-journal.zip" > notes.md
+          if gh release view "$TAG" >/dev/null 2>&1; then
+            gh release upload "$TAG" dist/kiosque-journal.zip --clobber
+            gh release edit "$TAG" --notes-file notes.md --latest
+          else
+            gh release create "$TAG" dist/kiosque-journal.zip --title "Le Kiosque $TAG — paquet complet" --notes-file notes.md --latest
+          fi
