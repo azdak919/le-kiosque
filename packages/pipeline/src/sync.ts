@@ -16,6 +16,7 @@ import { freezeId } from '../../adapters/markdown/src/frontmatter.ts';
 import { formatIssues, validateBundle } from '../../core/src/validate.ts';
 import type { Article, ContentBundle } from '../../core/src/model.ts';
 import { readChecksums, readIndex, writeChecksums, writeIndex, writeMedia } from './mirror.ts';
+import { writeRemoteMirror } from './mirror-write.ts';
 import type { KiosqueConfig } from './config.ts';
 
 export interface SyncOptions {
@@ -41,8 +42,7 @@ export interface SyncResult {
  *
  * Ne concerne que les articles issus du miroir Markdown — pour un backend
  * distant, l'`id` se fige au moment où `sync` écrit le fichier miroir.
- * (Cette écriture-là reste à implémenter : elle arrivera avec le premier
- * adaptateur distant, au jalon 5.)
+ * (Voir `mirror-write.ts`.)
  */
 async function freezeArticleIds(
   root: string,
@@ -161,6 +161,13 @@ export async function sync(options: SyncOptions): Promise<SyncResult> {
       // que l'illustration, et un article sans photo vaut mieux qu'un site figé.
       log.warn(`média non rapatrié (${asset.src}) : ${err instanceof Error ? err.message : err}`);
     }
+  }
+
+  // Un backend distant : `build` ne lit que le miroir Markdown, il faut donc
+  // l'écrire ici. Le Markdown, lui, EST déjà le miroir.
+  if (source.id !== 'markdown') {
+    const mirror = await writeRemoteMirror(config.root, bundle, source.id, !options.since);
+    for (const rel of mirror.removed) log.info(`retiré du miroir (plus dans « ${source.id} ») : ${rel}`);
   }
 
   await writeChecksums(config.root, checksums);
