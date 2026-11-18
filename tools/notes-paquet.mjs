@@ -47,7 +47,7 @@ export function notesPaquet({ kiosque, socle, kiosqueLog, socleLog, depot }) {
     ...(redaction.length ? redaction : [none]),
     '',
     '## Installer ou mettre à jour',
-    `Première installation : décompressez, envoyez le contenu du ZIP à la racine de votre espace Web PHP (par exemple public_html/), puis ouvrez https://votre-journal.com/redaction/ : l'assistant d'installation demande le nom, le logo, les couleurs et le compte administrateur. Un sous-dossier reste possible.`,
+    `Première installation : décompressez le ZIP, vous obtenez un dossier kiosque-journal/ ; envoyez le contenu de ce dossier (pas le dossier lui-même) à la racine de votre espace Web PHP (par exemple public_html/), puis ouvrez https://votre-journal.com/redaction/ : l'assistant d'installation demande le nom, le logo, les couleurs et le compte administrateur. Un sous-dossier reste possible.`,
     '',
     'Mise à jour : page **Mise à jour** de l’espace de rédaction, en un clic (sauvegarde et retour en arrière compris).',
     '',

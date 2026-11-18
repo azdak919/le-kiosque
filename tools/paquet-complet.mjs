@@ -1,7 +1,10 @@
 /**
- * Paquet complet d'un journal : un seul ZIP par version, à déposer chez un
- * hébergeur PHP, à la racine du domaine (votre-journal.com). Un sous-dossier
- * reste possible : le programme détecte le préfixe tout seul. Il contient
+ * Paquet complet d'un journal : un seul ZIP par version. Il contient un
+ * dossier `kiosque-journal/` (avec le marqueur INSTALLER-A-LA-RACINE.txt) :
+ * on dépose le *contenu* de ce dossier à la racine du domaine
+ * (votre-journal.com). Ce dossier unique rend la mise à jour en un clic
+ * possible depuis un journal en 0.2.x. Un sous-dossier reste possible : le
+ * programme détecte le préfixe tout seul. Il contient
  * la rédaction du Socle
  * (articles, banque de photos, rôles, sauvegardes, mises à jour) et le site
  * du journal, une coquille Kiosque qui se dessine dans le navigateur à partir
@@ -86,6 +89,7 @@ const roots = new Set(names.map((name) => name.split('/')[0]));
 const folder = roots.size === 1 && packed.has(`${[...roots][0]}/index.php`) ? [...roots][0] : '';
 const prefix = folder ? `${folder}/` : '';
 const lisezmoi = await readFile(path.join(repoRoot, 'tools', 'LISEZMOI-journal.txt'));
+const marqueur = await readFile(path.join(repoRoot, 'tools', 'INSTALLER-A-LA-RACINE.txt'));
 const files = names
   .filter((name) => !folder || (name.startsWith(prefix) && name.length > prefix.length))
   .map((name) => {
@@ -93,6 +97,13 @@ const files = names
     const data = relative === 'LISEZMOI.txt' ? lisezmoi : packed.get(name);
     return { name: relative, data };
   });
-await writeFile(out, zipStore(files));
-if (folder) console.log(`[paquet] fichiers à la racine du ZIP (dossier « ${folder}/ » retiré)`);
+// Un seul dossier de premier niveau, comme les paquets 0.2.x : l'ancien
+// installateur (Socle 1.2.2) n'accepte que cette forme. Le marqueur dit que
+// le contenu s'installe à la racine du site déjà en place, pas dans un
+// sous-dossier kiosque-journal/.
+const wrap = 'kiosque-journal';
+const wrapped = files.map((file) => ({ name: `${wrap}/${file.name}`, data: file.data }));
+wrapped.push({ name: `${wrap}/INSTALLER-A-LA-RACINE.txt`, data: marqueur });
+await writeFile(out, zipStore(wrapped));
+console.log(`[paquet] dossier ${wrap}/ (mise à jour possible depuis 0.2.x)`);
 await rm(work, { recursive: true, force: true });

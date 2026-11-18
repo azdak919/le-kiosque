@@ -4,11 +4,13 @@ LE KIOSQUE — paquet complet d'un journal étudiant (site du journal + rédacti
    (les fichiers .htaccess) : c'est le cas chez presque tous les hébergeurs mutualisés.
    Sur nginx seul, les .htaccess sont ignorés : demandez au service informatique de
    fermer donnees/ et php/ et d'envoyer le reste à index.php.
-2. Décompressez le ZIP et déposez son contenu à la racine de votre espace web
-   (gestionnaire de fichiers, FTP ou SFTP), par exemple dans public_html/ ou www/,
-   avec les fichiers cachés (.htaccess, .user.ini). Si une page d'accueil de
-   l'hébergeur s'y trouve déjà (index.html), remplacez-la. Pour installer dans un
-   sous-dossier, déposez les mêmes fichiers dans ce dossier : le programme détecte
+2. Décompressez le ZIP : vous obtenez un dossier kiosque-journal/. Déposez le
+   CONTENU de ce dossier (pas le dossier lui-même) à la racine de votre espace
+   web (gestionnaire de fichiers, FTP ou SFTP), par exemple dans public_html/
+   ou www/, avec les fichiers cachés (.htaccess, .user.ini). Le fichier
+   INSTALLER-A-LA-RACINE.txt le rappelle. Si une page d'accueil de l'hébergeur
+   s'y trouve déjà (index.html), remplacez-la. Pour installer dans un
+   sous-dossier, déposez le même contenu dans ce dossier : le programme détecte
    le préfixe tout seul, sans casser les liens.
 3. Ouvrez tout de suite https://votre-journal.com/redaction/ et remplissez l'assistant
    d'installation : nom du journal, couleur, logo, sections, options et compte
