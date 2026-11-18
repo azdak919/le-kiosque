@@ -15,9 +15,10 @@ on:
   push:
     branches: [main]
   schedule:
-    # Filet de sécurité quotidien : un webhook manqué ne doit pas créer de
-    # dérive silencieuse entre le CMS et le site publié.
-    - cron: '0 9 * * *'
+    # Chaque heure : un article publié dans le socle apparaît sur le site
+    # sans que personne ait à lancer quoi que ce soit (gratuit pour un dépôt
+    # public). Pour ne pas attendre : Actions → Publier le journal → Run workflow.
+    - cron: '17 * * * *'
   workflow_dispatch:
 
 permissions:

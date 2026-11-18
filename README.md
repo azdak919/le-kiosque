@@ -61,10 +61,17 @@ projet découle de cette seule frontière :
 
 ## Démarrer
 
-**Choisissez « Use this template ».** C'est la voie principale : votre dépôt
-sera indépendant et pourra recevoir vos fichiers générés. Un fork demeure
-possible, mais GitHub y désactive les Actions par défaut et impose donc une
-activation manuelle supplémentaire.
+**Équipe étudiante : suivez [`docs/guide-etudiant.md`](docs/guide-etudiant.md).**
+C'est le chemin recommandé, de bout en bout et sans terminal : « Use this
+template », le configurateur, la rédaction (le socle) sur un hébergement PHP
+ordinaire — serveur du cégep ou hébergeur mutualisé —, puis le site public
+sur GitHub Pages. Cloudflare reste possible, mais demande la ligne de commande
+(voir la section 10 du guide).
+
+Sans hébergement du tout, le journal peut vivre seulement dans GitHub, en
+Markdown : [`docs/installation.md`](docs/installation.md).
+
+Pour travailler sur le code :
 
 ```bash
 git clone https://github.com/<votre-organisation>/<votre-journal>.git
@@ -74,11 +81,6 @@ npm ci
 node packages/pipeline/src/cli.ts sync
 node packages/pipeline/src/cli.ts build
 ```
-
-Activez GitHub Pages (Settings → Pages → Source : **GitHub Actions**), puis
-relancez « Vérification » dans l'onglet Actions : le site est en ligne,
-gratuitement, sur `https://<organisation>.github.io/<depot>/`. Le sous-chemin
-`/<depot>` est détecté automatiquement par la publication GitHub Pages.
 
 Diagnostic et passation : `kiosque doctor`, `kiosque adopt` (écrit
 `PASSATION.md`), `kiosque export` (archive portable) et `kiosque deploy-hint`.

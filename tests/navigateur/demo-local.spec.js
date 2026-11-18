@@ -104,7 +104,7 @@ test('configurer, rédiger, prévisualiser, publier, persister et exporter sans 
   await expect(front.getByRole('heading', { level: 1, name: 'Un article local mis à jour' })).toBeVisible();
 
   await page.locator('.admin-nav').getByRole('link', { name: 'Tableau de bord', exact: true }).click();
-  await page.getByLabel('Afficher les exemples publiés dans le front end').uncheck();
+  await page.getByLabel('Afficher les exemples publiés sur le site').uncheck();
   await expect(front.getByText('La radio de campus souffle ses cinquante bougies')).toHaveCount(0);
   await expect(front.getByRole('heading', { level: 1, name: 'Un article local mis à jour' })).toBeVisible();
   page.once('dialog', (dialog) => dialog.accept());
