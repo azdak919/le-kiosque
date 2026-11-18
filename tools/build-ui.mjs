@@ -1,4 +1,4 @@
-// Compile les interfaces d'outil (vitrine, configurateur, administration) avec
+// Compile les interfaces d'outil (vitrine, configurateur) avec
 // Tailwind CSS v4 + Basecoat (MIT). On ne garde de Basecoat que les composants
 // utilisés, pour garder des feuilles légères. Usage : npm run ui
 import { readFile, writeFile, mkdir } from 'node:fs/promises';
@@ -24,7 +24,7 @@ ${kept.join('\n')}
 await mkdir(path.join(root, 'ui/vendor'), { recursive: true });
 await writeFile(path.join(root, 'ui/vendor/basecoat-subset.css'), out);
 const cli = path.join(root, 'node_modules/.bin/tailwindcss');
+// L'admin de rédaction a sa feuille dans le socle (`le-socle/admin/ui/`).
 for (const [input, output] of [
-  ['ui/admin.css', 'packages/theme-radar/assets/editorial/admin.css'],
   ['ui/site.css', 'site/assets/kiosque-ui.css'],
 ]) execFileSync(cli, ['-i', input, '-o', output, '--minify'], { cwd: root, stdio: 'inherit' });

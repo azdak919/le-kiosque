@@ -27,6 +27,11 @@ fs.mkdirSync(path.join(KIT, 'outils'), { recursive: true });
 fs.cpSync(path.join(REPO, 'template'), path.join(KIT, 'journal'), { recursive: true, filter: (s) => !s.includes(`${path.sep}.github`) });
 fs.cpSync(path.join(REPO, 'packages'), path.join(KIT, 'packages'), { recursive: true });
 for (const dep of ['yaml', 'marked']) fs.cpSync(path.join(REPO, 'node_modules', dep), path.join(KIT, 'node_modules', dep), { recursive: true });
+// Du socle, le kit n'emporte que l'admin de rédaction (et sa licence) :
+// le build la copie dans le site. Le serveur du socle reste à part.
+for (const part of ['package.json', 'LICENSE', 'THIRD_PARTY.md', 'admin']) fs.cpSync(path.join(REPO, 'node_modules', 'le-socle', part), path.join(KIT, 'node_modules', 'le-socle', part), { recursive: true });
+// Le build lit la version du Kiosque dans package.json (page Mise à jour).
+fs.copyFileSync(path.join(REPO, 'package.json'), path.join(KIT, 'package.json'));
 fs.copyFileSync(path.join(REPO, 'LICENSE'), path.join(KIT, 'LICENSE'));
 
 // 2. Outils et documents

@@ -15,7 +15,7 @@ import {
   scoreStockFit,
   STOCK_MIN_RETAIN_SCORE,
 } from '../packages/stock-photo/src/index.ts';
-import { rankLocalMedia as rankBrowser } from '../packages/theme-radar/assets/editorial/stock-photo-match.js';
+import { rankLocalMedia as rankBrowser } from 'le-socle/admin/assets/stock-photo-match.js';
 
 const DEMO = path.resolve(fileURLToPath(import.meta.url), '../../examples/demo-journal');
 
