@@ -6,17 +6,42 @@ import { expect, test } from '@playwright/test';
  * recouvrir la navigation, de 390 px à 1920 px, en clair et en sombre.
  */
 const largeurs = [390, 820, 1024, 1280, 1920];
+
+/**
+ * LE-RADAR sert la barre radio (https://le-radar.ca/radio-barre.js). Les
+ * tests ne dépendent pas du réseau : un faux module, réduit au contrat
+ * (une barre de 48 px après le script, puis data-radar-radio="ready" sur
+ * l'emplacement), tient lieu de LE-RADAR. Le vrai module est testé chez
+ * LE-RADAR.
+ */
+const FAUX_MODULE = `(function () {
+  var s = document.currentScript; if (!s) return;
+  var h = document.createElement('div'); h.className = 'radar-radio';
+  h.style.cssText = 'display:block;height:48px;background:#0a0a0b;border-radius:12px';
+  s.after(h); s.parentElement.dataset.radarRadio = 'ready';
+})();`;
+async function fauxRadar(ctx, muet = false) {
+  const requetes = [];
+  await ctx.route('https://le-radar.ca/**', (route) => {
+    requetes.push(route.request().url());
+    if (muet) return route.abort();
+    if (route.request().url().endsWith('/radio-barre.js')) return route.fulfill({ status: 200, contentType: 'text/javascript', body: FAUX_MODULE });
+    return route.fulfill({ status: 404, body: '' });
+  });
+  return requetes;
+}
 const paires = [
   ['.masthead-clock', '.masthead-status'],
   ['.masthead-clock', '.masthead-tools'],
   ['.masthead-status', '.masthead-tools'],
   ['.masthead-weather', '.masthead-sports'],
-  ['.kiosque-radio', '.nav-wrap'],
+  ['.radar-radio-slot', '.nav-wrap'],
 ];
 
 for (const theme of ['light', 'dark']) for (const largeur of largeurs) {
   test(`mât sans chevauchement à ${largeur} px (${theme})`, async ({ browser }) => {
     const ctx = await browser.newContext({ viewport: { width: largeur, height: 900 }, colorScheme: theme });
+    await fauxRadar(ctx);
     const page = await ctx.newPage();
     const erreurs = [];
     page.on('pageerror', (e) => erreurs.push(e.message));
@@ -53,6 +78,7 @@ for (const theme of ['light', 'dark']) for (const largeur of largeurs) {
 for (const theme of ['light', 'dark']) for (const largeur of [1024, 1280, 1440, 1920]) {
   test(`pastilles du mât uniformes à ${largeur} px (${theme})`, async ({ browser }) => {
     const ctx = await browser.newContext({ viewport: { width: largeur, height: 900 }, colorScheme: theme });
+    await fauxRadar(ctx);
     const page = await ctx.newPage();
     await page.goto('/autre-nom/demo/');
     await page.waitForTimeout(1200);
@@ -92,6 +118,7 @@ for (const theme of ['light', 'dark']) for (const largeur of [1024, 1280, 1440, 
 for (const theme of ['light', 'dark']) for (const largeur of [360, 390, 430]) {
   test(`mât mobile façon Radar à ${largeur} px (${theme})`, async ({ browser }) => {
     const ctx = await browser.newContext({ viewport: { width: largeur, height: 900 }, colorScheme: theme, isMobile: true, hasTouch: true });
+    await fauxRadar(ctx);
     const page = await ctx.newPage();
     await page.goto('/autre-nom/demo/');
     await page.waitForTimeout(1500);
@@ -103,7 +130,7 @@ for (const theme of ['light', 'dark']) for (const largeur of [360, 390, 430]) {
       });
       const sep = [...document.querySelectorAll('.site-foot__sep')].filter((e) => e.getBoundingClientRect().width > 0).length;
       return { vw: innerWidth, horloge: r('.masthead-clock'), titre: r('.masthead-top'), outils, rangee: r('.masthead-tools'),
-        radio: r('.kiosque-radio'), meteo: r('.masthead-weather-dock .weather-chip'), sports: r('.masthead-weather-dock .sports-chip'),
+        radio: r('.radar-radio-slot'), meteo: r('.masthead-weather-dock .weather-chip'), sports: r('.masthead-weather-dock .sports-chip'),
         coupe: [...document.querySelectorAll('.masthead-clock, .masthead-weather-dock .weather-chip__name')].some((e) => e.scrollWidth > e.clientWidth + 1),
         sep, hscroll: document.documentElement.scrollWidth > innerWidth + 1 };
     });
@@ -132,17 +159,33 @@ for (const theme of ['light', 'dark']) for (const largeur of [360, 390, 430]) {
   });
 }
 
-test('la barre radio est native : pas d’iframe, lecture et arrêt au clavier', async ({ page }) => {
+test('la barre radio est le module de LE-RADAR, appelé en une ligne', async ({ browser }) => {
+  for (const largeur of [390, 1280]) {
+    const ctx = await browser.newContext({ viewport: { width: largeur, height: 900 } });
+    const requetes = await fauxRadar(ctx);
+    const page = await ctx.newPage();
+    await page.goto('/autre-nom/demo/');
+    const slot = page.locator('.radar-radio-slot');
+    await expect(slot).toHaveAttribute('data-radar-radio', 'ready');
+    await expect(slot.locator('script')).toHaveAttribute('src', 'https://le-radar.ca/radio-barre.js');
+    await expect(slot.locator('script')).toHaveAttribute('data-station', 'chyz');
+    await expect(page.locator('iframe')).toHaveCount(0);
+    const boite = await slot.locator('.radar-radio').boundingBox();
+    expect(boite.height).toBe(48);
+    expect(boite.width).toBeLessThanOrEqual(largeur);
+    expect(requetes.filter((u) => u.endsWith('/radio-barre.js')).length).toBe(1);
+    await ctx.close();
+  }
+});
+
+test('LE-RADAR muet : la barre ne s’affiche pas et ne laisse pas de trou', async ({ browser }) => {
+  const ctx = await browser.newContext({ viewport: { width: 390, height: 900 } });
+  await fauxRadar(ctx, true);
+  const page = await ctx.newPage();
   await page.goto('/autre-nom/demo/');
-  const bar = page.locator('.kiosque-radio');
-  await expect(bar).toHaveClass(/is-enhanced/);
-  await expect(page.locator('iframe')).toHaveCount(0);
-  const play = bar.locator('.kiosque-radio__play');
-  await expect(play).toHaveAttribute('aria-pressed', 'false');
-  await play.focus();
-  await page.keyboard.press('Enter');
-  await expect(play).toHaveAttribute('aria-pressed', 'true');
-  await page.keyboard.press('Enter');
-  await expect(play).toHaveAttribute('aria-pressed', 'false');
-  await expect(bar.locator('audio')).not.toHaveAttribute('src', /./);
+  await page.waitForTimeout(800);
+  const slot = page.locator('.radar-radio-slot');
+  await expect(slot).toBeHidden();
+  expect((await slot.evaluate((e) => e.getBoundingClientRect().height))).toBe(0);
+  await ctx.close();
 });

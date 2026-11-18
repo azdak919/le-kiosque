@@ -167,7 +167,7 @@ function sectionName(slug: string | undefined, ctx: RenderContext): Section | un
 }
 
 function radioTuner(ctx: RenderContext): string {
-  // Lecteur natif du journal (radio.js) : plus d'iframe de le-radar.ca.
+  // Une ligne : le module radio de LE-RADAR (radio.js). Rien si la radio est éteinte.
   return radioBarHtml(ctx.publication.radio);
 }
 

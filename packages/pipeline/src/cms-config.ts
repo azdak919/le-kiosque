@@ -206,11 +206,7 @@ export function buildCmsConfig(options: CmsConfigOptions): Record<string, unknow
             ] },
             { name: 'radio', label: 'Radio étudiante', widget: 'object', required: false, fields: [
               { name: 'enabled', label: 'Afficher la radio', widget: 'boolean', default: true },
-              { name: 'station', label: 'Station du répertoire (chyz, cism, ckut, cjlo, cfak, choq)', widget: 'string', required: false },
-              { name: 'stream', label: 'Adresse du flux (https), pour une autre station', widget: 'string', required: false },
-              { name: 'name', label: 'Nom affiché', widget: 'string', required: false },
-              { name: 'frequency', label: 'Fréquence', widget: 'string', required: false },
-              { name: 'website', label: 'Site de la station (https)', widget: 'string', required: false },
+              { name: 'station', label: 'Station de LE-RADAR (identifiant de radios.json : chyz, cism, ckut, cjlo, cfak, choq…)', widget: 'string', required: false },
               { name: 'theme', label: 'Ancien thème', widget: 'hidden', required: false },
               { name: 'position', label: 'Ancienne position', widget: 'hidden', required: false },
             ] },

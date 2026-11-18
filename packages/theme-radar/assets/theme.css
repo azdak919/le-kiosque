@@ -256,7 +256,7 @@ a { color: inherit; }
 /* ─────────────── BANDEAU DE DÉMONSTRATION ───────────────
  * Sticky au scroll (démo) : reste au-dessus de la barre radio.
  * --demo-banner-sticky-h = hauteur réelle (mesurée en JS) pour que
- * .kiosque-radio ne glisse pas sous un bandeau 2 lignes sur mobile. */
+ * le contenu ne glisse pas sous un bandeau 2 lignes sur mobile. */
 :root {
   --demo-banner-sticky-h: 0px;
 }
@@ -321,116 +321,19 @@ body:has(.demo-banner) {
   }
 }
 
-/* ─────────────── BARRE RADIO NATIVE (radio.js + kiosque.js) ───────────────
- * Une bande sombre pleine largeur, collée sous le mât ; le contenu suit la
- * colonne du journal (.wrap). Plus d’iframe : la hauteur suit le contenu. */
-.kiosque-radio {
-  position: sticky;
-  top: var(--demo-banner-sticky-h, 0px);
-  z-index: 100;
-  background: var(--tuner-session-base, color-mix(in srgb, var(--accent, #6c2163) 22%, #14101a));
-  color: #f4f1f6;
-  font-family: var(--sans, system-ui, sans-serif);
-  box-shadow: 0 6px 18px -16px rgba(0, 0, 0, 0.9);
-}
-.kiosque-radio__inner {
-  max-width: var(--maxw);
-  margin: 0 auto;
-  padding: 10px var(--pad);
-  display: flex;
-  align-items: center;
-  gap: 14px;
-  min-height: 60px;
+/* ─────────────── BARRE RADIO (module de LE-RADAR) ───────────────
+ * radio.js pose un emplacement et une ligne d'appel à
+ * https://le-radar.ca/radio-barre.js. Le module dessine la barre (son
+ * style vit dans son Shadow DOM, chez LE-RADAR). Le journal ne règle que la
+ * place : la colonne du journal, sous le mât. L'emplacement reste replié tant
+ * que le module n'a pas dit « ready » (LE-RADAR muet : rien du tout). */
+.radar-radio-slot { display: none; }
+.radar-radio-slot[data-radar-radio="ready"] {
+  display: block;
+  max-width: var(--maxw, 1200px);
+  margin: 10px auto 0;
+  padding: 0 var(--pad, 16px);
   box-sizing: border-box;
-}
-.kiosque-radio p { margin: 0; }
-.kiosque-radio__play {
-  flex: none;
-  display: grid;
-  place-items: center;
-  width: 42px;
-  height: 42px;
-  border-radius: 999px;
-  border: 0;
-  background: #e0203a;
-  color: #fff;
-  cursor: pointer;
-  box-shadow: 0 2px 10px -4px rgba(224, 32, 58, 0.8);
-  transition: transform 120ms ease, background-color 120ms ease;
-}
-.kiosque-radio__play:hover { background: #f02a45; }
-.kiosque-radio__play:active { transform: scale(0.96); }
-.kiosque-radio__play:focus-visible,
-.kiosque-radio__site:focus-visible,
-.kiosque-radio input:focus-visible { outline: 3px solid #fff; outline-offset: 2px; }
-.kiosque-radio__play svg { width: 20px; height: 20px; }
-.kiosque-radio__icon-pause { display: none; }
-.kiosque-radio[data-state="playing"] .kiosque-radio__icon-play,
-.kiosque-radio[data-state="loading"] .kiosque-radio__icon-play { display: none; }
-.kiosque-radio[data-state="playing"] .kiosque-radio__icon-pause,
-.kiosque-radio[data-state="loading"] .kiosque-radio__icon-pause { display: block; }
-.kiosque-radio__id { min-width: 0; flex: 0 1 auto; }
-.kiosque-radio__status {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  font-size: 0.6875rem;
-  font-weight: 700;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-  color: rgba(244, 241, 246, 0.68);
-}
-.kiosque-radio__dot { width: 7px; height: 7px; border-radius: 50%; background: rgba(244, 241, 246, 0.45); }
-.kiosque-radio[data-state="playing"] .kiosque-radio__dot { background: #ff4d63; box-shadow: 0 0 0 3px rgba(255, 77, 99, 0.22); animation: kiosque-radio-pulse 1.6s ease-in-out infinite; }
-.kiosque-radio[data-state="loading"] .kiosque-radio__dot { background: #f5c451; }
-.kiosque-radio[data-state="error"] .kiosque-radio__dot { background: #8f8a94; }
-@keyframes kiosque-radio-pulse { 50% { box-shadow: 0 0 0 6px rgba(255, 77, 99, 0); } }
-.kiosque-radio__name { display: flex; align-items: baseline; gap: 8px; min-width: 0; white-space: nowrap; }
-.kiosque-radio__name strong { font-size: 0.9375rem; font-weight: 700; overflow: hidden; text-overflow: ellipsis; }
-.kiosque-radio__inst { font-size: 0.8125rem; color: rgba(244, 241, 246, 0.68); overflow: hidden; text-overflow: ellipsis; }
-.kiosque-radio__show {
-  flex: 1 1 auto;
-  min-width: 0;
-  font-size: 0.8125rem;
-  color: rgba(244, 241, 246, 0.85);
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  padding-left: 14px;
-  border-left: 1px solid rgba(244, 241, 246, 0.18);
-}
-.kiosque-radio__show:empty { border-left: 0; padding-left: 0; }
-.kiosque-radio__audio { flex: 1 1 auto; min-width: 0; height: 36px; max-width: 360px; }
-.kiosque-radio.is-enhanced .kiosque-radio__audio { display: none; }
-.kiosque-radio__volume { flex: none; display: flex; align-items: center; gap: 8px; color: rgba(244, 241, 246, 0.8); }
-.kiosque-radio__volume[hidden] { display: none; }
-.kiosque-radio__volume svg { width: 18px; height: 18px; }
-.kiosque-radio__volume input { width: 96px; accent-color: #ff4d63; }
-.kiosque-radio__sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0, 0, 0, 0); white-space: nowrap; }
-.kiosque-radio__site {
-  flex: none;
-  font-size: 0.8125rem;
-  font-weight: 600;
-  color: #f4f1f6;
-  text-decoration: none;
-  padding: 6px 10px;
-  border-radius: 999px;
-  border: 1px solid rgba(244, 241, 246, 0.24);
-}
-.kiosque-radio__site:hover { background: rgba(244, 241, 246, 0.1); }
-@media (max-width: 719.98px) {
-  .kiosque-radio__inner { gap: 10px; padding-top: 8px; padding-bottom: 8px; min-height: 56px; flex-wrap: nowrap; }
-  .kiosque-radio__id { flex: 1 1 auto; }
-  .kiosque-radio__inst, .kiosque-radio__site { display: none; }
-  /* Sur téléphone, l’émission remplace l’établissement, sous le nom. */
-  .kiosque-radio__inner { display: grid; grid-template-columns: auto minmax(0, 1fr); grid-template-areas: "play id" "play show"; row-gap: 0; }
-  .kiosque-radio__play { grid-area: play; }
-  .kiosque-radio__id { grid-area: id; }
-  .kiosque-radio__show { grid-area: show; border-left: 0; padding-left: 0; font-size: 0.75rem; color: rgba(244, 241, 246, 0.72); }
-  /* iOS ignore le volume d’une page : les boutons du téléphone font le travail. */
-  .kiosque-radio__volume { display: none !important; }
-  .kiosque-radio__audio { grid-column: 2 / -1; }
-  .kiosque-radio__volume input { width: 72px; }
 }
 /* Petit air entre la barre radio et la rangée de rubriques. */
 body.with-radio .nav-wrap {
@@ -2756,7 +2659,7 @@ a.masthead-sports__chip:focus-visible {
   .masthead-background-shade,
   .masthead-photo-credit,
   .masthead-background-transition,
-  .kiosque-radio,
+  .radar-radio-slot,
   .nav-wrap,
   .nav-toggle,
   .brief-rail,

@@ -41,17 +41,14 @@ masthead:
     pomodoro: true
     solitaire: true
 
-# Barre radio sous le mât : un lecteur audio servi par le journal lui-même.
-# station : chyz, cism, ckut, cjlo, cfak ou choq (répertoire de LE-RADAR).
-# Pour une autre station, donnez son flux https :
-#   stream: https://exemple.ca/flux
-#   name: Radio du campus
-#   frequency: 88,1 FM
-#   website: https://exemple.ca/
-# Sans flux connu, la barre n'apparaît pas.
+# Barre radio sous le mât : le module de LE-RADAR, appelé en une ligne.
+# Les stations, le lecteur et son style restent chez LE-RADAR et se mettent
+# à jour sans toucher au journal. station : identifiant de radios.json
+# (chyz, cism, ckut, cjlo, cfak, choq…). Éteinte, la barre n'existe pas et
+# aucune requête ne part vers le-radar.ca.
 radio:
-  enabled: true
-  station: station-exemple
+  enabled: false
+  station: chyz
   theme: dark
   position: top
 

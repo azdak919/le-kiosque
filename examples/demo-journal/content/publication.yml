@@ -564,7 +564,7 @@ masthead:
   overlayStrength: 0.38
   textAlignment: left
 
-# Station de campus de la barre radio native (répertoire LE-RADAR : chyz).
+# Barre radio de LE-RADAR (module radio-barre.js), station chyz.
 radio:
   enabled: true
   station: chyz
