@@ -46,17 +46,8 @@ jobs:
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
-          socle=$(node -p "require('./node_modules/le-socle/package.json').version")
-          printf '%s\n' \
-            "Paquet complet d'un journal : **kiosque-journal.zip** (site du journal + rédaction : articles, photos, rôles, sauvegardes, mises à jour). Socle $socle." \
-            "" \
-            "Première installation : décompressez, envoyez le dossier \`journal/\` dans votre espace web PHP (par exemple \`public_html/journal/\`), puis ouvrez \`…/journal/redaction/\` : l'assistant d'installation demande le nom, le logo, les couleurs et le compte administrateur." \
-            "" \
-            "Mise à jour : page **Mise à jour** de la rédaction, en un clic (sauvegarde et retour arrière compris)." \
-            "" \
-            "Guide : https://github.com/${{ github.repository }}/blob/main/docs/guide-etudiant.md" \
-            "" \
-            "Adresse fixe de la dernière version : https://github.com/${{ github.repository }}/releases/latest/download/kiosque-journal.zip" > notes.md
+          # Nouveautés des deux parties, lues par la page Mise à jour de l'espace de rédaction.
+          node tools/notes-paquet.mjs "${{ github.repository }}" > notes.md
           if gh release view "$TAG" >/dev/null 2>&1; then
             gh release upload "$TAG" dist/kiosque-journal.zip --clobber
             gh release edit "$TAG" --notes-file notes.md --latest
