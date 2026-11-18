@@ -36,7 +36,8 @@ GitHub n'a pas besoin de le joindre.
    site : `https://phare-essai.alwaysdata.net`. Le site par défaut sert le
    dossier `www/` en PHP (menu **Web → Sites**).
 3. Dans l'administration (<https://admin.alwaysdata.com>), menu **Accès
-   distant → SSH** : un utilisateur SSH portant le nom du compte existe déjà.
+   distant → SSH** : un utilisateur SSH portant le nom du compte existe déjà
+   (essai de novembre 2026 : c'est bien le cas, PHP 8.4, racine `www/`).
    Modifiez-le pour lui donner un mot de passe (et cochez la connexion par mot
    de passe si la case est proposée).
 4. Ouvrez `https://ssh-phare-essai.alwaysdata.net` (remplacez par votre
@@ -52,10 +53,18 @@ GitHub n'a pas besoin de le joindre.
 
    (Sans console : envoyez le dossier `journal/` décompressé par SFTP avec
    FileZilla, hôte `ssh-phare-essai.alwaysdata.net`, port 22, dans `www/`.)
-5. Ouvrez `https://phare-essai.alwaysdata.net/journal/redaction/` et
-   remplissez l'assistant d'installation (guide, section 4). Gardez **Cacher
-   le journal des moteurs de recherche** cochée pendant l'essai.
-6. Le journal est à `https://phare-essai.alwaysdata.net/journal/`.
+5. **Tout de suite**, ouvrez `https://phare-essai.alwaysdata.net/journal/redaction/` et
+   remplissez l'assistant d'installation (guide, section 4) : tant qu'il n'est
+   pas rempli, la première personne qui ouvre la page peut créer le compte
+   administrateur. Gardez **Cacher le journal des moteurs de recherche**
+   cochée pendant l'essai, et cochez **Afficher le bandeau « Journal étudiant
+   fictif »** si le journal est un exercice. Attendez le message « Le journal
+   est installé » avant de fermer l'onglet.
+6. Le journal est à `https://phare-essai.alwaysdata.net/journal/`. L'adresse
+   sans `/journal/` montre encore la page d'accueil d'alwaysdata (`www/index.html`) :
+   supprimez ce fichier ou laissez-le, il ne gêne pas. Pendant l'essai, vous pouvez
+   aussi fermer tout le domaine aux moteurs : `printf 'User-agent: *\nDisallow: /\n' > ~/www/robots.txt`
+   (le journal envoie de toute façon l'en-tête « noindex » quand la case est cochée).
 7. Mise à jour : page **Mise à jour** de la rédaction (alwaysdata permet les
    connexions sortantes vers GitHub).
 
