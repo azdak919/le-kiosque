@@ -2418,6 +2418,84 @@
 
   window.KiosqueRefreshFeed = refreshFeedChrome;
 
+
+  function initShareAndRevue() {
+    document.addEventListener('click', function (event) {
+      var printBtn = event.target.closest('[data-revue-print]');
+      if (printBtn) {
+        event.preventDefault();
+        window.print();
+        return;
+      }
+      var button = event.target.closest('[data-share]');
+      if (!button) return;
+      var kind = button.getAttribute('data-share');
+      var url = button.getAttribute('data-share-url') || location.href;
+      var title = button.getAttribute('data-share-title') || document.title;
+      if (kind === 'copy') {
+        event.preventDefault();
+        var done = function () {
+          button.textContent = 'Lien copié';
+          window.setTimeout(function () { button.textContent = 'Copier le lien'; }, 2000);
+        };
+        if (navigator.clipboard && navigator.clipboard.writeText) {
+          navigator.clipboard.writeText(url).then(done).catch(function () {
+            window.prompt('Copiez le lien :', url);
+          });
+        } else {
+          window.prompt('Copiez le lien :', url);
+        }
+      }
+      if (kind === 'mastodon') {
+        event.preventDefault();
+        var host = window.prompt('Adresse de votre instance Mastodon (par exemple mastodon.social)');
+        if (!host) return;
+        host = host.replace(/^https?:\/\//, '').replace(/\/.*$/, '').trim();
+        if (!host) return;
+        window.open('https://' + host + '/share?text=' + encodeURIComponent(title + ' ' + url), '_blank', 'noopener');
+      }
+    });
+  }
+
+  function initRecherchePage() {
+    var indexNode = document.getElementById('recherche-index');
+    var results = document.getElementById('recherche-results');
+    var input = document.getElementById('recherche-q');
+    if (!indexNode || !results || !input) return;
+    var items = [];
+    try { items = JSON.parse(indexNode.textContent || '[]'); } catch (error) { items = []; }
+    var apply = function (query) {
+      input.value = query;
+      var needle = query.trim().toLowerCase();
+      if (!needle) {
+        results.innerHTML = '<p class="empty">Écrivez un mot, un titre ou un nom, puis lancez la recherche.</p>';
+        return;
+      }
+      var matches = items.filter(function (item) {
+        return [item.title, item.excerpt, item.authors].join(' ').toLowerCase().indexOf(needle) !== -1;
+      });
+      results.innerHTML = matches.length
+        ? '<ul class="search-results">' + matches.map(function (item) {
+            return '<li><a href="' + String(item.href || '').replace(/"/g, '&quot;') + '">' + String(item.title || '').replace(/</g, '&lt;') + '</a><p>' + String(item.excerpt || '').replace(/</g, '&lt;') + '</p></li>';
+          }).join('') + '</ul>'
+        : '<p class="empty">Aucun article ne correspond à « ' + query.replace(/</g, '&lt;') + ' ».</p>';
+    };
+    var params = new URLSearchParams(location.search);
+    apply(params.get('q') || '');
+    var form = input.form;
+    if (form) {
+      form.addEventListener('submit', function (event) {
+        event.preventDefault();
+        var query = input.value.trim();
+        var url = new URL(form.action || location.pathname, location.href);
+        if (query) url.searchParams.set('q', query);
+        else url.searchParams.delete('q');
+        history.pushState({}, '', url.pathname + url.search);
+        apply(query);
+      });
+    }
+  }
+
   function init() {
     initTheme();
     initDemoBannerStickyOffset();
@@ -2434,6 +2512,8 @@
     initMarquees();
     initPageScrollTop();
     initNewsSearch();
+    initShareAndRevue();
+    initRecherchePage();
     focusSportsTeamFromUrl();
   }
 

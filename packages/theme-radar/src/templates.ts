@@ -741,7 +741,7 @@ function mastheadTools(ctx: RenderContext, current?: string): string {
       : ''}
     <div class="masthead-tools">
       ${button(homeHref, 'Accueil', icon('home', assetsBase), 'masthead-home', current === homeHref)}
-      ${ctx.editorial?.mode === 'socle-vivant' ? '' : button(asset('/feed.xml', ctx), 'Flux RSS', icon('rss', assetsBase), 'masthead-rss')}
+      ${ctx.publication.noindex ? '' : button(asset('/feed.xml', ctx), 'Flux RSS', icon('rss', assetsBase), 'masthead-rss')}
       ${tools?.pomodoro !== false ? button('https://le-radar.ca/pomo/', 'Pomodoro', emojiIcon(assetsBase, 'tomato.png'), 'masthead-pomo') : ''}
       ${tools?.solitaire !== false ? button('https://le-radar.ca/solitaire/', 'Solitaire', emojiIcon(assetsBase, 'playing-cards.png'), 'masthead-solitaire') : ''}
       <button type="button" id="theme-toggle" class="masthead-tool theme-toggle" aria-label="Passer en mode sombre" title="Passer en mode sombre">${icon('sun', assetsBase)}${icon('moon', assetsBase)}</button>
@@ -890,7 +890,7 @@ export function page(content: string, options: PageOptions, ctx: RenderContext):
   }
 <meta name="twitter:card" content="${options.image ? 'summary_large_image' : 'summary'}">
 
-${ctx.editorial?.mode === 'socle-vivant' ? '' : `<link rel="alternate" type="application/atom+xml" title="${esc(pub.name)}" href="${asset('/feed.xml', ctx)}">`}
+${pub.noindex ? '' : `<link rel="alternate" type="application/atom+xml" title="${esc(pub.name)}" href="${asset('/feed.xml', ctx)}">`}
 <link rel="stylesheet" href="${asset('/assets/tokens.css', ctx)}">
 <link rel="stylesheet" href="${asset('/assets/theme.css', ctx)}">
 <link rel="stylesheet" href="${asset('/assets/source-view.css', ctx)}">
@@ -940,13 +940,16 @@ ${content}
     <nav class="site-foot__nav" aria-label="Sections, pied de page">
       ${footerNavHtml(nav, { current: options.current, editorial })}
     </nav>
-    ${ctx.editorial?.mode === 'socle-vivant' ? '' : `<nav class="site-foot__links" aria-label="Liens de pied de page">
-      <a href="${asset('/feed.xml', ctx)}">Flux RSS</a>
-      <span class="site-foot__sep" aria-hidden="true">·</span>
+    <nav class="site-foot__links" aria-label="Liens de pied de page">
+      ${pub.noindex ? '' : `<a href="${asset('/feed.xml', ctx)}">Flux RSS</a><span class="site-foot__sep" aria-hidden="true">·</span>`}
       <a href="${asset('/archives/', ctx)}"${editorial ? ' data-editorial-link' : ''}>Archives</a>
       <span class="site-foot__sep" aria-hidden="true">·</span>
       <a href="${asset('/plan-du-site/', ctx)}"${editorial ? ' data-editorial-link' : ''}>Plan du site</a>
-    </nav>`}
+      <span class="site-foot__sep" aria-hidden="true">·</span>
+      <a href="${asset('/revue/', ctx)}"${editorial ? ' data-editorial-link' : ''}>Revue</a>
+      <span class="site-foot__sep" aria-hidden="true">·</span>
+      <a href="${asset('/recherche/', ctx)}"${editorial ? ' data-editorial-link' : ''}>Recherche</a>
+    </nav>
     <div class="site-foot__credit">
       ${
         pub.governance.contact
@@ -1181,6 +1184,7 @@ export function articlePage(article: Article, ctx: RenderContext, relatedArticle
             : ''
         }
       </div>
+      ${shareButtons(article.title, article.canonicalUrl || `${String(ctx.publication.siteUrl || '').replace(/\/+$/, '')}/articles/${article.slug}/`)}
       <div class="post-flow">
       ${
         lead
@@ -1446,6 +1450,66 @@ function archiveYearOf(article: Article, timeZone: string): number {
 }
 
 /** Groupement année → articles (années desc., articles déjà triés). */
+
+/** Boutons de partage sans pistage : copies, courriel, et liens d'intention. */
+export function shareButtons(title: string, url: string): string {
+  const encodedUrl = encodeURIComponent(url);
+  const encodedTitle = encodeURIComponent(title);
+  return `<aside class="share" aria-label="Partager">
+    <p class="share__label">Partager</p>
+    <div class="share__actions">
+      <button type="button" class="share__btn" data-share="copy" data-share-url="${esc(url)}">Copier le lien</button>
+      <a class="share__btn" href="mailto:?subject=${encodedTitle}&body=${encodedUrl}">Courriel</a>
+      <a class="share__btn" href="https://bsky.app/intent/compose?text=${encodedTitle}%20${encodedUrl}" target="_blank" rel="noopener noreferrer">Bluesky</a>
+      <button type="button" class="share__btn" data-share="mastodon" data-share-url="${esc(url)}" data-share-title="${esc(title)}">Mastodon</button>
+      <a class="share__btn" href="https://www.facebook.com/sharer/sharer.php?u=${encodedUrl}" target="_blank" rel="noopener noreferrer">Facebook</a>
+      <a class="share__btn" href="https://x.com/intent/post?text=${encodedTitle}&url=${encodedUrl}" target="_blank" rel="noopener noreferrer">X</a>
+    </div>
+  </aside>`;
+}
+
+export function searchPage(articles: Article[], ctx: RenderContext): string {
+  const index = articles.map((article) => ({
+    title: article.title,
+    excerpt: article.excerpt || '',
+    href: asset(`/articles/${article.slug}/`, ctx),
+    authors: article.authors.map((slug) => ctx.authorsBySlug.get(slug)?.name ?? slug).join(', '),
+  }));
+  return page(
+    `<div class="wrap wire">
+      <div class="wire-head"><h1 class="wire-title">Recherche</h1></div>
+      <form class="search-form" method="get" action="${asset('/recherche/', ctx)}" role="search">
+        <label>Chercher dans le journal<input type="search" name="q" value="" placeholder="Un titre, un nom, un mot" id="recherche-q"></label>
+        <button type="submit" class="primary">Rechercher</button>
+      </form>
+      <div id="recherche-results"><p class="empty">Écrivez un mot, un titre ou un nom, puis lancez la recherche.</p></div>
+      <script type="application/json" id="recherche-index">${JSON.stringify(index).replace(/</g, '\\u003c')}</script>
+    </div>`,
+    { title: `Recherche — ${ctx.publication.name}`, canonical: `${ctx.publication.siteUrl.replace(/\/+$/, '')}/recherche/` },
+    ctx,
+  );
+}
+
+export function revuePage(articles: Article[], ctx: RenderContext): string {
+  const picks = articles.slice(0, 12);
+  const pieces = picks.map((article) => {
+    const names = article.authors.map((slug) => ctx.authorsBySlug.get(slug)?.name ?? slug).join(', ');
+    const date = article.publishedAt || article.updatedAt;
+    const body = article.body?.raw ? `<div class="post-body">${article.body.format === 'html' ? article.body.raw : ''}</div>` : (article.excerpt ? `<p>${esc(article.excerpt)}</p>` : '');
+    return `<article class="revue-piece"><h2>${esc(article.title)}</h2><p class="post-meta">${esc(names)} · <time datetime="${esc(date)}">${esc(date)}</time></p>${body}<p class="revue-piece__link"><a href="${asset(`/articles/${article.slug}/`, ctx)}">Lire sur le site</a></p></article>`;
+  }).join('');
+  return page(
+    `<div class="wrap wire wire--revue">
+      <div class="wire-head"><h1 class="wire-title">Revue</h1>${picks.length ? `<span class="wire-status">${picks.length} article${picks.length > 1 ? 's' : ''}</span>` : ''}</div>
+      <p class="section-intro">Une édition à imprimer : les articles récents, à la suite, sans le mât ni la radio. Utilisez « Imprimer » dans votre navigateur, ou le bouton ci-dessous.</p>
+      <p class="revue-actions noprint"><button type="button" class="primary" data-revue-print>Imprimer la revue</button></p>
+      ${picks.length ? pieces : '<p class="empty">Aucun article à mettre dans la revue pour le moment.</p>'}
+    </div>`,
+    { title: `Revue — ${ctx.publication.name}`, canonical: `${ctx.publication.siteUrl.replace(/\/+$/, '')}/revue/` },
+    ctx,
+  );
+}
+
 export function groupArticlesByYear(articles: Article[], timeZone: string): Array<{ year: number; articles: Article[] }> {
   const buckets = new Map<number, Article[]>();
   for (const article of articles) {

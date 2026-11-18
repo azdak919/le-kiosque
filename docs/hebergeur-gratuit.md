@@ -47,22 +47,24 @@ GitHub n'a pas besoin de le joindre.
    ```
    cd ~/www
    wget https://github.com/azdak919/le-kiosque/releases/latest/download/kiosque-journal.zip
-   unzip kiosque-journal.zip
+   unzip -o kiosque-journal.zip
    rm kiosque-journal.zip
    ```
 
-   (Sans console : envoyez le dossier `journal/` décompressé par SFTP avec
-   FileZilla, hôte `ssh-phare-essai.alwaysdata.net`, port 22, dans `www/`.)
-5. **Tout de suite**, ouvrez `https://phare-essai.alwaysdata.net/journal/redaction/` et
+   La commande remplace la page d'accueil par défaut d'alwaysdata (`www/index.html`)
+   par le journal, à la racine du domaine. (Sans console : décompressez le ZIP sur
+   votre ordinateur et envoyez son contenu par SFTP avec FileZilla, hôte
+   `ssh-phare-essai.alwaysdata.net`, port 22, dans `www/`.) Pour installer dans un
+   sous-dossier, créez ce dossier et déposez-y les mêmes fichiers : le programme
+   détecte le préfixe tout seul, sans casser les liens.
+5. **Tout de suite**, ouvrez `https://phare-essai.alwaysdata.net/redaction/` et
    remplissez l'assistant d'installation (guide, section 4) : tant qu'il n'est
    pas rempli, la première personne qui ouvre la page peut créer le compte
    administrateur. Gardez **Cacher le journal des moteurs de recherche**
    cochée pendant l'essai, et cochez **Afficher le bandeau « Journal étudiant
    fictif »** si le journal est un exercice. Attendez le message « Le journal
    est installé » avant de fermer l'onglet.
-6. Le journal est à `https://phare-essai.alwaysdata.net/journal/`. L'adresse
-   sans `/journal/` montre encore la page d'accueil d'alwaysdata (`www/index.html`) :
-   supprimez ce fichier ou laissez-le, il ne gêne pas. Pendant l'essai, vous pouvez
+6. Le journal est à `https://phare-essai.alwaysdata.net/`. Pendant l'essai, vous pouvez
    aussi fermer tout le domaine aux moteurs : `printf 'User-agent: *\nDisallow: /\n' > ~/www/robots.txt`
    (le journal envoie de toute façon l'en-tête « noindex » quand la case est cochée).
 7. Mise à jour : page **Mise à jour** de la rédaction (alwaysdata permet les
@@ -77,17 +79,17 @@ GitHub n'a pas besoin de le joindre.
 2. Connectez-vous à **Plesk** depuis <https://heliohost.org/login/>, ouvrez
    **Fichiers**, entrez dans `httpdocs/`.
 3. **Téléverser** `kiosque-journal.zip`, puis sur le fichier : **Extraire les
-   fichiers**. Vous obtenez `httpdocs/journal/`.
-4. Ouvrez `https://<nom>.helioho.st/journal/redaction/` et remplissez
-   l'assistant.
+   fichiers**. Les fichiers du journal sont dans `httpdocs/` (à la racine du site).
+4. Ouvrez `https://<nom>.helioho.st/redaction/` et remplissez l'assistant.
 
 ## InfinityFree, pas à pas
 
 1. <https://www.infinityfree.com> → **Register**, puis **Create Account**
    (sous-domaine gratuit). Activez le certificat **SSL** gratuit dans le
    panneau du compte.
-2. **File Manager** → dossier `htdocs/` → envoyez le dossier `journal/`
-   décompressé (ou le ZIP, puis **Extract** s'il est proposé).
-3. Ouvrez `https://<sous-domaine>/journal/redaction/` et remplissez
-   l'assistant. Si la page Mise à jour dit « Vérification impossible »,
-   suivez la marche à la main qu'elle affiche.
+2. **File Manager** → dossier `htdocs/` → envoyez le contenu du ZIP
+   décompressé (ou le ZIP, puis **Extract** s'il est proposé), à la racine
+   de `htdocs/`.
+3. Ouvrez `https://<sous-domaine>/redaction/` et remplissez l'assistant. Si la
+   page Mise à jour dit « Vérification impossible », suivez la marche à la
+   main qu'elle affiche.

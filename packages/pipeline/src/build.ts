@@ -37,6 +37,8 @@ import {
   homePage,
   page,
   redirectPage,
+  revuePage,
+  searchPage,
   sectionPage,
   sportsResultsPage,
   esc,
@@ -449,6 +451,13 @@ export async function build(options: BuildOptions): Promise<BuildResult> {
     pages++;
   }
 
+  await emit(outDir, '/recherche/', searchPage(listed, ctx));
+  urls.push({ loc: `${base}/recherche/` });
+  pages++;
+  await emit(outDir, '/revue/', revuePage(listed, ctx));
+  urls.push({ loc: `${base}/revue/` });
+  pages++;
+
   // Plan du site lisible par un humain — c'est aussi la porte d'entrée d'une
   // reprise : on y voit tout ce que le journal contient.
   await emit(
@@ -463,6 +472,8 @@ export async function build(options: BuildOptions): Promise<BuildResult> {
         ${sportsCfg && sportsCfg.enabled !== false && sportsTeams.length
           ? `<li><a href="${basePath}/sports/">Au tableau</a> — scores et prochains matchs</li>`
           : ''}
+        <li><a href="${basePath}/recherche/">Recherche</a></li>
+        <li><a href="${basePath}/revue/">Revue</a> — édition à imprimer</li>
         ${listed.map((a) => `<li><a href="${basePath}/articles/${esc(a.slug)}/">${esc(a.title)}</a></li>`).join('\n        ')}
       </ul>
     </div>`,
