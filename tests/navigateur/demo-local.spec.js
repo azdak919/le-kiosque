@@ -30,6 +30,7 @@ test('configurer, rédiger, prévisualiser, publier, persister et exporter sans 
   const expectedMediaCount = demoSeedMediaCount();
   await page.goto('/autre-nom/configurer/');
   await page.getByLabel('Nom du journal').fill('La Relève locale');
+  await page.locator('[data-key="institution"]').fill('Cégep de démonstration');
   await page.getByRole('button', { name: 'Continuer' }).click();
   await page.locator('[data-key="accent"]').fill('#005a78');
   await page.locator('section[data-step="2"] .avance > summary').click();

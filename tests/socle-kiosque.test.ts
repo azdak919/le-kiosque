@@ -90,9 +90,44 @@ test('build n’importe ni un adaptateur ni le serveur du socle ; le gabarit res
   const serveur = K.kiosqueConfigTs(K.completer({
     name: 'La Gazette', institution: 'Cégep du Nord', accent: '#8a1538', sections: 'Actualités', hebergement: 'serveur',
   }));
+  // Sans adresse de socle, le journal reste sur Markdown.
   assert.match(serveur, /adapter: 'markdown'/);
-  assert.match(serveur, /leur serveur, pour le site entier/);
   assert.doesNotMatch(serveur, /adapter: 'socle'/);
+  const avecSocle = K.kiosqueConfigTs(K.completer({
+    name: 'La Gazette', institution: 'Cégep du Nord', sections: 'Actualités', hebergement: 'serveur', socleUrl: 'https://journal.cegep.example/socle/',
+  }));
+  assert.match(avecSocle, /adapter: 'socle', options: \{ baseUrl: "https:\/\/journal\.cegep\.example\/socle" \}/);
+  assert.match(avecSocle, /mode: 'external'/);
+});
+
+test('le configurateur : adresse déduite du dépôt, logo dans l’archive, catégories des sections, vraies vérifications', () => {
+  const png = 'iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNk+M9QDwADhgGAWjR9awAAAABJRU5ErkJggg==';
+  const vide = K.completer({ name: 'La Girouette', institution: 'Cégep fictif', sections: 'Campus\nCulture' });
+  assert.equal(vide.demoContent, false);
+  assert.ok(K.aVerifier(vide).length >= 2, 'dépôt et courriel manquants sont signalés');
+  const c = K.completer({
+    name: 'La Girouette', institution: 'Cégep fictif', sections: 'Campus\nCulture', repository: 'azdak919/la-girouette',
+    contact: 'redaction@girouette.example', noindex: true, logo: { src: `data:image/png;base64,${png}` },
+  });
+  assert.equal(c.siteUrl, 'https://azdak919.github.io/la-girouette');
+  assert.deepEqual(K.aVerifier(c), []);
+  const files = K.fichiersKiosque(c);
+  const logo = files.find((f) => f.path === 'media/logo.png');
+  assert.ok(logo?.bytes?.length, 'le logo est un fichier de l’archive');
+  const pub = files.find((f) => f.path === 'content/publication.yml').content;
+  assert.match(pub, /noindex: true/);
+  assert.match(pub, /src: "\/media\/logo\.png"/);
+  assert.match(pub, /contact: "redaction@girouette\.example"/);
+  const tax = files.find((f) => f.path === 'content/taxonomies.yml').content;
+  assert.match(tax, /slug: "campus"/);
+  assert.doesNotMatch(tax, /vie-etudiante|politique/);
+  const json = JSON.parse(files.find((f) => f.path === 'kiosque-config.json').content);
+  assert.equal(json.gouvernance.contact, 'redaction@girouette.example');
+  assert.equal(json.gouvernance.depot, 'https://github.com/azdak919/la-girouette');
+  assert.equal(json.options.noindex, true);
+  const retour = K.importer(json);
+  assert.equal(retour.repository, 'azdak919/la-girouette');
+  assert.equal(retour.noindex, true);
 });
 
 test('la page Mise à jour nomme Socle et Kiosque et n’appelle pas le réseau', () => {
