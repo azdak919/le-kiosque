@@ -47,7 +47,7 @@ test('configurer, rédiger, prévisualiser, publier, persister et exporter sans 
   await page.locator('.admin-nav').getByRole('link', { name: 'Photos', exact: true }).click();
   // Banque démo = seed (pas un entier magique 50/51).
   await expect(page.locator('.media-card')).toHaveCount(expectedMediaCount);
-  await page.getByLabel('Rechercher un établissement, un campus ou un mot-clé').fill('Jonquière');
+  await page.getByLabel('Rechercher une photo (lieu, sujet, mot-clé)').fill('Jonquière');
   await expect(page.locator('.media-card:visible')).toHaveCount(2);
   await page.locator('.admin-nav').getByRole('link', { name: 'Tableau de bord', exact: true }).click();
 
@@ -59,11 +59,11 @@ test('configurer, rédiger, prévisualiser, publier, persister et exporter sans 
   await page.getByLabel('Marie Tremblay').check();
   await page.getByRole('button', { name: 'Choisir une photo' }).click();
   const articlePicker = page.locator('.media-picker');
-  await articlePicker.getByLabel('Rechercher un établissement, un campus ou un mot-clé').fill('Limoilou');
+  await articlePicker.getByLabel('Rechercher une photo (lieu, sujet, mot-clé)').fill('Limoilou');
   await articlePicker.getByRole('button', { name: 'Choisir cette photo' }).click();
   await expect(page.locator('#article-lead-preview .crop-preview')).toHaveCount(3);
-  await page.getByLabel('Point focal X').fill('71');
-  await page.getByLabel('Point focal Y').fill('38');
+  await page.getByLabel('Cadrage horizontal').fill('71');
+  await page.getByLabel('Cadrage vertical').fill('38');
   await page.getByRole('button', { name: 'Prévisualiser sans publier' }).click();
   await expect(page.getByText('Une vraie prévisualisation')).toBeVisible();
   await page.getByRole('button', { name: 'Enregistrer' }).click();
@@ -124,10 +124,10 @@ test('configurer, rédiger, prévisualiser, publier, persister et exporter sans 
   await page.locator('.admin-nav').getByRole('link', { name: 'Configuration', exact: true }).click();
   await page.getByRole('button', { name: 'Choisir une photo' }).click();
   const mastheadPicker = page.locator('.media-picker');
-  await mastheadPicker.getByLabel('Rechercher un établissement, un campus ou un mot-clé').fill('McGill');
+  await mastheadPicker.getByLabel('Rechercher une photo (lieu, sujet, mot-clé)').fill('McGill');
   await mastheadPicker.getByRole('button', { name: 'Choisir cette photo' }).first().click();
-  await page.getByLabel('Point focal X').fill('73');
-  await page.getByLabel('Point focal Y').fill('42');
+  await page.getByLabel('Cadrage horizontal').fill('73');
+  await page.getByLabel('Cadrage vertical').fill('42');
   await page.getByRole('button', { name: 'Enregistrer' }).click();
   await expect(front.locator('.masthead-background')).toHaveAttribute('src', /mcgill-(roddick|campus|arts)\.jpg/);
 
@@ -211,7 +211,7 @@ test('l’éditeur programme et archive un article', async ({ page }) => {
   await expect(page.getByRole('heading', { name: 'Articles', level: 2 })).toBeVisible({ timeout: 60_000 });
   await page.getByRole('button', { name: 'Nouvel article' }).click();
   await page.getByLabel('Titre').fill('Article programmé');
-  await page.getByLabel('Identifiant URL').fill('article-programme');
+  await page.getByLabel('Adresse de l’article').fill('article-programme');
   await page.getByLabel('Résumé').fill('Sortira demain.');
   await page.locator('input[name="authors"]').first().check();
   await expect(page.locator('[data-scheduled-field]')).toBeHidden();

@@ -1,0 +1,12 @@
+{
+  "piece": "socle",
+  "avant": {
+    "commit": "bd7938a6b385c26d9646225baf42de2bf776d03b",
+    "version": "1.0.0"
+  },
+  "apres": {
+    "commit": "62c920e3c037a09dcec799d38061329f2876fb2a"
+  },
+  "date": "2026-11-18T15:59:37.711Z",
+  "revenir": "node tools/maj-socle.mjs bd7938a6b385c26d9646225baf42de2bf776d03b"
+}

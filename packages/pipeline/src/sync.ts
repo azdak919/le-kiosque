@@ -15,7 +15,8 @@ import { createSourceContext, safeHealth, type ContentSource } from '../../core/
 import { freezeId } from '../../adapters/markdown/src/frontmatter.ts';
 import { formatIssues, validateBundle } from '../../core/src/validate.ts';
 import type { Article, ContentBundle } from '../../core/src/model.ts';
-import { readChecksums, readIndex, writeChecksums, writeIndex, writeMedia } from './mirror.ts';
+import { readChecksums, readIndex, readPublicationRaw, writeChecksums, writeIndex, writeMedia } from './mirror.ts';
+import { bodyMedia, normalizeRemote } from './remote-normalize.ts';
 import { writeRemoteMirror } from './mirror-write.ts';
 import type { KiosqueConfig } from './config.ts';
 
@@ -99,13 +100,24 @@ export async function sync(options: SyncOptions): Promise<SyncResult> {
     articles.push(article);
   }
 
-  const bundle: ContentBundle = {
+  let bundle: ContentBundle = {
     publication,
     articles,
     authors,
     taxonomies,
     syncedAt: new Date().toISOString(),
   };
+
+  // Backend distant : compléter la fiche avec content/publication.yml (le
+  // configurateur l'a écrite), donner à chaque article son adresse canonique,
+  // poser un logo `data:` en fichier.
+  let logoFile: { src: string; bytes: Uint8Array } | undefined;
+  if (source.id !== 'markdown') {
+    const local = await readPublicationRaw(config.root).catch(() => undefined);
+    const normalized = normalizeRemote(bundle, local);
+    bundle = normalized.bundle;
+    logoFile = normalized.logoFile;
+  }
 
   const validation = validateBundle(bundle);
   const warnings = validation.issues.filter((i) => i.level === 'warning');
@@ -143,11 +155,19 @@ export async function sync(options: SyncOptions): Promise<SyncResult> {
   const seen = new Set<string>();
   let mediaMirrored = 0;
 
+  if (logoFile) {
+    checksums[logoFile.src] = await writeMedia(config.root, logoFile.src, logoFile.bytes);
+    seen.add(logoFile.src);
+    mediaMirrored++;
+  }
+
   const assets = [
-    ...articles.flatMap((a) => [a.lead, ...(a.media ?? [])]),
+    ...bundle.articles.flatMap((a) => [a.lead, ...(a.media ?? [])]),
+    ...(source.id !== 'markdown' ? bundle.articles.flatMap((a) => bodyMedia(a.body?.raw).map((src) => ({ src, alt: '' }))) : []),
     ...authors.map((a) => a.avatar),
-    publication.logo,
-  ].filter((a): a is NonNullable<typeof a> => Boolean(a));
+    bundle.publication.logo,
+    ...(bundle.publication.masthead?.backgrounds?.images ?? []),
+  ].filter((a): a is NonNullable<typeof a> => Boolean(a) && !String(a?.src ?? '').startsWith('data:'));
 
   for (const asset of assets) {
     if (seen.has(asset.src)) continue;
@@ -174,6 +194,6 @@ export async function sync(options: SyncOptions): Promise<SyncResult> {
   const carry = options.since ? ((await readIndex(config.root))?.articles ?? []) : [];
   await writeIndex(config.root, bundle, carry);
 
-  log.info(`${articles.length} articles, ${authors.length} signatures, ${mediaMirrored} médias`);
+  log.info(`${bundle.articles.length} articles, ${authors.length} signatures, ${mediaMirrored} médias`);
   return { bundle, mediaMirrored, warnings: warnings.length, idsFrozen };
 }
