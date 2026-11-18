@@ -467,6 +467,8 @@ export interface Article {
   isDemo?: boolean;
   /** Vrai dès qu'une personne modifie un exemple dans le mode local. */
   isUserModified?: boolean;
+  /** Article mis en avant (« À la une »). Sans cela, pas d'étiquette. */
+  featured?: boolean;
   publishedAt?: ISODate;
   updatedAt: ISODate;
 

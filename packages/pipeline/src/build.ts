@@ -51,6 +51,8 @@ import { renderCmsConfig, repoSlug } from './cms-config.ts';
 import { sanitizeHtml } from './sanitize.ts';
 import { normalizeBasePath, type KiosqueConfig } from './config.ts';
 import { readIndex } from './mirror.ts';
+import { isGeneratedInitialsLogo } from '../../theme-radar/src/generated-logo.js';
+import { inflateSync } from 'node:zlib';
 
 const THEME_ASSETS = path.resolve(
   fileURLToPath(new URL('../../theme-radar/assets', import.meta.url)),
@@ -64,6 +66,7 @@ async function copyDemoRuntime(outDir: string, live = false): Promise<void> {
   // démo en mode navigateur. Il vit côté thème, puis est copié explicitement dans le
   // runtime navigateur — jamais recopié à la main dans render.js.
   await cp(path.resolve(THEME_ASSETS, '..', 'src', 'source-view.js'), path.join(editorialDir, 'source-view.js'));
+  await cp(path.resolve(THEME_ASSETS, '..', 'src', 'generated-logo.js'), path.join(editorialDir, 'generated-logo.js'));
   await cp(path.resolve(THEME_ASSETS, '..', 'src', 'radio.js'), path.join(editorialDir, 'radio.js'));
   await cp(path.resolve(THEME_ASSETS, '..', 'src', 'social.js'), path.join(editorialDir, 'social.js'));
   await cp(MARKED_BROWSER, path.join(editorialDir, 'marked.esm.js')).catch(() => {
@@ -294,11 +297,20 @@ export async function build(options: BuildOptions): Promise<BuildResult> {
   const browserRendered = editorialMode === 'demo-local' || live;
   const editorialAssetsBase = `${basePath}/assets/editorial`;
   const databaseKey = `kiosque-${basePath.replace(/[^a-z0-9]+/gi, '-') || 'root'}-${bundle.publication.slug}`;
-  // Un logo-emblème (carré, rond) ne dit pas le nom : le gabarit l'écrit à côté.
+  // Un monogramme d'initiales généré n'est pas un logo : on l'ignore et le mât montre le nom.
   const logo = bundle.publication.logo;
-  if (logo?.src?.startsWith('/media/') && !(logo.width && logo.height)) {
-    const size = await readFile(path.join(config.root, logo.src)).then((bytes) => imageSize(bytes)).catch(() => null);
-    if (size) bundle.publication.logo = { ...logo, ...size };
+  if (logo?.src) {
+    let logoBytes;
+    if (logo.src.startsWith('/media/')) {
+      logoBytes = await readFile(path.join(config.root, logo.src)).catch(() => undefined);
+      if (logoBytes && !(logo.width && logo.height)) {
+        const size = imageSize(logoBytes);
+        if (size) bundle.publication.logo = { ...logo, ...size };
+      }
+    }
+    if (isGeneratedInitialsLogo(bundle.publication.logo, logoBytes, inflateSync)) {
+      bundle.publication.logo = undefined;
+    }
   }
   const publicationForRender = browserRendered ? bundle.publication : {
     ...bundle.publication,

@@ -23,6 +23,8 @@ import {
   type Taxonomies,
 } from '../../core/src/model.ts';
 import { renderSourceArticle } from './source-view.js';
+import { usablePublicationLogo } from './generated-logo.js';
+import { inflateSync } from 'node:zlib';
 import { radioBarHtml } from './radio.js';
 import { socialNavHtml } from './social.js';
 import { pruneSportsPayload } from './sports-freshness.js';
@@ -117,7 +119,7 @@ export function mastheadOptions(publication: Publication): MastheadOptions {
     name: publication.name,
     signature: publication.tagline,
     institution: publication.institution,
-    logo: publication.logo,
+    logo: usablePublicationLogo(publication.logo, undefined, inflateSync),
     image,
     backgroundPosition: `${clampPercent(focal?.x)}% ${clampPercent(focal?.y)}%`,
     overlayStrength: Number.isFinite(overlay) ? Math.min(0.9, Math.max(0, overlay!)) : 0.55,
@@ -220,12 +222,13 @@ function darkAccent(color: string): string {
  * journal ; avec un logo (SVG ou image), le logo remplace le nom écrit
  * (son texte alternatif porte le nom). Jamais les deux.
  */
-function wordmarkInner(masthead: { name: string; logo?: { src: string; alt?: string; width?: number; height?: number } }, ctx: RenderContext): string {
-  if (!masthead.logo) return `<span class="wordmark-name">${esc(masthead.name)}</span>`;
-  const { width, height } = masthead.logo;
+export function wordmarkInner(masthead: { name: string; logo?: { src: string; alt?: string; width?: number; height?: number } }, ctx: RenderContext): string {
+  const logo = usablePublicationLogo(masthead.logo, undefined, inflateSync);
+  if (!logo) return `<span class="wordmark-name">${esc(masthead.name)}</span>`;
+  const { width, height } = logo;
   const size = width && height ? ` width="${width}" height="${height}"` : '';
-  const src = safeUrl(asset(masthead.logo.src, ctx));
-  return `<img class="publication-logo" src="${src}" alt="${esc(masthead.logo.alt || masthead.name)}"${size}>`;
+  const src = safeUrl(asset(logo.src, ctx));
+  return `<img class="publication-logo" src="${src}" alt="${esc(logo.alt || masthead.name)}"${size}>`;
 }
 
 /** « Photo : Nom (CC BY-SA 4.0) », licence liée quand on a son adresse. */
@@ -774,8 +777,8 @@ export function articleCard(article: Article, ctx: RenderContext, variant: boole
     title: article.title,
     excerpt: article.excerpt,
     readMore: true,
-    // Eyebrow manchette ≠ titre du fil (défaut « À la une », pas wireTitle).
-    leadEyebrow: labels?.leadEyebrow || 'À la une',
+    // « À la une » seulement pour un article vraiment mis en avant (featured).
+    leadEyebrow: role === 'lead' && article.featured ? (labels?.leadEyebrow || 'À la une') : undefined,
     date: { iso: date, label: formatDateTime(date, ctx.publication.timeZone) },
     authors: article.authors.map((slug) => ({
       name: ctx.authorsBySlug.get(slug)?.name ?? slug,
@@ -1047,7 +1050,9 @@ export function magazineFeedHtml(
   opts: { heroLabel: string; empty: string },
 ): string {
   if (!articles.length) return `<p class="empty">${esc(opts.empty)}</p>`;
-  const [first, ...rest] = articles;
+  const featured = articles.find((item) => item.featured);
+  const first = featured ?? articles[0];
+  const rest = articles.filter((item) => item.id !== first.id);
   // 3 vedettes + jusqu’à 6 en bref (graine). Le JS peut encore trimmer
   // la dernière carte si En bref dépasse le hero (règle d’équité LE-RADAR).
   const features = rest.slice(0, 3);
