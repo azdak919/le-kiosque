@@ -42,7 +42,7 @@ jobs:
       - name: Récupérer l'amont
         id: amont
         run: |
-          git remote add upstream https://github.com/kiosque/kiosque.git 2>/dev/null || true
+          git remote add upstream https://github.com/azdak919/le-kiosque.git 2>/dev/null || true
           git fetch upstream main
           if git merge-base --is-ancestor upstream/main HEAD; then
             echo "a_jour=true" >> "$GITHUB_OUTPUT"
