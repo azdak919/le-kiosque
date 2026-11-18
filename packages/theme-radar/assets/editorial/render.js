@@ -56,7 +56,7 @@ function mediaFigure(article, base) {
   const src = safeMediaUrl(article.lead.src);
   if (!src) return '';
   const resolved = src.startsWith('/') ? link(base, src) : src;
-  const credit = [article.lead.caption, article.lead.credit && `Photo : ${article.lead.credit}`].filter(Boolean).map(esc).join(' — ');
+  const credit = [article.lead.caption, article.lead.credit && `Photo : ${article.lead.credit}${article.lead.license ? ` (${article.lead.license})` : ''}`].filter(Boolean).map(esc).join(' — ');
   const x = Number(article.lead.focalPoint?.x ?? 50);
   const y = Number(article.lead.focalPoint?.y ?? 50);
   const w = article.lead.width ? ` width="${Number(article.lead.width)}"` : '';

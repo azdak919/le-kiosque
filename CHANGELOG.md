@@ -1,6 +1,7 @@
 # Journal
 
 ## Non publié
+- Cartes de la une : la licence de la photo suit le crédit, comme dans l'article.
 
 - Guide étudiant de bout en bout (`docs/guide-etudiant.md`) : gabarit, configurateur, socle sur un hébergement PHP mutualisé, photos libres, mises à jour ; README et installation.md renvoient à ce chemin ; Cloudflare annoncé honnêtement comme demandant la ligne de commande. Publication automatique chaque heure. Socle épinglé sur 6910e5b (connexion par mot de passe, paquet PHP).
 - Configurateur : il part de zéro (plus le nom, l'adresse, la station ni les catégories du Quorum) et parle du socle. L'étape 4 demande où s'écrivent les articles (le socle, recommandé, ou des fichiers Markdown), l'adresse du socle, le dépôt GitHub, le courriel de la rédaction ; l'adresse du site se déduit du dépôt. Les articles fictifs sont décochés par défaut, une case « Cacher le journal des moteurs de recherche » écrit `noindex: true`. « À vérifier » liste ce qui manque vraiment au lieu de « Rien à signaler ». Le logo est dans l'archive (`media/logo.png`) et dans la fiche ; les catégories suivent les sections ; `kiosque-config.json` porte la gouvernance, `noindex` et l'adresse du socle, pour l'import en un clic dans l'admin du socle. La station radio se choisit dans la liste de LE-RADAR. « Identifiant court » devient « Nom court ». Avec une adresse de socle, `kiosque.config.ts` branche l'adaptateur socle.
