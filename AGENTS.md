@@ -23,6 +23,7 @@ checks CI verts (`test`) → **merge + delete branch**.
 **Push ≠ livré** : avertir l’humain avec  
 `gh pr merge <N> --merge --delete-branch` si la clôture n’est pas encore faite.  
 **LE-RADAR UI/CSS** : `npm run check` + Playwright (au minimum mât/smoke) avant push.
+**Worktree** : ne jamais versionner `node_modules`, même comme lien vers un autre clone. Relire `git status` avant `git add -A`.
 
 ### Photos = crédit photographe (comme les articles ont des signatures)
 
