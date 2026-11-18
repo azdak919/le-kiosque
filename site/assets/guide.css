@@ -1,0 +1,64 @@
+/* Guide d'une page — s'appuie sur vitrine.css */
+body.guide { background: #fffdf8; }
+.guide-head { padding: 2.2rem 0 0.5rem; }
+.guide-head h1 { margin: 0.3rem 0 0; font-size: clamp(2rem, 5vw, 2.8rem); line-height: 1.1; max-width: 20ch; }
+.guide-head .lede { margin: 0.8rem 0 0; max-width: 38rem; color: var(--muted-foreground); font-size: 1.05rem; }
+.guide-meta { margin-top: 0.8rem; font-size: 0.85rem; color: var(--muted-foreground); }
+.guide-grid {
+  display: grid;
+  gap: 1.1rem;
+  margin: 1.6rem 0 2.5rem;
+}
+@media (min-width: 800px) {
+  .guide-grid { grid-template-columns: 1fr 1fr; }
+}
+.guide-grid article {
+  padding: 1rem 1.1rem 1.15rem;
+  border: 1px solid var(--rule);
+  border-radius: 0.8rem;
+  background: #fff;
+  break-inside: avoid;
+}
+.guide-grid h2 {
+  margin: 0;
+  font-size: 1.15rem;
+  font-family: var(--font-serif);
+}
+.guide-grid p, .guide-grid li { font-size: 0.95rem; line-height: 1.45; }
+.guide-grid ol, .guide-grid ul { margin: 0.5rem 0 0; padding-left: 1.2rem; }
+.guide-grid li + li { margin-top: 0.25rem; }
+.guide-grid code { font-size: 0.86em; }
+.roles { width: 100%; border-collapse: collapse; font-size: 0.88rem; margin-top: 0.6rem; }
+.roles th, .roles td { text-align: left; vertical-align: top; padding: 0.28rem 0.4rem 0.28rem 0; border-bottom: 1px solid var(--rule); }
+.guide-foot { padding: 0 0 2.5rem; font-size: 0.9rem; color: var(--muted-foreground); }
+
+@page { size: A4; margin: 12mm 12mm 14mm; }
+@media print {
+  .site-head, .skip-link, .no-print { display: none !important; }
+  body.guide { background: white; color: #111; }
+  .wrap { width: auto; }
+  .guide-head { padding: 0; }
+  .guide-head h1 { font-size: 16pt; margin: 0.1rem 0 0; }
+  .guide-head .lede { font-size: 9pt; margin: 0.25rem 0 0; max-width: none; }
+  .guide-meta { display: none; }
+  .guide-grid {
+    display: grid !important;
+    grid-template-columns: 1fr 1fr;
+    gap: 0.45rem 0.85rem;
+    margin: 0.45rem 0 0;
+  }
+  .guide-grid article {
+    break-inside: avoid;
+    border: 0.4pt solid #d0c8bc;
+    border-radius: 0;
+    padding: 0.4rem 0.5rem 0.45rem;
+    background: transparent;
+  }
+  .guide-grid h2 { font-size: 10.5pt; }
+  .guide-grid p, .guide-grid li, .roles { font-size: 8pt; line-height: 1.28; }
+  .guide-grid ol, .guide-grid ul { margin: 0.3rem 0 0; }
+  .roles th, .roles td { padding: 0.12rem 0.35rem 0.12rem 0; }
+  .guide-foot { padding: 0.35rem 0 0; font-size: 7.5pt; }
+  a { color: inherit; text-decoration: none; }
+  a[href]::after { content: none; }
+}

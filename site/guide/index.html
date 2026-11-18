@@ -1,0 +1,99 @@
+<!doctype html>
+<html lang="fr-CA">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Installer son journal — guide d’une page · Le Kiosque</title>
+  <meta name="description" content="Guide d’une page pour installer un journal étudiant avec Le Kiosque : télécharger le paquet, le déposer chez l’hébergeur, remplir l’assistant, publier et sauvegarder.">
+  <meta name="theme-color" content="#6c2163">
+  <link rel="stylesheet" href="{{BASE_PATH}}/assets/kiosque-ui.css">
+  <link rel="stylesheet" href="{{BASE_PATH}}/assets/vitrine.css">
+  <link rel="stylesheet" href="{{BASE_PATH}}/assets/guide.css">
+</head>
+<body class="vitrine guide antialiased">
+  <a class="skip-link" href="#contenu">Aller au contenu</a>
+  <header class="site-head no-print">
+    <div class="site-head__inner">
+      <a class="wordmark" href="{{BASE_PATH}}/">Le Kiosque <small>Plateforme libre</small></a>
+      <nav class="nav-main" aria-label="Navigation principale">
+        <a href="{{BASE_PATH}}/">Présentation</a>
+        <a href="{{DEMO_PATH}}">Démonstration</a>
+        <a class="btn" href="https://github.com/azdak919/le-kiosque/releases/latest/download/kiosque-journal.zip">Télécharger</a>
+      </nav>
+    </div>
+  </header>
+
+  <main id="contenu" class="wrap">
+    <header class="guide-head">
+      <p class="kicker">Guide d’une page</p>
+      <h1>Installer et faire paraître son journal</h1>
+      <p class="lede">Pour une étudiante ou un étudiant, avec un navigateur et un hébergement PHP. Comptez une vingtaine de minutes la première fois. Aucune ligne de commande.</p>
+      <p class="guide-meta">Le Kiosque — plateforme libre pour les journaux étudiants. Version du paquet : la dernière publiée, toujours à la même adresse. <a class="no-print" href="{{BASE_PATH}}/guide/guide.pdf">Télécharger le PDF</a> (une page, à imprimer).</p>
+    </header>
+
+    <div class="guide-grid">
+      <article>
+        <h2>1. Ce qu’il vous faut</h2>
+        <ul>
+          <li>Un hébergement <strong>PHP 8.1 ou plus récent, avec SQLite</strong>, et un moyen d’y envoyer des fichiers (gestionnaire de fichiers, FTP ou SFTP).</li>
+          <li>En premier lieu : le serveur du cégep ou de l’association étudiante.</li>
+          <li>Pour un essai gratuit : <a href="https://www.alwaysdata.com/fr/inscription/">alwaysdata</a>, offre Free — le détail est dans le guide des hébergeurs.</li>
+          <li>Une adresse courriel pour le compte administrateur (elle n’apparaît pas sur le site).</li>
+        </ul>
+      </article>
+
+      <article>
+        <h2>2. Télécharger le paquet</h2>
+        <p>Un seul fichier contient le site Web public et l’espace de rédaction :</p>
+        <p><a href="https://github.com/azdak919/le-kiosque/releases/latest/download/kiosque-journal.zip">Télécharger kiosque-journal.zip</a> — adresse fixe, dernière version publiée.</p>
+        <p>Décompressez-le : vous obtenez un dossier <code>journal/</code>.</p>
+      </article>
+
+      <article>
+        <h2>3. Le déposer chez l’hébergeur</h2>
+        <p>Envoyez le contenu du dossier <code>journal/</code> à la racine de l’espace Web, par exemple dans <code>public_html/</code>. Gardez les fichiers cachés (<code>.htaccess</code>, <code>.user.ini</code>). Si le gestionnaire sait extraire un ZIP, envoyez le fichier et choisissez Extraire.</p>
+        <p>Le journal sera à <code>https://votre-journal.com</code>, la rédaction à <code>https://votre-journal.com/redaction/</code>. Un sous-dossier reste possible si vous le souhaitez.</p>
+      </article>
+
+      <article>
+        <h2>4. Remplir l’assistant</h2>
+        <p>Ouvrez tout de suite l’adresse de la rédaction. Tant que l’assistant n’est pas terminé, la première personne qui arrive peut créer le compte administrateur.</p>
+        <ul>
+          <li>Nom du journal, établissement, rubriques (séparées par des virgules).</li>
+          <li>Couleur, logo facultatif (500 ko au plus). S’il y a un logo, il remplace le nom dans le mât.</li>
+          <li>Radio étudiante, au besoin. Pendant un essai, laissez cochée l’option qui cache le journal des moteurs de recherche.</li>
+          <li>Courriel et mot de passe du compte administrateur (10 caractères ou plus). Notez-le dans le gestionnaire de mots de passe de l’équipe.</li>
+        </ul>
+        <p>Attendez le message « Le journal est installé » avant de fermer l’onglet.</p>
+      </article>
+
+      <article>
+        <h2>5. L’équipe, puis un article</h2>
+        <p>L’administrateur ajoute les comptes dans <strong>Auteurs → Équipe : comptes et rôles</strong>. Une signature (le nom sous l’article) n’est pas un compte.</p>
+        <table class="roles">
+          <thead><tr><th>Rôle</th><th>Ce qu’il peut faire</th></tr></thead>
+          <tbody>
+            <tr><td>Auteur</td><td>Écrit ses articles et les met en révision ; ne publie pas. Peut être limité à des rubriques.</td></tr>
+            <tr><td>Photographe</td><td>Gère la banque de photos (crédit obligatoire) ; n’écrit pas d’articles.</td></tr>
+            <tr><td>Réviseur</td><td>Relit, publie et retire tous les articles.</td></tr>
+            <tr><td>Chef de pupitre</td><td>Relit, publie et retire les articles de ses rubriques seulement.</td></tr>
+            <tr><td>Éditeur</td><td>Tout le contenu, plus les sections et la configuration.</td></tr>
+            <tr><td>Administrateur</td><td>Tout, plus l’équipe, la sauvegarde et les mises à jour.</td></tr>
+          </tbody>
+        </table>
+        <p style="margin-top:0.6rem"><strong>Articles → Nouvel article</strong> : titre, chapeau, texte, rubrique, signature. Le crédit de la photo est obligatoire. Passez le statut à En révision, puis à Publié : l’article paraît tout de suite. Vous pouvez d’abord prévisualiser sans publier.</p>
+      </article>
+
+      <article>
+        <h2>6. Sauvegarder, et plus tard mettre à jour</h2>
+        <p>À chaque fin de session, et avant une opération délicate : <strong>Sauvegarde → Télécharger la sauvegarde complète</strong>. Gardez le ZIP hors du serveur. La même page permet de restaurer une archive.</p>
+        <p>Quand une version est publiée, la page <strong>Mise à jour</strong> la propose. Une sauvegarde juste avant reste la bonne habitude. Chaque installation est autonome : après le téléchargement, rien ne dépend d’un serveur central.</p>
+      </article>
+    </div>
+
+    <footer class="guide-foot">
+      <p>Démonstration : <a href="{{DEMO_PATH}}">Le Quorum</a>. Présentation : <a href="{{BASE_PATH}}/">azdak919.github.io/le-kiosque</a>. Guide détaillé et hébergeurs gratuits : dans le <a href="https://github.com/azdak919/le-kiosque/blob/main/docs/guide-etudiant.md">dépôt</a>. Licence du logiciel : GPL version&nbsp;2 seulement. Les articles appartiennent au journal.</p>
+    </footer>
+  </main>
+</body>
+</html>
