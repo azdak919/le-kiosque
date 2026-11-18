@@ -23,8 +23,11 @@ for requis in $REQUIS; do
   [ -n "$ligne" ] || erreur "la vérification « $requis » n'a pas tourné sur $sha."
   echo "$ligne" | grep -qP '\tcompleted\tsuccess$' || erreur "la vérification « $requis » n'est pas verte sur $sha ($ligne)."
 done
-if awk -F'\t' '$2 == "completed" && $3 != "success" && $3 != "skipped" && $3 != "neutral"' checks.tsv | grep -q .; then
-  erreur "une vérification a échoué sur $sha : $(awk -F'\t' '$2 == "completed" && $3 != "success" && $3 != "skipped" && $3 != "neutral" {print $1}' checks.tsv | tr '\n' ' ')"
+# Un essai précédent de ce bouton (refusé, par exemple parce que la CI tournait
+# encore) laisse une vérification « publier-version » en échec : on l'ignore.
+echoue='$1 != "publier-version" && $2 == "completed" && $3 != "success" && $3 != "skipped" && $3 != "neutral"'
+if awk -F'\t' "$echoue" checks.tsv | grep -q .; then
+  erreur "une vérification a échoué sur $sha : $(awk -F'\t' "$echoue {print \$1}" checks.tsv | tr '\n' ' ')"
 fi
 
 git config user.name "Azdak"
