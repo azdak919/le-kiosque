@@ -32,7 +32,7 @@ import { writeDeployHint } from './deploy-hint.ts';
 const log = createConsoleLogger('kiosque');
 
 const USAGE = `
-Le Kiosque — socle libre pour les journaux étudiants
+Le Kiosque — plateforme libre pour les journaux étudiants
 
   kiosque sync    [--since <date>] [--dry-run]   rapatrie le contenu du backend
   kiosque build   [--allow-deletions] [--out <dir>] [--base </sous-dossier>]

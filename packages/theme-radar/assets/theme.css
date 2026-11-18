@@ -87,7 +87,9 @@ a { color: inherit; }
   flex-wrap: wrap;
 }
 .wordmark {
-  font-family: var(--serif);
+  /* Nom du journal en caractères de titre de journal, quelle que soit la typographie
+     du site : Times New Roman, ou ses équivalents libres (Liberation Serif, Tinos : OFL). */
+  font-family: var(--masthead-serif, "Times New Roman", Times, "Liberation Serif", Tinos, "Nimbus Roman", serif);
   font-weight: 700;
   font-size: var(--wordmark-size);
   line-height: 1;
@@ -97,9 +99,9 @@ a { color: inherit; }
   text-decoration: none;
 }
 .wordmark a { text-decoration: none; color: inherit; }
-.publication-logo { display: block; max-width: min(320px, 70vw); max-height: 82px; width: auto; height: auto; }
-.wordmark-with-logo { display: inline-flex; align-items: center; gap: 0.45em; }
-.publication-logo--emblem { height: 1.6em; max-height: 82px; width: auto; flex: none; }
+.publication-logo { display: block; max-width: min(420px, 78vw); height: clamp(56px, 7vw + 24px, 96px); width: auto; object-fit: contain; object-position: left center; }
+.masthead[data-text-alignment="center"] .publication-logo { margin-inline: auto; object-position: center; }
+.masthead[data-text-alignment="right"] .publication-logo { margin-left: auto; object-position: right center; }
 .masthead-tagline {
   font-size: 0.82rem;
   color: var(--muted);
@@ -294,6 +296,9 @@ body:has(.demo-banner) {
 .demo-banner__rest {
   display: inline;
 }
+/* Dans une boîte flex, les espaces autour du tiret disparaissent : « FICTIF—ESSAI ».
+   La marge les remet. */
+.demo-banner__sep { margin-inline: 0.45em; }
 /* Mobile : 2 lignes contrôlées
  *   DÉMONSTRATION DU KIOSQUE —
  *   JOURNAL ÉTUDIANT FICTIF
@@ -314,7 +319,7 @@ body:has(.demo-banner) {
     display: none;
   }
   .demo-banner__lead::after {
-    content: ' —';
+    content: '\00a0—';
   }
   .demo-banner__lead,
   .demo-banner__rest {
