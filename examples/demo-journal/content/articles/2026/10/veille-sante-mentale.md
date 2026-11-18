@@ -8,6 +8,7 @@ excerpt: >-
   diagnostic ni d'un échantillon…
 status: published
 demo: true
+featured: true
 publishedAt: 2026-10-05T10:00:00Z
 updatedAt: 2026-10-05T10:00:00Z
 authors:

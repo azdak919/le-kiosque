@@ -1,4 +1,5 @@
 import { renderSourceArticle } from './source-view.js';
+import { isInitialsMonogramCandidate, pixelsLookLikeInitialsMonogram, usablePublicationLogo } from './generated-logo.js';
 import { radioSlotElement, radioStation } from './radio.js';
 import { pruneSportsPayload } from './sports-freshness.js';
 import { socialNavHtml } from './social.js';
@@ -118,7 +119,7 @@ function articleCard(article, bundle, base, variant = 'tail') {
     title: article.title,
     excerpt: article.excerpt,
     readMore: true,
-    leadEyebrow: labels.leadEyebrow || 'À la une',
+    leadEyebrow: role === 'lead' && article.featured ? (labels.leadEyebrow || 'À la une') : undefined,
     date: {
       iso: article.publishedAt || article.updatedAt,
       label: formatDateTime(article.publishedAt || article.updatedAt, bundle.publication.timeZone),
@@ -140,7 +141,9 @@ function articleCard(article, bundle, base, variant = 'tail') {
 /** Fil magazine (accueil / section / catégorie) — même partition que le thème statique. */
 function magazineFeedHtml(articles, bundle, base, heroLabel, empty) {
   if (!articles.length) return `<p class="empty">${esc(empty)}</p>`;
-  const [first, ...rest] = articles;
+  const featured = articles.find((item) => item.featured);
+  const first = featured || articles[0];
+  const rest = articles.filter((item) => item.id !== first.id);
   const features = rest.slice(0, 3);
   // Parité templates.ts : 3 vedettes + 6 en bref, suite dès l’index 9 (ne pas sauter d’article).
   const briefs = rest.slice(3, 9);
@@ -507,16 +510,57 @@ export function footCopyright(publication, year) {
   return `© ${footYears(publication.founded, year)}${name ? ` ${esc(name)}` : ''}. ${footRights(publication.license)}`;
 }
 
+
+function wordmarkLogoHtml(publication, src) {
+  return `<img class="publication-logo" src="${esc(src)}" alt="${esc(publication.logo.alt || publication.name)}">`;
+}
+
+function confirmInitialsMonogram(src) {
+  return new Promise((resolve) => {
+    const image = new Image();
+    image.onload = () => {
+      try {
+        const canvas = document.createElement('canvas');
+        canvas.width = image.naturalWidth;
+        canvas.height = image.naturalHeight;
+        const context = canvas.getContext('2d', { willReadFrequently: true });
+        if (!context) { resolve(null); return; }
+        context.drawImage(image, 0, 0);
+        const pixels = context.getImageData(0, 0, canvas.width, canvas.height);
+        resolve(pixelsLookLikeInitialsMonogram(pixels.width, pixels.height, pixels.data));
+      } catch {
+        resolve(null);
+      }
+    };
+    image.onerror = () => resolve(null);
+    image.src = src;
+  });
+}
+
+function paintWordmark(node, publication) {
+  const src = safeMediaUrl(publication.logo?.src);
+  const usable = usablePublicationLogo(publication.logo);
+  // Le logo remplace le nom écrit ; sans logo, ou si c'est un monogramme d'initiales généré, le nom en grand.
+  if (usable && src) {
+    node.innerHTML = wordmarkLogoHtml(publication, src);
+    return;
+  }
+  node.innerHTML = `<span class="wordmark-name">${esc(publication.name)}</span>`;
+  // Candidat data PNG : on montre le nom, puis on rétablit l'image si ce n'est pas un monogramme.
+  if (src && isInitialsMonogramCandidate(publication.logo)) {
+    confirmInitialsMonogram(src).then((isMono) => {
+      if (isMono === false && node.isConnected) node.innerHTML = wordmarkLogoHtml(publication, src);
+    });
+  }
+}
+
 export function applyBranding(bundle, base) {
   const publication = bundle.publication;
   document.documentElement.style.setProperty('--accent', publication.theme?.accent || '#6c2163');
   document.documentElement.dataset.typography = publication.theme?.typography || 'modern-accessible';
   document.querySelectorAll('.wordmark a').forEach((node) => {
     node.href = `${base}/`;
-    const logo = safeMediaUrl(publication.logo?.src);
-    // Le logo remplace le nom écrit ; sans logo, le nom en grand (comme templates.ts).
-    if (logo) node.innerHTML = `<img class="publication-logo" src="${esc(logo)}" alt="${esc(publication.logo.alt || publication.name)}">`;
-    else node.innerHTML = `<span class="wordmark-name">${esc(publication.name)}</span>`;
+    paintWordmark(node, publication);
   });
   document.querySelectorAll('.masthead-tagline').forEach((node) => { node.textContent = publication.tagline || ''; });
   // Pied de page : le site vivant du paquet complet part d'une coquille sans nom.

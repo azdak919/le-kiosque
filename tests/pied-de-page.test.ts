@@ -33,7 +33,9 @@ test('site vivant : même pied de page, logo à la place du nom, licence sur les
   assert.match(live, /export function footCopyright\(publication, year\)/);
   assert.match(live, /footCopyright\(publication, new Date\(\)\.getFullYear\(\)\)/);
   assert.match(live, /creativecommons\.org\/licenses\/by-nc-nd\/4\.0\/deed\.fr/);
-  assert.match(live, /if \(logo\) node\.innerHTML = `<img class="publication-logo"/);
+  assert.match(live, /paintWordmark\(node, publication\)/);
+  assert.match(live, /wordmark-name/);
+  assert.match(live, /usablePublicationLogo/);
   assert.match(live, /license: lead\.license,/);
   assert.doesNotMatch(live, /Contenus sous licence \$\{esc\(publication\.license\)\}, sauf mention contraire/);
 });

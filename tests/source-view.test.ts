@@ -51,6 +51,9 @@ test('le noyau de carte conserve les règles image, métadonnées et absence d�
   assert.match(brief, /<\/span>\s*<a class="article-more"/);
   assert.doesNotMatch(tail, /<figure class="article-media">/);
   assert.match(tail, /article--tail/);
+  assert.doesNotMatch(lead, /article-eyebrow/, 'sans sélection, pas d’étiquette « À la une »');
+  const une = renderSourceArticle({ ...view, leadEyebrow: 'À la une' }, 'lead');
+  assert.match(une, /<span class="article-eyebrow">À la une<\/span>/);
 });
 
 test('le build copie le même noyau et la même feuille de style dans la démonstration', async (t) => {
@@ -71,6 +74,7 @@ test('le build copie le même noyau et la même feuille de style dans la démons
   const home = await readFile(path.join(out, 'index.html'), 'utf8');
   const runtime = await readFile(path.join(out, 'assets/editorial/render.js'), 'utf8');
   await access(path.join(out, 'assets/editorial/source-view.js'));
+  await access(path.join(out, 'assets/editorial/generated-logo.js'));
 
   assert.match(home, /href="\/sous-dossier\/assets\/source-view\.css"/);
   // Avec des leads réels, les briefs portent aussi has-image + article--thumb.

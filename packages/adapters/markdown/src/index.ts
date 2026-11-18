@@ -673,6 +673,7 @@ export class MarkdownSource implements ContentSource<MarkdownConfig> {
         translations: (data.translations as Record<string, string> | undefined) ?? undefined,
         status,
         isDemo: data.demo === undefined ? false : Boolean(data.demo),
+        featured: data.featured === undefined ? undefined : Boolean(data.featured),
         publishedAt: isoDate(data.publishedAt),
         updatedAt,
         canonicalUrl: str(data.canonicalUrl) ?? `${base}/articles/${slug}/`,

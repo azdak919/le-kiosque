@@ -1,6 +1,8 @@
 # Journal
 
 ## Non publié
+- Mât : un monogramme d’initiales généré (cercle « LV » et assimilés, encore stocké comme logo dans des journaux déjà installés) n’est plus affiché. Sans vrai logo téléversé, le nom du journal paraît en grand, en caractères de titre de journal. Un logo téléversé continue de remplacer le nom. L’assistant et le configurateur ne fabriquent jamais de logo à initiales.
+- « À la une » n’apparaît plus sur le premier article par défaut. L’étiquette est réservée à un article vraiment mis en avant (`featured`). Sans sélection, pas d’étiquette ; l’article choisi, s’il y en a un, prend la place de la manchette.
 - Version 0.3.1. Socle épinglé à 1.3.1 (b38ea68).
 - Le ZIP à adresse fixe (`kiosque-journal.zip`) contient de nouveau un seul dossier `kiosque-journal/`, avec le fichier `INSTALLER-A-LA-RACINE.txt`. Les journaux en 0.2.x peuvent se mettre à jour en un clic. Première installation : déposer le *contenu* de ce dossier à la racine du domaine, pas le dossier lui-même. Un test rejoue l’installateur réel de la 0.2.1 (Socle 1.2.2).
 - Site : réseaux sociaux du journal en icônes, dans le mât et au pied de page (Facebook, Instagram, X, Bluesky, Mastodon, TikTok, YouTube, LinkedIn, Threads, courriel), avec les mêmes icônes que LE-RADAR (Simple Icons, CC0 ; Bootstrap Icons, MIT, pour LinkedIn et le courriel ; voir THIRD_PARTY.md). Neutres au repos, couleur principale du journal au survol et au focus clavier ; un réseau vide n’est pas affiché ; chaque lien est nommé (« La Vigie sur Instagram ») et s’ouvre avec `rel="me noopener"`. Les adresses viennent de `publication.social` (Configuration du socle, ou Sveltia CMS avec la même vérification).
