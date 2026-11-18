@@ -68,6 +68,8 @@ test('le workflow propose une pull request, sans force ni réécriture', () => {
   assert.match(wf, /tools\/proposer-maj\.sh/);
   assert.doesNotMatch(wf, /--force|-f origin|gh pr merge/);
   const proposer = readFileSync('tools/proposer-maj.sh', 'utf8');
+  assert.match(proposer, /gh pr create --repo "\$REPO"/, 'la PR vise le dépôt du journal, pas l’amont');
+  assert.match(proposer, /gh issue create --repo "\$REPO"/, 'l’issue vise le dépôt du journal, pas l’amont');
   assert.match(proposer, /gh pr create/);
   assert.match(proposer, /gh issue create/, 'si GitHub interdit la pull request, une issue donne le lien en un clic');
   assert.match(proposer, /compare\/main\.\.\./);
