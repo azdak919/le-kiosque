@@ -1,6 +1,7 @@
 # Journal
 
 ## Non publié
+- Cartes de la une : la licence de la photo suit le crédit, comme dans l'article.
 
 - Configurateur : plus d'adresses inventées (`releve-1@journal-exemple.invalid`, `redaction@journal-exemple.invalid`, propriétaire `nom-utilisateur`) dans la fiche du journal ; le ZIP porte une date valide (1980-01-01 au lieu d'un mois 0).
 - Guide étudiant de bout en bout (`docs/guide-etudiant.md`) : gabarit, configurateur, socle sur un hébergement PHP mutualisé, photos libres, mises à jour ; README et installation.md renvoient à ce chemin ; Cloudflare annoncé honnêtement comme demandant la ligne de commande. Publication automatique chaque heure. Socle épinglé sur 6910e5b (connexion par mot de passe, paquet PHP).
