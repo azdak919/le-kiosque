@@ -7,6 +7,14 @@ const TABLES = {
   media: 'media',
 };
 
+/** Statuts de la démo : ceux du modèle du Kiosque, sauf « retiré ». */
+const STATUSES = ['draft', 'in-review', 'scheduled', 'published', 'archived'];
+
+/** Un article programmé dont l'heure est passée se lit comme publié. */
+function due(article, at = Date.now()) {
+  return article.status === 'scheduled' && article.scheduledAt && Date.parse(article.scheduledAt) <= at;
+}
+
 const CAPABILITIES = Object.freeze({
   writable: true,
   preview: true,
@@ -237,7 +245,7 @@ export class DemoBackendPGlite {
       CREATE TABLE IF NOT EXISTS articles (
         id text PRIMARY KEY,
         slug text NOT NULL UNIQUE,
-        status text NOT NULL CHECK (status IN ('draft', 'in-review', 'published')),
+        status text NOT NULL CHECK (status IN ('draft', 'in-review', 'scheduled', 'published', 'archived')),
         is_demo boolean NOT NULL DEFAULT false,
         is_user_modified boolean NOT NULL DEFAULT false,
         updated_at timestamptz NOT NULL,
@@ -261,7 +269,10 @@ export class DemoBackendPGlite {
       CREATE TABLE IF NOT EXISTS media (
         id text PRIMARY KEY, data jsonb NOT NULL
       );
-      INSERT INTO kiosque_meta(key, value) VALUES ('schema-version', '1'::jsonb)
+      -- Schéma 2 : programmé et archivé (une base de schéma 1 les refusait).
+      ALTER TABLE articles DROP CONSTRAINT IF EXISTS articles_status_check;
+      ALTER TABLE articles ADD CONSTRAINT articles_status_check CHECK (status IN ('draft', 'in-review', 'scheduled', 'published', 'archived'));
+      INSERT INTO kiosque_meta(key, value) VALUES ('schema-version', '2'::jsonb)
       ON CONFLICT (key) DO UPDATE SET value = excluded.value;
     `);
   }
@@ -323,7 +334,7 @@ export class DemoBackendPGlite {
       }
       const articles = (seed.settings?.startEmpty ? [] : (seed.articles || [])).map((raw) => {
         const entity = { ...raw, id: entityId(raw), isDemo: true, isUserModified: false };
-        const status = ['draft', 'in-review', 'published'].includes(entity.status) ? entity.status : 'draft';
+        const status = STATUSES.includes(entity.status) ? entity.status : 'draft';
         return { ...entity, status };
       });
       if (articles.length) {
@@ -376,8 +387,10 @@ export class DemoBackendPGlite {
     const includeDemo = options.includeDemo ?? demoVisible;
     const visibleArticles = articles.filter((article) => {
       if (!includeDemo && article.isDemo && !article.isUserModified) return false;
-      return options.audience !== 'public' || article.status === 'published';
-    });
+      return options.audience !== 'public' || article.status === 'published' || due(article);
+    }).map((article) => (options.audience === 'public' && due(article)
+      ? { ...article, status: 'published', publishedAt: article.scheduledAt }
+      : article));
     const usedAuthors = new Set(visibleArticles.flatMap((article) => article.authors || []));
     const visibleAuthors = includeDemo
       ? authors
@@ -398,11 +411,13 @@ export class DemoBackendPGlite {
     if (!table) throw new Error(`Type éditorial inconnu : ${kind}`);
     const entity = clone({ ...input, id: entityId(input) });
     if (kind === 'article') {
-      if (!['draft', 'in-review', 'published'].includes(entity.status)) throw new Error('Statut éditorial invalide.');
+      if (!STATUSES.includes(entity.status)) throw new Error('Statut éditorial invalide.');
+      if (entity.status === 'scheduled' && (!entity.scheduledAt || Number.isNaN(Date.parse(entity.scheduledAt)))) throw new Error('Programmer exige une date et une heure de publication.');
+      if (entity.status === 'scheduled' && (!entity.authors?.length || !entity.section)) throw new Error('Programmer exige au moins une signature et une section.');
       if (!entity.title?.trim() || !entity.slug?.trim()) throw new Error('Un article requiert un titre et un identifiant URL.');
       entity.updatedAt = now();
-      if (entity.status === 'published' && !entity.publishedAt) entity.publishedAt = entity.updatedAt;
-      if (entity.status === 'published' && (!entity.authors?.length || !entity.section || !entity.publishedAt)) {
+      if ((entity.status === 'published' || entity.status === 'archived') && !entity.publishedAt) entity.publishedAt = entity.updatedAt;
+      if ((entity.status === 'published' || entity.status === 'archived') && (!entity.authors?.length || !entity.section || !entity.publishedAt)) {
         throw new Error('Publier exige au moins une signature, une section et une date de publication.');
       }
       if (entity.isDemo) entity.isUserModified = true;
