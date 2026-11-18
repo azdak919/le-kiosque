@@ -2,6 +2,7 @@
 
 ## Non publié
 - Paquet PHP du socle : le guide, le configurateur, la page Mise à jour et la proposition « Mise à jour du socle » renvoient à la Release à adresse fixe (https://github.com/azdak919/le-socle/releases/latest/download/le-socle-php.zip), lisible sans compte, au lieu d'un fichier de CI.
+- Un journal créé avec « Use this template » ne reçoit plus de propositions Dependabot : la première publication retire `.github/dependabot.yml`, et une proposition déjà ouverte est refermée automatiquement. Le dépôt du Kiosque garde Dependabot et sa fusion automatique. Le guide ne demande plus de les fermer.
 - Proposition de mise à jour : elle ne demande plus de « vérifier la publication ci-dessous » (aucun test ne tourne sur une pull request de journal) ; elle dit de regarder « Publier le journal » après la fusion, et comment revenir en arrière.
 - Mises à jour dans un journal : l'issue « Mise à jour disponible » s'ouvre enfin (gh visait le dépôt amont, ajouté comme « upstream », et GitHub refusait).
 - Socle épinglé sur fd6f5cd : licence des photos d'article gardée, un auteur ne se voit plus proposer « Publié ».

@@ -43,3 +43,27 @@ jobs:
           echo "Type : $kind ($title)"
           [ "$kind" != majeure ] || { echo "Majeure : reste ouverte pour la veille."; exit 0; }
           gh pr merge "$pr" -R "$REPO" --squash --delete-branch
+
+  # Dans un journal créé avec « Use this template » : Dependabot n'a rien à y
+  # faire (les mises à jour arrivent par « Mise à jour de la plateforme »).
+  # Le fichier .github/dependabot.yml est copié avec le gabarit et Dependabot
+  # agit dès la création du dépôt ; on referme ses propositions et on retire
+  # sa configuration, une fois pour toutes.
+  journal:
+    if: github.repository != 'azdak919/le-kiosque' && github.event.workflow_run.actor.login == 'dependabot[bot]'
+    runs-on: ubuntu-24.04
+    steps:
+      - name: Refermer la proposition Dependabot et retirer sa configuration
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          REPO: ${{ github.repository }}
+          BRANCH: ${{ github.event.workflow_run.head_branch }}
+        run: |
+          set -euo pipefail
+          for pr in $(gh pr list -R "$REPO" --author 'app/dependabot' --state open --json number --jq '.[].number'); do
+            gh pr close "$pr" -R "$REPO" --delete-branch --comment "Refermée automatiquement : dans un journal, les mises à jour arrivent par « Mise à jour de la plateforme »." || true
+          done
+          sha=$(gh api "repos/$REPO/contents/.github/dependabot.yml" --jq .sha 2>/dev/null || true)
+          if [ -n "$sha" ]; then
+            gh api -X DELETE "repos/$REPO/contents/.github/dependabot.yml" -f message="Dependabot retiré : réservé au dépôt du Kiosque" -f sha="$sha" >/dev/null
+          fi
