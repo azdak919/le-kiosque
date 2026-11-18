@@ -3,112 +3,177 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>LE KIOSQUE — Publier aujourd’hui. Transmettre demain.</title>
-  <meta name="description" content="Le journal étudiant clé en main, libre et portable.">
+  <title>Le Kiosque — plateforme libre pour les journaux étudiants</title>
+  <meta name="description" content="Le Kiosque est une plateforme libre pour les journaux étudiants : le site Web public et l’espace de rédaction, livrés dans un seul paquet, à installer chez soi.">
   <meta name="theme-color" content="#6c2163">
   <link rel="stylesheet" href="{{BASE_PATH}}/assets/kiosque-ui.css">
+  <link rel="stylesheet" href="{{BASE_PATH}}/assets/vitrine.css">
 </head>
 <body class="vitrine antialiased">
   <a class="skip-link" href="#contenu">Aller au contenu</a>
 
-  <header class="sticky top-0 z-40 border-b border-border/70 bg-background/80 backdrop-blur-md">
-    <div class="mx-auto flex h-16 max-w-6xl items-center justify-between gap-4 px-4 sm:px-6">
-      <a class="flex items-center gap-2.5 no-underline" href="{{BASE_PATH}}/">
-        <span class="grid size-8 place-items-center rounded-lg bg-primary text-sm font-bold text-primary-foreground" aria-hidden="true">K</span>
-        <span class="text-sm font-semibold tracking-[0.12em]">LE KIOSQUE</span>
-      </a>
-      <nav aria-label="Navigation principale" class="flex items-center gap-1">
-        <a class="hidden md:inline-flex h-9 items-center rounded-md px-3 text-sm font-medium text-muted-foreground hover:bg-muted hover:text-foreground" href="#fonctionnement">Comment ça marche</a>
-        <a class="hidden md:inline-flex h-9 items-center rounded-md px-3 text-sm font-medium text-muted-foreground hover:bg-muted hover:text-foreground" href="#options">Mettre en ligne</a>
-        <a class="btn" href="{{BASE_PATH}}/configurer/">Créer mon journal</a>
+  <header class="site-head">
+    <div class="site-head__inner">
+      <a class="wordmark" href="{{BASE_PATH}}/">Le Kiosque <small>Plateforme libre</small></a>
+      <nav class="nav-main" aria-label="Navigation principale">
+        <a href="#installer">Installer</a>
+        <a href="#site">Le site</a>
+        <a href="#redaction">La rédaction</a>
+        <a href="{{BASE_PATH}}/guide/">Guide</a>
+        <a class="btn" href="https://github.com/azdak919/le-kiosque/releases/latest/download/kiosque-journal.zip">Télécharger</a>
+        <details class="nav-toggle">
+          <summary class="btn" data-variant="outline">Menu</summary>
+          <div class="nav-panel">
+            <a href="#installer">Installer</a>
+            <a href="#site">Le site</a>
+            <a href="#redaction">La rédaction</a>
+            <a href="{{BASE_PATH}}/guide/">Lire le guide</a>
+            <a href="{{DEMO_PATH}}">Voir la démonstration</a>
+          </div>
+        </details>
       </nav>
     </div>
   </header>
 
   <main id="contenu">
-    <section class="relative overflow-hidden">
-      <div class="pointer-events-none absolute inset-0 -z-10 bg-[radial-gradient(60rem_30rem_at_50%_-10%,color-mix(in_oklch,var(--primary)_14%,transparent),transparent)]"></div>
-      <div class="mx-auto max-w-6xl px-4 pt-16 pb-12 text-center sm:px-6 sm:pt-24">
-        <span class="badge" data-variant="outline">Gratuit et libre · Fait au Québec</span>
-        <h1 class="mx-auto mt-6 max-w-4xl text-4xl font-semibold tracking-tight text-balance sm:text-6xl">Publier aujourd’hui.<br><span class="text-primary">Transmettre demain.</span></h1>
-        <p class="mx-auto mt-6 max-w-2xl text-lg text-pretty text-muted-foreground">Le site de votre journal étudiant, prêt en quelques minutes. Vous écrivez, il se publie, et rien ne se perd quand votre cohorte part.</p>
-        <div class="mt-8 flex flex-wrap justify-center gap-3">
-          <a class="btn" data-size="lg" href="{{BASE_PATH}}/configurer/">Configurer mon journal →</a>
-          <a class="btn" data-size="lg" data-variant="outline" href="{{BASE_PATH}}/demo/">Voir la démonstration</a>
-        </div>
-        <p class="mt-4 text-xs text-muted-foreground">Votre journal vous appartient : vos articles restent à vous.</p>
+    <div class="wrap hero">
+      <p class="kicker">Gratuit et libre · Licence GPL</p>
+      <h1>La plateforme des <em>journaux étudiants</em>.</h1>
+      <p class="sigle">Kit d’Infrastructure Ouverte, Souveraine et de Qualité pour les Usages Éditoriaux</p>
+      <p class="lede">Un seul fichier à déposer chez un hébergeur. Un assistant s’ouvre dans le navigateur. Le site Web public et l’espace de rédaction sont prêts, sans aucun serveur central.</p>
+      <div class="cta-row">
+        <a class="btn" data-size="lg" href="https://github.com/azdak919/le-kiosque/releases/latest/download/kiosque-journal.zip">Télécharger le paquet</a>
+        <a class="btn" data-size="lg" data-variant="outline" href="{{DEMO_PATH}}">Voir la démonstration</a>
+        <a class="btn" data-size="lg" data-variant="ghost" href="{{BASE_PATH}}/guide/">Lire le guide</a>
       </div>
-      <div class="mx-auto max-w-6xl px-4 pb-20 sm:px-6">
-        <figure class="m-0 overflow-hidden rounded-2xl bg-card shadow-2xl ring-1 ring-foreground/10">
-          <div class="flex items-center gap-1.5 border-b border-border bg-muted/60 px-4 py-2.5" aria-hidden="true">
-            <span class="size-2.5 rounded-full bg-foreground/15"></span><span class="size-2.5 rounded-full bg-foreground/15"></span><span class="size-2.5 rounded-full bg-foreground/15"></span>
-            <span class="ml-3 truncate rounded-md bg-background px-3 py-0.5 text-xs text-muted-foreground">le-quorum.exemple.ca</span>
-          </div>
-          <a href="{{BASE_PATH}}/demo/" class="block">
-            <picture>
-              <source media="(max-width: 640px)" srcset="{{BASE_PATH}}/assets/apercu-demo-mobile.jpg">
-              <img class="block h-auto w-full" src="{{BASE_PATH}}/assets/apercu-demo.jpg" width="1280" height="800" alt="Page d’accueil du Quorum, un journal étudiant inventé pour la démonstration." loading="eager">
-            </picture>
-          </a>
-          <figcaption class="border-t border-border px-4 py-2 text-xs text-muted-foreground">Le Quorum, journal de démonstration.</figcaption>
-        </figure>
+      <p class="note">Le code est sous licence GPL version&nbsp;2 seulement. Les articles restent la propriété du journal.</p>
+    </div>
+
+    <div class="wrap">
+      <figure class="frame">
+        <div class="frame-bar" aria-hidden="true"><i></i><i></i><i></i><span>azdak919.github.io/le-kiosque/demo/</span></div>
+        <a href="{{DEMO_PATH}}">
+          <picture>
+            <source media="(max-width: 640px)" srcset="{{BASE_PATH}}/assets/captures/quorum-accueil-mobile.jpg">
+            <img src="{{BASE_PATH}}/assets/captures/quorum-accueil-ordi.jpg" width="1280" height="800" alt="Page d’accueil du Quorum, journal de démonstration : mât, météo, sports, barre radio et fil d’articles." loading="eager">
+          </picture>
+        </a>
+        <figcaption>Le Quorum, journal de démonstration. Météo, sports et barre radio y figurent ; celle-ci est un module du Radar, chargé depuis le-radar.ca.</figcaption>
+      </figure>
+    </div>
+
+    <section id="installer" class="block">
+      <div class="wrap">
+        <p class="kicker">Mise en route</p>
+        <h2>Quatre étapes, dans le navigateur.</h2>
+        <p class="intro">Il faut un hébergement PHP 8.1 ou plus récent, avec SQLite : le serveur du cégep ou de l’association, un hébergeur habituel, ou un essai gratuit chez alwaysdata. Ni compte GitHub, ni ligne de commande.</p>
+        <ol class="steps">
+          <li><span class="kbd">1</span><h3>Téléchargez le paquet</h3><p>Un seul fichier, <a href="https://github.com/azdak919/le-kiosque/releases/latest/download/kiosque-journal.zip">kiosque-journal.zip</a>, toujours à la même adresse : la dernière version publiée.</p></li>
+          <li><span class="kbd">2</span><h3>Déposez-le chez l’hébergeur</h3><p>Envoyez le contenu du dossier <code>journal/</code> à la racine de l’espace Web, par exemple dans <code>public_html/</code>. Le site sera à <code>https://votre-journal.com</code>. Un sous-dossier reste possible si vous le souhaitez. Le gestionnaire de fichiers peut souvent extraire le ZIP directement.</p></li>
+          <li><span class="kbd">3</span><h3>Remplissez l’assistant</h3><p>Ouvrez <code>https://votre-journal.com/redaction/</code>. Donnez le nom du journal, les rubriques, un logo au besoin, et créez le compte administrateur.</p></li>
+          <li><span class="kbd">4</span><h3>Écrivez, puis publiez</h3><p>L’article paraît tout de suite sur le site. Une sauvegarde se télécharge en un clic ; une mise à jour aussi, quand une version est publiée.</p></li>
+        </ol>
       </div>
     </section>
 
-    <section id="fonctionnement" class="mx-auto max-w-6xl scroll-mt-20 px-4 py-20 sm:px-6">
-      <div class="max-w-2xl">
-        <p class="text-sm font-semibold text-primary">Comment ça marche</p>
-        <h2 class="mt-2 text-3xl font-semibold tracking-tight sm:text-4xl">Quatre étapes, aucune connaissance technique.</h2>
-      </div>
-      <ol class="mt-10 grid list-none gap-4 p-0 sm:grid-cols-2 lg:grid-cols-4">
-        <li class="card" data-size="sm"><section><span class="kbd">1</span><h3 class="mt-3 text-base font-semibold">Vous le personnalisez</h3><p class="mt-1 text-muted-foreground">Vous choisissez le nom, le logo et les couleurs de votre journal.</p></section></li>
-        <li class="card" data-size="sm"><section><span class="kbd">2</span><h3 class="mt-3 text-base font-semibold">Vous écrivez</h3><p class="mt-1 text-muted-foreground">Vous rédigez vos articles dans un éditeur simple, comme un document.</p></section></li>
-        <li class="card" data-size="sm"><section><span class="kbd">3</span><h3 class="mt-3 text-base font-semibold">C’est en ligne</h3><p class="mt-1 text-muted-foreground">Le journal se publie sur le Web tout seul, sur ordinateur comme sur téléphone.</p></section></li>
-        <li class="card" data-size="sm"><section><span class="kbd">4</span><h3 class="mt-3 text-base font-semibold">Rien ne se perd</h3><p class="mt-1 text-muted-foreground">Tous les numéros restent archivés pour la cohorte suivante.</p></section></li>
-      </ol>
-    </section>
-
-    <section id="options" class="scroll-mt-20 border-t border-border bg-muted/50">
-      <div class="mx-auto max-w-6xl px-4 py-20 sm:px-6">
-        <div class="max-w-2xl">
-          <p class="text-sm font-semibold text-primary">Trois façons de le mettre en ligne</p>
-          <h2 class="mt-2 text-3xl font-semibold tracking-tight sm:text-4xl">Choisissez ce qui est le plus simple pour votre équipe.</h2>
+    <section id="site" class="block">
+      <div class="wrap">
+        <p class="kicker">Le site Web public</p>
+        <h2>Un journal, pas une page d’accueil générique.</h2>
+        <p class="intro">Sans logo, le nom du journal s’écrit en grand dans le mât, dans une police de titre. S’il y a un logo, le logo remplace le nom. Les articles portent toutes leurs signatures, avec le crédit et la licence de chaque photo.</p>
+        <div class="pair pair--mobile gallery">
+          <figure class="shot">
+            <img src="{{BASE_PATH}}/assets/captures/quorum-article-ordi.jpg" width="1280" height="800" alt="Page d’un article du Quorum, avec le mât, la barre radio et une colonne En bref." loading="lazy">
+            <figcaption>Une page d’article, sur ordinateur.</figcaption>
+          </figure>
+          <figure class="shot phone">
+            <img src="{{BASE_PATH}}/assets/captures/quorum-accueil-mobile.jpg" width="390" height="844" alt="Accueil du Quorum sur un téléphone, avec la barre radio, la météo et les sports." loading="lazy">
+            <figcaption>Le même journal, sur un téléphone.</figcaption>
+          </figure>
         </div>
-        <div class="mt-10 grid gap-4 md:grid-cols-3">
-          <article class="card"><header><h3>Sur le site WordPress de votre cégep</h3><p>Si votre association a déjà un site WordPress, vous y ajoutez Le Kiosque en quelques clics.</p></header><footer><span class="badge" data-variant="outline">Disponible</span></footer></article>
-          <article class="card"><header><h3>En ligne, gratuitement</h3><p>Vous créez un compte gratuit, et votre journal est en ligne. Rien à installer, rien à payer.</p></header><footer><span class="badge" data-variant="outline">Disponible</span></footer></article>
-          <article class="card"><header><h3>Sur une clé USB</h3><p>Tout le journal tient dans un dossier, avec un guide imprimé pour le local du journal.</p></header><footer><span class="badge" data-variant="outline">Disponible</span></footer></article>
-        </div>
-      </div>
-    </section>
-
-    <section class="px-4 sm:px-6">
-      <div class="mx-auto flex max-w-6xl flex-col items-start gap-6 rounded-2xl bg-primary px-6 py-12 text-primary-foreground sm:px-12 md:flex-row md:items-center md:justify-between">
-        <div class="max-w-xl">
-          <p class="text-sm font-semibold opacity-80">Le Quorum</p>
-          <h2 class="mt-2 text-3xl font-semibold tracking-tight">Tout essayer, en un clic.</h2>
-          <p class="mt-3 opacity-85">Un vrai journal étudiant, avec rubriques, sports, météo et radio. Ouvrez-le, ou essayez l’espace de rédaction.</p>
-        </div>
-        <div class="flex flex-wrap gap-3">
-          <a class="btn bg-background! text-foreground! hover:bg-background/90!" data-size="lg" href="{{BASE_PATH}}/demo/">Ouvrir Le Quorum</a>
-          <a class="btn border-primary-foreground/30! text-primary-foreground! hover:bg-primary-foreground/10!" data-size="lg" data-variant="ghost" href="{{BASE_PATH}}/admin/">Essayer la rédaction</a>
+        <div class="features">
+          <article><h3>Rubriques, recherche et mode sombre</h3><p>Le menu suit les sections du journal. Une loupe cherche dans les titres, les signatures, les rubriques et les extraits déjà affichés. Un bouton passe du mode clair au mode sombre.</p></article>
+          <article><h3>Météo, sports et radio</h3><p>Le mât peut afficher la météo locale et les résultats sportifs du campus. La barre radio, facultative, est un module du Radar chargé depuis le-radar.ca : stations, lecteur et style restent chez le Radar.</p></article>
+          <article><h3>Équipe et archives durables</h3><p>Chaque signature a sa page. Sur la démonstration en site statique, et sur un site construit pour GitHub Pages, s’ajoutent les archives, le plan du site et un fil RSS.</p></article>
+          <article><h3>Une copie autonome</h3><p>Après le téléchargement, rien ne dépend d’un serveur du Kiosque. Le journal reste en ligne même si ce dépôt change, ou s’il s’arrête.</p></article>
         </div>
       </div>
     </section>
 
-    <section id="technique" class="mx-auto max-w-3xl scroll-mt-20 px-4 py-16 sm:px-6">
-      <details class="rounded-xl border border-border p-5 text-sm text-muted-foreground">
-        <summary class="cursor-pointer font-semibold text-foreground">Pour les responsables techniques</summary>
-        <p class="mt-3">Les articles sont écrits en Markdown et conservés dans un dépôt Git que l’équipe possède. Le site est produit en HTML statique, publiable sur GitHub Pages, avec une extension WordPress ou un kit portable. Code sous licence GPL-2.0, aucune dépendance à un service externe.</p>
-        <p class="mt-2"><a class="underline hover:text-foreground" href="https://github.com/azdak919/le-kiosque">Code source et documentation</a></p>
-      </details>
+    <section id="redaction" class="block">
+      <div class="wrap">
+        <p class="kicker">L’espace de rédaction</p>
+        <h2>Écrire, relire, publier, à plusieurs.</h2>
+        <p class="intro">L’espace de rédaction, c’est le Socle : l’interface d’administration et son serveur, livrés dans le même paquet. Chaque journal installe sa propre copie. Les captures ci-dessous viennent d’un essai, La Vigie, journal étudiant fictif.</p>
+        <div class="pair pair--two gallery">
+          <figure class="shot shot--tall">
+            <img src="{{BASE_PATH}}/assets/captures/assistant-installation.jpg" width="1280" height="1226" alt="Assistant d’installation du journal, avec les champs du nom, des rubriques, de l’apparence et du compte administrateur encore vides." loading="lazy">
+            <figcaption>L’assistant d’installation, à la première visite.</figcaption>
+          </figure>
+          <figure class="shot shot--tall">
+            <img src="{{BASE_PATH}}/assets/captures/editeur-article.jpg" width="1400" height="1893" alt="Formulaire de rédaction d’un article : titre, résumé, rubrique, statut, signatures, photo et texte, avec le bouton Prévisualiser sans publier." loading="lazy">
+            <figcaption>L’éditeur d’article, avec un aperçu dans le thème avant publication.</figcaption>
+          </figure>
+          <figure class="shot shot--tall">
+            <img src="{{BASE_PATH}}/assets/captures/banque-photos.jpg" width="1280" height="1269" alt="Banque de photos de La Vigie, avec crédit et licence sous chaque image." loading="lazy">
+            <figcaption>La banque de photos : crédit obligatoire, licence affichée, réemploi dans tout le journal.</figcaption>
+          </figure>
+          <figure class="shot shot--tall">
+            <img src="{{BASE_PATH}}/assets/captures/equipe-roles.jpg" width="1088" height="939" alt="Liste des comptes de La Vigie : administrateur, autrice limitée à certaines rubriques, chef de pupitre et photographe." loading="lazy">
+            <figcaption>Les rôles : auteur, photographe, réviseur, chef de pupitre, éditeur, administrateur — avec restriction par rubrique au besoin.</figcaption>
+          </figure>
+        </div>
+        <p class="legal">La sauvegarde complète se télécharge en un fichier ZIP (articles, photos, équipe et réglages, sans les mots de passe). On peut la restaurer plus tard. Quand une version de la plateforme est publiée, la page Mise à jour la propose, en un clic. Pour en savoir plus sur le programme lui-même : <a href="https://azdak919.github.io/le-socle/">la page du Socle</a>.</p>
+      </div>
+    </section>
+
+    <section id="essai" class="block">
+      <div class="wrap">
+        <p class="kicker">Pour un professeur, une équipe, un essai</p>
+        <h2>Voir, puis installer.</h2>
+        <p class="intro">Le Quorum est la démonstration officielle, déjà en ligne. La Vigie est un journal fictif installé chez un hébergeur gratuit, pour vérifier le paquet de bout en bout. Le guide d’une page tient sur une feuille, pour un étudiant qui n’a jamais rien installé.</p>
+        <div class="cta-row" style="justify-content:flex-start">
+          <a class="btn" href="{{DEMO_PATH}}">Ouvrir Le Quorum</a>
+          <a class="btn" data-variant="outline" href="{{BASE_PATH}}/admin/">Essayer la rédaction en démonstration</a>
+          <a class="btn" data-variant="outline" href="{{BASE_PATH}}/guide/">Guide d’une page</a>
+          <a class="btn" data-variant="ghost" href="https://la-vigie-test.alwaysdata.net/journal/">La Vigie (essai)</a>
+        </div>
+        <p class="legal">D’autres chemins existent, documentés dans le <a href="https://github.com/azdak919/le-kiosque/blob/main/docs/guide-etudiant.md">guide étudiant complet</a> : site public sur GitHub Pages, serveur de l’établissement, auto-hébergement. Une extension peut aussi préparer un WordPress neuf ; l’écriture depuis WordPress vers le Kiosque n’est pas encore offerte. Le configurateur en ligne reste disponible pour qui prépare une fiche avant l’installation.</p>
+      </div>
+    </section>
+
+    <div class="wrap">
+      <div class="band">
+        <div>
+          <p class="kicker" style="color:inherit;opacity:.85">Le paquet complet</p>
+          <h2>Installer son journal aujourd’hui.</h2>
+          <p>Téléchargez <code>kiosque-journal.zip</code>, déposez-le chez l’hébergeur, ouvrez l’assistant. Comptez une vingtaine de minutes la première fois.</p>
+        </div>
+        <div class="cta-row">
+          <a class="btn" data-size="lg" href="https://github.com/azdak919/le-kiosque/releases/latest/download/kiosque-journal.zip">Télécharger le paquet</a>
+          <a class="btn" data-size="lg" data-variant="ghost" href="{{BASE_PATH}}/guide/">Lire le guide</a>
+        </div>
+      </div>
+    </div>
+
+    <section class="block">
+      <div class="wrap">
+        <p class="kicker">Licence et crédits</p>
+        <h2>Libre pour le logiciel, au journal pour les textes.</h2>
+        <p class="intro">Le Kiosque est sous <a href="https://github.com/azdak919/le-kiosque/blob/main/LICENSE">licence GPL version&nbsp;2 seulement</a>, comme <a href="https://github.com/azdak919/le-radar">le Radar</a>, dont il reprend l’identité visuelle. Les composants tiers et leurs licences sont listés dans <a href="https://github.com/azdak919/le-kiosque/blob/main/THIRD_PARTY.md">THIRD_PARTY.md</a>. Les articles, les photos et le nom du journal appartiennent à leurs autrices, auteurs et à l’équipe qui les publie.</p>
+      </div>
     </section>
   </main>
 
-  <footer class="border-t border-border">
-    <div class="mx-auto flex max-w-6xl flex-wrap items-center justify-between gap-3 px-4 py-8 text-sm text-muted-foreground sm:px-6">
-      <span><strong class="text-foreground">LE KIOSQUE</strong> · Gratuit et libre</span>
-      <span class="flex gap-4"><a class="hover:text-foreground" href="https://github.com/azdak919/le-kiosque">Code source</a><a class="hover:text-foreground" href="https://github.com/azdak919/le-kiosque/blob/main/THIRD_PARTY.md">Crédits</a></span>
+  <footer class="site-foot">
+    <div class="wrap">
+      <p><strong>Le Kiosque</strong> — plateforme libre pour les journaux étudiants.</p>
+      <p>
+        <a href="https://github.com/azdak919/le-kiosque">Code source</a>
+        · <a href="{{BASE_PATH}}/guide/">Guide</a>
+        · <a href="https://github.com/azdak919/le-kiosque/blob/main/THIRD_PARTY.md">Crédits</a>
+        · <a href="https://azdak919.github.io/le-socle/">Le Socle</a>
+      </p>
     </div>
   </footer>
 </body>
