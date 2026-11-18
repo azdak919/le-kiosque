@@ -29,7 +29,9 @@ test('configurer, rédiger, prévisualiser, publier, persister et exporter sans 
   test.setTimeout(240_000);
   const expectedMediaCount = demoSeedMediaCount();
   await page.goto('/autre-nom/configurer/');
-  await page.getByLabel('Nom du journal').fill('La Relève locale');
+  // L'aide du texte alternatif dit « le nom du journal » : getByLabel
+  // correspond aussi à ce champ. Le data-key vise le nom seul.
+  await page.locator('[data-key="name"]').fill('La Relève locale');
   await page.locator('[data-key="institution"]').fill('Cégep de démonstration');
   await page.getByRole('button', { name: 'Continuer' }).click();
   await page.locator('[data-key="accent"]').fill('#005a78');
@@ -37,7 +39,11 @@ test('configurer, rédiger, prévisualiser, publier, persister et exporter sans 
   await page.getByLabel('Typographie').selectOption('editorial-classic');
   await page.getByLabel('Logo facultatif').setInputFiles({ name: 'logo.svg', mimeType: 'image/svg+xml', buffer: Buffer.from('<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"><circle cx="10" cy="10" r="9" fill="#005a78"/></svg>') });
   await expect(page.locator('#preview-logo')).toBeVisible();
+  // Aperçu : champ vide, le nom du journal sert déjà de texte alternatif.
+  await expect(page.locator('#preview-logo')).toHaveAttribute('alt', 'La Relève locale');
   await page.getByRole('button', { name: 'Continuer' }).click();
+  // Plus de sections préremplies : sans au moins une, Terminer reste sur l'étape.
+  await page.getByRole('button', { name: 'Partir des sections proposées' }).click();
   await page.getByRole('button', { name: 'Terminer' }).click();
   await expect(page.getByRole('heading', { name: 'C’est prêt.' })).toBeVisible();
   await page.getByRole('link', { name: 'Ouvrir /admin/' }).click();
@@ -74,6 +80,8 @@ test('configurer, rédiger, prévisualiser, publier, persister et exporter sans 
   await front.goto('/autre-nom/demo/');
   await front.waitForFunction(() => document.documentElement.dataset.editorialReady === 'true', null, { timeout: 45_000 });
   await expect(front.locator('.publication-logo')).toBeVisible();
+  // Texte alternatif laissé vide : le rendu reprend le nom du journal.
+  await expect(front.locator('.publication-logo')).toHaveAttribute('alt', 'La Relève locale');
   await expect(front.locator('html')).toHaveAttribute('data-typography', 'editorial-classic');
   // La démo (sql.js) doit employer le même noyau de carte que le HTML statique :
   // vignettes en bref, mais aucune image réintroduite dans la suite du fil.
