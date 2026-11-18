@@ -62,10 +62,13 @@ projet découle de cette seule frontière :
 ## Démarrer
 
 **Équipe étudiante : suivez [`docs/guide-etudiant.md`](docs/guide-etudiant.md).**
-C'est le chemin recommandé, de bout en bout et sans terminal : « Use this
-template », le configurateur, la rédaction (le socle) sur un hébergement PHP
-ordinaire — serveur du cégep ou hébergeur mutualisé —, puis le site public
-sur GitHub Pages. Cloudflare reste possible, mais demande la ligne de commande
+C'est le chemin recommandé, de bout en bout et sans terminal : le **paquet
+complet** ([`kiosque-journal.zip`](https://github.com/azdak919/le-kiosque/releases/latest/download/kiosque-journal.zip),
+un ZIP par version : site du journal et rédaction) déposé sur un hébergement
+PHP ordinaire — serveur du cégep ou hébergeur mutualisé —, un assistant
+d'installation dans le navigateur, puis des mises à jour en un clic. Le
+chemin B du guide garde le site public sur GitHub Pages (« Use this
+template », configurateur). Cloudflare reste possible, mais demande la ligne de commande
 (voir la section 10 du guide).
 
 Sans hébergement du tout, le journal peut vivre seulement dans GitHub, en

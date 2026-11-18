@@ -60,6 +60,8 @@ const kiosque = JSON.parse(await readFile(path.join(repoRoot, 'package.json'), '
 const socleVersion = JSON.parse(await readFile(path.join(socle, 'package.json'), 'utf8')).version;
 const paquet = {
   nom: 'kiosque-journal',
+  // Version du paquet = version du Kiosque = étiquette vX.Y.Z de la Release.
+  version: kiosque.version,
   kiosque: kiosque.version,
   socle: socleVersion,
   // Mise à jour en un clic : la page Mise à jour lit la dernière version ici.
