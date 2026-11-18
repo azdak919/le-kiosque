@@ -39,6 +39,7 @@
     <div class="wrap hero">
       <p class="kicker">Gratuit et libre · Licence GPL</p>
       <h1>La plateforme des <em>journaux étudiants</em>.</h1>
+      <p class="sigle">Kit d’Infrastructure Ouverte, Souveraine et de Qualité pour les Usages Éditoriaux</p>
       <p class="lede">Un seul fichier à déposer chez un hébergeur. Un assistant s’ouvre dans le navigateur. Le site Web public et l’espace de rédaction sont prêts, sans aucun serveur central.</p>
       <div class="cta-row">
         <a class="btn" data-size="lg" href="https://github.com/azdak919/le-kiosque/releases/latest/download/kiosque-journal.zip">Télécharger le paquet</a>
@@ -68,8 +69,8 @@
         <p class="intro">Il faut un hébergement PHP 8.1 ou plus récent, avec SQLite : le serveur du cégep ou de l’association, un hébergeur habituel, ou un essai gratuit chez alwaysdata. Ni compte GitHub, ni ligne de commande.</p>
         <ol class="steps">
           <li><span class="kbd">1</span><h3>Téléchargez le paquet</h3><p>Un seul fichier, <a href="https://github.com/azdak919/le-kiosque/releases/latest/download/kiosque-journal.zip">kiosque-journal.zip</a>, toujours à la même adresse : la dernière version publiée.</p></li>
-          <li><span class="kbd">2</span><h3>Déposez-le chez l’hébergeur</h3><p>Envoyez le dossier <code>journal/</code> dans l’espace Web, par exemple <code>public_html/journal/</code>. Le gestionnaire de fichiers peut souvent extraire le ZIP directement.</p></li>
-          <li><span class="kbd">3</span><h3>Remplissez l’assistant</h3><p>Ouvrez <code>/journal/redaction/</code>. Donnez le nom du journal, les rubriques, un logo au besoin, et créez le compte administrateur.</p></li>
+          <li><span class="kbd">2</span><h3>Déposez-le chez l’hébergeur</h3><p>Envoyez le contenu du dossier <code>journal/</code> à la racine de l’espace Web, par exemple dans <code>public_html/</code>. Le site sera à <code>https://votre-journal.com</code>. Un sous-dossier reste possible si vous le souhaitez. Le gestionnaire de fichiers peut souvent extraire le ZIP directement.</p></li>
+          <li><span class="kbd">3</span><h3>Remplissez l’assistant</h3><p>Ouvrez <code>https://votre-journal.com/redaction/</code>. Donnez le nom du journal, les rubriques, un logo au besoin, et créez le compte administrateur.</p></li>
           <li><span class="kbd">4</span><h3>Écrivez, puis publiez</h3><p>L’article paraît tout de suite sur le site. Une sauvegarde se télécharge en un clic ; une mise à jour aussi, quand une version est publiée.</p></li>
         </ol>
       </div>
@@ -103,7 +104,7 @@
       <div class="wrap">
         <p class="kicker">L’espace de rédaction</p>
         <h2>Écrire, relire, publier, à plusieurs.</h2>
-        <p class="intro">L’espace de rédaction, c’est le socle : l’interface d’administration et son serveur, livrés dans le même paquet. Chaque journal installe sa propre copie. Les captures ci-dessous viennent d’un essai, La Vigie, journal étudiant fictif.</p>
+        <p class="intro">L’espace de rédaction, c’est le Socle : l’interface d’administration et son serveur, livrés dans le même paquet. Chaque journal installe sa propre copie. Les captures ci-dessous viennent d’un essai, La Vigie, journal étudiant fictif.</p>
         <div class="pair pair--two gallery">
           <figure class="shot shot--tall">
             <img src="{{BASE_PATH}}/assets/captures/assistant-installation.jpg" width="1280" height="1226" alt="Assistant d’installation du journal, avec les champs du nom, des rubriques, de l’apparence et du compte administrateur encore vides." loading="lazy">
@@ -122,7 +123,7 @@
             <figcaption>Les rôles : auteur, photographe, réviseur, chef de pupitre, éditeur, administrateur — avec restriction par rubrique au besoin.</figcaption>
           </figure>
         </div>
-        <p class="legal">La sauvegarde complète se télécharge en un fichier ZIP (articles, photos, équipe et réglages, sans les mots de passe). On peut la restaurer plus tard. Quand une version de la plateforme est publiée, la page Mise à jour la propose, en un clic. Pour en savoir plus sur le programme lui-même : <a href="https://azdak919.github.io/le-socle/">la page du socle</a>.</p>
+        <p class="legal">La sauvegarde complète se télécharge en un fichier ZIP (articles, photos, équipe et réglages, sans les mots de passe). On peut la restaurer plus tard. Quand une version de la plateforme est publiée, la page Mise à jour la propose, en un clic. Pour en savoir plus sur le programme lui-même : <a href="https://azdak919.github.io/le-socle/">la page du Socle</a>.</p>
       </div>
     </section>
 
@@ -171,7 +172,7 @@
         <a href="https://github.com/azdak919/le-kiosque">Code source</a>
         · <a href="{{BASE_PATH}}/guide/">Guide</a>
         · <a href="https://github.com/azdak919/le-kiosque/blob/main/THIRD_PARTY.md">Crédits</a>
-        · <a href="https://azdak919.github.io/le-socle/">Le socle</a>
+        · <a href="https://azdak919.github.io/le-socle/">Le Socle</a>
       </p>
     </div>
   </footer>

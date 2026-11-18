@@ -1,5 +1,7 @@
 # Le Kiosque
 
+*Kit d’Infrastructure Ouverte, Souveraine et de Qualité pour les Usages Éditoriaux.*
+
 **Plateforme libre pour les journaux étudiants.** Elle fournit le site Web public du journal et l’espace de rédaction, livrés ensemble dans un seul paquet.
 
 Un journal étudiant ne disparaît presque jamais par manque de talent. Il disparaît parce que le domaine a expiré, que l’hébergement n’est plus payé, ou que le compte d’administration est parti avec quelqu’un qui a gradué. Le Kiosque répond à ce problème : chaque journal installe sa propre copie, sans dépendre d’aucun serveur central, et garde ses archives.
@@ -26,8 +28,8 @@ Aux équipes de journaux étudiants et de médias de campus qui veulent un site 
 ## Installer un journal
 
 1. **Téléchargez** [`kiosque-journal.zip`](https://github.com/azdak919/le-kiosque/releases/latest/download/kiosque-journal.zip) — toujours la dernière version, à une adresse fixe.
-2. **Déposez** le dossier `journal/` dans l’espace Web d’un hébergeur **PHP 8.1 ou plus récent, avec SQLite** (serveur du cégep ou de l’association, hébergeur habituel, ou essai gratuit chez [alwaysdata](docs/hebergeur-gratuit.md)).
-3. **Ouvrez** `https://votre-site/journal/redaction/` et remplissez l’assistant : nom, rubriques, logo au besoin, compte administrateur. Attendez le message « Le journal est installé ».
+2. **Déposez** le contenu du dossier `journal/` à la racine de l’espace Web d’un hébergeur **PHP 8.1 ou plus récent, avec SQLite** (serveur du cégep ou de l’association, hébergeur habituel, ou essai gratuit chez [alwaysdata](docs/hebergeur-gratuit.md)). Un sous-dossier reste possible si vous le souhaitez.
+3. **Ouvrez** `https://votre-journal.com/redaction/` et remplissez l’assistant : nom, rubriques, logo au besoin, compte administrateur. Attendez le message « Le journal est installé ».
 4. **Écrivez**, relisez, publiez. L’article paraît tout de suite. Téléchargez une sauvegarde à chaque fin de session.
 
 Le détail, pour un étudiant, tient dans le [guide d’une page](https://azdak919.github.io/le-kiosque/guide/). Le [guide étudiant complet](docs/guide-etudiant.md) couvre aussi les autres chemins : site public sur GitHub Pages, serveur de l’établissement, auto-hébergement.
@@ -44,7 +46,7 @@ Le détail, pour un étudiant, tient dans le [guide d’une page](https://azdak9
 - Chaque article porte toutes ses signatures ; chaque photo porte son crédit et sa licence.
 - Sur la démonstration et sur un site statique (par exemple GitHub Pages) : archives, plan du site et fil RSS.
 
-**Dans l’espace de rédaction** (c’est [le socle](https://github.com/azdak919/le-socle) : l’interface d’administration et son serveur)
+**Dans l’espace de rédaction** (c’est [le Socle](https://azdak919.github.io/le-socle/) : l’interface d’administration et son serveur)
 
 - Assistant d’installation dans le navigateur.
 - Rôles : auteur, photographe, réviseur, chef de pupitre, éditeur, administrateur. Un auteur ou un chef de pupitre peut être limité à certaines rubriques.
