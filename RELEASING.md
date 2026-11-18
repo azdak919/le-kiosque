@@ -44,7 +44,10 @@ documentation, CI) : l'issue le dit.
    (ordinateur et mobile, clair et sombre ; site Web et rédaction).
 4. **Nouveautés rédigées** dans `CHANGELOG.md`, rubrique « Non publié », en
    français clair. Elles deviennent les nouveautés affichées sur la page
-   Mise à jour des journaux.
+   Mise à jour des journaux : `tools/notes-paquet.mjs` prend les puces sous
+   « - Version X.Y.Z » (Kiosque, rubrique « Site Web du journal ») et sous la
+   version du socle épinglé (rubrique « Espace de rédaction »). Vérifiez avec
+   `node tools/notes-paquet.mjs`.
 5. **PR de version** : `npm version X.Y.Z --no-git-tag-version` et une ligne
    « Version X.Y.Z. » en tête de « Non publié » dans `CHANGELOG.md`. CI verte,
    fusion locale signée, comme toute PR.
