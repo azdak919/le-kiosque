@@ -1,0 +1,27 @@
+LE KIOSQUE — paquet complet d'un journal étudiant (site du journal + rédaction)
+
+1. Il faut PHP 8.1 ou plus avec SQLite (pdo_sqlite) et un serveur Apache ou LiteSpeed
+   (les fichiers .htaccess) : c'est le cas chez presque tous les hébergeurs mutualisés.
+   Sur nginx seul, les .htaccess sont ignorés : demandez au service informatique de
+   fermer donnees/ et php/ et d'envoyer le reste à index.php.
+2. Décompressez le ZIP et déposez son contenu à la racine de votre espace web
+   (gestionnaire de fichiers, FTP ou SFTP), par exemple dans public_html/ ou www/,
+   avec les fichiers cachés (.htaccess, .user.ini). Si une page d'accueil de
+   l'hébergeur s'y trouve déjà (index.html), remplacez-la. Pour installer dans un
+   sous-dossier, déposez les mêmes fichiers dans ce dossier : le programme détecte
+   le préfixe tout seul, sans casser les liens.
+3. Ouvrez tout de suite https://votre-journal.com/redaction/ et remplissez l'assistant
+   d'installation : nom du journal, couleur, logo, sections, options et compte
+   administrateur (courriel + mot de passe de 10 caractères ou plus).
+   Tant que ce compte n'existe pas, la première personne qui ouvre la page peut le créer.
+4. Le journal est à https://votre-journal.com/ ; tout se change ensuite dans
+   « Configuration ». Aucun dépôt GitHub, aucun terminal n'est nécessaire.
+
+Les données (articles, photos, comptes) sont dans donnees/. Ce dossier est fermé
+au public. Sauvegarde : dans la rédaction, Sauvegarde → Télécharger la sauvegarde complète.
+Mise à jour : dans la rédaction, Mise à jour → Vérifier s'il y a une nouvelle version.
+
+Dernière version, toujours à la même adresse (sans compte GitHub) :
+  https://github.com/azdak919/le-kiosque/releases/latest/download/kiosque-journal.zip
+À la main : faites une sauvegarde, puis envoyez les nouveaux fichiers par-dessus
+les anciens SANS remplacer donnees/ (vos articles, photos et comptes y sont).

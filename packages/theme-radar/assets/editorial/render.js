@@ -37,6 +37,40 @@ function safeMediaUrl(value) {
   return /^(?:data:image\/(?:svg\+xml|png|webp|jpeg);base64,|https?:\/\/|\/)/i.test(raw) ? raw : '';
 }
 
+
+function shareBox(title, url) {
+  const encodedUrl = encodeURIComponent(url);
+  const encodedTitle = encodeURIComponent(title);
+  return `<aside class="share" aria-label="Partager">
+    <p class="share__label">Partager</p>
+    <div class="share__actions">
+      <button type="button" class="share__btn" data-share="copy" data-share-url="${esc(url)}">Copier le lien</button>
+      <a class="share__btn" href="mailto:?subject=${encodedTitle}&body=${encodedUrl}">Courriel</a>
+      <a class="share__btn" href="https://bsky.app/intent/compose?text=${encodedTitle}%20${encodedUrl}" target="_blank" rel="noopener noreferrer">Bluesky</a>
+      <button type="button" class="share__btn" data-share="mastodon" data-share-url="${esc(url)}" data-share-title="${esc(title)}">Mastodon</button>
+      <a class="share__btn" href="https://www.facebook.com/sharer/sharer.php?u=${encodedUrl}" target="_blank" rel="noopener noreferrer">Facebook</a>
+      <a class="share__btn" href="https://x.com/intent/post?text=${encodedTitle}&url=${encodedUrl}" target="_blank" rel="noopener noreferrer">X</a>
+    </div>
+  </aside>`;
+}
+
+function groupByYear(articles, timeZone) {
+  const groups = new Map();
+  for (const article of articles) {
+    const stamp = article.publishedAt || article.updatedAt;
+    let year = 0;
+    try {
+      year = Number(new Intl.DateTimeFormat('en-CA', { timeZone: timeZone || 'America/Toronto', year: 'numeric' }).format(new Date(stamp)));
+    } catch {
+      year = Number(String(stamp || '').slice(0, 4));
+    }
+    if (!year) continue;
+    if (!groups.has(year)) groups.set(year, []);
+    groups.get(year).push(article);
+  }
+  return [...groups.entries()].sort((a, b) => b[0] - a[0]).map(([year, items]) => ({ year, articles: items }));
+}
+
 function authorHref(base, slug) {
   return link(base, `/auteurs/${encodeURIComponent(slug)}/`);
 }
@@ -114,10 +148,11 @@ function magazineFeedHtml(articles, bundle, base, heroLabel, empty) {
   return `<div class="magazine-layout"><section class="news-hero" aria-label="${esc(heroLabel)}">${articleCard(first, bundle, base, 'lead')}<div class="news-features">${features.map((item) => articleCard(item, bundle, base, 'feature')).join('')}</div></section>${briefs.length ? `<aside class="brief-rail" aria-label="En bref"><h2>En bref</h2>${briefs.map((item) => articleCard(item, bundle, base, 'brief')).join('')}</aside>` : ''}${tail.length ? `<section class="news-tail" data-tail-visible="10"><h2 class="news-tail-title">Suite du fil</h2><div class="news-tail-body news-tail-grid">${tail.map((item) => articleCard(item, bundle, base, 'tail')).join('')}</div></section>` : ''}</div>`;
 }
 
-export function renderRoute(bundle, base, pathname, renderBody) {
+export function renderRoute(bundle, base, pathname, renderBody, search = '') {
   const route = pathname.slice(base.length).replace(/^\/+|\/+$/g, '');
   const parts = route ? route.split('/') : [];
   const published = bundle.articles.filter((article) => article.status === 'published');
+  const paged = bundle.articles.filter((article) => article.status === 'published' || article.status === 'archived');
   if (!parts.length) {
     const wireTitle = bundle.publication.labels?.wireTitle || 'Le fil étudiant';
     return {
@@ -126,7 +161,7 @@ export function renderRoute(bundle, base, pathname, renderBody) {
     };
   }
   if (parts[0] === 'articles' && parts[1]) {
-    const article = published.find((item) => item.slug === decodeURIComponent(parts[1]));
+    const article = paged.find((item) => item.slug === decodeURIComponent(parts[1]));
     if (!article) return null;
     const authorLinks = article.authors.map((slug) => {
       const name = bundle.authors.find((item) => item.slug === slug)?.name || slug;
@@ -146,7 +181,7 @@ export function renderRoute(bundle, base, pathname, renderBody) {
       ? `<a class="post-eyebrow" data-editorial-link href="${eyebrowHref}"${eyebrowColor ? ` style="--c:${esc(eyebrowColor)}"` : ''}>${esc(eyebrowName)}</a>`
       : '';
     const briefs = published.filter((item) => item.slug !== article.slug).slice(0, 5);
-    const post = `<article class="post post--in-magazine">${eyebrow}<h1 class="post-title">${esc(article.title)}</h1>${article.subtitle ? `<p class="post-subtitle">${esc(article.subtitle)}</p>` : ''}${article.dek ? `<p class="post-dek">${esc(article.dek)}</p>` : ''}<div class="post-meta"><span>Par ${authorLinks.join(', ')}</span><time datetime="${esc(article.publishedAt || article.updatedAt)}">${esc(formatDateTime(article.publishedAt || article.updatedAt, bundle.publication.timeZone))}</time></div><div class="post-flow">${mediaFigure(article, base)}<div class="post-body">${renderBody(article)}</div></div>${categories.length ? `<div class="post-tags">${categories.map((category) => `<a class="tag" data-editorial-link href="${link(base, `/categories/${encodeURIComponent(category.slug)}/`)}">${esc(category.name)}</a>`).join('')}</div>` : ''}</article>`;
+    const post = `<article class="post post--in-magazine">${eyebrow}<h1 class="post-title">${esc(article.title)}</h1>${article.subtitle ? `<p class="post-subtitle">${esc(article.subtitle)}</p>` : ''}${article.dek ? `<p class="post-dek">${esc(article.dek)}</p>` : ''}<div class="post-meta"><span>Par ${authorLinks.join(', ')}</span><time datetime="${esc(article.publishedAt || article.updatedAt)}">${esc(formatDateTime(article.publishedAt || article.updatedAt, bundle.publication.timeZone))}</time></div>${shareBox(article.title, `${typeof location !== 'undefined' ? location.origin : ''}${link(base, `/articles/${encodeURIComponent(article.slug)}/`)}`)}<div class="post-flow">${mediaFigure(article, base)}<div class="post-body">${renderBody(article)}</div></div>${categories.length ? `<div class="post-tags">${categories.map((category) => `<a class="tag" data-editorial-link href="${link(base, `/categories/${encodeURIComponent(category.slug)}/`)}">${esc(category.name)}</a>`).join('')}</div>` : ''}</article>`;
     const rail = briefs.length
       ? `<aside class="brief-rail brief-rail--article" aria-label="En bref"><h2>En bref</h2>${briefs.map((item) => articleCard(item, bundle, base, 'brief')).join('')}</aside>`
       : '';
@@ -398,7 +433,59 @@ export function renderRoute(bundle, base, pathname, renderBody) {
       html: `<div class="wrap wire"><header class="author-page-head">${avatarHtml(author, 112)}<div class="author-page-head__text"><div class="wire-head" style="margin:0;border:0;padding:0"><h1 class="wire-title">${esc(author.name)}</h1><span class="wire-status">${articles.length} signature${articles.length > 1 ? 's' : ''}${author.active === false ? ' · Alumni' : ''}</span></div>${roleLine}${author.bio ? `<p class="author-bio">${esc(author.bio)}</p>` : ''}</div></header>${articles.length ? magazineFeedHtml(articles, bundle, base, `Articles de ${author.name}`, 'Aucun article signé pour le moment.') : '<p class="empty">Aucun article signé pour le moment.</p>'}</div>`,
     };
   }
-  return null;
+  if (parts[0] === 'archives' && !parts[1]) {
+    const groups = groupByYear(paged, bundle.publication.timeZone);
+    const years = groups.map((g) => `<a data-editorial-link href="${link(base, `/archives/${g.year}/`)}">${g.year}<span class="archive-year-nav__count">${g.articles.length}</span></a>`).join('');
+    const blocks = groups.length
+      ? groups.map((g) => `<section class="archive-year"><h2 class="archive-year__title" id="archive-y-${g.year}"><a data-editorial-link href="${link(base, `/archives/${g.year}/`)}">${g.year}</a></h2><ul class="archive-list">${g.articles.map((article) => `<li><time datetime="${esc(article.publishedAt || article.updatedAt)}">${esc(formatDateTime(article.publishedAt || article.updatedAt, bundle.publication.timeZone))}</time> <a data-editorial-link href="${link(base, `/articles/${encodeURIComponent(article.slug)}/`)}">${esc(article.title)}</a></li>`).join('')}</ul></section>`).join('')
+      : '<p class="empty">Aucun article dans les archives pour le moment.</p>';
+    return {
+      title: `Archives — ${bundle.publication.name}`,
+      html: `<div class="wrap wire wire--archives"><div class="wire-head"><h1 class="wire-title">Archives</h1>${paged.length ? `<span class="wire-status">${paged.length} article${paged.length > 1 ? 's' : ''}</span>` : ''}</div><p class="archive-lead">Le fil d’accueil met en avant l’actualité récente. Les archives sont le registre complet du journal : chaque article garde sa page, sa photo et son adresse permanente — y compris les pièces retirées du fil (« hors fil »).</p>${years ? `<nav class="archive-year-nav" aria-label="Années d’archives">${years}</nav>` : ''}${blocks}</div>`,
+    };
+  }
+  if (parts[0] === 'archives' && parts[1]) {
+    const year = Number(parts[1]);
+    const groups = groupByYear(paged, bundle.publication.timeZone);
+    const group = groups.find((item) => item.year === year);
+    const articles = group?.articles || [];
+    return {
+      title: `Archives ${year} — ${bundle.publication.name}`,
+      html: `<div class="wrap wire wire--archives"><nav class="archive-crumbs" aria-label="Fil d’Ariane"><a data-editorial-link href="${link(base, '/')}">Accueil</a><span class="archive-crumbs__sep" aria-hidden="true">›</span><a data-editorial-link href="${link(base, '/archives/')}">Archives</a><span class="archive-crumbs__sep" aria-hidden="true">›</span><span aria-current="page">${year}</span></nav><div class="wire-head"><h1 class="wire-title">${year}</h1>${articles.length ? `<span class="wire-status">${articles.length} article${articles.length > 1 ? 's' : ''}</span>` : ''}</div>${articles.length ? `<ul class="archive-list">${articles.map((article) => `<li><time datetime="${esc(article.publishedAt || article.updatedAt)}">${esc(formatDateTime(article.publishedAt || article.updatedAt, bundle.publication.timeZone))}</time> <a data-editorial-link href="${link(base, `/articles/${encodeURIComponent(article.slug)}/`)}">${esc(article.title)}</a></li>`).join('')}</ul>` : '<p class="empty">Aucun article pour cette année.</p>'}<p class="archive-back"><a data-editorial-link href="${link(base, '/archives/')}">← Toutes les années</a></p></div>`,
+    };
+  }
+  if (parts[0] === 'recherche') {
+    const query = String(search || '').replace(/^\?/, '').split('&').map((part) => part.split('=')).reduce((acc, [key, value]) => { if (decodeURIComponent((key || '').replace(/\+/g, ' ')) === 'q') acc = decodeURIComponent((value || '').replace(/\+/g, ' ')); return acc; }, '');
+    const haystack = (article) => [article.title, article.excerpt, article.body?.raw, article.slug, ...(article.authors || []).map((slug) => bundle.authors.find((author) => author.slug === slug)?.name || slug)].join(' ').toLowerCase();
+    const matches = query.trim() ? published.filter((article) => haystack(article).includes(query.trim().toLowerCase())) : [];
+    const list = !query.trim()
+      ? '<p class="empty">Écrivez un mot, un titre ou un nom, puis lancez la recherche.</p>'
+      : (matches.length ? `<ul class="search-results">${matches.map((article) => `<li><a data-editorial-link href="${link(base, `/articles/${encodeURIComponent(article.slug)}/`)}">${esc(article.title)}</a><p>${esc(article.excerpt || '')}</p></li>`).join('')}</ul>` : `<p class="empty">Aucun article ne correspond à « ${esc(query)} ».</p>`);
+    return {
+      title: query.trim() ? `Recherche : ${query} — ${bundle.publication.name}` : `Recherche — ${bundle.publication.name}`,
+      html: `<div class="wrap wire"><div class="wire-head"><h1 class="wire-title">Recherche</h1>${query.trim() && matches.length ? `<span class="wire-status">${matches.length} résultat${matches.length > 1 ? 's' : ''}</span>` : ''}</div><form class="search-form" method="get" action="${link(base, '/recherche/')}" role="search"><label>Chercher dans le journal<input type="search" name="q" value="${esc(query)}" placeholder="Un titre, un nom, un mot"></label><button type="submit" class="primary">Rechercher</button></form>${list}</div>`,
+    };
+  }
+  if (parts[0] === 'revue') {
+    const picks = published.slice(0, 12);
+    const pieces = picks.map((article) => `<article class="revue-piece"><h2>${esc(article.title)}</h2><p class="post-meta">${esc((article.authors || []).map((slug) => bundle.authors.find((author) => author.slug === slug)?.name || slug).join(', '))} · <time datetime="${esc(article.publishedAt || article.updatedAt)}">${esc(formatDateTime(article.publishedAt || article.updatedAt, bundle.publication.timeZone))}</time></p>${mediaFigure(article, base)}<div class="post-body">${renderBody(article)}</div><p class="revue-piece__link"><a data-editorial-link href="${link(base, `/articles/${encodeURIComponent(article.slug)}/`)}">Lire sur le site</a></p></article>`).join('');
+    return {
+      title: `Revue — ${bundle.publication.name}`,
+      html: `<div class="wrap wire wire--revue"><div class="wire-head"><h1 class="wire-title">Revue</h1>${picks.length ? `<span class="wire-status">${picks.length} article${picks.length > 1 ? 's' : ''}</span>` : ''}</div><p class="section-intro">Une édition à imprimer : les articles récents, à la suite, sans le mât ni la radio. Utilisez « Imprimer » dans votre navigateur, ou le bouton ci-dessous.</p><p class="revue-actions noprint"><button type="button" class="primary" data-revue-print>Imprimer la revue</button></p>${picks.length ? pieces : '<p class="empty">Aucun article à mettre dans la revue pour le moment.</p>'}</div>`,
+    };
+  }
+  if (parts[0] === 'plan-du-site') {
+    const sportsOn = (bundle.publication.masthead?.sports?.enabled !== false) && (Array.isArray(bundle.publication.masthead?.sports?.teams) ? bundle.publication.masthead.sports.teams.length : bundle.publication.masthead?.sports?.team);
+    return {
+      title: `Plan du site — ${bundle.publication.name}`,
+      html: `<div class="wrap wire"><div class="wire-head"><h1 class="wire-title">Plan du site</h1></div><p class="section-intro">${published.length} article${published.length > 1 ? 's' : ''} sur le fil, ${paged.length} dans les <a data-editorial-link href="${link(base, '/archives/')}">archives</a>, ${bundle.taxonomies.sections.length} sections, ${bundle.authors.length} signatures.</p><ul><li><a data-editorial-link href="${link(base, '/archives/')}">Archives</a> — registre chronologique complet</li>${sportsOn ? `<li><a data-editorial-link href="${link(base, '/sports/')}">Au tableau</a> — scores et prochains matchs</li>` : ''}<li><a data-editorial-link href="${link(base, '/recherche/')}">Recherche</a></li><li><a data-editorial-link href="${link(base, '/revue/')}">Revue</a> — édition à imprimer</li>${published.map((article) => `<li><a data-editorial-link href="${link(base, `/articles/${encodeURIComponent(article.slug)}/`)}">${esc(article.title)}</a></li>`).join('')}</ul></div>`,
+    };
+  }
+  return {
+    title: `Page introuvable — ${bundle.publication.name}`,
+    html: '<div class="wrap wire"><h1>Page introuvable</h1><p>Cette adresse ne correspond à aucune page du journal.</p></div>',
+    notFound: true,
+  };
 }
 
 /** Années du droit d'auteur : l'année courante, ou « fondation–année courante » (comme templates.ts). */
@@ -552,6 +639,7 @@ export function applyBranding(bundle, base) {
       label: section.name,
       color: section.color,
     })),
+    ...(needSports ? [{ href: link(base, '/sports/'), label: 'Au tableau' }] : []),
     { href: link(base, '/auteurs/'), label: 'Équipe' },
   ];
   const navLink = (item) => {
@@ -570,6 +658,26 @@ export function applyBranding(bundle, base) {
     const sep = '<span class="site-foot__sep" aria-hidden="true">·</span>';
     footNav.innerHTML = navItems.map(navLink).join(sep);
   }
+  const hideRss = Boolean(publication.noindex);
+  document.querySelectorAll('.masthead-rss, link[rel="alternate"][type="application/atom+xml"]').forEach((node) => {
+    node.toggleAttribute('hidden', hideRss);
+    if (node instanceof HTMLLinkElement) node.disabled = hideRss;
+  });
+  let util = document.querySelector('.site-foot__links');
+  if (!util) {
+    util = document.createElement('nav');
+    util.className = 'site-foot__links';
+    util.setAttribute('aria-label', 'Liens de pied de page');
+    document.querySelector('.site-foot__nav')?.after(util);
+  }
+  const footParts = [];
+  if (!hideRss) footParts.push(`<a href="${link(base, '/feed.xml')}">Flux RSS</a>`);
+  footParts.push(`<a data-editorial-link href="${link(base, '/archives/')}">Archives</a>`);
+  footParts.push(`<a data-editorial-link href="${link(base, '/plan-du-site/')}">Plan du site</a>`);
+  footParts.push(`<a data-editorial-link href="${link(base, '/revue/')}">Revue</a>`);
+  footParts.push(`<a data-editorial-link href="${link(base, '/recherche/')}">Recherche</a>`);
+  const sep = '<span class="site-foot__sep" aria-hidden="true">·</span>';
+  util.innerHTML = footParts.join(sep);
   document.body.classList.toggle('with-radio', Boolean(radioStation(publication.radio)));
   syncRadarTuner(publication.radio);
 }

@@ -1,6 +1,8 @@
 /**
  * Paquet complet d'un journal : un seul ZIP par version, à déposer chez un
- * hébergeur PHP (dossier « journal/ »). Il contient la rédaction du socle
+ * hébergeur PHP, à la racine du domaine (votre-journal.com). Un sous-dossier
+ * reste possible : le programme détecte le préfixe tout seul. Il contient
+ * la rédaction du Socle
  * (articles, banque de photos, rôles, sauvegardes, mises à jour) et le site
  * du journal, une coquille Kiosque qui se dessine dans le navigateur à partir
  * des articles publiés (mode « socle-vivant »). Nom, logo, couleurs, radio et
@@ -9,10 +11,10 @@
  * Usage : node tools/paquet-complet.mjs [--sortie dist/kiosque-journal.zip]
  */
 import { spawnSync } from 'node:child_process';
-import { cp, mkdtemp, readFile, rm } from 'node:fs/promises';
+import { cp, mkdtemp, readFile, rm, writeFile } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
 import path from 'node:path';
-import { fileURLToPath } from 'node:url';
+import { fileURLToPath, pathToFileURL } from 'node:url';
 
 import { MarkdownSource } from '../packages/adapters/markdown/src/index.ts';
 import { createSourceContext } from '../packages/core/src/source.ts';
@@ -46,7 +48,7 @@ await build({
 });
 // Le socle sert lui-même /admin, /redaction et robots.txt ; une coquille vide
 // n'a ni plan du site ni fil RSS à figer.
-// La rédaction a sa propre copie de ses fichiers (journal/admin/assets).
+// La rédaction a sa propre copie de ses fichiers (admin/assets).
 for (const name of ['admin', 'archives', 'plan-du-site', '.nojekyll', 'robots.txt', 'sitemap.xml', 'feed.xml', 'rss.xml', 'CNAME', '_redirects', 'assets/kiosque-admin.css',
   ...['admin.js', 'admin.css', 'export.js', 'socle-backend.js', 'stock-photo-match.js'].map((file) => `assets/editorial/${file}`)]) {
   await rm(path.join(site, name), { recursive: true, force: true });
@@ -68,8 +70,29 @@ const paquet = {
   depot: 'azdak919/le-kiosque',
   fichier: 'kiosque-journal.zip',
 };
-const made = spawnSync(process.execPath, [path.join(socle, 'tools', 'paquet-php.mjs'), '--sortie', out, '--racine', 'journal', '--site', site, '--paquet', JSON.stringify(paquet)], { encoding: 'utf8' });
+const made = spawnSync(process.execPath, [path.join(socle, 'tools', 'paquet-php.mjs'), '--sortie', out, '--site', site, '--paquet', JSON.stringify(paquet)], { encoding: 'utf8' });
 process.stdout.write(made.stdout);
 process.stderr.write(made.stderr);
+if (made.status !== 0) {
+  await rm(work, { recursive: true, force: true });
+  process.exit(made.status ?? 1);
+}
+// À la racine du domaine : si le programme du Socle épinglé a encore enveloppé
+// les fichiers dans un dossier (journal/ ou socle/), on le retire.
+const { unzip, zipStore } = await import(pathToFileURL(path.join(socle, 'src/zip.ts')).href);
+const packed = unzip(new Uint8Array(await readFile(out)));
+const names = [...packed.keys()].filter((name) => !name.endsWith('/'));
+const roots = new Set(names.map((name) => name.split('/')[0]));
+const folder = roots.size === 1 && packed.has(`${[...roots][0]}/index.php`) ? [...roots][0] : '';
+const prefix = folder ? `${folder}/` : '';
+const lisezmoi = await readFile(path.join(repoRoot, 'tools', 'LISEZMOI-journal.txt'));
+const files = names
+  .filter((name) => !folder || (name.startsWith(prefix) && name.length > prefix.length))
+  .map((name) => {
+    const relative = folder ? name.slice(prefix.length) : name;
+    const data = relative === 'LISEZMOI.txt' ? lisezmoi : packed.get(name);
+    return { name: relative, data };
+  });
+await writeFile(out, zipStore(files));
+if (folder) console.log(`[paquet] fichiers à la racine du ZIP (dossier « ${folder}/ » retiré)`);
 await rm(work, { recursive: true, force: true });
-if (made.status !== 0) process.exit(made.status ?? 1);

@@ -45,7 +45,7 @@ async function render(push = false) {
   try {
     if (typeof window.KiosqueRefreshMasthead === 'function') window.KiosqueRefreshMasthead();
   } catch (_) {}
-  const result = renderRoute(bundle, config.publicBasePath, location.pathname, articleBody);
+  const result = renderRoute(bundle, config.publicBasePath, location.pathname, articleBody, location.search);
   if (!result) return;
   if (push) history.pushState({}, '', location.pathname);
   document.title = result.title;
