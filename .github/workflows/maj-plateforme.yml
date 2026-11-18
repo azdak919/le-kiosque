@@ -89,7 +89,7 @@ jobs:
             "Des améliorations sont disponibles en amont (corrections, accessibilité, sécurité)." \
             "" \
             "**Avant de fusionner**" \
-            "1. Vérifiez que la publication du journal passe ci-dessous." \
+            "1. Fusionnez, puis regardez l’onglet Actions : « Publier le journal » doit passer au vert. Sinon, bouton « Revert » de la pull request." \
             "2. Si quelque chose vous déplaît : fermez simplement la proposition. Rien ne casse." \
             "" \
             "Votre contenu (content/, media/, theme/, kiosque.config.ts) n'est jamais modifié par cette mise à jour." \
