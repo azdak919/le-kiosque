@@ -181,6 +181,13 @@ await writeFile(
   injectBase(await readFile(path.join(siteDir, 'index.html'), 'utf8')),
   'utf8',
 );
+await mkdir(path.join(outDir, 'guide'), { recursive: true });
+await writeFile(
+  path.join(outDir, 'guide', 'index.html'),
+  injectBase(await readFile(path.join(siteDir, 'guide/index.html'), 'utf8')),
+  'utf8',
+);
+await cp(path.join(repoRoot, 'docs/guide-une-page.pdf'), path.join(outDir, 'guide', 'guide.pdf'));
 await mkdir(path.join(outDir, 'configurer'), { recursive: true });
 await writeFile(
   path.join(outDir, 'configurer', 'index.html'),

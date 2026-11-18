@@ -1,215 +1,84 @@
-# LE KIOSQUE
+# Le Kiosque
 
-> *Kit d'Infrastructure Ouverte, Souveraine et de Qualité pour les Usages Éditoriaux.*
->
-> **« Publier aujourd'hui. Transmettre demain. »**
+**Plateforme libre pour les journaux étudiants.** Elle fournit le site Web public du journal et l’espace de rédaction, livrés ensemble dans un seul paquet.
 
-Socle libre pour les journaux étudiants, les médias de campus et les équipes
-éditoriales. Conçu pour survivre à ses fondateurs.
+Un journal étudiant ne disparaît presque jamais par manque de talent. Il disparaît parce que le domaine a expiré, que l’hébergement n’est plus payé, ou que le compte d’administration est parti avec quelqu’un qui a gradué. Le Kiosque répond à ce problème : chaque journal installe sa propre copie, sans dépendre d’aucun serveur central, et garde ses archives.
 
-**LE-RADAR** est l'agrégateur et le réseau de découverte des médias étudiants.
-**LE KIOSQUE** est le kit qui permet d'en créer un. Deux projets distincts : un
-journal sous LE KIOSQUE reste propriétaire de son domaine, de son hébergement,
-de ses comptes et de ses contenus.
+[![Page d’accueil du Quorum, journal de démonstration](site/assets/captures/quorum-accueil-ordi.jpg)](https://azdak919.github.io/le-kiosque/demo/)
 
-Un journal étudiant ne meurt presque jamais par manque de talent. Il meurt parce
-que le domaine a expiré, que l'hébergement n'est plus payé, que le compte
-d'administration appartient à quelqu'un qui a gradué, et que dix ans d'archives
-sont partis avec.
+<p align="center"><em>Le Quorum, journal de démonstration — météo, sports, barre radio et fil d’articles.</em></p>
 
-Le Kiosque est une réponse à ce problème-là — pas à celui de fabriquer un joli
-site, qui est le problème facile.
+- **Page de présentation :** <https://azdak919.github.io/le-kiosque/>
+- **Démonstration :** <https://azdak919.github.io/le-kiosque/demo/>
+- **Guide d’une page :** <https://azdak919.github.io/le-kiosque/guide/>
+- **Paquet complet :** <https://github.com/azdak919/le-kiosque/releases/latest/download/kiosque-journal.zip>
 
-> **Agents et personnes qui reprennent le projet :** lire
-> **[`AGENTS.md`](AGENTS.md)** (architecture, invariants, pièges déjà payés)
-> puis la section **« Registre officiel de livraison »** de
-> **[`AGENTS.md`](AGENTS.md)** (mission en cours et décisions de continuité).
-
-**Démo en ligne : <https://azdak919.github.io/le-kiosque/>.**
-
-**État : jalon 4 livré, démonstration locale (sql.js).** La vitrine, Le Quorum, le configurateur
-et une interface de rédaction persistante dans le navigateur fonctionnent sans
-compte ni serveur. Voir la [feuille de route](#feuille-de-route).
+Le Radar est l’agrégateur des médias étudiants. Le Kiosque est la plateforme qui permet d’en faire paraître un. Les deux projets sont distincts : un journal sous le Kiosque reste maître de son domaine, de son hébergement, de ses comptes et de ses contenus.
 
 ---
 
-## Le principe
+## À qui ça s’adresse
 
-> **La génération du site ne parle jamais au CMS.**
-> Seule l'étape `sync` le fait. Le CMS alimente un miroir portable dans Git ; le
-> site se construit *uniquement* depuis ce miroir.
-
-```
-CMS au choix ──sync──► content/*.md + media/ ──build──► site statique
-(peut mourir)          (l'archive, dans Git)           (ne meurt pas)
-```
-
-Un backend qui meurt casse l'écriture, **jamais** la lecture. Tout le reste du
-projet découle de cette seule frontière :
-
-- **Vous n'êtes prisonnier de rien.** Markdown/Git aujourd'hui ; l'interface
-  `ContentSource` est prévue pour WordPress, Ghost ou Drupal (jalon 5, pas
-  encore disponible). Le site ne change pas.
-- **Le site ne peut pas se vider tout seul.** Un quota dépassé ou un jeton
-  expiré fait échouer `sync` bruyamment — le site publié reste intact.
-- **Les archives sont récupérables sans rien.** Du Markdown et des images dans
-  Git. `npm ci && kiosque build` reconstruit tout, sans aucun compte ni secret.
-- **Trois ans de sommeil ne cassent rien.** Le site est statique : il n'y a
-  rien à redémarrer.
+Aux équipes de journaux étudiants et de médias de campus qui veulent un site à elles, simple à transmettre d’une cohorte à l’autre. L’installation se fait dans le navigateur. Il ne faut ni ligne de commande, ni compte GitHub.
 
 ---
 
-## Démarrer
+## Installer un journal
 
-**Équipe étudiante : suivez [`docs/guide-etudiant.md`](docs/guide-etudiant.md).**
-C'est le chemin recommandé, de bout en bout et sans terminal : le **paquet
-complet** ([`kiosque-journal.zip`](https://github.com/azdak919/le-kiosque/releases/latest/download/kiosque-journal.zip),
-un ZIP par version : site du journal et rédaction) déposé sur un hébergement
-PHP ordinaire — serveur du cégep ou hébergeur mutualisé —, un assistant
-d'installation dans le navigateur, puis des mises à jour en un clic. Le
-chemin B du guide garde le site public sur GitHub Pages (« Use this
-template », configurateur). Cloudflare reste possible, mais demande la ligne de commande
-(voir la section 10 du guide).
+1. **Téléchargez** [`kiosque-journal.zip`](https://github.com/azdak919/le-kiosque/releases/latest/download/kiosque-journal.zip) — toujours la dernière version, à une adresse fixe.
+2. **Déposez** le dossier `journal/` dans l’espace Web d’un hébergeur **PHP 8.1 ou plus récent, avec SQLite** (serveur du cégep ou de l’association, hébergeur habituel, ou essai gratuit chez [alwaysdata](docs/hebergeur-gratuit.md)).
+3. **Ouvrez** `https://votre-site/journal/redaction/` et remplissez l’assistant : nom, rubriques, logo au besoin, compte administrateur. Attendez le message « Le journal est installé ».
+4. **Écrivez**, relisez, publiez. L’article paraît tout de suite. Téléchargez une sauvegarde à chaque fin de session.
 
-Sans hébergement du tout, le journal peut vivre seulement dans GitHub, en
-Markdown : [`docs/installation.md`](docs/installation.md).
+Le détail, pour un étudiant, tient dans le [guide d’une page](https://azdak919.github.io/le-kiosque/guide/). Le [guide étudiant complet](docs/guide-etudiant.md) couvre aussi les autres chemins : site public sur GitHub Pages, serveur de l’établissement, auto-hébergement.
 
-Pour travailler sur le code :
+---
+
+## Ce que fait la plateforme
+
+**Sur le site Web public**
+
+- Le mât affiche le nom du journal en grand ; s’il y a un logo, le logo remplace le nom.
+- Rubriques, pages d’articles, pages des signatures, recherche dans la page, mode sombre.
+- Météo locale, résultats sportifs et barre radio, au choix. La radio est un module du [Radar](https://le-radar.ca), chargé depuis le-radar.ca.
+- Chaque article porte toutes ses signatures ; chaque photo porte son crédit et sa licence.
+- Sur la démonstration et sur un site statique (par exemple GitHub Pages) : archives, plan du site et fil RSS.
+
+**Dans l’espace de rédaction** (c’est [le socle](https://github.com/azdak919/le-socle) : l’interface d’administration et son serveur)
+
+- Assistant d’installation dans le navigateur.
+- Rôles : auteur, photographe, réviseur, chef de pupitre, éditeur, administrateur. Un auteur ou un chef de pupitre peut être limité à certaines rubriques.
+- Banque de photos, avec crédit obligatoire.
+- Aperçu de l’article dans le thème, sans le publier.
+- Sauvegarde complète en un fichier ZIP, et restauration.
+- Mise à jour en un clic, quand une version de la plateforme est publiée.
+
+![Assistant d’installation](site/assets/captures/assistant-installation.jpg)
+
+<p align="center"><em>L’assistant, à la première visite de l’espace de rédaction.</em></p>
+
+![Banque de photos](site/assets/captures/banque-photos.jpg)
+
+<p align="center"><em>La banque de photos, avec crédit et licence.</em></p>
+
+---
+
+## Travailler sur le code
 
 ```bash
-git clone https://github.com/<votre-organisation>/<votre-journal>.git
-cd <votre-journal>
+git clone https://github.com/azdak919/le-kiosque.git
+cd le-kiosque
 npm ci
-
-node packages/pipeline/src/cli.ts sync
-node packages/pipeline/src/cli.ts build
+npm test
+npm run site
 ```
 
-Diagnostic et passation : `kiosque doctor`, `kiosque adopt` (écrit
-`PASSATION.md`), `kiosque export` (archive portable) et `kiosque deploy-hint`.
-
-Servi dans un sous-dossier hors GitHub Pages ? Renseignez-le, sinon les liens
-pointent à côté :
-
-```ts
-// kiosque.config.ts
-deploy: { basePath: '/<depot>' }   // laisser vide avec un domaine dédié
-```
-
-**Deux fichiers à éditer, pas plus :**
-
-| Fichier | Rôle |
-|---|---|
-| `theme/tokens.css` | vos couleurs, votre typographie |
-| `kiosque.config.ts` | votre backend, votre déploiement |
-
-**Trois fichiers à lire :** [`AJOUTER-UN-ARTICLE.md`](template/AJOUTER-UN-ARTICLE.md) ·
-[`OWNERS.md`](template/OWNERS.md) · [`RESTAURATION.md`](template/RESTAURATION.md)
-
-**Pour que votre équipe écrive sans jamais voir Git :**
-[`docs/brancher-sveltia.md`](docs/brancher-sveltia.md)
-
-**Installer chez un journal depuis une clé USB** (hébergeur mutualisé, serveur,
-à côté d’un WordPress) : `npm run kit`, puis voir
-[`tools/kit/GUIDE.md`](tools/kit/GUIDE.md) et la
-[fiche à imprimer](tools/kit/FICHE-A-IMPRIMER.html).
-
-**Pour essayer sans compte, jeton ni terminal :** terminez le configurateur,
-puis ouvrez `/admin/`. Le [mode de démonstration local](docs/demo-local.md)
-conserve les données uniquement dans IndexedDB, dans ce navigateur.
+`npm run site` construit la page de présentation, le configurateur et la démonstration Le Quorum dans `dist/`. Le guide de contribution et les invariants du projet sont dans [`AGENTS.md`](AGENTS.md).
 
 ---
 
-## Mises à jour de la plateforme
+## Licence et crédits
 
-Personne ne peut écrire dans votre dépôt — pas même nous. Le workflow
-`maj-plateforme.yml` va chercher les améliorations en amont et vous les **propose
-en pull request**. Vous mergez, ou vous ignorez.
+Le logiciel est sous [GPL version 2 seulement](LICENSE). Les contenus publiés par chaque journal appartiennent à leurs autrices, auteurs et à l’équipe. Les composants tiers sont listés dans [`THIRD_PARTY.md`](THIRD_PARTY.md).
 
-Ça reste sans conflit parce que la frontière est stricte :
-
-```
-À VOUS, jamais touché par l'amont
-  content/  media/  theme/tokens.css  kiosque.config.ts  OWNERS.md
-
-À LA PLATEFORME, ne pas modifier à la main
-  packages/  tools/  .github/workflows/
-```
-
----
-
-## Structure
-
-```
-packages/
-  core/            modèle commun + contrats — zéro dépendance
-  adapters/
-    markdown/      adaptateur de référence
-    wordpress/     squelette non branché (jalon 5)
-  pipeline/        sync · build · verify · cms:config
-  theme-radar/     identité éditoriale : jetons + gabarits
-template/          ce que vous éditez
-examples/          journal de démonstration
-docs/              guides
-```
-
-Deux dépendances de production (`yaml`, `marked`), aucune étape de compilation :
-Node exécute le TypeScript directement. Chaque dépendance est une dette de
-survie. Playwright est verrouillé comme dépendance de développement, pour les
-tests. La base de la démonstration locale (sql.js) arrive avec l’admin du socle.
-
----
-
-## Feuille de route
-
-| Jalon | Contenu | État |
-|---|---|---|
-| **1** | Noyau, adaptateur Markdown, thème, chaîne complète, test de continuité | **fait** |
-| **2** | Sveltia CMS, statut éditorial, identifiants permanents | **fait** |
-| **3** | Vitrine, Le Quorum, configurateur et barre radio LE-RADAR | **fait** |
-| **Démo locale** | SQLite (sql.js), administration navigateur, import/export et front vivant | **fait** |
-| **4** | `doctor`, `adopt` (PASSATION.md), `export`, `deploy-hint` | **fait** |
-| 5 | Adaptateur WordPress/Newspack | à venir |
-| 6 | Premier pilote avec une vraie équipe | à venir |
-
----
-
-## Ce que Le Kiosque fournit — et ce qu'il ne fournit pas
-
-**Disponible aujourd’hui :** le code libre, le gabarit Markdown/Git, la vitrine,
-Le Quorum, le configurateur et la démonstration éditoriale locale, la page
-Mise à jour (lignes Socle et Kiosque), l’adaptateur socle éteint dans le gabarit,
-la documentation d'installation et de reprise, les guides de passation, la
-procédure de restauration et la barre radio facultative. Les autres backends
-et outils de migration restent une feuille de route.
-
-**Chaque journal demeure responsable de :** son hébergement, son domaine, ses
-comptes d'administration, ses sauvegardes, sa sécurité, ses dépenses, et la
-gestion et la publication de son contenu.
-
-**Le Kiosque et LE-RADAR n'hébergent pas les sites.** Le projet est expérimental
-et développé avec des ressources limitées. Il ne garantit aucune infrastructure,
-maintenance permanente, niveau de service ni service commercial.
-L'accompagnement est bénévole et offert selon les disponibilités.
-
-L'architecture laisse la porte ouverte à des partenariats, des services payants
-facultatifs ou une coopérative — **sans qu'aucun journal ne devienne dépendant
-du Kiosque pour conserver ou migrer ses contenus.** Le référencement dans
-l'annuaire signifie seulement que LE-RADAR lit un flux RSS public et conserve
-les métadonnées nécessaires à l'agrégation.
-
----
-
-## Licence
-
-**GNU GPL v2** ([`LICENSE`](LICENSE)), comme
-[LE-RADAR](https://github.com/azdak919/le-radar), dont ce projet reprend
-l'identité visuelle (valeurs **copiées** dans
-`packages/theme-radar/assets/tokens.css`, pas liées — chaque projet garde sa
-liberté d'évoluer).
-
-Sveltia CMS est redistribué sous licence MIT
-(`packages/theme-radar/assets/admin/SVELTIA-LICENSE.txt`).
-
-Les contenus publiés par chaque journal appartiennent à leurs autrices et
-auteurs.
+L’identité visuelle reprend celle du [Radar](https://github.com/azdak919/le-radar), sans y être liée : chaque projet peut évoluer de son côté.
