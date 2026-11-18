@@ -14,6 +14,7 @@ import { cp, mkdir, readFile, rm, writeFile } from 'node:fs/promises';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { marked } from 'marked';
+import { imageSize } from './image-size.ts';
 
 import {
   byDateDesc,
@@ -286,6 +287,12 @@ export async function build(options: BuildOptions): Promise<BuildResult> {
   const editorialMode = config.editorial?.mode ?? 'git-sveltia';
   const editorialAssetsBase = `${basePath}/assets/editorial`;
   const databaseKey = `kiosque-${basePath.replace(/[^a-z0-9]+/gi, '-') || 'root'}-${bundle.publication.slug}`;
+  // Un logo-emblème (carré, rond) ne dit pas le nom : le gabarit l'écrit à côté.
+  const logo = bundle.publication.logo;
+  if (logo?.src?.startsWith('/media/') && !(logo.width && logo.height)) {
+    const size = await readFile(path.join(config.root, logo.src)).then((bytes) => imageSize(bytes)).catch(() => null);
+    if (size) bundle.publication.logo = { ...logo, ...size };
+  }
   const publicationForRender = editorialMode === 'demo-local' ? bundle.publication : {
     ...bundle.publication,
     masthead: bundle.publication.masthead ? {

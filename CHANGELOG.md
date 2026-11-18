@@ -1,6 +1,7 @@
 # Journal
 
 ## Non publié
+- Mât : un logo-emblème (rond, carré) est suivi du nom du journal au lieu de le remplacer ; un logo large (nom dessiné) le remplace toujours. Taille lue dans le fichier, aucun réglage.
 - Cartes de la une : la licence de la photo suit le crédit, comme dans l'article.
 
 - Configurateur : plus d'adresses inventées (`releve-1@journal-exemple.invalid`, `redaction@journal-exemple.invalid`, propriétaire `nom-utilisateur`) dans la fiche du journal ; le ZIP porte une date valide (1980-01-01 au lieu d'un mois 0).

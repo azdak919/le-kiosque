@@ -173,6 +173,20 @@ function darkAccent(color: string): string {
   return `:root[data-theme="dark"]{--accent:${c}}@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){--accent:${c}}}`;
 }
 
+/**
+ * Logo du mât. Un logo large (un nom dessiné) remplace le nom ; un emblème
+ * (presque carré : moins de 1,8 fois plus large que haut) l'accompagne.
+ */
+function wordmarkInner(masthead: { name: string; logo?: { src: string; width?: number; height?: number } }, ctx: RenderContext): string {
+  if (!masthead.logo) return esc(masthead.name);
+  const { width, height } = masthead.logo;
+  const emblem = Boolean(width && height && width / height < 1.8);
+  const src = safeUrl(asset(masthead.logo.src, ctx));
+  return emblem
+    ? `<span class="wordmark-with-logo"><img class="publication-logo publication-logo--emblem" src="${src}" alt="" width="${width}" height="${height}"><span class="wordmark-name">${esc(masthead.name)}</span></span>`
+    : `<img class="publication-logo" src="${src}" alt="${esc(masthead.name)}">`;
+}
+
 /** « Photo : Nom (CC BY-SA 4.0) », licence liée quand on a son adresse. */
 function photoCredit(item: { credit?: string; license?: string }): string {
   if (!item.credit) return '';
@@ -853,7 +867,7 @@ ${demoBannerHtml(ctx.demoNotice)}
     ${mastheadTools(ctx, options.current)}
     <div class="masthead-top">
       <div>
-        <p class="wordmark"><a href="${asset('/', ctx)}">${masthead.logo ? `<img class="publication-logo" src="${safeUrl(asset(masthead.logo.src, ctx))}" alt="${esc(masthead.name)}">` : esc(masthead.name)}</a></p>
+        <p class="wordmark"><a href="${asset('/', ctx)}">${wordmarkInner(masthead, ctx)}</a></p>
         ${masthead.signature ? `<p class="masthead-tagline">${esc(masthead.signature)}</p>` : ''}
       </div>
       <div class="masthead-meta">
