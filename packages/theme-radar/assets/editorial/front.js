@@ -52,7 +52,7 @@ async function render(push = false) {
   document.querySelector('main').innerHTML = result.html;
   document.documentElement.dataset.editorialReady = 'true';
   /*
-   * kiosque.js s’attache au HTML statique au load ; le rendu PGlite remplace
+   * kiosque.js s’attache au HTML statique au load ; le rendu de la démo remplace
    * main.innerHTML. Rejouer collaps suite du fil, équité magazine et index
    * de recherche — sinon : fil tout ouvert, vide sous vedettes, loupe morte.
    */
@@ -117,7 +117,7 @@ function start() {
 
 editorialNeeded().then((needed) => {
   if (needed) return start();
-  /* Lecteur : HTML statique déjà correct, aucun PGlite. Si l’admin s’ouvre
+  /* Lecteur : HTML statique déjà correct, aucune base de démo. Si l’admin s’ouvre
    * dans un autre onglet, on bascule alors sur le rendu local. */
   document.documentElement.dataset.editorialReady = 'true';
   window.addEventListener('storage', (event) => {

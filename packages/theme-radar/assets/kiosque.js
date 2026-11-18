@@ -234,7 +234,7 @@
 
   /**
    * Mât illustré — lit toujours le DOM courant.
-   * Important : applyBranding (PGlite) remplace img + #masthead-backgrounds ;
+   * Important : applyBranding (démo) remplace img + #masthead-backgrounds ;
    * on ne doit jamais garder de références mortes (sinon shuffle « mort »).
    */
   var mastheadBgState = {
@@ -2368,7 +2368,7 @@
 
   /**
    * Re-applique collaps suite du fil + équité magazine + index recherche
-   * après un re-render éditorial (PGlite remplace main.innerHTML).
+   * après un re-render éditorial (la démo remplace main.innerHTML).
    */
   function refreshFeedChrome() {
     newsTailExpanded = false;

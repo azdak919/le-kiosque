@@ -127,7 +127,7 @@ test('demo et template reçoivent le même theme.css / kiosque.js (packages/them
   assert.match(demoHome, /wire-title">Le fil</, 'démo Quorum : libellé focus-group');
   assert.match(tplHome, /wire-title">À la une</, 'template : fallback tant que labels absents');
 
-  // Équipe : portraits + intro lisible ; seed PGlite versionné pour re-sync.
+  // Équipe : portraits + intro lisible ; seed de la démo versionné pour re-sync.
   const demoAuthors = await readFile(path.join(demo.out, 'auteurs/index.html'), 'utf8');
   assert.match(demoAuthors, /author-avatar__img/, 'portraits d’équipe dans le HTML statique');
   assert.match(demoAuthors, /author-avatar__initials/, 'initiales en secours sous la photo');

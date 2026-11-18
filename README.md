@@ -27,7 +27,7 @@ site, qui est le problème facile.
 
 **Démo en ligne : <https://azdak919.github.io/le-kiosque/>.**
 
-**État : jalon 4 livré, démonstration locale PGlite.** La vitrine, Le Quorum, le configurateur
+**État : jalon 4 livré, démonstration locale (sql.js).** La vitrine, Le Quorum, le configurateur
 et une interface de rédaction persistante dans le navigateur fonctionnent sans
 compte ni serveur. Voir la [feuille de route](#feuille-de-route).
 
@@ -110,7 +110,7 @@ deploy: { basePath: '/<depot>' }   // laisser vide avec un domaine dédié
 [fiche à imprimer](tools/kit/FICHE-A-IMPRIMER.html).
 
 **Pour essayer sans compte, jeton ni terminal :** terminez le configurateur,
-puis ouvrez `/admin/`. Le [mode de démonstration local](docs/demo-local-pglite.md)
+puis ouvrez `/admin/`. Le [mode de démonstration local](docs/demo-local.md)
 conserve les données uniquement dans IndexedDB, dans ce navigateur.
 
 ---
@@ -150,8 +150,8 @@ docs/              guides
 
 Deux dépendances de production (`yaml`, `marked`), aucune étape de compilation :
 Node exécute le TypeScript directement. Chaque dépendance est une dette de
-survie. PGlite et Playwright sont verrouillés comme dépendances de développement
-et ne sont copiés que pour construire et tester la démonstration locale.
+survie. Playwright est verrouillé comme dépendance de développement, pour les
+tests. La base de la démonstration locale (sql.js) arrive avec l’admin du socle.
 
 ---
 
@@ -162,7 +162,7 @@ et ne sont copiés que pour construire et tester la démonstration locale.
 | **1** | Noyau, adaptateur Markdown, thème, chaîne complète, test de continuité | **fait** |
 | **2** | Sveltia CMS, statut éditorial, identifiants permanents | **fait** |
 | **3** | Vitrine, Le Quorum, configurateur et barre radio LE-RADAR | **fait** |
-| **Démo locale** | PGlite, administration navigateur, import/export et front vivant | **fait** |
+| **Démo locale** | SQLite (sql.js), administration navigateur, import/export et front vivant | **fait** |
 | **4** | `doctor`, `adopt` (PASSATION.md), `export`, `deploy-hint` | **fait** |
 | 5 | Adaptateur WordPress/Newspack | à venir |
 | 6 | Premier pilote avec une vraie équipe | à venir |

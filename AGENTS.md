@@ -78,7 +78,7 @@ pas dans ce dépôt.
 
 ```bash
 npm test                    # tests unitaires — doit rester vert
-npm run test:navigateur     # parcours Chromium PGlite sous un basePath renommé
+npm run test:navigateur     # parcours Chromium de la démo (sql.js) sous un basePath renommé
 npm run test:continuity     # le test décisif du projet (voir plus bas)
 npm run typecheck           # tsc --noEmit (typage seul, aucune compilation)
 
@@ -106,15 +106,17 @@ compile pas. Donc : pas d'`enum`, pas de `namespace`, pas de propriétés de
 paramètre (`constructor(private x)`). Utilise des types union et des `const`
 objects. *Un fichier qui viole ça plante au chargement, pas au build.*
 
-**Trois dépendances de production, `yaml`, `marked` et `le-socle`.** `le-socle` est épinglé sur un commit précis (`github:azdak919/le-socle#<sha>`) : c'est lui qui fournit l'admin de rédaction. PGlite et Playwright
-sont des dépendances de développement verrouillées : PGlite est copié seulement
-dans une sortie `demo-local`, Playwright ne sert qu’aux tests. N'en ajoute pas sans
+**Trois dépendances de production, `yaml`, `marked` et `le-socle`.** `le-socle` est épinglé sur un commit précis (`github:azdak919/le-socle#<sha>`) : c'est lui qui fournit l'admin de rédaction. Playwright
+est une dépendance de développement verrouillée, qui ne sert qu’aux tests. La base
+de la démo (sql.js, MIT) arrive avec l’admin du socle et n’est copiée que dans une
+sortie `demo-local`. PGlite (Apache-2.0, incompatible avec GPL-2.0-only) est retiré :
+ne pas le remettre. N'en ajoute pas sans
 raison forte. Chaque dépendance est une dette de survie : le projet doit se
 reconstruire dans dix ans.
 
 **L'admin de rédaction se développe dans le socle, pas ici.** Les écrans
 (articles, photos, auteurs, rubriques, configuration), le client
-`/v1/redaction/`, la démo PGlite (`demo-backend.js`, `runtime.js`) et leur
+`/v1/redaction/`, la démo en mode navigateur (`demo-backend.js`, `runtime.js`, `sqljs-db.js`, sql.js) et leur
 feuille vivent dans `le-socle/admin/`. Le build les copie dans
 `assets/editorial/`. Pour les changer : une pull request dans le socle, puis
 mettre à jour le commit épinglé dans `package.json` (`npm install
@@ -177,7 +179,7 @@ packages/
   theme-radar/        identité éditoriale reprise de LE-RADAR
     assets/tokens.css  ← le SEUL fichier qu'une équipe modifie
     src/templates.ts   gabarits (fonctions pures : modèle → HTML)
-    src/source-view.js noyau de carte partagé build statique + démo PGlite
+    src/source-view.js noyau de carte partagé build statique + démo navigateur
     LE-RADAR-SOURCE-VIEW.json  révision de référence et adaptations admises
     src/admin.ts       page /admin
     assets/admin/      Sveltia CMS figé (2 Mo, MIT)
@@ -216,13 +218,12 @@ du shell. Cibler par port ou par PID.
 stocke `/media/…` et c'est le thème qui préfixe au rendu. L'inclure produirait
 `/depot/depot/media/…`.
 
-**PGlite ne doit jamais contaminer `git-sveltia`.** Ses modules JS, WASM et
-`pglite.data` sont copiés depuis `node_modules` pendant un build `demo-local`.
+**La base de la démo ne doit jamais contaminer `git-sveltia`.** `sql-wasm.js`
+et `sql-wasm.wasm` sont copiés depuis `le-socle/admin/` pendant un build `demo-local`.
 Ils ne sont pas committés, chargés depuis un CDN ou émis dans un build Git.
 
-**Statuts de la démo.** La base PGlite accepte `draft`, `in-review`,
-`scheduled`, `published` et `archived` (schéma 2 ; `#migrate` remplace la
-contrainte d'une base de schéma 1). Un article programmé dont l'heure est
+**Statuts de la démo.** La base SQLite (sql.js) accepte `draft`, `in-review`,
+`scheduled`, `published` et `archived` (schéma 2). Un article programmé dont l'heure est
 passée sort comme publié dans la lecture publique ; la base garde `scheduled`.
 
 ---
@@ -258,7 +259,7 @@ on ne recrée pas de deuxième journal d’état.
 
 | État | Chantier | Décision, critères et suites |
 |---|---|---|
-| **fait** | Jalon 3 — vitrine, Le Quorum et administration locale | Le build statique, le mode `demo-local` PGlite, la banque média locale, les points focaux, la barre radio et les validations correspondantes sont livrés. La barre radio est le module de LE-RADAR (`https://le-radar.ca/radio-barre.js`), appelé en une ligne par `packages/theme-radar/src/radio.js`. Ne jamais copier ses stations, son lecteur ou son style dans le Kiosque : un changement de la radio doit arriver aux journaux sans mise à jour du Kiosque. Radio éteinte : ni emplacement ni requête vers le-radar.ca. LE-RADAR muet : l’emplacement reste replié. Les tests navigateur remplacent le module par un faux réduit au contrat. PGlite reste exclu des builds Git/Sveltia. |
+| **fait** | Jalon 3 — vitrine, Le Quorum et administration locale | Le build statique, le mode `demo-local` (sql.js), la banque média locale, les points focaux, la barre radio et les validations correspondantes sont livrés. La barre radio est le module de LE-RADAR (`https://le-radar.ca/radio-barre.js`), appelé en une ligne par `packages/theme-radar/src/radio.js`. Ne jamais copier ses stations, son lecteur ou son style dans le Kiosque : un changement de la radio doit arriver aux journaux sans mise à jour du Kiosque. Radio éteinte : ni emplacement ni requête vers le-radar.ca. LE-RADAR muet : l’emplacement reste replié. Les tests navigateur remplacent le module par un faux réduit au contrat. La base de la démo reste exclue des builds Git/Sveltia. |
 | **fait** | Modèle éditorial de source individuelle | `source-view.js` est le noyau unique appelé par `templates.ts` et `assets/editorial/render.js`; `source-view.css` porte les mesures/rôles de LE-RADAR. La démonstration ne possède plus de carte concurrente. |
 | **à surveiller** | Synchronisation LE-RADAR → LE-KIOSQUE | LE-RADAR est la référence du modèle de carte seulement. Avant de faire évoluer ce modèle dans LE-KIOSQUE, exécuter `npm run radar:reference:check -- --from=../le-radar`, examiner les écarts, puis actualiser le manifeste avec les adaptations réellement nécessaires. Les empreintes portent seulement sur `partitionSourceFeed`, `createArticle` et leurs CSS : une évolution du lecteur radio ne déclenche donc pas une fausse migration. Le build ne dépend jamais du dépôt voisin. |
 | **fait** | Impression Ctrl+P d’un article individuel | `@media print` dans `theme.css` + `body.is-article-page` : masque mât photo, radio, nav, En bref, tags et footer chrome ; garde titre, méta, photo lead (si présente) et corps. Critère : Ctrl+P sur `/articles/…` = une page lisible, pas un scrape de l’UI. |
@@ -270,7 +271,7 @@ on ne recrée pas de deuxième journal d’état.
 
 ### Port éditorial LE-RADAR : contrat d’acceptation
 
-- La génération statique et le rendu PGlite utilisent le même HTML de carte;
+- La génération statique et le rendu de la démo navigateur utilisent le même HTML de carte;
   aucun copier-coller de `articleCard` n’est autorisé.
 - La carte conserve les rôles, images proportionnées, absence d’image pour la
   suite du fil, métadonnées, date/heure, auteur, liens et états de champs

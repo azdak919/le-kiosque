@@ -1,13 +1,16 @@
-# Mode démonstration local PGlite
+# Mode démonstration local
 
 Le mode `demo-local` permet d’essayer un journal complet sur GitHub Pages sans
-serveur, terminal, compte d’administration, OAuth ou jeton. PostgreSQL s’exécute
-dans le navigateur avec PGlite et conserve ses données dans IndexedDB.
+serveur, terminal, compte d’administration, OAuth ou jeton. SQLite s’exécute
+dans le navigateur avec sql.js (MIT) et conserve ses données dans IndexedDB.
+La base (environ 0,7 Mo) vient de l’admin du socle et ne se charge que pour
+`/admin/` ou le configurateur.
 
 ## Ce qui fonctionne
 
 - création, modification, suppression et prévisualisation d’articles;
-- statuts Brouillon, En révision et Publié;
+- statuts Brouillon, En révision, Programmé, Publié et Archivé;
+- banque de photos : ses propres photos, avec crédit obligatoire, réutilisables;
 - auteurs, sections, catégories, mots-clés, identité et barre radio;
 - mise à jour du front end dans les autres onglets;
 - logo local, trois typographies et couleurs;

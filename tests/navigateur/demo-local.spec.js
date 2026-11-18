@@ -23,7 +23,7 @@ function demoSeedMediaCount() {
 }
 
 test('configurer, rédiger, prévisualiser, publier, persister et exporter sans serveur', async ({ page, context }) => {
-  // Ce parcours exerce PGlite, deux téléchargements et une réimportation ; il
+  // Ce parcours exerce la base sql.js, deux téléchargements et une réimportation ; il
   // reste volontairement intégral. La banque élargie allonge reset/import —
   // 4 min sur un CI saturé.
   test.setTimeout(240_000);
@@ -74,7 +74,7 @@ test('configurer, rédiger, prévisualiser, publier, persister et exporter sans 
   await front.waitForFunction(() => document.documentElement.dataset.editorialReady === 'true', null, { timeout: 45_000 });
   await expect(front.locator('.publication-logo')).toBeVisible();
   await expect(front.locator('html')).toHaveAttribute('data-typography', 'editorial-classic');
-  // La démo PGlite doit employer le même noyau de carte que le HTML statique :
+  // La démo (sql.js) doit employer le même noyau de carte que le HTML statique :
   // vignettes en bref, mais aucune image réintroduite dans la suite du fil.
   await expect(front.locator('article.article--brief.has-image .article-media').first()).toBeVisible();
   await expect(front.locator('article.article--tail .article-media')).toHaveCount(0);
@@ -114,7 +114,7 @@ test('configurer, rédiger, prévisualiser, publier, persister et exporter sans 
   await page.locator('.admin-nav').getByRole('link', { name: 'Tableau de bord', exact: true }).click();
   page.once('dialog', (dialog) => dialog.accept());
   await page.getByRole('button', { name: 'Restaurer Le Quorum' }).click();
-  // Import banque + PGlite : long en CI. Le toast (#toast) est éphémère (CSS/timing) —
+  // Import banque + sql.js : long en CI. Le toast (#toast) est éphémère (CSS/timing) —
   // attendre le bouton redevenu utilisable puis les exemples en liste.
   await expect(page.getByRole('button', { name: 'Restaurer Le Quorum' })).toBeEnabled({ timeout: 90_000 });
   await expect(page.locator('#publication-name')).toHaveText('La Relève locale');
@@ -152,13 +152,13 @@ test('configurer, rédiger, prévisualiser, publier, persister et exporter sans 
 
   page.once('dialog', (dialog) => dialog.accept());
   await page.getByRole('button', { name: 'Réinitialiser Le Quorum' }).click();
-  // Reset complet + rechargement PGlite de la banque démo : long sur CI.
+  // Reset complet + rechargement sql.js de la banque démo : long sur CI.
   await expect(page.getByRole('heading', { name: 'Tableau de bord' })).toBeVisible({ timeout: 60_000 });
   await page.locator('.admin-nav').getByRole('link', { name: 'Exporter et poursuivre', exact: true }).click();
   const chooser = page.waitForEvent('filechooser');
   await page.getByRole('button', { name: 'Importer une sauvegarde' }).click();
   // Le handler de fichier est asynchrone : attendre explicitement le dialogue
-  // évite de rater la confirmation lorsque PGlite répond plus vite qu’un CI.
+  // évite de rater la confirmation lorsque la base répond plus vite qu’un CI.
   const importDialog = page.waitForEvent('dialog');
   await (await chooser).setFiles(jsonPath);
   await importDialog.then((dialog) => dialog.accept());
@@ -177,15 +177,15 @@ test('l’alias admin redirige et le bandeau ne promet aucun service distant', a
   expect(body).not.toMatch(/authentification réelle|sauvegarde distante|publication automatique dans GitHub/i);
 });
 
-test('un lecteur de la démo ne télécharge pas PGlite (réservé à /admin/)', async ({ browser }) => {
+test('un lecteur de la démo ne télécharge pas la base sql.js (réservée à /admin/)', async ({ browser }) => {
   const ctx = await browser.newContext();
   const page = await ctx.newPage();
-  const pglite = [];
-  ctx.on('request', (r) => { if (/pglite|\.wasm$|\.data$/.test(r.url())) pglite.push(r.url()); });
+  const base = [];
+  ctx.on('request', (r) => { if (/pglite|sql-wasm|\.wasm$|\.data$/.test(r.url())) base.push(r.url()); });
   await page.goto('/autre-nom/demo/');
   await page.waitForFunction(() => document.documentElement.dataset.editorialReady === 'true');
   await page.waitForTimeout(1500);
-  expect(pglite).toEqual([]);
+  expect(base).toEqual([]);
   await ctx.close();
 });
 
