@@ -1,6 +1,6 @@
 # Installer un journal KIOSQUE
 
-KIOSQUE est un socle libre et expérimental. Il ne fournit ni hébergement, ni
+KIOSQUE est une plateforme libre et expérimentale. Il ne fournit ni hébergement, ni
 domaine, ni compte d’administration. Chaque journal reste propriétaire et
 responsable de ces ressources. L’accompagnement est bénévole, selon les
 disponibilités.
