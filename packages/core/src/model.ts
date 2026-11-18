@@ -356,6 +356,8 @@ export interface Publication {
   siteUrl: string;
   /** Fuseau IANA utilisé pour présenter les heures éditoriales. */
   timeZone: string;
+  /** Cacher le site des moteurs de recherche (journal fictif, essai). */
+  noindex?: boolean;
   logo?: MediaAsset;
   theme: {
     accent: string;

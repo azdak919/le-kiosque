@@ -467,7 +467,9 @@ export async function build(options: BuildOptions): Promise<BuildResult> {
   await writeFile(path.join(outDir, 'sitemap.xml'), sitemap(bundle, urls), 'utf8');
   await writeFile(
     path.join(outDir, 'robots.txt'),
-    `User-agent: *\nAllow: /\n\nSitemap: ${base}/sitemap.xml\n`,
+    bundle.publication.noindex
+      ? `User-agent: *\nDisallow: /\n`
+      : `User-agent: *\nAllow: /\n\nSitemap: ${base}/sitemap.xml\n`,
     'utf8',
   );
 
@@ -522,9 +524,13 @@ export async function build(options: BuildOptions): Promise<BuildResult> {
       log.warn('Sveltia CMS absent — lancer « node tools/vendor-cms.mjs ». Le site publié n’est pas affecté.');
     });
   } else {
+    const socleBase = config.source.adapter === 'socle' && typeof config.source.options?.baseUrl === 'string'
+      ? config.source.options.baseUrl
+      : undefined;
     await writeFile(path.join(outDir, 'admin', 'index.html'), unavailableExternalAdminPage(
       { publicationName: bundle.publication.name, lang: bundle.publication.lang, basePath, accent: bundle.publication.theme.accent },
-      config.editorial?.externalBackend ?? 'PocketBase',
+      config.editorial?.externalBackend ?? '',
+      socleBase,
     ), 'utf8');
   }
   const kiosquePackage = JSON.parse(await readFile(new URL('../../../package.json', import.meta.url), 'utf8')) as { version: string };

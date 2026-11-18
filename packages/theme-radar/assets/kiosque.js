@@ -319,7 +319,7 @@
     if (!credit) return;
     credit.replaceChildren();
     if (!item || !item.credit) return;
-    var label = 'Photo : ' + item.credit;
+    var label = 'Photo : ' + item.credit + (item.license ? ' (' + item.license + ')' : '');
     if (item.creditUrl && /^https:\/\//i.test(item.creditUrl)) {
       var link = document.createElement('a');
       link.href = item.creditUrl;

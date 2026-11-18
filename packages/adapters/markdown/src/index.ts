@@ -451,6 +451,7 @@ export class MarkdownSource implements ContentSource<MarkdownConfig> {
       langs: list(raw.langs),
       siteUrl: (str(raw.siteUrl) ?? '').replace(/\/+$/, ''),
       timeZone: str(raw.timeZone) ?? 'America/Toronto',
+      noindex: raw.noindex === true || undefined,
       logo: mediaFrom(raw.logo, attribution, 'publication'),
       theme: {
         accent: str(theme.accent) ?? '#6c2163',

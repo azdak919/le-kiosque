@@ -159,7 +159,24 @@ function relative(absolute: string, ctx: RenderContext): string {
 
 /** Chemin d'un fichier statique (feuilles de style, script, flux). */
 function asset(path: string, ctx: RenderContext): string {
+  if (/^(?:https?:|data:)/i.test(path)) return path;
   return `${ctx.basePath}${path}`;
+}
+
+/**
+ * Couleur du journal en mode sombre, que le mode vienne du bouton ou du
+ * système : sans la seconde règle, le violet de démonstration de tokens.css
+ * l'emportait chez qui a son téléphone en sombre.
+ */
+function darkAccent(color: string): string {
+  const c = esc(color);
+  return `:root[data-theme="dark"]{--accent:${c}}@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){--accent:${c}}}`;
+}
+
+/** « Photo : Nom (CC BY-SA 4.0) », licence liée quand on a son adresse. */
+function photoCredit(item: { credit?: string; license?: string }): string {
+  if (!item.credit) return '';
+  return `Photo : ${item.credit}${item.license ? ` (${item.license})` : ''}`;
 }
 
 function sectionName(slug: string | undefined, ctx: RenderContext): Section | undefined {
@@ -227,11 +244,11 @@ function mastheadBackground(ctx: RenderContext, options: MastheadOptions): strin
   const image = settings.images[0];
   const credit = image.credit
     ? image.creditUrl
-      ? `<a href="${safeUrl(image.creditUrl)}" rel="noopener">Photo : ${esc(image.credit)}</a>`
-      : `Photo : ${esc(image.credit)}`
+      ? `<a href="${safeUrl(image.creditUrl)}" rel="noopener">${esc(photoCredit(image))}</a>`
+      : esc(photoCredit(image))
     : '';
   const manifest = settings.images.map((item) => ({
-    src: asset(item.src, ctx), alt: item.alt, credit: item.credit ?? '', creditUrl: item.creditUrl ?? '',
+    src: asset(item.src, ctx), alt: item.alt, credit: item.credit ?? '', license: item.license ?? '', creditUrl: item.creditUrl ?? '',
     backgroundPosition: `${clampPercent(item.focalPoint?.x)}% ${clampPercent(item.focalPoint?.y)}%`,
   }));
   return `<img class="masthead-background" src="${safeUrl(asset(image.src, ctx))}" alt="" data-masthead-background style="object-position:${esc(options.backgroundPosition)}">
@@ -822,9 +839,9 @@ export function page(content: string, options: PageOptions, ctx: RenderContext):
 <link rel="stylesheet" href="${asset('/assets/tokens.css', ctx)}">
 <link rel="stylesheet" href="${asset('/assets/theme.css', ctx)}">
 <link rel="stylesheet" href="${asset('/assets/source-view.css', ctx)}">
-<style>:root{--accent:${esc(pub.theme.accent)}}${
-    pub.theme.accentDark ? `:root[data-theme="dark"]{--accent:${esc(pub.theme.accentDark)}}` : ''
-  }</style>
+<style>:root{--accent:${esc(pub.theme.accent)}}${darkAccent(pub.theme.accentDark || pub.theme.accent)}</style>${
+    pub.noindex ? '\n<meta name="robots" content="noindex, nofollow">' : ''
+  }
 ${options.jsonLd ? `<script type="application/ld+json">${options.jsonLd}</script>\n` : ''}</head>
 <body${bodyClasses ? ` class="${esc(bodyClasses)}"` : ''}>
 <a class="skip-link" href="#contenu">Aller au contenu</a>
@@ -835,7 +852,7 @@ ${demoBannerHtml(ctx.demoNotice)}
     ${mastheadTools(ctx, options.current)}
     <div class="masthead-top">
       <div>
-        <p class="wordmark"><a href="${asset('/', ctx)}">${masthead.logo ? `<img class="publication-logo" src="${safeUrl(asset(masthead.logo.src, ctx))}" alt="${esc(masthead.logo.alt || masthead.name)}">` : esc(masthead.name)}</a></p>
+        <p class="wordmark"><a href="${asset('/', ctx)}">${masthead.logo ? `<img class="publication-logo" src="${safeUrl(asset(masthead.logo.src, ctx))}" alt="${esc(masthead.name)}">` : esc(masthead.name)}</a></p>
         ${masthead.signature ? `<p class="masthead-tagline">${esc(masthead.signature)}</p>` : ''}
       </div>
       <div class="masthead-meta">
@@ -1060,7 +1077,7 @@ export function articlePage(article: Article, ctx: RenderContext, relatedArticle
     .map((category) => `<a class="tag" href="${asset(`/categories/${category!.slug}/`, ctx)}">${esc(category!.name)}</a>`)
     .join('\n      ');
 
-  const caption = [lead?.caption, lead?.credit && `Photo : ${lead.credit}`]
+  const caption = [lead?.caption, lead && photoCredit(lead)]
     .filter(Boolean)
     .map((x) => esc(x))
     .join(' — ');

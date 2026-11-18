@@ -73,6 +73,13 @@ export async function writeIndex(
       .concat(kept as never[])
       .sort((x, y) => x.slug.localeCompare(y.slug)),
   };
+  // Rien n'a changé ? Garder l'ancienne date : sinon chaque publication crée un
+  // commit du robot, et le prochain `git push` de l'équipe est refusé.
+  const previous = await readIndex(root) as (Record<string, unknown> | undefined);
+  if (previous && previous.syncedAt) {
+    const same = JSON.stringify({ ...previous, syncedAt: undefined }) === JSON.stringify({ ...payload, syncedAt: undefined });
+    if (same) return;
+  }
   await mkdir(path.dirname(indexPath(root)), { recursive: true });
   await writeFile(indexPath(root), `${JSON.stringify(payload, null, 2)}\n`, 'utf8');
 }
