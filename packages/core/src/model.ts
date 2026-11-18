@@ -416,7 +416,7 @@ export interface Publication {
   };
   /**
    * Libellés d’interface paramétrables (focus group / rédaction).
-   * Fallbacks thème : « À la une ».
+   * Fallbacks thème : « Le fil étudiant » (titre du fil), « À la une » (manchette).
    */
   labels?: {
     /** Titre du fil d’accueil (h1). */
