@@ -7,7 +7,7 @@ test('annuler une signature revient à la liste sans enregistrer', async ({ page
   await expect(page.getByRole('heading', { name: 'Auteurs et rôles informatifs' })).toBeVisible();
   await page.getByRole('button', { name: 'Modifier' }).first().click();
   await expect(page.getByRole('heading', { name: 'Modifier une signature' })).toBeVisible();
-  const name = page.getByLabel('Nom');
+  const name = page.getByLabel('Nom', { exact: true });
   const original = await name.inputValue();
   await name.fill('Nom qui ne doit pas rester');
   await page.getByRole('button', { name: 'Annuler' }).click();
@@ -22,7 +22,7 @@ test('une section se colore dans la page, et Annuler ne change rien', async ({ p
   await page.locator('.admin-nav').getByRole('link', { name: 'Sections et catégories', exact: true }).click();
   await expect(page.getByRole('heading', { name: 'Structure éditoriale' })).toBeVisible();
   const row = () => page.locator('.entity-list li').filter({ hasText: 'Actualités' }).first();
-  const picker = () => row().getByLabel('Couleur de Actualités');
+  const picker = () => row().getByLabel('Couleur : Actualités');
   await expect(picker()).toHaveValue('#c45c26');
   await row().getByRole('button', { name: 'Modifier' }).click();
   await expect(page.getByRole('heading', { name: 'Modifier une section' })).toBeVisible();
@@ -57,6 +57,7 @@ test('un lien et une photo se décrivent dans la page', async ({ page }) => {
   });
   await expect(page.getByRole('heading', { name: 'Photo dans le texte' })).toBeVisible();
   await page.getByLabel('Ce que montre la photo').fill('Un pixel de test');
+  await page.getByLabel('Crédit photo (qui l’a prise)').fill('Équipe de test');
   await page.getByRole('dialog').getByRole('button', { name: 'Ajouter' }).click();
   await expect(page.getByRole('heading', { name: 'Photo dans le texte' })).toHaveCount(0);
   await expect(page.locator('#toast')).toContainText('Photo ajoutée');
