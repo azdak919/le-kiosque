@@ -1,5 +1,5 @@
 import { renderSourceArticle } from './source-view.js';
-import { radioBarHtml, resolveStation } from './radio.js';
+import { radioSlotElement, radioStation } from './radio.js';
 import { pruneSportsPayload } from './sports-freshness.js';
 
 const ESCAPES = { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' };
@@ -524,28 +524,24 @@ export function applyBranding(bundle, base) {
     const sep = '<span class="site-foot__sep" aria-hidden="true">·</span>';
     footNav.innerHTML = navItems.map(navLink).join(sep);
   }
-  document.body.classList.toggle('with-radio', Boolean(resolveStation(publication.radio)));
+  document.body.classList.toggle('with-radio', Boolean(radioStation(publication.radio)));
   syncRadarTuner(publication.radio);
 }
 
 /**
- * Garde la barre radio vivante (écoute en cours, volume) tant que la station
- * et son flux ne changent pas ; sinon, la remplace par le même HTML que le
- * build statique (radio.js) et demande à kiosque.js de l’habiller.
+ * Garde la barre radio de LE-RADAR (écoute en cours) tant que la station ne
+ * change pas ; sinon, pose un nouvel emplacement avec l'appel au module.
+ * Radio éteinte : l'emplacement disparaît et le module n'est pas chargé.
  */
 function syncRadarTuner(radio) {
-  const current = document.querySelector('.kiosque-radio');
-  const station = resolveStation(radio);
+  const current = document.querySelector('.radar-radio-slot');
+  const station = radioStation(radio);
   if (!station) {
     current?.remove();
     return;
   }
-  if (current && current.dataset.station === station.id && current.dataset.stream === station.stream) return;
-  const template = document.createElement('template');
-  template.innerHTML = radioBarHtml(radio);
-  const next = template.content.firstElementChild;
-  if (!next) return;
+  if (current && current.dataset.station === station) return;
+  const next = radioSlotElement(radio);
   if (current) current.replaceWith(next);
   else document.querySelector('header')?.after(next);
-  window.KiosqueRadio?.enhance(next);
 }

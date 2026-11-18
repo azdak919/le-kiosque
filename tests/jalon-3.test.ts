@@ -53,7 +53,7 @@ test('demoContent=false masque tous les articles fictifs sans les supprimer du m
   await assert.rejects(() => readdir(path.join(out, 'articles')));
 });
 
-test('la barre radio est un lecteur natif du journal, lisible sans script ni iframe', async (t) => {
+test('la barre radio est le module de LE-RADAR, appelé en une ligne', async (t) => {
   const out = await mkdtemp(path.join(os.tmpdir(), 'kiosque-radio-'));
   t.after(() => rm(out, { recursive: true, force: true }));
 
@@ -66,27 +66,40 @@ test('la barre radio est un lecteur natif du journal, lisible sans script ni ifr
   const home = await readFile(path.join(out, 'index.html'), 'utf8');
   const client = await readFile(path.join(out, 'assets/kiosque.js'), 'utf8');
   const theme = await readFile(path.join(out, 'assets/theme.css'), 'utf8');
-  assert.match(home, /<section class="kiosque-radio"[^>]*data-station="chyz"/);
-  assert.match(home, /data-stream="https:\/\/ecoutez\.chyz\.ca\/proxy\/chyz\/stream"/);
-  // Sans JavaScript : le lecteur natif du navigateur, sans préchargement.
-  assert.match(home, /<audio class="kiosque-radio__audio" controls preload="none" src="https:\/\/ecoutez\.chyz\.ca/);
-  assert.ok(!home.includes('<iframe'), 'plus aucune iframe radio');
-  assert.ok(!home.includes('tuner-embed'), 'plus de dépendance à l’embed de le-radar.ca');
-  assert.ok(!home.includes('<radar-tuner'));
-  assert.match(client, /function enhanceRadio\(host\)/);
-  assert.match(client, /audio\.removeAttribute\('src'\)/, 'un direct en pause coupe vraiment le flux');
-  assert.match(theme, /\.kiosque-radio \{[^}]*position: sticky/);
+  assert.match(home, /<div class="radar-radio-slot" data-station="chyz"><script src="https:\/\/le-radar\.ca\/radio-barre\.js" data-station="chyz" async><\/script><\/div>/);
+  assert.match(home, /<body class="[^"]*with-radio/);
+  assert.ok(!home.includes('<iframe'), 'aucune iframe radio');
+  assert.ok(!home.includes('tuner-embed'));
+  // Aucune copie des stations, du lecteur ou de son style dans le Kiosque.
+  assert.ok(!home.includes('ecoutez.chyz.ca') && !client.includes('ecoutez.chyz.ca'), 'pas de flux copié');
+  assert.ok(!client.includes('enhanceRadio'), 'pas de lecteur copié');
+  assert.ok(!theme.includes('kiosque-radio'), 'pas de style de lecteur copié');
+  // Replié tant que le module n'a pas dit « ready » : LE-RADAR muet, rien.
+  assert.match(theme, /\.radar-radio-slot \{ display: none; \}/);
+  assert.match(theme, /\.radar-radio-slot\[data-radar-radio="ready"\]/);
   assert.match(home, /href="\/depot-renomme\/assets\/theme\.css"/);
 });
 
-test('une station sans flux https ne montre pas de barre muette', async () => {
-  const { radioBarHtml, resolveStation } = await import('../packages/theme-radar/src/radio.js');
-  assert.equal(resolveStation({ enabled: true, station: 'station-exemple' }), null);
-  assert.equal(radioBarHtml({ enabled: true, station: 'chyz', }).includes('CHYZ 94,3 FM'), true);
-  assert.equal(resolveStation({ enabled: true, stream: 'http://non-securise.invalid/flux' }), null);
-  const custom = resolveStation({ enabled: true, station: 'campus', stream: 'https://radio.invalid/flux', name: 'Radio Campus', frequency: '88,1 FM' });
-  assert.equal(custom?.name, 'Radio Campus');
-  assert.equal(resolveStation({ enabled: false, station: 'chyz' }), null);
+test('radio éteinte : aucune barre et aucune requête vers le-radar.ca', async (t) => {
+  const { radioBarHtml, radioStation } = await import('../packages/theme-radar/src/radio.js');
+  assert.equal(radioBarHtml({ enabled: false, station: 'chyz' }), '');
+  assert.equal(radioBarHtml({ enabled: true }), '');
+  assert.equal(radioBarHtml(undefined), '');
+  assert.equal(radioStation({ enabled: true, station: '<script>' }), null);
+  assert.equal(radioStation({ enabled: true, station: 'CHYZ' }), 'chyz');
+
+  const out = await mkdtemp(path.join(os.tmpdir(), 'kiosque-sans-radio-'));
+  t.after(() => rm(out, { recursive: true, force: true }));
+  const data = await bundle();
+  data.publication = { ...data.publication, radio: { enabled: false, station: 'chyz' } };
+  await build({ config: config({ deploy: { basePath: '' } }), bundle: data, outDir: out, logger: silent });
+  for (const page of ['index.html', `articles/${data.articles.find((a) => a.status === 'published')?.slug}/index.html`]) {
+    const html = await readFile(path.join(out, page), 'utf8').catch(() => '');
+    if (!html) continue;
+    assert.ok(!html.includes('le-radar.ca/radio-barre'), `${page} : le module n'est pas appelé`);
+    assert.ok(!html.includes('radar-radio-slot'), `${page} : pas d'emplacement radio`);
+    assert.doesNotMatch(html, /<body class="[^"]*with-radio/);
+  }
 });
 
 test('la vitrine expose le bandeau illustré, les outils et la composition magazine', async (t) => {

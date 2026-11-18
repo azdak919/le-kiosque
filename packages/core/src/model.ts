@@ -392,18 +392,14 @@ export interface Publication {
     textAlignment?: 'left' | 'center' | 'right';
   };
   /**
-   * Barre radio native du journal (lecteur <audio>, sans iframe).
-   * `station` : identifiant du répertoire LE-RADAR (chyz, cism, ckut, cjlo,
-   * cfak, choq). Une autre station se décrit par `stream` (https), `name`,
-   * `frequency` et `website`. Sans flux https connu, la barre n'apparaît pas.
+   * Barre radio de LE-RADAR, appelée en une ligne (module radio-barre.js
+   * servi par le-radar.ca ; stations, code et style restent chez LE-RADAR).
+   * `station` : identifiant de radios.json (chyz, cism…). Éteinte ou sans
+   * station : aucune barre et aucune requête vers le-radar.ca.
    */
   radio?: {
     enabled?: boolean;
     station?: string;
-    stream?: string;
-    name?: string;
-    frequency?: string;
-    website?: string;
     theme?: 'auto' | 'light' | 'dark';
     position?: 'top' | 'bottom';
   };

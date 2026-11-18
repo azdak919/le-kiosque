@@ -2,6 +2,7 @@
 
 ## Non publié
 
+- Barre radio : le journal appelle en une ligne le module de LE-RADAR (`https://le-radar.ca/radio-barre.js`) au lieu de garder sa propre copie des stations, du lecteur et du style (PR #52). Un changement de la radio arrive donc sans mise à jour du Kiosque. Radio éteinte dans le configurateur ou l’admin : aucune barre et aucune requête vers le-radar.ca. Si LE-RADAR ne répond pas, la barre ne s’affiche pas. Les champs `radio.stream`, `name`, `frequency` et `website` sont retirés ; le gabarit part radio éteinte. L’admin propose les stations lues chez LE-RADAR, seulement quand la radio est allumée.
 - Éditeur de la démo : les statuts Programmé et Archivé s’ajoutent à Brouillon, En révision et Publié. Un article programmé demande une heure à venir, une signature et une section ; il se lit comme publié dès son heure passée. Un article archivé quitte les listes. Une base locale déjà créée est migrée (schéma 2). Une erreur d’enregistrement s’affiche au lieu de rester silencieuse.
 - Configurateur : sans logo, l’image d’aperçu n’a plus d’adresse (un logo retiré ne restait pas en cache).
 - Administration locale : Annuler revient à la liste sans enregistrer. La couleur d’une section ou d’une catégorie se choisit dans la liste. Un lien ou une photo dans le texte se décrit dans la page, au lieu d’une fenêtre du navigateur.
