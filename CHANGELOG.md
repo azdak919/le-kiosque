@@ -1,6 +1,7 @@
 # Journal
 
 ## Non publié
+- Météo du mât, paquet complet : après l’enregistrement des localités dans Configuration, la température s’affiche. Le premier dessin du site vivant se faisait trop tôt, avant que la rédaction n’ait fourni la ville.
 - Publier une version : `RELEASING.md` (quand publier, numéro, liste de contrôle), issue « Prochaine version » tenue à jour à chaque fusion (PR non publiées, avis quand des changements visibles attendent), et bouton *Actions → Publier une version* qui vérifie « test » et « navigateur », le numéro et le journal des changements avant de poser l’étiquette et de lancer le paquet complet. Seulement dans le dépôt du Kiosque.
 - Site : le titre de l’accueil devient « Le fil étudiant » (il répétait « À la une », déjà la pastille de la manchette) ; « À la une » reste réservé à l’article mis en avant. Pied de page : l’organisme responsable n’est plus répété quand il porte le nom du journal, plus de tiret orphelin quand l’établissement manque, « logiciel libre » au lieu de « socle libre », et la navigation du pied de page a son propre nom pour les lecteurs d’écran.
 - Version 0.2.1 (essai réel chez alwaysdata). Socle épinglé à 1.2.2 (0e60eca) : sauvegarde complète réparée (ZIP lisible, restauration de toute la rédaction, photos comprises), bandeau « Journal étudiant fictif » au choix dans l'assistant et Configuration, en-tête noindex en sous-dossier, LISEZMOI propre au paquet complet. Guides : bandeau fictif, attendre « Le journal est installé », page d'accueil d'alwaysdata et robots.txt du domaine.
