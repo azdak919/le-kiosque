@@ -70,7 +70,7 @@
         <p class="intro">Il faut un hébergement PHP 8.1 ou plus récent, avec SQLite : le serveur du cégep ou de l’association, un hébergeur habituel, ou un essai gratuit chez alwaysdata. Ni compte GitHub, ni ligne de commande.</p>
         <ol class="steps">
           <li><span class="kbd">1</span><h3>Téléchargez le paquet</h3><p>Un seul fichier, <a href="https://github.com/azdak919/le-kiosque/releases/latest/download/kiosque-journal.zip">kiosque-journal.zip</a>, toujours à la même adresse : la dernière version publiée.</p></li>
-          <li><span class="kbd">2</span><h3>Déposez-le chez l’hébergeur</h3><p>Envoyez le contenu du dossier <code>journal/</code> à la racine de l’espace Web, par exemple dans <code>public_html/</code>. Le site sera à <code>https://votre-journal.com</code>. Un sous-dossier reste possible si vous le souhaitez. Le gestionnaire de fichiers peut souvent extraire le ZIP directement.</p></li>
+          <li><span class="kbd">2</span><h3>Déposez-le chez l’hébergeur</h3><p>Envoyez le contenu du dossier <code>kiosque-journal/</code> à la racine de l’espace Web, par exemple dans <code>public_html/</code>. Le site sera à <code>https://votre-journal.com</code>. Un sous-dossier reste possible si vous le souhaitez. Le gestionnaire de fichiers peut souvent extraire le ZIP directement.</p></li>
           <li><span class="kbd">3</span><h3>Remplissez l’assistant</h3><p>Ouvrez <code>https://votre-journal.com/redaction/</code>. Donnez le nom du journal, les rubriques, un logo au besoin, et créez le compte administrateur.</p></li>
           <li><span class="kbd">4</span><h3>Écrivez, puis publiez</h3><p>L’article paraît tout de suite sur le site. Une sauvegarde se télécharge en un clic ; une mise à jour aussi, quand une version est publiée.</p></li>
         </ol>
@@ -92,6 +92,10 @@
             <figcaption>Le même journal, sur un téléphone.</figcaption>
           </figure>
         </div>
+        <figure class="shot" style="margin-top:1.25rem">
+          <img src="{{BASE_PATH}}/assets/captures/quorum-accueil-sombre.jpg" width="1280" height="800" alt="Page d’accueil du Quorum en mode sombre : mât, barre radio, scores sportifs et fil d’articles." loading="lazy">
+          <figcaption>Le même accueil, en mode sombre.</figcaption>
+        </figure>
         <div class="features">
           <article><h3>Rubriques, recherche et mode sombre</h3><p>Le menu suit les sections du journal. Une loupe cherche dans les titres, les signatures, les rubriques et les extraits déjà affichés. Un bouton passe du mode clair au mode sombre.</p></article>
           <article><h3>Météo, sports et radio</h3><p>Le mât peut afficher la météo locale et les résultats sportifs du campus. La barre radio, facultative, est un module du Radar chargé depuis le-radar.ca : stations, lecteur et style restent chez le Radar.</p></article>
@@ -105,22 +109,22 @@
       <div class="wrap">
         <p class="kicker">L’espace de rédaction</p>
         <h2>Écrire, relire, publier, à plusieurs.</h2>
-        <p class="intro">L’espace de rédaction, c’est le Socle : l’interface d’administration et son serveur, livrés dans le même paquet. Chaque journal installe sa propre copie. Les captures ci-dessous viennent d’un essai, La Vigie, journal étudiant fictif.</p>
+        <p class="intro">L’espace de rédaction, c’est le Socle : l’interface d’administration et son serveur, livrés dans le même paquet. Chaque journal installe sa propre copie. Les captures ci-dessous viennent du Quorum, la démonstration officielle, et de l’assistant d’installation.</p>
         <div class="pair pair--two gallery">
           <figure class="shot shot--tall">
             <img src="{{BASE_PATH}}/assets/captures/assistant-installation.jpg" width="1280" height="1924" alt="Assistant d’installation du journal, avec les champs du nom, des rubriques, de l’apparence et du compte administrateur encore vides." loading="lazy">
             <figcaption>L’assistant d’installation, à la première visite.</figcaption>
           </figure>
           <figure class="shot shot--tall">
-            <img src="{{BASE_PATH}}/assets/captures/editeur-article.jpg" width="1400" height="2312" alt="Formulaire de rédaction d’un article : titre, résumé, rubrique, statut, signatures, photo et texte, avec le bouton Prévisualiser sans publier." loading="lazy">
+            <img src="{{BASE_PATH}}/assets/captures/editeur-article.jpg" width="1400" height="2752" alt="Formulaire de rédaction d’un article du Quorum : titre, résumé, rubrique, statut, signatures, photo principale et texte, avec le bouton Prévisualiser sans publier." loading="lazy">
             <figcaption>L’éditeur d’article, avec un aperçu dans le thème avant publication.</figcaption>
           </figure>
           <figure class="shot shot--tall">
-            <img src="{{BASE_PATH}}/assets/captures/banque-photos.jpg" width="1280" height="2036" alt="Banque de photos de La Vigie, avec crédit et licence sous chaque image." loading="lazy">
+            <img src="{{BASE_PATH}}/assets/captures/banque-photos.jpg" width="1280" height="1940" alt="Banque de photos du Quorum, avec crédit et licence sous chaque image." loading="lazy">
             <figcaption>La banque de photos : crédit obligatoire, licence affichée, réemploi dans tout le journal.</figcaption>
           </figure>
           <figure class="shot shot--tall">
-            <img src="{{BASE_PATH}}/assets/captures/equipe-roles.jpg" width="1280" height="1540" alt="Liste des comptes de La Vigie : administrateur, autrice limitée à certaines rubriques, chef de pupitre et photographe." loading="lazy">
+            <img src="{{BASE_PATH}}/assets/captures/equipe-roles.jpg" width="1280" height="1588" alt="Liste des comptes du Quorum : administrateur, autrice limitée à certaines rubriques, chef de pupitre et photographe, puis les signatures." loading="lazy">
             <figcaption>Les rôles : auteur, photographe, réviseur, chef de pupitre, éditeur, administrateur — avec restriction par rubrique au besoin.</figcaption>
           </figure>
         </div>
