@@ -1,11 +1,12 @@
 # Journal
 
 ## Non publié
+- Version 0.4.1. Socle épinglé à 1.4.1 (7ecf21d).
 - Accueil au téléphone : un petit espace entre le mât et la barre radio, le même qu’entre la météo et la carte sport. La place de la barre reste réservée pendant le chargement.
-- Accueil au téléphone, façon LE-RADAR : mât plus court (radio collée dessous), météo et sport plus compacts, navigation en ligne de liens séparés par des points, « Le fil étudiant » juste en dessous. Les hauteurs réservées et les cibles tactiles de 44 px sont conservées. Toutes les rubriques restent accessibles.
+- Accueil au téléphone, façon LE-RADAR : mât plus court, météo et sport plus compacts, navigation en ligne de liens séparés par des points, « Le fil étudiant » juste en dessous. Les hauteurs réservées et les cibles tactiles de 44 px sont conservées. Toutes les rubriques restent accessibles.
 - Titres d’articles (à la une, dans le fil et sur les pages d’article) : plus de césure. Un mot long passe à la ligne entier, sans trait d’union. Les résumés gardent la césure.
 - Accueil au téléphone : moins d’air perdu sous le bandeau de démonstration, le mât, la radio, la météo, le sport, la navigation et le titre « Le fil étudiant », pour que La une remonte. Les hauteurs réservées (radio, météo, sport) restent en place, pour que la page ne saute pas au chargement.
-- Suite du fil : chaque article qui a une photo garde une vignette, comme sur LE-RADAR (format 3:2). Un article sans photo reste sans case vide. Même dessin sur la démo et sur un journal vivant.
+- Suite du fil : chaque article qui a une photo garde une vignette, comme sur LE-RADAR (format 3:2), sur tous les formats. Un article sans photo reste sans case vide. Même dessin sur la démo et sur un journal vivant.
 - Démonstration Le Quorum : le lien « Espace de rédaction » du pied mène à la rédaction de démonstration (`/admin/`), et non plus à une adresse `/demo/redaction/` qui n’existe pas. Les journaux installés gardent `/redaction/`.
 - Version 0.4.0. Socle épinglé à 1.4.1 (7ecf21d).
 - Météo du mât au téléphone : la puce prend toute la largeur et garde « Québec 6° », avec le maximum et le minimum du jour, puis « Demain » avec son icône et sa température. Les données viennent du même appel à Open-Meteo. La puce d’attente a la même hauteur et la même disposition, donc rien ne bouge au chargement. Si Open-Meteo ne répond pas en 10 secondes, la puce se retire. Rien ne change à l’ordinateur.
