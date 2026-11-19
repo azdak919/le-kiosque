@@ -161,12 +161,16 @@ export async function sync(options: SyncOptions): Promise<SyncResult> {
     mediaMirrored++;
   }
 
-  const assets = [
+  const listed = [
     ...bundle.articles.flatMap((a) => [a.lead, ...(a.media ?? [])]),
     ...(source.id !== 'markdown' ? bundle.articles.flatMap((a) => bodyMedia(a.body?.raw).map((src) => ({ src, alt: '' }))) : []),
     ...authors.map((a) => a.avatar),
     bundle.publication.logo,
     ...(bundle.publication.masthead?.backgrounds?.images ?? []),
+  ];
+  const assets = [
+    ...listed,
+    ...listed.flatMap((asset) => (asset && 'variants' in (asset ?? {}) ? (asset?.variants ?? []).map((variant) => ({ src: variant.src, alt: '' })) : [])),
   ].filter((a): a is NonNullable<typeof a> => Boolean(a) && !String(a?.src ?? '').startsWith('data:'));
 
   for (const asset of assets) {

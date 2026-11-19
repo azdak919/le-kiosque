@@ -39,6 +39,46 @@ function safeMediaUrl(value) {
   return /^(?:data:image\/(?:svg\+xml|png|webp|jpeg);base64,|https?:\/\/|\/)/i.test(raw) ? raw : '';
 }
 
+const SIZES_CARD = '(max-width: 40rem) 100vw, (max-width: 70rem) 50vw, 22rem';
+const SIZES_LEAD_CARD = '(max-width: 40rem) 100vw, 45rem';
+const SIZES_POST = '(max-width: 40rem) 100vw, 70rem';
+const SIZES_MASTHEAD = '100vw';
+
+function resolveMedia(src, base) {
+  const raw = safeMediaUrl(src);
+  if (!raw) return '';
+  return raw.startsWith('/') ? link(base, raw) : raw;
+}
+
+function responsiveAttrs(image, base, sizes) {
+  const src = resolveMedia(image?.src, base);
+  const variants = Array.isArray(image?.variants) ? image.variants : [];
+  if (!src || !variants.length) return src ? { src } : {};
+  const originalWidth = image.width || Math.max(2400, ...variants.map((item) => Number(item.width) || 0));
+  const srcset = [
+    ...variants.map((item) => `${resolveMedia(item.src, base)} ${item.width}w`).filter((part) => !part.startsWith(' ')),
+    `${src} ${originalWidth}w`,
+  ].join(', ');
+  return { src, srcset, sizes };
+}
+
+function srcsetHtml(attrs) {
+  if (!attrs?.src) return '';
+  const srcset = attrs.srcset ? ` srcset="${esc(attrs.srcset)}"` : '';
+  const sizes = attrs.sizes ? ` sizes="${esc(attrs.sizes)}"` : '';
+  return `src="${esc(attrs.src)}"${srcset}${sizes}`;
+}
+
+function applyResponsive(img, attrs) {
+  if (!img || !attrs?.src) return;
+  if (attrs.srcset) img.setAttribute('srcset', attrs.srcset);
+  else img.removeAttribute('srcset');
+  if (attrs.sizes) img.setAttribute('sizes', attrs.sizes);
+  else img.removeAttribute('sizes');
+  img.src = attrs.src;
+}
+
+
 
 function shareBox(title, url) {
   const encodedUrl = encodeURIComponent(url);
@@ -100,9 +140,8 @@ function bylineAuthors(article, bundle, base) {
 
 function mediaFigure(article, base) {
   if (!article.lead) return '';
-  const src = safeMediaUrl(article.lead.src);
-  if (!src) return '';
-  const resolved = src.startsWith('/') ? link(base, src) : src;
+  const attrs = responsiveAttrs(article.lead, base, SIZES_POST);
+  if (!attrs.src) return '';
   const credit = [article.lead.caption, article.lead.credit && `Photo : ${article.lead.credit}${article.lead.license ? ` (${article.lead.license})` : ''}`].filter(Boolean).map(esc).join(' — ');
   const x = Number(article.lead.focalPoint?.x ?? 50);
   const y = Number(article.lead.focalPoint?.y ?? 50);
@@ -110,7 +149,7 @@ function mediaFigure(article, base) {
   const h = article.lead.height ? ` height="${Number(article.lead.height)}"` : '';
   // Même figure .post-lead que le build statique (photo + crédit, pas crédit seul).
   // Sans aspect-ratio inline : l’impression doit pouvoir réduire la lead.
-  return `<figure class="post-lead"><img class="post-lead__img" src="${esc(resolved)}" alt="${esc(article.lead.alt || '')}" decoding="async" fetchpriority="high"${w}${h} style="object-position:${x}% ${y}%">${credit ? `<figcaption class="post-lead__credit">${credit}</figcaption>` : ''}</figure>`;
+  return `<figure class="post-lead"><img class="post-lead__img" ${srcsetHtml(attrs)} alt="${esc(article.lead.alt || '')}" decoding="async" fetchpriority="high"${w}${h} style="object-position:${x}% ${y}%">${credit ? `<figcaption class="post-lead__credit">${credit}</figcaption>` : ''}</figure>`;
 }
 
 function articleCard(article, bundle, base, variant = 'tail') {
@@ -137,7 +176,7 @@ function articleCard(article, bundle, base, variant = 'tail') {
     },
     authors: bylineAuthors(article, bundle, base),
     image: src ? {
-      src: src.startsWith('/') ? link(base, src) : src,
+      ...responsiveAttrs(lead, base, role === 'lead' ? SIZES_LEAD_CARD : SIZES_CARD),
       alt: lead.alt || '',
       caption: lead.caption,
       credit: lead.credit,
@@ -610,10 +649,10 @@ export function applyBranding(bundle, base) {
   masthead?.classList.toggle('masthead--illustrated', Boolean(images.length));
   masthead?.querySelectorAll('[data-masthead-background], .masthead-background-shade, [data-masthead-credit], #masthead-backgrounds').forEach((node) => node.remove());
   if (masthead && images.length) {
-    const image = document.createElement('img'); image.className = 'masthead-background'; image.dataset.mastheadBackground = ''; image.alt = ''; image.src = safeMediaUrl(images[0].src.startsWith('/') ? link(base, images[0].src) : images[0].src); image.style.objectPosition = `${images[0].focalPoint?.x ?? 50}% ${images[0].focalPoint?.y ?? 50}%`;
+    const image = document.createElement('img'); image.className = 'masthead-background'; image.dataset.mastheadBackground = ''; image.alt = ''; applyResponsive(image, responsiveAttrs(images[0], base, SIZES_MASTHEAD)); image.style.objectPosition = `${images[0].focalPoint?.x ?? 50}% ${images[0].focalPoint?.y ?? 50}%`;
     const shade = document.createElement('span'); shade.className = 'masthead-background-shade'; shade.setAttribute('aria-hidden', 'true');
     const credit = document.createElement('span'); credit.className = 'masthead-photo-credit'; credit.dataset.mastheadCredit = ''; if (images[0].credit) { /* Même libellé que kiosque.js (rotation) : crédit et licence ; lien seulement s'il existe. */ const label = `Photo : ${images[0].credit}${images[0].license ? ` (${images[0].license})` : ''}`; const href = images[0].creditUrl || images[0].sourceUrl || ''; if (/^https:\/\//i.test(href)) { const anchor = document.createElement('a'); anchor.href = href; anchor.rel = 'noopener'; anchor.textContent = label; credit.append(anchor); } else credit.textContent = label; }
-    const manifest = document.createElement('script'); manifest.type = 'application/json'; manifest.id = 'masthead-backgrounds'; manifest.textContent = JSON.stringify(images.map((item) => ({ ...item, src: item.src.startsWith('/') ? link(base, item.src) : item.src, backgroundPosition: `${item.focalPoint?.x ?? 50}% ${item.focalPoint?.y ?? 50}%` })));
+    const manifest = document.createElement('script'); manifest.type = 'application/json'; manifest.id = 'masthead-backgrounds'; manifest.textContent = JSON.stringify(images.map((item) => { const attrs = responsiveAttrs(item, base, SIZES_MASTHEAD); return { ...item, src: attrs.src, srcset: attrs.srcset, sizes: attrs.sizes, backgroundPosition: `${item.focalPoint?.x ?? 50}% ${item.focalPoint?.y ?? 50}%` }; }));
     masthead.prepend(image, shade); masthead.append(credit, manifest);
     /* Rebrancher le shuffle sur le nouvel <img> + manifeste (sinon nœud mort). */
     try {

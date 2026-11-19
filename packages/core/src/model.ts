@@ -121,6 +121,8 @@ export interface MediaAsset {
   mime?: string;
   /** sha256 du fichier — vérification d'intégrité de l'archive. */
   checksum?: string;
+  /** Miniatures servies par le Socle (côté long 480, 960, 1600), pour le srcset. */
+  variants?: Array<{ src: string; width: number; height: number }>;
   source: SourceAttribution;
 }
 
@@ -404,15 +406,6 @@ export interface Publication {
     station?: string;
     theme?: 'auto' | 'light' | 'dark';
     position?: 'top' | 'bottom';
-  };
-  /**
-   * Politique média du journal (photos d’articles).
-   * `autoStockPhoto` : si aucune photo principale n’est fournie à
-   * l’enregistrement, l’algo stock LE-RADAR (banque locale / Openverse /
-   * Commons selon le contenu) en propose une.
-   */
-  media?: {
-    autoStockPhoto?: boolean;
   };
   /**
    * Libellés d’interface paramétrables (focus group / rédaction).

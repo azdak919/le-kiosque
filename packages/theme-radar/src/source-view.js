@@ -106,7 +106,9 @@ function imageMarkup(image, role) {
   /* onerror : retire la figure si 404 (IDB périmée / chemin mort) pour ne pas
      afficher l’alt brut en place de la vignette En bref. */
   const onErr = `onerror="const f=this.closest('figure');const a=this.closest('article');if(f)f.remove();if(a){a.classList.remove('has-image','article--thumb');}"`;
-  return `<figure class="article-media"><img src="${escapeSourceViewHtml(image.src)}" alt="${escapeSourceViewHtml(image.alt || '')}" loading="${loading}"${priority} decoding="async" style="object-position:${x}% ${y}%"${width}${height} ${onErr}>${credit ? `<figcaption class="article-media-credit">${credit}</figcaption>` : ''}</figure>`;
+  const srcset = image.srcset ? ` srcset="${escapeSourceViewHtml(image.srcset)}"` : '';
+  const sizes = image.sizes ? ` sizes="${escapeSourceViewHtml(image.sizes)}"` : '';
+  return `<figure class="article-media"><img src="${escapeSourceViewHtml(image.src)}"${srcset}${sizes} alt="${escapeSourceViewHtml(image.alt || '')}" loading="${loading}"${priority} decoding="async" style="object-position:${x}% ${y}%"${width}${height} ${onErr}>${credit ? `<figcaption class="article-media-credit">${credit}</figcaption>` : ''}</figure>`;
 }
 
 /**

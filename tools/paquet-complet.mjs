@@ -53,7 +53,7 @@ await build({
 // n'a ni plan du site ni fil RSS à figer.
 // La rédaction a sa propre copie de ses fichiers (admin/assets).
 for (const name of ['admin', 'archives', 'plan-du-site', '.nojekyll', 'robots.txt', 'sitemap.xml', 'feed.xml', 'rss.xml', 'CNAME', '_redirects', 'assets/kiosque-admin.css',
-  ...['admin.js', 'admin.css', 'export.js', 'socle-backend.js', 'stock-photo-match.js'].map((file) => `assets/editorial/${file}`)]) {
+  ...['admin.js', 'admin.css', 'export.js', 'socle-backend.js', 'stock-photo-match.js', 'filepond-banque.js', 'filepond.esm.min.js', 'filepond.min.css', 'filepond-locale-fr-fr.js'].map((file) => `assets/editorial/${file}`)]) {
   await rm(path.join(site, name), { recursive: true, force: true });
 }
 
