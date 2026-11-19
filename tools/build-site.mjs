@@ -56,8 +56,8 @@ function deployedOrigin() {
 }
 
 /**
- * Icônes d'onglet du Kiosque (Twemoji « journal », CC BY 4.0 ; voir
- * THIRD_PARTY.md) : pages de présentation, guide, configurateur et la
+ * Icônes d'onglet du Kiosque (kiosque à auvent rayé, dessin original ;
+ * voir THIRD_PARTY.md) : pages de présentation, guide, configurateur et la
  * démonstration de cette vitrine. Jamais dans le thème : le site public
  * d'un vrai journal garde son logo ou son nom.
  */
