@@ -1874,39 +1874,15 @@
     if (!nav || !btn) return;
 
     var expanded = false;
-    var phoneMq = typeof window.matchMedia === 'function'
-      ? window.matchMedia('(max-width: 720px)')
-      : null;
-
-    function isPhone() {
-      return phoneMq ? phoneMq.matches : window.innerWidth <= 720;
-    }
 
     function sync() {
-      if (!isPhone()) {
-        shell.classList.remove('has-overflow', 'is-expanded');
-        btn.hidden = true;
-        btn.setAttribute('aria-expanded', 'false');
-        expanded = false;
-        return;
-      }
-      /* Mesure avec max-height levée. */
-      var wasExpanded = shell.classList.contains('is-expanded');
-      shell.classList.add('is-expanded');
-      var fullH = nav.scrollHeight;
-      if (!wasExpanded) shell.classList.remove('is-expanded');
-      var oneRow = 44; /* ~2.65rem */
-      var overflow = fullH > oneRow + 8;
-      shell.classList.toggle('has-overflow', overflow);
-      btn.hidden = !overflow;
-      if (!overflow) {
-        expanded = false;
-        shell.classList.remove('is-expanded');
-      } else if (expanded) {
-        shell.classList.add('is-expanded');
-      }
-      btn.setAttribute('aria-expanded', expanded ? 'true' : 'false');
-      btn.textContent = expanded ? 'Réduire le menu' : 'Toutes les rubriques';
+      /* Téléphone : toutes les rubriques restent visibles, en ligne de
+         liens à points (parité LE-RADAR). Le bouton d’expansion n’a plus
+         lieu d’être. Ordinateur : inchangé, menu toujours déployé. */
+      shell.classList.remove('has-overflow', 'is-expanded');
+      btn.hidden = true;
+      btn.setAttribute('aria-expanded', 'false');
+      expanded = false;
     }
 
     btn.addEventListener('click', function () {
@@ -2067,12 +2043,13 @@
     var card = cards[cards.length - 1];
     if (!card) return false;
     card.remove();
-    /* Gabarit suite : rôle tail sans image (parité source-view / noImageRoles). */
-    card.classList.remove('article--compact', 'article--brief', 'article--thumb', 'has-image');
+    /* Gabarit suite : rôle tail, vignette conservée s’il y a une photo
+       (parité LE-RADAR et source-view / imageRoles). */
+    card.classList.remove('article--compact', 'article--brief');
     card.classList.add('article--tail');
-    card.querySelectorAll('.article-media').forEach(function (media) {
-      media.remove();
-    });
+    if (!card.querySelector('.article-media')) {
+      card.classList.remove('article--thumb', 'has-image');
+    }
     var tail = ensureNewsTailSection(layout);
     var body = tail.querySelector('.news-tail-body') || tail;
     /* En tête de suite (plus frais que le bas du fil historique). */

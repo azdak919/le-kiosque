@@ -93,8 +93,9 @@
   line-height: 1.2;
   overflow-wrap: break-word;
   word-break: normal;
-  hyphens: auto;
-  -webkit-hyphens: auto;
+  /* Pas de césure dans les titres : un mot long passe à la ligne entier. */
+  hyphens: none;
+  -webkit-hyphens: none;
   /* Évite les orphelins d’un seul mot (« de » / « compost ») en bas de titre. */
   text-wrap: pretty;
   transition: color 140ms ease;
@@ -332,8 +333,8 @@
   margin-bottom: 2px;
   font-size: 1.28rem;
   line-height: 1.18;
-  hyphens: auto;
-  -webkit-hyphens: auto;
+  hyphens: none;
+  -webkit-hyphens: none;
   text-wrap: pretty;
 }
 .article--compact .article-byline { margin: 0 0 6px; font-size: .78rem; }
@@ -470,6 +471,15 @@
   aspect-ratio: 1 / 1;
   object-fit: cover;
   object-position: center;
+}
+/* « Suite du fil » : vignette paysage 3:2 uniforme (parité LE-RADAR).
+   Sans ce verrou, la règle carrée 1:1 des vedettes / En bref s’applique. */
+.news-tail-body .article.article--thumb.has-image .article-media img,
+.news-tail-grid .article.article--thumb.has-image .article-media img {
+  aspect-ratio: 3 / 2;
+  width: 100%;
+  height: auto;
+  object-fit: cover;
 }
 .article--thumb.has-image .article-media-credit {
   display: block;
@@ -677,8 +687,8 @@
   margin: 0 0 4px;
   font-size: 1.22rem;
   line-height: 1.2;
-  hyphens: auto;
-  -webkit-hyphens: auto;
+  hyphens: none;
+  -webkit-hyphens: none;
   word-break: normal;
   text-wrap: pretty;
 }
@@ -970,6 +980,11 @@
   }
 }
 @media (max-width: 720px) {
+  /* Parité LE-RADAR : moins d’air entre « Le fil étudiant » et La une. */
+  .news-hero > .article--lead,
+  .article--lead { padding-top: 6px; }
+  .article-eyebrow,
+  .article--lead .article-eyebrow { margin-bottom: 4px; }
   .news-tail-body,
   .news-tail-grid { grid-template-columns: 1fr; }
   /*

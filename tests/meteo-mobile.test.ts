@@ -26,7 +26,7 @@ test('mât illustré : pas de pastille de crédit vide ; crédit et licence comm
 test('mât mobile : boutons également espacés, crédit sous les outils, sports hors du mât', () => {
   const css = read('packages/theme-radar/assets/theme.css');
   assert.match(css, /justify-content: space-between;/);
-  assert.match(css, /padding-bottom: calc\(var\(--mat-gap\) \* 2 \+ 16px\)/);
+  assert.match(css, /padding-bottom: 34px/);
   assert.match(css, /\.masthead:has\(\.masthead-photo-credit:not\(:empty\)\) \.masthead-photo-credit \{[\s\S]*?bottom: var\(--mat-gap\);/);
   assert.match(css, /\.masthead-sports-strip\[hidden\]:not\(\.is-empty\)/);
   assert.match(css, /min-height: 60px/);

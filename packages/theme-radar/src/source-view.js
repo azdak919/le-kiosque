@@ -95,10 +95,10 @@ function imageMarkup(image, role) {
   const priority = role === 'lead' ? ' fetchpriority="high"' : ' fetchpriority="low"';
   /*
    * Attributs width/height : utiles pour la une (réserve CLS au 16:9).
-   * Sur vignettes (feature/brief), on les omet — le ratio intrinsèque du
-   * JPEG (souvent 3:2 / 16:9) gagnait sur le carré CSS 1:1.
+   * Sur vignettes (feature/brief/suite du fil), on les omet — le ratio
+   * intrinsèque du JPEG (souvent 3:2 / 16:9) gagnait sur le CSS.
    */
-  const isThumb = role === 'feature' || role === 'brief';
+  const isThumb = role === 'feature' || role === 'brief' || role === 'tail';
   const width = !isThumb && Number.isFinite(Number(image.width)) ? ` width="${Number(image.width)}"` : '';
   const height = !isThumb && Number.isFinite(Number(image.height)) ? ` height="${Number(image.height)}"` : '';
   const x = Math.max(0, Math.min(100, Number(image.focalPoint?.x ?? 50)));
@@ -149,12 +149,12 @@ export function renderSourceArticle(view, requestedRole = 'tail') {
   const date = String(view?.date?.iso || '');
   const dateLabel = escapeSourceViewHtml(view?.date?.label || '');
   const excerpt = truncateExcerpt(view?.excerpt, role);
-  const showImage = Boolean(view?.image?.src) && role !== 'tail';
+  const showImage = Boolean(view?.image?.src);
   const roleClasses = [
     'article',
     `article--${role}`,
     showImage ? 'has-image' : '',
-    showImage && (role === 'feature' || role === 'brief') ? 'article--thumb' : '',
+    showImage && (role === 'feature' || role === 'brief' || role === 'tail') ? 'article--thumb' : '',
     role === 'brief' ? 'article--compact' : '',
   ].filter(Boolean).join(' ');
   const articleLink = href ? `<a ${linkAttributesPrefix}href="${escapeSourceViewHtml(href)}">${title}</a>` : title;
@@ -183,7 +183,9 @@ export function renderSourceArticle(view, requestedRole = 'tail') {
 }
 
 export const sourceViewRules = Object.freeze({
-  imageRoles: ['lead', 'feature', 'brief'],
-  noImageRoles: ['tail'],
+  /* Parité LE-RADAR : une photo reste sur la une, les vedettes, En bref
+     et la suite du fil. Sans photo, pas de case vide. */
+  imageRoles: ['lead', 'feature', 'brief', 'tail'],
+  noImageRoles: [],
   excerptLimits: EXCERPT_LIMITS,
 });

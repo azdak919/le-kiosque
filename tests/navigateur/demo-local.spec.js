@@ -84,9 +84,15 @@ test('configurer, rédiger, prévisualiser, publier, persister et exporter sans 
   await expect(front.locator('.publication-logo')).toBeVisible();
   await expect(front.locator('html')).toHaveAttribute('data-typography', 'editorial-classic');
   // La démo (sql.js) doit employer le même noyau de carte que le HTML statique :
-  // vignettes en bref, mais aucune image réintroduite dans la suite du fil.
+  // vignettes en bref et, comme sur LE-RADAR, dans la suite du fil quand
+  // l’article a une photo. Sans photo, pas de case vide.
   await expect(front.locator('article.article--brief.has-image .article-media').first()).toBeVisible();
-  await expect(front.locator('article.article--tail .article-media')).toHaveCount(0);
+  await expect(front.locator('article.article--tail.has-image .article-media').first()).toBeVisible();
+  const tailsSansPhoto = front.locator('article.article--tail:not(.has-image)');
+  const nSans = await tailsSansPhoto.count();
+  for (let i = 0; i < nSans; i += 1) {
+    await expect(tailsSansPhoto.nth(i).locator('.article-media')).toHaveCount(0);
+  }
   await expect(front.getByText('Un article créé dans le navigateur')).toHaveCount(0);
 
   await row.getByRole('button', { name: 'Modifier' }).click();
