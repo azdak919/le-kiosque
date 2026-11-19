@@ -46,7 +46,7 @@ body.vitrine h1, body.vitrine h2, body.vitrine .wordmark {
   text-decoration: none;
   font-size: 1.35rem;
 }
-/* Logo du Kiosque : Twemoji « journal » (CC BY 4.0) sur le carreau du Radar. */
+/* Logo du Kiosque : kiosque à auvent rayé (dessin original, GPL-2.0-only) sur le carreau du Radar. */
 .wordmark__logo { display: block; flex: none; width: 2.25rem; height: 2.25rem; }
 .wordmark__nom { display: flex; align-items: baseline; gap: 0.7rem; }
 .wordmark small {

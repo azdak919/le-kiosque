@@ -86,6 +86,6 @@ npm run site
 
 ## Licence et crédits
 
-Le logiciel est sous [GPL version 2 seulement](LICENSE). Les contenus publiés par chaque journal appartiennent à leurs autrices, auteurs et à l’équipe. Les composants tiers sont listés dans [`THIRD_PARTY.md`](THIRD_PARTY.md). Le logo reprend l’emoji « journal » de [Twemoji](https://github.com/jdecked/twemoji) (© Twitter, Inc. et autres contributeurs), sous licence [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/deed.fr).
+Le logiciel est sous [GPL version 2 seulement](LICENSE). Les contenus publiés par chaque journal appartiennent à leurs autrices, auteurs et à l’équipe. Les composants tiers sont listés dans [`THIRD_PARTY.md`](THIRD_PARTY.md). Le logo du Kiosque, un kiosque à auvent rayé, est un dessin original publié sous la même licence que le logiciel.
 
 L’identité visuelle reprend celle du [Radar](https://github.com/azdak919/le-radar), sans y être liée : chaque projet peut évoluer de son côté.
