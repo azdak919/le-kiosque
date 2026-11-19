@@ -69,6 +69,7 @@ async function copyDemoRuntime(outDir: string, live = false): Promise<void> {
   await cp(path.resolve(THEME_ASSETS, '..', 'src', 'generated-logo.js'), path.join(editorialDir, 'generated-logo.js'));
   await cp(path.resolve(THEME_ASSETS, '..', 'src', 'radio.js'), path.join(editorialDir, 'radio.js'));
   await cp(path.resolve(THEME_ASSETS, '..', 'src', 'social.js'), path.join(editorialDir, 'social.js'));
+  await cp(path.resolve(THEME_ASSETS, '..', 'src', 'home-rail.js'), path.join(editorialDir, 'home-rail.js'));
   await cp(MARKED_BROWSER, path.join(editorialDir, 'marked.esm.js')).catch(() => {
     throw new Error('Module navigateur marked absent. Relancer « npm ci » avant le build.');
   });

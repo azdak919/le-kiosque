@@ -1,6 +1,12 @@
 # Journal
 
 ## Non publié
+- Archives : l’année n’est plus répétée (« 2026 / 4 / 2026 ») quand le journal n’en compte qu’une ; la barre des années ne paraît qu’à partir de deux. Sur le site vivant, les articles sont rangés du plus récent au plus ancien, aux archives comme à l’accueil : le dernier article publié prend la grande place.
+- Accueil à l’ordinateur : la colonne vide à droite du fil reçoit « Au tableau » (dernier résultat et prochain match de chaque équipe) et « Rubriques » (nombre d’articles, lien vers les archives). Quand il y a assez d’articles, la colonne « En bref » garde sa place. Au téléphone, ces encadrés passent sous le fil.
+- Recherche : bouton « Rechercher » à la hauteur du champ, bien visible (pleine largeur au téléphone). Les résultats ont l’allure des cartes d’article (rubrique, titre, signature, date, extrait).
+- Haut de page : la place de la barre radio est réservée pendant son chargement, et la météo montre tout de suite une puce d’attente (ville, rond gris). La vraie puce arrive avec son icône déjà chargée : plus de puce sans icône ni de barre qui fait bouger la page. Si LE-RADAR ne répond pas, la place se referme. Au téléphone, la radio, la météo et le sport restent sous le nom du journal, comme sur LE-RADAR : c’est voulu.
+- Crédit « Photo : … » des cartes plus lisible (environ 12 px). Sur les vignettes, le crédit est affiché en entier, sans la légende, qui reste sur la page de l’article.
+- Photo de la grande place : chargée en priorité, avant les vignettes. Pendant son arrivée au téléphone, un reflet passe sur l’emplacement, au lieu d’un bloc gris qui a l’air vide. Les vignettes restent en chargement différé.
 - Version 0.3.3.
 - Nouveau logo du Kiosque : un kiosque à journaux avec un auvent rayé rouge et blanc, dessiné pour le projet. Il remplace le journal plié sur la page de présentation, le guide, le configurateur et dans l’onglet du navigateur. Il ne s’affiche jamais sur le site de votre journal.
 - Version 0.3.2.

@@ -27,6 +27,7 @@ import { usablePublicationLogo } from './generated-logo.js';
 import { inflateSync } from 'node:zlib';
 import { radioBarHtml } from './radio.js';
 import { socialNavHtml } from './social.js';
+import { homeRailHtml } from './home-rail.js';
 import { pruneSportsPayload } from './sports-freshness.js';
 
 export interface RenderContext {
@@ -1047,7 +1048,7 @@ ${ctx.editorial ? `<script>window.KIOSQUE_EDITORIAL=${JSON.stringify(ctx.editori
 export function magazineFeedHtml(
   articles: Article[],
   ctx: RenderContext,
-  opts: { heroLabel: string; empty: string },
+  opts: { heroLabel: string; empty: string; rail?: string },
 ): string {
   if (!articles.length) return `<p class="empty">${esc(opts.empty)}</p>`;
   const featured = articles.find((item) => item.featured);
@@ -1066,7 +1067,7 @@ export function magazineFeedHtml(
       ${
         briefs.length
           ? `<aside class="brief-rail" aria-label="En bref"><h2>En bref</h2>${briefs.map((a) => articleCard(a, ctx, 'brief')).join('\n')}</aside>`
-          : ''
+          : (opts.rail ?? '')
       }
       ${
         tail.length
@@ -1090,6 +1091,7 @@ export function homePage(articles: Article[], ctx: RenderContext): string {
       ${magazineFeedHtml(articles, ctx, {
         heroLabel: wireTitle,
         empty: 'Aucun article publié pour le moment.',
+        rail: homeRailHtml({ publication: ctx.publication, sections: ctx.taxonomies.sections, articles, base: ctx.basePath, linkAttributes: '' }),
       })}
     </div>`,
     {
@@ -1631,7 +1633,8 @@ export function archivesPage(articles: Article[], ctx: RenderContext): string {
     (pub.institution ? `, journal étudiant de ${pub.institution}` : '') +
     `. ${articles.length} article${articles.length > 1 ? 's' : ''} classé${articles.length > 1 ? 's' : ''} par année — textes, photos et liens permanents hébergés ici.`;
 
-  const yearNav = groups.length
+  // Une seule année : pas de barre des années (elle répétait « 2026 » au-dessus du titre « 2026 »).
+  const yearNav = groups.length > 1
     ? `<nav class="archive-year-nav" aria-label="Années d’archives">
       ${groups
         .map(

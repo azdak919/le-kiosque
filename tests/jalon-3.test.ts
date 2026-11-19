@@ -66,7 +66,7 @@ test('la barre radio est le module de LE-RADAR, appelé en une ligne', async (t)
   const home = await readFile(path.join(out, 'index.html'), 'utf8');
   const client = await readFile(path.join(out, 'assets/kiosque.js'), 'utf8');
   const theme = await readFile(path.join(out, 'assets/theme.css'), 'utf8');
-  assert.match(home, /<div class="radar-radio-slot" data-station="chyz"><script src="https:\/\/le-radar\.ca\/radio-barre\.js" data-station="chyz" async><\/script><\/div>/);
+  assert.match(home, /<div class="radar-radio-slot" data-station="chyz"><script src="https:\/\/le-radar\.ca\/radio-barre\.js" data-station="chyz" async onerror="this\.parentNode\.dataset\.radarRadio='off'"><\/script><\/div>/);
   assert.match(home, /<body class="[^"]*with-radio/);
   assert.ok(!home.includes('<iframe'), 'aucune iframe radio');
   assert.ok(!home.includes('tuner-embed'));
@@ -74,8 +74,9 @@ test('la barre radio est le module de LE-RADAR, appelé en une ligne', async (t)
   assert.ok(!home.includes('ecoutez.chyz.ca') && !client.includes('ecoutez.chyz.ca'), 'pas de flux copié');
   assert.ok(!client.includes('enhanceRadio'), 'pas de lecteur copié');
   assert.ok(!theme.includes('kiosque-radio'), 'pas de style de lecteur copié');
-  // Replié tant que le module n'a pas dit « ready » : LE-RADAR muet, rien.
+  // Place réservée pendant le chargement ; repliée si LE-RADAR est muet (« off »).
   assert.match(theme, /\.radar-radio-slot \{ display: none; \}/);
+  assert.match(theme, /\.radar-radio-slot:not\(\[data-radar-radio\]\),/);
   assert.match(theme, /\.radar-radio-slot\[data-radar-radio="ready"\]/);
   assert.match(home, /href="\/depot-renomme\/assets\/theme\.css"/);
 });

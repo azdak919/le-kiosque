@@ -8,8 +8,11 @@
  *
  * - Radio désactivée, ou sans station : aucune barre, aucune requête vers
  *   le-radar.ca (le module n'est même pas chargé).
+ * - Pendant le chargement, la place de la barre est réservée (pas de saut de
+ *   la page quand elle apparaît).
  * - Si LE-RADAR ne répond pas, le module ne pose rien et marque l'emplacement
- *   `data-radar-radio="off"` : il reste replié.
+ *   `data-radar-radio="off"` : il se replie. Si le module lui-même ne se
+ *   charge pas, l'erreur du <script> fait de même.
  *
  * Partagé par le build statique (templates.ts) et la démo (render.js).
  */
@@ -28,7 +31,9 @@ export function radioStation(radio) {
 export function radioBarHtml(radio) {
   const station = radioStation(radio);
   if (!station) return '';
-  return `<div class="radar-radio-slot" data-station="${station}"><script src="${RADAR_MODULE}" data-station="${station}" async></script></div>`;
+  // La place de la barre est réservée dès le départ (theme.css) ; si le module
+  // ne se charge pas, l'emplacement se replie aussitôt (« off »).
+  return `<div class="radar-radio-slot" data-station="${station}"><script src="${RADAR_MODULE}" data-station="${station}" async onerror="this.parentNode.dataset.radarRadio='off'"></script></div>`;
 }
 
 /**
@@ -45,6 +50,7 @@ export function radioSlotElement(radio, doc = document) {
   script.src = RADAR_MODULE;
   script.async = true;
   script.dataset.station = station;
+  script.addEventListener('error', () => { slot.dataset.radarRadio = 'off'; });
   slot.append(script);
   return slot;
 }

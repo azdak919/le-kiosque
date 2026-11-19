@@ -81,8 +81,18 @@ function truncateExcerpt(value, role) {
 
 function imageMarkup(image, role) {
   if (!image?.src) return '';
-  const credit = [image.caption, image.credit && `Photo : ${image.credit}${image.license ? ` (${image.license})` : ''}`].filter(Boolean).map(escapeSourceViewHtml).join(' — ');
+  /* Légende et crédit dans deux span : sur les vignettes, la légende est
+     masquée (CSS) pour que le crédit « Photo : … » reste lisible en entier. */
+  const photo = image.credit ? `Photo : ${image.credit}${image.license ? ` (${image.license})` : ''}` : '';
+  const caption = image.caption ? String(image.caption) : '';
+  const credit = [
+    caption && `<span class="article-media-caption">${escapeSourceViewHtml(caption)}${photo ? ' — ' : ''}</span>`,
+    photo && `<span class="article-media-photo">${escapeSourceViewHtml(photo)}</span>`,
+  ].filter(Boolean).join('');
+  /* La une : chargée tout de suite et en priorité (sur téléphone, les vignettes
+     proches la ralentissaient : bloc gris vide le temps du chargement). */
   const loading = role === 'lead' ? 'eager' : 'lazy';
+  const priority = role === 'lead' ? ' fetchpriority="high"' : ' fetchpriority="low"';
   /*
    * Attributs width/height : utiles pour la une (réserve CLS au 16:9).
    * Sur vignettes (feature/brief), on les omet — le ratio intrinsèque du
@@ -96,7 +106,7 @@ function imageMarkup(image, role) {
   /* onerror : retire la figure si 404 (IDB périmée / chemin mort) pour ne pas
      afficher l’alt brut en place de la vignette En bref. */
   const onErr = `onerror="const f=this.closest('figure');const a=this.closest('article');if(f)f.remove();if(a){a.classList.remove('has-image','article--thumb');}"`;
-  return `<figure class="article-media"><img src="${escapeSourceViewHtml(image.src)}" alt="${escapeSourceViewHtml(image.alt || '')}" loading="${loading}" decoding="async" style="object-position:${x}% ${y}%"${width}${height} ${onErr}>${credit ? `<figcaption class="article-media-credit">${credit}</figcaption>` : ''}</figure>`;
+  return `<figure class="article-media"><img src="${escapeSourceViewHtml(image.src)}" alt="${escapeSourceViewHtml(image.alt || '')}" loading="${loading}"${priority} decoding="async" style="object-position:${x}% ${y}%"${width}${height} ${onErr}>${credit ? `<figcaption class="article-media-credit">${credit}</figcaption>` : ''}</figure>`;
 }
 
 /**

@@ -1287,6 +1287,21 @@
 
   var weatherPaintGen = 0;
 
+  function preloadWeatherIcons(urls) {
+    var each = urls.map(function (url) {
+      return new Promise(function (resolve) {
+        var img = new Image();
+        img.onload = img.onerror = function () { resolve(); };
+        img.src = url;
+        if (typeof img.decode === 'function') img.decode().then(resolve, resolve);
+      });
+    });
+    return Promise.race([
+      Promise.all(each),
+      new Promise(function (resolve) { setTimeout(resolve, 1500); }),
+    ]);
+  }
+
   function initMastheadWeather() {
     var host = document.querySelector('[data-weather-localities]');
     if (!host || typeof fetch !== 'function') return;
@@ -1314,6 +1329,30 @@
 
     /* Dock immédiat sur téléphone (même avant le fetch) pour éviter un flash dans le mât. */
     syncMastheadWeatherDock();
+
+    /* Place réservée : une puce d'attente par localité (nom, rond à la place
+       de l'icône) pendant la requête, pour que le mât ne bouge pas quand la
+       vraie puce arrive. */
+    if (!host.querySelector('.weather-chip, .masthead-weather__city')) {
+      localities.forEach(function (loc) {
+        var wait = document.createElement('span');
+        wait.className = 'weather-chip masthead-weather__city weather-chip--attente';
+        wait.setAttribute('aria-hidden', 'true');
+        var dot = document.createElement('span');
+        dot.className = 'weather-icon-meteocon weather-icon-attente';
+        var waitName = document.createElement('span');
+        waitName.className = 'weather-chip__name masthead-weather__name';
+        waitName.textContent = loc.name;
+        var waitTemp = document.createElement('span');
+        waitTemp.className = 'weather-chip__temp masthead-weather__temp';
+        waitTemp.textContent = '–°';
+        wait.appendChild(dot);
+        wait.appendChild(waitName);
+        wait.appendChild(waitTemp);
+        host.appendChild(wait);
+      });
+      syncMastheadWeatherDock();
+    }
 
     Promise.all(localities.map(async function (loc) {
       var cacheKey = 'kiosque-weather:v2:' + loc.name.toLowerCase();
@@ -1357,6 +1396,12 @@
       try { localStorage.setItem(cacheKey, JSON.stringify({ savedAt: Date.now(), value: value })); } catch (_) {}
       return value;
     })).then(function (values) {
+      /* Icônes chargées avant la pose : plus de puce sans icône pendant une
+         seconde (au pire 1,5 s d'attente, puis on pose quand même). */
+      return preloadWeatherIcons(values.map(function (value) {
+        return meteoBase + weatherIconName(value.code, value.isDay) + '.svg';
+      })).then(function () { return values; });
+    }).then(function (values) {
       if (gen !== weatherPaintGen) return;
       host.querySelectorAll('.weather-chip, .masthead-weather__city').forEach(function (node) { node.remove(); });
       values.forEach(function (value) {
