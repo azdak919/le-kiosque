@@ -237,8 +237,9 @@ a { color: inherit; }
   }
   .nav-shell.has-overflow .nav-toggle {
     display: inline-flex;
-    margin-top: 6px;
-    margin-bottom: 4px;
+    margin-top: 4px;
+    margin-bottom: 2px;
+    padding: 6px 12px;
   }
   .nav-shell.is-expanded .nav {
     max-height: none;
@@ -359,6 +360,10 @@ body:has(.demo-banner) {
 .radar-radio-slot:not([data-radar-radio]) > .radar-radio { display: none; }
 @media (max-width: 720px) {
   .radar-radio-slot:not([data-radar-radio])::before { height: 58px; }
+  .radar-radio-slot:not([data-radar-radio]),
+  .radar-radio-slot[data-radar-radio="ready"] {
+    margin-top: 6px;
+  }
 }
 @keyframes radar-radio-attente {
   0%, 100% { background-position: 0% 0; }
@@ -600,6 +605,9 @@ body.with-radio .nav {
   margin-top: 8px;
   padding-bottom: 6px;
   border-bottom: 2px solid var(--rule-strong);
+}
+@media (max-width: 720px) {
+  .wire-head { margin-top: 4px; }
 }
 .wire-title {
   font-family: var(--serif);
@@ -2655,6 +2663,7 @@ a.masthead-sports__chip:focus-visible {
 /* La grille magazine est portée par source-view.css avec les cartes. */
 
 @media (max-width: 720px) {
+  body.with-radio .nav-wrap { padding-top: 6px; }
   .masthead { min-height: 0; padding: 10px 0 12px; }
   .masthead--illustrated {
     --masthead-ar: 2.85;
@@ -3335,7 +3344,9 @@ html {
   .masthead:has(.masthead-photo-credit:not(:empty)) .masthead-photo-credit {
     bottom: var(--mat-gap);
   }
-  .masthead-weather-dock { padding: 4px 18px 2px; }
+  .masthead-weather-dock:not(:empty) { padding: 4px 18px 4px; }
+  /* Après retrait de la puce (échec météo), ne pas laisser le seul rembourrage. */
+  .masthead-weather-dock:not(:has(.weather-chip)) { display: none; }
   .masthead-weather-dock .masthead-status {
     display: flex !important; flex-direction: column; align-items: stretch; gap: 4px; width: 100%; overflow: visible;
   }
@@ -3437,8 +3448,12 @@ html {
 }
 @media (max-width: 720px) {
   .masthead-sports-strip {
-    padding: 4px 18px 8px;
+    padding: 4px 18px 4px;
     width: 100%;
+  }
+  .masthead-sports-strip:not([hidden]),
+  .masthead-sports-strip[hidden]:not(.is-empty) {
+    min-height: 56px;
   }
   .masthead-sports-strip .sports-chip,
   .masthead-sports-strip .masthead-sports__chip {

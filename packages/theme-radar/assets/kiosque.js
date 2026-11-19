@@ -2067,12 +2067,13 @@
     var card = cards[cards.length - 1];
     if (!card) return false;
     card.remove();
-    /* Gabarit suite : rôle tail sans image (parité source-view / noImageRoles). */
-    card.classList.remove('article--compact', 'article--brief', 'article--thumb', 'has-image');
+    /* Gabarit suite : rôle tail, vignette conservée s’il y a une photo
+       (parité LE-RADAR et source-view / imageRoles). */
+    card.classList.remove('article--compact', 'article--brief');
     card.classList.add('article--tail');
-    card.querySelectorAll('.article-media').forEach(function (media) {
-      media.remove();
-    });
+    if (!card.querySelector('.article-media')) {
+      card.classList.remove('article--thumb', 'has-image');
+    }
     var tail = ensureNewsTailSection(layout);
     var body = tail.querySelector('.news-tail-body') || tail;
     /* En tête de suite (plus frais que le bas du fil historique). */

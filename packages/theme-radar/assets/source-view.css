@@ -471,6 +471,15 @@
   object-fit: cover;
   object-position: center;
 }
+/* « Suite du fil » : vignette paysage 3:2 uniforme (parité LE-RADAR).
+   Sans ce verrou, la règle carrée 1:1 des vedettes / En bref s’applique. */
+.news-tail-body .article.article--thumb.has-image .article-media img,
+.news-tail-grid .article.article--thumb.has-image .article-media img {
+  aspect-ratio: 3 / 2;
+  width: 100%;
+  height: auto;
+  object-fit: cover;
+}
 .article--thumb.has-image .article-media-credit {
   display: block;
   margin-top: 4px;
