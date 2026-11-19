@@ -360,9 +360,10 @@ body:has(.demo-banner) {
 .radar-radio-slot:not([data-radar-radio]) > .radar-radio { display: none; }
 @media (max-width: 720px) {
   .radar-radio-slot:not([data-radar-radio])::before { height: 58px; }
+  /* Même air qu’entre la puce météo et la carte sport (padding-top 4 px du bandeau). */
   .radar-radio-slot:not([data-radar-radio]),
   .radar-radio-slot[data-radar-radio="ready"] {
-    margin-top: 0;
+    margin-top: 4px;
   }
 }
 @keyframes radar-radio-attente {
