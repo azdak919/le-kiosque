@@ -1,7 +1,7 @@
 # Journal
 
 ## Non publié
-- Version 0.4.0. Socle épinglé à 1.4.0 (20fe911).
+- Version 0.4.0. Socle épinglé à 1.4.1 (7ecf21d).
 - Météo du mât au téléphone : la puce prend toute la largeur et garde « Québec 6° », avec le maximum et le minimum du jour, puis « Demain » avec son icône et sa température. Les données viennent du même appel à Open-Meteo. La puce d’attente a la même hauteur et la même disposition, donc rien ne bouge au chargement. Si Open-Meteo ne répond pas en 10 secondes, la puce se retire. Rien ne change à l’ordinateur.
 - Mât illustré : une image sans crédit n’affiche plus de pastille vide dans le coin ; sur le site vivant, le crédit donne aussi la licence (« Photo : abdallahh (CC BY 2.0) »), comme pendant la rotation des images.
 - Sports : chaque équipe a un genre (Féminin, Masculin, Mixte), un lien officiel facultatif vers les résultats, et une case « En cours » pour le prochain match. Sous la radio, un bandeau à deux voies montre les scores, les matchs en cours et ceux à venir ; au téléphone, une puce reprend le même rythme sous la météo.

@@ -50,14 +50,15 @@ test('un lien et une photo se décrivent dans la page', async ({ page }) => {
   await page.getByRole('dialog').getByRole('button', { name: 'Annuler' }).click();
   await expect(page.getByRole('heading', { name: 'Adresse du lien' })).toHaveCount(0);
 
-  await page.locator('#article-inline-file').setInputFiles({
+  await page.getByRole('button', { name: 'Téléverser une photo' }).click();
+  await expect(page.getByRole('heading', { name: 'Photo dans le texte' })).toBeVisible();
+  await page.locator('.media-picker input.filepond--browser, #inline-pond').first().setInputFiles({
     name: 'note.png',
     mimeType: 'image/png',
     buffer: Buffer.from('iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8z8BQDwAEhQGAhKmMIQAAAABJRU5ErkJggg==', 'base64'),
   });
-  await expect(page.getByRole('heading', { name: 'Photo dans le texte' })).toBeVisible();
-  await page.getByLabel('Ce que montre la photo').fill('Un pixel de test');
-  await page.getByLabel('Crédit photo (qui l’a prise)').fill('Équipe de test');
+  await page.locator('.media-picker [data-pond-alt]').fill('Un pixel de test');
+  await page.locator('.media-picker [data-pond-credit]').fill('Équipe de test');
   await page.getByRole('dialog').getByRole('button', { name: 'Ajouter' }).click();
   await expect(page.getByRole('heading', { name: 'Photo dans le texte' })).toHaveCount(0);
   await expect(page.locator('#toast')).toContainText('Photo ajoutée');

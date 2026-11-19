@@ -66,7 +66,7 @@ test('configurer, rédiger, prévisualiser, publier, persister et exporter sans 
   await page.getByLabel('Date et heure de publication').fill('2026-07-27T08:45');
   await page.getByLabel('Texte de l’article').fill('## Une vraie prévisualisation\n\nLe contenu demeure dans **ce navigateur**.');
   await page.getByLabel('Marie Tremblay').check();
-  await page.getByRole('button', { name: 'Choisir une photo' }).click();
+  await page.getByRole('button', { name: 'Choisir une photo de la banque' }).click();
   const articlePicker = page.locator('.media-picker');
   await articlePicker.getByLabel('Rechercher une photo (lieu, sujet, mot-clé)').fill('Limoilou');
   await articlePicker.getByRole('button', { name: 'Choisir cette photo' }).click();
