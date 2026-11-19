@@ -52,7 +52,7 @@ test('un lien et une photo se décrivent dans la page', async ({ page }) => {
 
   await page.getByRole('button', { name: 'Téléverser une photo' }).click();
   await expect(page.getByRole('heading', { name: 'Photo dans le texte' })).toBeVisible();
-  await page.locator('.media-picker input.filepond--browser, #inline-pond').first().setInputFiles({
+  await page.locator('.media-picker input.filepond--browser').setInputFiles({
     name: 'note.png',
     mimeType: 'image/png',
     buffer: Buffer.from('iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8z8BQDwAEhQGAhKmMIQAAAABJRU5ErkJggg==', 'base64'),
