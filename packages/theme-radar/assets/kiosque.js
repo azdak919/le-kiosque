@@ -1287,6 +1287,23 @@
 
   var weatherPaintGen = 0;
 
+  /* Abréger proprement plutôt que « Saint-L… » : St-, Ste-, puis premier mot.
+     Sert aux vraies puces et aux puces d'attente. */
+  var WEATHER_ABREGER = [
+    function (n) { return n.replace(/\bSainte-/g, 'Ste-').replace(/\bSaint-/g, 'St-'); },
+    function (n) { return n.split(/-(?:du|de|des|la|le|sur)-|\s/)[0]; },
+  ];
+  function fitWeatherName(nameEl, full, status) {
+    nameEl.textContent = full;
+    var trop = function () {
+      return nameEl.scrollWidth > nameEl.clientWidth + 1 ||
+        (status && status.scrollWidth > status.clientWidth + 1);
+    };
+    for (var k = 0; k < WEATHER_ABREGER.length && trop(); k++) {
+      nameEl.textContent = WEATHER_ABREGER[k](nameEl.textContent);
+    }
+  }
+
   function preloadWeatherIcons(urls) {
     var each = urls.map(function (url) {
       return new Promise(function (resolve) {
@@ -1350,6 +1367,7 @@
         wait.appendChild(waitName);
         wait.appendChild(waitTemp);
         host.appendChild(wait);
+        fitWeatherName(waitName, loc.name, host.closest('.masthead-status'));
       });
       syncMastheadWeatherDock();
     }
@@ -1445,22 +1463,8 @@
         chip.appendChild(temp);
         host.appendChild(chip);
         chip.title = value.name + ' · ' + value.temperature + '°';
-        /* Abréger proprement plutôt que « Saint-L… » : St-, Ste-, puis premier mot. */
-        var abreger = [
-          function (n) { return n.replace(/\bSainte-/g, 'Ste-').replace(/\bSaint-/g, 'St-'); },
-          function (n) { return n.split(/-(?:du|de|des|la|le|sur)-|\s/)[0]; },
-        ];
         var status = host.closest('.masthead-status');
-        var ajuster = function () {
-          nameEl.textContent = value.name;
-          var trop = function () {
-            return nameEl.scrollWidth > nameEl.clientWidth + 1 ||
-              (status && status.scrollWidth > status.clientWidth + 1);
-          };
-          for (var k = 0; k < abreger.length && trop(); k++) {
-            nameEl.textContent = abreger[k](nameEl.textContent);
-          }
-        };
+        var ajuster = function () { fitWeatherName(nameEl, value.name, status); };
         ajuster();
         if (window.ResizeObserver && status) new ResizeObserver(ajuster).observe(status);
       });
