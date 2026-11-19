@@ -4,7 +4,7 @@
  * aucun secret et aucun réseau ne participent au build.
  */
 
-import { cp, mkdir, readFile, rm, writeFile } from 'node:fs/promises';
+import { cp, mkdir, readdir, readFile, rm, writeFile } from 'node:fs/promises';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 
@@ -55,8 +55,40 @@ function deployedOrigin() {
   return 'https://journal-exemple.invalid';
 }
 
+/**
+ * Icônes d'onglet du Kiosque (Twemoji « journal », CC BY 4.0 ; voir
+ * THIRD_PARTY.md) : pages de présentation, guide, configurateur et la
+ * démonstration de cette vitrine. Jamais dans le thème : le site public
+ * d'un vrai journal garde son logo ou son nom.
+ */
+function kiosqueIcons() {
+  const logo = `${basePath}/assets/logo`;
+  return [
+    `<link rel="icon" type="image/png" sizes="16x16" href="${logo}/favicon-16.png" media="(prefers-color-scheme: light)">`,
+    `<link rel="icon" type="image/png" sizes="16x16" href="${logo}/favicon-16-sombre.png" media="(prefers-color-scheme: dark)">`,
+    `<link rel="icon" type="image/png" sizes="32x32" href="${logo}/favicon-32.png" media="(prefers-color-scheme: light)">`,
+    `<link rel="icon" type="image/png" sizes="32x32" href="${logo}/favicon-32-sombre.png" media="(prefers-color-scheme: dark)">`,
+    `<link rel="icon" type="image/png" sizes="512x512" href="${logo}/icone-512.png">`,
+    `<link rel="icon" type="image/svg+xml" sizes="any" href="${logo}/icone.svg">`,
+    `<link rel="apple-touch-icon" href="${logo}/apple-touch-icon.png">`,
+  ].join('\n  ');
+}
+
+/** Ajoute les icônes du Kiosque aux pages de la démonstration (vitrine seulement). */
+async function addDemoIcons(dir) {
+  for (const entry of await readdir(dir, { withFileTypes: true })) {
+    const file = path.join(dir, entry.name);
+    if (entry.isDirectory()) await addDemoIcons(file);
+    else if (entry.name.endsWith('.html')) {
+      const html = await readFile(file, 'utf8');
+      if (html.includes('</head>') && !html.includes('rel="icon"')) await writeFile(file, html.replace('</head>', `${kiosqueIcons()}\n</head>`), 'utf8');
+    }
+  }
+}
+
 function injectBase(html) {
   return html
+    .replaceAll('{{ICONES}}', kiosqueIcons())
     .replaceAll('{{BASE_PATH}}', basePath)
     .replaceAll('{{DEMO_PATH}}', withBase(basePath, '/demo/'));
 }
@@ -130,6 +162,8 @@ await build({
   outDir: path.join(outDir, 'demo'),
   logger: log,
 });
+
+await addDemoIcons(path.join(outDir, 'demo'));
 
 // La vitrine place l'administration locale à la racine. L'alias historique
 // /demo/admin/ reste utilisable sans maintenir deux applications distinctes.

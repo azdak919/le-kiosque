@@ -1,6 +1,7 @@
 # Journal
 
 ## Non publié
+- Le Kiosque a un logo : un journal plié (emoji Twemoji, CC BY 4.0, voir THIRD_PARTY.md). Il paraît sur la page de présentation, le guide, le configurateur et le README, et comme icône d’onglet (aussi sur la démo). Il ne paraît jamais sur le site Web d’un journal. Captures de la page de présentation refaites avec le nouvel espace de rédaction.
 - Mât : un monogramme d’initiales généré (cercle « LV » et assimilés, encore stocké comme logo dans des journaux déjà installés) n’est plus affiché. Sans vrai logo téléversé, le nom du journal paraît en grand, en caractères de titre de journal. Un logo téléversé continue de remplacer le nom. L’assistant et le configurateur ne fabriquent jamais de logo à initiales.
 - « À la une » n’apparaît plus sur le premier article par défaut. L’étiquette est réservée à un article vraiment mis en avant (`featured`). Sans sélection, pas d’étiquette ; l’article choisi, s’il y en a un, prend la place de la manchette.
 - Version 0.3.1. Socle épinglé à 1.3.1 (b38ea68).

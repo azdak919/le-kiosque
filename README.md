@@ -1,3 +1,8 @@
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="site/assets/logo/icone-sombre.svg">
+  <img src="site/assets/logo/icone-clair.svg" alt="Logo du Kiosque" width="72" height="72">
+</picture>
+
 # Le Kiosque
 
 *Kit d’Infrastructure Ouverte, Souveraine et de Qualité pour les Usages Éditoriaux.*
@@ -81,6 +86,6 @@ npm run site
 
 ## Licence et crédits
 
-Le logiciel est sous [GPL version 2 seulement](LICENSE). Les contenus publiés par chaque journal appartiennent à leurs autrices, auteurs et à l’équipe. Les composants tiers sont listés dans [`THIRD_PARTY.md`](THIRD_PARTY.md).
+Le logiciel est sous [GPL version 2 seulement](LICENSE). Les contenus publiés par chaque journal appartiennent à leurs autrices, auteurs et à l’équipe. Les composants tiers sont listés dans [`THIRD_PARTY.md`](THIRD_PARTY.md). Le logo reprend l’emoji « journal » de [Twemoji](https://github.com/jdecked/twemoji) (© Twitter, Inc. et autres contributeurs), sous licence [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/deed.fr).
 
 L’identité visuelle reprend celle du [Radar](https://github.com/azdak919/le-radar), sans y être liée : chaque projet peut évoluer de son côté.
