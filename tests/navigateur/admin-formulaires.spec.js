@@ -20,7 +20,7 @@ test('une section se colore dans la page, et Annuler ne change rien', async ({ p
   await page.goto('/autre-nom/admin/');
   await expect(page.getByRole('heading', { name: 'Tableau de bord' })).toBeVisible({ timeout: 45_000 });
   await page.locator('.admin-nav').getByRole('link', { name: 'Sections et catégories', exact: true }).click();
-  await expect(page.getByRole('heading', { name: 'Sections et catégories', level: 2 })).toBeVisible();
+  await expect(page.getByRole('heading', { name: 'Sections et catégories', level: 1 })).toBeVisible();
   const row = () => page.locator('.entity-list li').filter({ hasText: 'Actualités' }).first();
   const picker = () => row().getByLabel('Couleur : Actualités');
   await expect(picker()).toHaveValue('#c45c26');
@@ -28,7 +28,7 @@ test('une section se colore dans la page, et Annuler ne change rien', async ({ p
   await expect(page.getByRole('heading', { name: 'Modifier une section' })).toBeVisible();
   await expect(page.locator('#taxonomy-color')).toHaveValue('#c45c26');
   await page.getByRole('button', { name: 'Annuler' }).click();
-  await expect(page.getByRole('heading', { name: 'Sections et catégories', level: 2 })).toBeVisible();
+  await expect(page.getByRole('heading', { name: 'Sections et catégories', level: 1 })).toBeVisible();
   await expect(picker()).toHaveValue('#c45c26');
   await expect(row()).toContainText('#c45c26');
 
