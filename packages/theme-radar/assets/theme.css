@@ -3531,8 +3531,10 @@ html {
 
 /* Pied mobile (t350u) : pas de « · » orphelin en début de ligne. */
 @media (max-width: 720px) {
-  .site-foot__nav .site-foot__sep, .site-foot__links .site-foot__sep { display: none; }
-  .site-foot__nav, .site-foot__links { display: flex; flex-wrap: wrap; gap: 4px 18px; }
+  .site-foot__nav .site-foot__sep,
+  .site-foot__links .site-foot__sep,
+  .site-foot__built .site-foot__sep { display: none; }
+  .site-foot__nav, .site-foot__links, .site-foot__built { display: flex; flex-wrap: wrap; gap: 4px 18px; }
   .site-foot { padding-bottom: 88px; }
 }
 

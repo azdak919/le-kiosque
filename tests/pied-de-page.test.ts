@@ -56,3 +56,8 @@ test('pied de page : lien discret « Espace de rédaction » après Propulsé pa
   assert.match(live, /Espace de rédaction/);
   assert.doesNotMatch(live, /site-foot__built[\s\S]{0,200}<img/);
 });
+
+test('pied mobile : le « · » de « Espace de rédaction » est masqué comme les autres', () => {
+  const css = readFileSync(new URL('../packages/theme-radar/assets/theme.css', import.meta.url), 'utf8');
+  assert.match(css, /\.site-foot__built \.site-foot__sep \{ display: none; \}/);
+});
