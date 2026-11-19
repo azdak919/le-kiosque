@@ -1287,6 +1287,38 @@
 
   var weatherPaintGen = 0;
 
+  /* Abréger proprement plutôt que « Saint-L… » : St-, Ste-, puis premier mot.
+     Sert aux vraies puces et aux puces d'attente. */
+  var WEATHER_ABREGER = [
+    function (n) { return n.replace(/\bSainte-/g, 'Ste-').replace(/\bSaint-/g, 'St-'); },
+    function (n) { return n.split(/-(?:du|de|des|la|le|sur)-|\s/)[0]; },
+  ];
+  function fitWeatherName(nameEl, full, status) {
+    nameEl.textContent = full;
+    var trop = function () {
+      return nameEl.scrollWidth > nameEl.clientWidth + 1 ||
+        (status && status.scrollWidth > status.clientWidth + 1);
+    };
+    for (var k = 0; k < WEATHER_ABREGER.length && trop(); k++) {
+      nameEl.textContent = WEATHER_ABREGER[k](nameEl.textContent);
+    }
+  }
+
+  function preloadWeatherIcons(urls) {
+    var each = urls.map(function (url) {
+      return new Promise(function (resolve) {
+        var img = new Image();
+        img.onload = img.onerror = function () { resolve(); };
+        img.src = url;
+        if (typeof img.decode === 'function') img.decode().then(resolve, resolve);
+      });
+    });
+    return Promise.race([
+      Promise.all(each),
+      new Promise(function (resolve) { setTimeout(resolve, 1500); }),
+    ]);
+  }
+
   function initMastheadWeather() {
     var host = document.querySelector('[data-weather-localities]');
     if (!host || typeof fetch !== 'function') return;
@@ -1314,6 +1346,31 @@
 
     /* Dock immédiat sur téléphone (même avant le fetch) pour éviter un flash dans le mât. */
     syncMastheadWeatherDock();
+
+    /* Place réservée : une puce d'attente par localité (nom, rond à la place
+       de l'icône) pendant la requête, pour que le mât ne bouge pas quand la
+       vraie puce arrive. */
+    if (!host.querySelector('.weather-chip, .masthead-weather__city')) {
+      localities.forEach(function (loc) {
+        var wait = document.createElement('span');
+        wait.className = 'weather-chip masthead-weather__city weather-chip--attente';
+        wait.setAttribute('aria-hidden', 'true');
+        var dot = document.createElement('span');
+        dot.className = 'weather-icon-meteocon weather-icon-attente';
+        var waitName = document.createElement('span');
+        waitName.className = 'weather-chip__name masthead-weather__name';
+        waitName.textContent = loc.name;
+        var waitTemp = document.createElement('span');
+        waitTemp.className = 'weather-chip__temp masthead-weather__temp';
+        waitTemp.textContent = '–°';
+        wait.appendChild(dot);
+        wait.appendChild(waitName);
+        wait.appendChild(waitTemp);
+        host.appendChild(wait);
+        fitWeatherName(waitName, loc.name, host.closest('.masthead-status'));
+      });
+      syncMastheadWeatherDock();
+    }
 
     Promise.all(localities.map(async function (loc) {
       var cacheKey = 'kiosque-weather:v2:' + loc.name.toLowerCase();
@@ -1357,6 +1414,12 @@
       try { localStorage.setItem(cacheKey, JSON.stringify({ savedAt: Date.now(), value: value })); } catch (_) {}
       return value;
     })).then(function (values) {
+      /* Icônes chargées avant la pose : plus de puce sans icône pendant une
+         seconde (au pire 1,5 s d'attente, puis on pose quand même). */
+      return preloadWeatherIcons(values.map(function (value) {
+        return meteoBase + weatherIconName(value.code, value.isDay) + '.svg';
+      })).then(function () { return values; });
+    }).then(function (values) {
       if (gen !== weatherPaintGen) return;
       host.querySelectorAll('.weather-chip, .masthead-weather__city').forEach(function (node) { node.remove(); });
       values.forEach(function (value) {
@@ -1400,22 +1463,8 @@
         chip.appendChild(temp);
         host.appendChild(chip);
         chip.title = value.name + ' · ' + value.temperature + '°';
-        /* Abréger proprement plutôt que « Saint-L… » : St-, Ste-, puis premier mot. */
-        var abreger = [
-          function (n) { return n.replace(/\bSainte-/g, 'Ste-').replace(/\bSaint-/g, 'St-'); },
-          function (n) { return n.split(/-(?:du|de|des|la|le|sur)-|\s/)[0]; },
-        ];
         var status = host.closest('.masthead-status');
-        var ajuster = function () {
-          nameEl.textContent = value.name;
-          var trop = function () {
-            return nameEl.scrollWidth > nameEl.clientWidth + 1 ||
-              (status && status.scrollWidth > status.clientWidth + 1);
-          };
-          for (var k = 0; k < abreger.length && trop(); k++) {
-            nameEl.textContent = abreger[k](nameEl.textContent);
-          }
-        };
+        var ajuster = function () { fitWeatherName(nameEl, value.name, status); };
         ajuster();
         if (window.ResizeObserver && status) new ResizeObserver(ajuster).observe(status);
       });

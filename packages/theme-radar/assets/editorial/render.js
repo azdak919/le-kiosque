@@ -3,6 +3,7 @@ import { isInitialsMonogramCandidate, pixelsLookLikeInitialsMonogram, usablePubl
 import { radioSlotElement, radioStation } from './radio.js';
 import { pruneSportsPayload } from './sports-freshness.js';
 import { socialNavHtml } from './social.js';
+import { homeRailHtml } from './home-rail.js';
 
 const ESCAPES = { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' };
 export const esc = (value) => String(value ?? '').replace(/[&<>"']/g, (character) => ESCAPES[character]);
@@ -72,6 +73,16 @@ function groupByYear(articles, timeZone) {
   return [...groups.entries()].sort((a, b) => b[0] - a[0]).map(([year, items]) => ({ year, articles: items }));
 }
 
+const articleStamp = (article) => String(article.publishedAt || article.updatedAt || '');
+/** Du plus récent au plus ancien (date de publication, sinon de mise à jour). */
+export function byDateDesc(articles) {
+  return [...articles].sort((a, b) => {
+    const ta = Date.parse(articleStamp(a)) || 0;
+    const tb = Date.parse(articleStamp(b)) || 0;
+    return tb - ta || articleStamp(b).localeCompare(articleStamp(a));
+  });
+}
+
 function authorHref(base, slug) {
   return link(base, `/auteurs/${encodeURIComponent(slug)}/`);
 }
@@ -139,7 +150,7 @@ function articleCard(article, bundle, base, variant = 'tail') {
 }
 
 /** Fil magazine (accueil / section / catégorie) — même partition que le thème statique. */
-function magazineFeedHtml(articles, bundle, base, heroLabel, empty) {
+function magazineFeedHtml(articles, bundle, base, heroLabel, empty, options = {}) {
   if (!articles.length) return `<p class="empty">${esc(empty)}</p>`;
   const featured = articles.find((item) => item.featured);
   const first = featured || articles[0];
@@ -148,19 +159,21 @@ function magazineFeedHtml(articles, bundle, base, heroLabel, empty) {
   // Parité templates.ts : 3 vedettes + 6 en bref, suite dès l’index 9 (ne pas sauter d’article).
   const briefs = rest.slice(3, 9);
   const tail = rest.slice(9);
-  return `<div class="magazine-layout"><section class="news-hero" aria-label="${esc(heroLabel)}">${articleCard(first, bundle, base, 'lead')}<div class="news-features">${features.map((item) => articleCard(item, bundle, base, 'feature')).join('')}</div></section>${briefs.length ? `<aside class="brief-rail" aria-label="En bref"><h2>En bref</h2>${briefs.map((item) => articleCard(item, bundle, base, 'brief')).join('')}</aside>` : ''}${tail.length ? `<section class="news-tail" data-tail-visible="10"><h2 class="news-tail-title">Suite du fil</h2><div class="news-tail-body news-tail-grid">${tail.map((item) => articleCard(item, bundle, base, 'tail')).join('')}</div></section>` : ''}</div>`;
+  return `<div class="magazine-layout"><section class="news-hero" aria-label="${esc(heroLabel)}">${articleCard(first, bundle, base, 'lead')}<div class="news-features">${features.map((item) => articleCard(item, bundle, base, 'feature')).join('')}</div></section>${briefs.length ? `<aside class="brief-rail" aria-label="En bref"><h2>En bref</h2>${briefs.map((item) => articleCard(item, bundle, base, 'brief')).join('')}</aside>` : (options.rail || '')}${tail.length ? `<section class="news-tail" data-tail-visible="10"><h2 class="news-tail-title">Suite du fil</h2><div class="news-tail-body news-tail-grid">${tail.map((item) => articleCard(item, bundle, base, 'tail')).join('')}</div></section>` : ''}</div>`;
 }
 
 export function renderRoute(bundle, base, pathname, renderBody, search = '') {
   const route = pathname.slice(base.length).replace(/^\/+|\/+$/g, '');
   const parts = route ? route.split('/') : [];
-  const published = bundle.articles.filter((article) => article.status === 'published');
-  const paged = bundle.articles.filter((article) => article.status === 'published' || article.status === 'archived');
+  // Du plus récent au plus ancien, comme le build statique (byDateDesc) : le
+  // Socle livre les articles dans un autre ordre (par adresse).
+  const published = byDateDesc(bundle.articles.filter((article) => article.status === 'published'));
+  const paged = byDateDesc(bundle.articles.filter((article) => article.status === 'published' || article.status === 'archived'));
   if (!parts.length) {
     const wireTitle = bundle.publication.labels?.wireTitle || 'Le fil étudiant';
     return {
       title: [bundle.publication.name, bundle.publication.tagline || bundle.publication.institution].filter(Boolean).join(' — '),
-      html: `<div class="wrap wire"><div class="wire-head"><h1 class="wire-title">${esc(wireTitle)}</h1>${published.length ? `<span class="wire-status">${published.length} article${published.length > 1 ? 's' : ''}</span>` : ''}</div>${magazineFeedHtml(published, bundle, base, wireTitle, 'Aucun article publié pour le moment.')}</div>`,
+      html: `<div class="wrap wire"><div class="wire-head"><h1 class="wire-title">${esc(wireTitle)}</h1>${published.length ? `<span class="wire-status">${published.length} article${published.length > 1 ? 's' : ''}</span>` : ''}</div>${magazineFeedHtml(published, bundle, base, wireTitle, 'Aucun article publié pour le moment.', { rail: homeRailHtml({ publication: bundle.publication, sections: bundle.taxonomies.sections, articles: published, base }) })}</div>`,
     };
   }
   if (parts[0] === 'articles' && parts[1]) {
@@ -438,7 +451,7 @@ export function renderRoute(bundle, base, pathname, renderBody, search = '') {
   }
   if (parts[0] === 'archives' && !parts[1]) {
     const groups = groupByYear(paged, bundle.publication.timeZone);
-    const years = groups.map((g) => `<a data-editorial-link href="${link(base, `/archives/${g.year}/`)}">${g.year}<span class="archive-year-nav__count">${g.articles.length}</span></a>`).join('');
+    const years = groups.length < 2 ? '' : groups.map((g) => `<a data-editorial-link href="${link(base, `/archives/${g.year}/`)}">${g.year}<span class="archive-year-nav__count">${g.articles.length}</span></a>`).join('');
     const blocks = groups.length
       ? groups.map((g) => `<section class="archive-year"><h2 class="archive-year__title" id="archive-y-${g.year}"><a data-editorial-link href="${link(base, `/archives/${g.year}/`)}">${g.year}</a></h2><ul class="archive-list">${g.articles.map((article) => `<li><time datetime="${esc(article.publishedAt || article.updatedAt)}">${esc(formatDateTime(article.publishedAt || article.updatedAt, bundle.publication.timeZone))}</time> <a data-editorial-link href="${link(base, `/articles/${encodeURIComponent(article.slug)}/`)}">${esc(article.title)}</a></li>`).join('')}</ul></section>`).join('')
       : '<p class="empty">Aucun article dans les archives pour le moment.</p>';
@@ -463,7 +476,7 @@ export function renderRoute(bundle, base, pathname, renderBody, search = '') {
     const matches = query.trim() ? published.filter((article) => haystack(article).includes(query.trim().toLowerCase())) : [];
     const list = !query.trim()
       ? '<p class="empty">Écrivez un mot, un titre ou un nom, puis lancez la recherche.</p>'
-      : (matches.length ? `<ul class="search-results">${matches.map((article) => `<li><a data-editorial-link href="${link(base, `/articles/${encodeURIComponent(article.slug)}/`)}">${esc(article.title)}</a><p>${esc(article.excerpt || '')}</p></li>`).join('')}</ul>` : `<p class="empty">Aucun article ne correspond à « ${esc(query)} ».</p>`);
+      : (matches.length ? `<div class="news-tail-body news-tail-grid search-results search-results--cards">${matches.map((article) => articleCard(article, bundle, base, 'tail')).join('')}</div>` : `<p class="empty">Aucun article ne correspond à « ${esc(query)} ».</p>`);
     return {
       title: query.trim() ? `Recherche : ${query} — ${bundle.publication.name}` : `Recherche — ${bundle.publication.name}`,
       html: `<div class="wrap wire"><div class="wire-head"><h1 class="wire-title">Recherche</h1>${query.trim() && matches.length ? `<span class="wire-status">${matches.length} résultat${matches.length > 1 ? 's' : ''}</span>` : ''}</div><form class="search-form" method="get" action="${link(base, '/recherche/')}" role="search"><label>Chercher dans le journal<input type="search" name="q" value="${esc(query)}" placeholder="Un titre, un nom, un mot"></label><button type="submit" class="primary">Rechercher</button></form>${list}</div>`,

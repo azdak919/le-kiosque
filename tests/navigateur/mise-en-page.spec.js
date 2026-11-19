@@ -189,3 +189,26 @@ test('LE-RADAR muet : la barre ne s’affiche pas et ne laisse pas de trou', asy
   expect((await slot.evaluate((e) => e.getBoundingClientRect().height))).toBe(0);
   await ctx.close();
 });
+
+test('pendant le chargement de LE-RADAR, la place de la barre est réservée', async ({ browser }) => {
+  for (const [largeur, hauteur] of [[390, 58], [1280, 68]]) {
+    const ctx = await browser.newContext({ viewport: { width: largeur, height: 900 } });
+    let lacher;
+    const attente = new Promise((resolve) => { lacher = resolve; });
+    await ctx.route('https://le-radar.ca/**', async (route) => {
+      await attente; // module retenu : on regarde la page avant qu'il réponde
+      return route.fulfill({ status: 200, contentType: 'text/javascript', body: FAUX_MODULE });
+    });
+    const page = await ctx.newPage();
+    await page.goto('/autre-nom/demo/', { waitUntil: 'domcontentloaded' });
+    const slot = page.locator('.radar-radio-slot');
+    await expect(slot).toBeVisible();
+    expect(await slot.getAttribute('data-radar-radio')).toBeNull();
+    const reserve = await slot.evaluate((e) => getComputedStyle(e, '::before').height);
+    expect(reserve).toBe(`${hauteur}px`);
+    lacher();
+    await expect(slot).toHaveAttribute('data-radar-radio', 'ready');
+    expect(await slot.evaluate((e) => getComputedStyle(e, '::before').content)).toBe('none');
+    await ctx.close();
+  }
+});
