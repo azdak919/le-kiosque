@@ -286,6 +286,8 @@ export interface SportsTeam {
   sport: string;
   sportLabel?: string;
   sex?: string;
+  /** Lien http(s) vers le calendrier ou les résultats officiels de l’équipe. */
+  officialUrl?: string;
   colors?: { primary?: string; secondary?: string };
   /** true = hors RSEQ, données de démonstration uniquement. */
   fictional?: boolean;
@@ -306,6 +308,8 @@ export interface SportsNextGame {
   home?: boolean;
   competition?: string;
   teamId?: string;
+  /** Saisi à la main : le match est en train de se jouer. */
+  live?: boolean;
 }
 
 /**

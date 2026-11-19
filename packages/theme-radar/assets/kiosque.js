@@ -724,6 +724,85 @@
     sportsReducedMotion = !!(window.matchMedia
       && window.matchMedia('(prefers-reduced-motion: reduce)').matches);
   } catch (_) {}
+  var sportsLaneTimers = { result: null, next: null, live: null };
+  var SPORTS_SUB_MARQUEE_PX_PER_S = 16;
+  var SPORTS_SUB_MARQUEE_MIN_SEC = 8;
+
+  /* Repris de LE-RADAR genderMark (magazine-front-page-lib.js) : (F)/(H), rien si mixte. */
+  function sportsSexKey(sex) {
+    var s = String(sex || '').trim().toLowerCase();
+    if (['f', 'w', 'women', 'woman', 'femmes', 'féminin', 'feminin', 'female'].indexOf(s) !== -1) return 'F';
+    if (['m', 'h', 'men', 'man', 'hommes', 'masculin', 'male'].indexOf(s) !== -1) return 'M';
+    if (['x', 'mixte', 'mixed', 'coed', 'co-ed', 'open', 'ouvert'].indexOf(s) !== -1) return 'X';
+    return '';
+  }
+  function genderMark(sex) {
+    var key = sportsSexKey(sex);
+    if (key === 'F') return '(F)';
+    if (key === 'M') return '(H)';
+    return '';
+  }
+  function parseSportsTimeMinutes(time) {
+    var raw = String(time || '').trim();
+    var m = raw.match(/^(\d{1,2})\s*[:hH.]\s*(\d{2})/);
+    if (!m) return Number.POSITIVE_INFINITY;
+    var hours = Number(m[1]);
+    var mins = Number(m[2]);
+    if (!isFinite(hours) || !isFinite(mins) || hours > 23 || mins > 59) return Number.POSITIVE_INFINITY;
+    return hours * 60 + mins;
+  }
+  function sportsPublicationTimeZone() {
+    return (sportsPayloadCache && sportsPayloadCache.timeZone) || 'America/Toronto';
+  }
+  function sportsRelativeDayLabel(iso, now) {
+    var day = String(iso || '').slice(0, 10);
+    if (!/^\d{4}-\d{2}-\d{2}$/.test(day)) return '';
+    try {
+      var parts = new Intl.DateTimeFormat('en-CA', {
+        timeZone: sportsPublicationTimeZone(),
+        year: 'numeric', month: '2-digit', day: '2-digit',
+      }).formatToParts(now || new Date());
+      var y = (parts.find(function (p) { return p.type === 'year'; }) || {}).value;
+      var m = (parts.find(function (p) { return p.type === 'month'; }) || {}).value;
+      var d = (parts.find(function (p) { return p.type === 'day'; }) || {}).value;
+      var todayKey = y && m && d ? y + '-' + m + '-' + d : '';
+      if (!todayKey) return '';
+      if (day === todayKey) return 'Aujourd’hui';
+      var shift = function (delta) {
+        var noon = new Date(todayKey + 'T12:00:00');
+        noon.setDate(noon.getDate() + delta);
+        return noon.getFullYear() + '-' + String(noon.getMonth() + 1).padStart(2, '0') + '-' + String(noon.getDate()).padStart(2, '0');
+      };
+      if (day === shift(1)) return 'Demain';
+      if (day === shift(-1)) return 'Hier';
+      return '';
+    } catch (_) { return ''; }
+  }
+  function sportsSlideIsLive(slide) {
+    return !!(slide && (slide.mode === 'live' || (slide.game && slide.game.live)));
+  }
+  function sportsSlideSportKey(slide) {
+    return String((slide && slide.game && slide.game.sport) || (slide && slide.team && slide.team.sport) || '').toLowerCase();
+  }
+  function sportsInterleaveBySport(items, compare) {
+    var sorted = items.slice().sort(compare);
+    var buckets = {};
+    var order = [];
+    sorted.forEach(function (slide) {
+      var key = sportsSlideSportKey(slide) || '_';
+      if (!buckets[key]) { buckets[key] = []; order.push(key); }
+      buckets[key].push(slide);
+    });
+    var out = [];
+    var added = true;
+    while (added) {
+      added = false;
+      order.forEach(function (key) {
+        if (buckets[key].length) { out.push(buckets[key].shift()); added = true; }
+      });
+    }
+    return out;
+  }
 
   function clearSportsRotateTimer() {
     if (sportsTimer) {
@@ -822,21 +901,34 @@
    * résultats les plus récents d’abord, puis prochains les plus proches.
    * Plus de brassage total (ressenti « aléatoire »).
    */
+  function sportsCompareDateTime(a, b, newestFirst) {
+    var da = String((a && a.game && a.game.date) || '');
+    var db = String((b && b.game && b.game.date) || '');
+    if (da !== db) return newestFirst ? db.localeCompare(da) : da.localeCompare(db);
+    var ta = parseSportsTimeMinutes(a && a.game && a.game.time);
+    var tb = parseSportsTimeMinutes(b && b.game && b.game.time);
+    if (ta !== tb) return newestFirst ? tb - ta : ta - tb;
+    return 0;
+  }
+
+  /**
+   * Alternance par sport (PR 381 du Radar), tri horaire numérique (PR 364),
+   * directs d’abord. Les scores et les à-venir s’intercalent.
+   */
   function orderSportsDeck(items) {
-    return items.slice().sort(function (a, b) {
-      var modeRank = function (s) { return s && s.mode === 'result' ? 0 : 1; };
-      if (modeRank(a) !== modeRank(b)) return modeRank(a) - modeRank(b);
-      var da = String((a && a.game && a.game.date) || '');
-      var db = String((b && b.game && b.game.date) || '');
-      var ta = String((a && a.game && a.game.time) || '');
-      var tb = String((b && b.game && b.game.time) || '');
-      if (a && a.mode === 'result') {
-        if (db !== da) return db.localeCompare(da);
-        return tb.localeCompare(ta);
-      }
-      if (da !== db) return da.localeCompare(db);
-      return ta.localeCompare(tb);
-    });
+    var lives = items.filter(sportsSlideIsLive);
+    var results = items.filter(function (s) { return s && s.mode === 'result' && !sportsSlideIsLive(s); });
+    var nexts = items.filter(function (s) { return s && s.mode !== 'result' && !sportsSlideIsLive(s); });
+    var left = sportsInterleaveBySport(results, function (a, b) { return sportsCompareDateTime(a, b, true); });
+    var right = sportsInterleaveBySport(nexts, function (a, b) { return sportsCompareDateTime(a, b, false); });
+    var mixed = [];
+    var max = Math.max(left.length, right.length);
+    var i;
+    for (i = 0; i < max; i += 1) {
+      if (left[i]) mixed.push(left[i]);
+      if (right[i]) mixed.push(right[i]);
+    }
+    return lives.concat(mixed);
   }
 
   function sportsTeamList(payload) {
@@ -883,7 +975,7 @@
       }
       if (next) {
         var nextSlide = {
-          mode: 'next',
+          mode: next.live ? 'live' : 'next',
           team: team,
           game: next,
           key: 'n:' + team.id + ':' + next.date + ':' + (next.opponentCode || next.opponent),
@@ -914,8 +1006,16 @@
     }
   }
 
+  function formatSportsChipClock(time) {
+    if (!time) return '';
+    return String(time).replace(/(\d{1,2})\s*[:.]\s*(\d{2})/, '$1 h $2').replace(/:/g, ' h ');
+  }
+
   function formatSportsChipWhen(iso, time) {
-    if (!iso) return '';
+    if (!iso) return formatSportsChipClock(time);
+    var clock = formatSportsChipClock(time);
+    var rel = sportsRelativeDayLabel(iso);
+    if (rel) return [rel, clock].filter(Boolean).join(' · ');
     var label = '';
     try {
       label = new Intl.DateTimeFormat('fr-CA', {
@@ -925,10 +1025,7 @@
     } catch (_) {
       label = iso;
     }
-    if (time) {
-      label += ' · ' + String(time).replace(/(\d{1,2})\s*[:.]\s*(\d{2})/, '$1 h $2').replace(/:/g, ' h ');
-    }
-    return label;
+    return [label, clock].filter(Boolean).join(' · ');
   }
 
   /** Domicile « reçoit », extérieur « à » (ton presse LE-RADAR). */
@@ -944,19 +1041,45 @@
   function sportsMatchSubLine(display) {
     var g = (display && display.game) || {};
     var team = (display && display.team) || {};
-    var when = formatSportsChipWhen(g.date, g.time);
-    if (g.competition) return [when, String(g.competition).trim()].filter(Boolean).join(' · ');
+    var when = sportsSlideIsLive(display)
+      ? ['En cours', formatSportsChipClock(g.time)].filter(Boolean).join(' · ')
+      : formatSportsChipWhen(g.date, g.time);
     var sportLabel = team.sportLabel || g.sport || '';
-    var sex = team.sex;
-    var sexLabel = sex === 'F' ? 'féminin' : sex === 'M' ? 'masculin' : sex === 'mixte' ? 'mixte' : '';
-    var meta = [sportLabel, sexLabel].filter(Boolean).join(' ');
-    return [when, meta].filter(Boolean).join(' · ');
+    var sport = [sportLabel, genderMark(team.sex)].filter(Boolean).join(' ');
+    var competition = String(g.competition || '').trim();
+    return [when, sport, competition].filter(Boolean).join(' · ');
   }
 
   /**
    * Marquee type bandeau météo LE-RADAR / RDS :
    * pauses aux extrémités dans les keyframes ; dwell = 1 aller-retour complet.
    */
+  function applySportsSubMarquee(chip) {
+    var view = chip && chip.querySelector('.sports-chip__sub');
+    var inner = chip && chip.querySelector('.sports-chip__sub-text');
+    if (!view || !inner) return 0;
+    chip.classList.remove('is-sub-overflowing');
+    inner.classList.remove('is-sports-sub-marquee');
+    var clone = inner.querySelector('.sports-chip__loop');
+    if (clone) clone.remove();
+    inner.style.removeProperty('--sports-scroll-duration-sub');
+    if (sportsReducedMotion) return 0;
+    var overflow = Math.ceil(inner.scrollWidth - view.clientWidth) + 2;
+    if (overflow <= 4) return 0;
+    var durationSec = Math.max(
+      SPORTS_SUB_MARQUEE_MIN_SEC,
+      overflow / SPORTS_SUB_MARQUEE_PX_PER_S,
+    );
+    var loop = inner.cloneNode(true);
+    loop.className = 'sports-chip__loop';
+    loop.setAttribute('aria-hidden', 'true');
+    inner.appendChild(loop);
+    inner.classList.add('is-sports-sub-marquee');
+    chip.classList.add('is-sub-overflowing');
+    inner.style.setProperty('--sports-scroll-duration-sub', durationSec.toFixed(1) + 's');
+    return Math.round(durationSec * 1000);
+  }
+
   function applySportsLineMarquee(viewport, onReady) {
     if (!viewport) {
       if (onReady) onReady(SPORTS_ROTATE_MIN_MS);
@@ -967,9 +1090,20 @@
       if (onReady) onReady(SPORTS_ROTATE_MIN_MS);
       return;
     }
+    var chip = viewport.closest('.sports-chip');
     viewport.classList.remove('is-sports-marquee');
     viewport.style.removeProperty('--sports-marquee-shift');
     viewport.style.removeProperty('--sports-marquee-duration');
+    if (chip) {
+      chip.classList.remove('is-sub-overflowing');
+      var subInner = chip.querySelector('.sports-chip__sub-text');
+      if (subInner) {
+        subInner.classList.remove('is-sports-sub-marquee');
+        var oldLoop = subInner.querySelector('.sports-chip__loop');
+        if (oldLoop) oldLoop.remove();
+        subInner.style.removeProperty('--sports-scroll-duration-sub');
+      }
+    }
     if (sportsReducedMotion) {
       if (onReady) onReady(SPORTS_ROTATE_MIN_MS);
       return;
@@ -993,7 +1127,8 @@
           /* 2 sens + petite marge pour finir le hold de fin de cycle. */
           dwellMs = Math.round(durationSec * 1000) * 2 + 400;
         }
-        if (onReady) onReady(Math.max(SPORTS_ROTATE_MIN_MS, dwellMs));
+        var subMs = applySportsSubMarquee(chip);
+        if (onReady) onReady(Math.max(SPORTS_ROTATE_MIN_MS, dwellMs, subMs));
       });
     });
   }
@@ -1039,9 +1174,10 @@
    *   haut — noms + score / « reçoit »|« à »
    *   bas  — date · sport (jamais de marquee sur le score ; lecture + rotation)
    */
-  function paintSportsChip(host, display, animate) {
+  function paintSportsChip(host, display, animate, opts) {
     if (!host || !display) return;
-    host.textContent = '';
+    opts = opts || {};
+    if (!opts.append) host.textContent = '';
     var team = display.team;
     var code = String(team.code || 'EQ').toUpperCase().slice(0, 4);
     var sport = display.game.sport || team.sport || '';
@@ -1052,6 +1188,9 @@
     var chip = document.createElement(href ? 'a' : 'span');
     chip.className = 'sports-chip masthead-sports__chip sports-chip--match';
     if (desktop) chip.classList.add('sports-chip--rich');
+    if (display.mode === 'result') chip.classList.add('sports-chip--result');
+    else if (sportsSlideIsLive(display)) chip.classList.add('sports-chip--live');
+    else chip.classList.add('sports-chip--next');
     if (animate && !sportsReducedMotion) chip.classList.add('is-arriving');
     chip.style.setProperty('--sports-tone', tone);
     if (team.colors && team.colors.primary) {
@@ -1135,7 +1274,7 @@
       ];
 
       subText.textContent = subLine;
-      titleParts = ['Prochain match', sportLabel, homeCode + ' ' + verb + ' ' + nextCompact];
+      titleParts = [sportsSlideIsLive(display) ? 'En cours' : 'Prochain match', sportLabel, homeCode + ' ' + verb + ' ' + nextCompact];
       if (subLine) titleParts.push(subLine);
       if (n.home === true) titleParts.push('Domicile');
       else if (n.home === false) titleParts.push('Extérieur');
@@ -1155,21 +1294,32 @@
     chip.dataset.sportsSport = sport || '';
     chip.dataset.sportsDensity = desktop ? 'rich' : 'compact';
 
-    host.appendChild(chip);
+    if (opts.before && opts.before.parentNode === host) host.insertBefore(chip, opts.before);
+    else host.appendChild(chip);
     host.hidden = false;
-    sportsAbregerSiTropLong(chip);
+    if (!desktop) sportsAbregerSiTropLong(chip);
 
-    /* Pas de marquee sur 2 lignes (FG A LE-RADAR) : dwell lecture ~9–12 s. */
+    /* Titre : aller-retour si débordement. Sous-ligne : boucle lente (PR 404/408). */
     var readDwell = SPORTS_ROTATE_MIN_MS + 3500;
-    if (animate && !sportsReducedMotion) {
-      window.setTimeout(function () {
-        if (!chip.isConnected) return;
-        chip.classList.remove('is-arriving');
+    applySportsLineMarquee(line, function (dwell) {
+      readDwell = Math.max(readDwell, dwell);
+      if (opts.split) return;
+      if (animate && !sportsReducedMotion) {
+        window.setTimeout(function () {
+          if (!chip.isConnected) return;
+          chip.classList.remove('is-arriving');
+          scheduleSportsRotate(readDwell);
+        }, SPORTS_ARRIVE_MS);
+      } else {
         scheduleSportsRotate(readDwell);
+      }
+    });
+    if (opts.split && animate && !sportsReducedMotion) {
+      window.setTimeout(function () {
+        if (chip.isConnected) chip.classList.remove('is-arriving');
       }, SPORTS_ARRIVE_MS);
-    } else {
-      scheduleSportsRotate(readDwell);
     }
+    return chip;
   }
 
   /**
@@ -1202,9 +1352,153 @@
     chip.classList.toggle('is-abrege', i > 0);
   }
 
+  function sportsUseSplitLanes() {
+    return sportsIsDesktopLabel() && sportsSlides.filter(function (s) {
+      return s.mode === 'result' || s.mode === 'next' || sportsSlideIsLive(s);
+    }).length >= 2;
+  }
+
+  function sportsLanePool(lane) {
+    if (lane === 'live') return sportsSlides.filter(sportsSlideIsLive);
+    if (lane === 'result') return sportsInterleaveBySport(
+      sportsSlides.filter(function (s) { return s.mode === 'result' && !sportsSlideIsLive(s); }),
+      function (a, b) { return sportsCompareDateTime(a, b, true); },
+    );
+    return sportsInterleaveBySport(
+      sportsSlides.filter(function (s) { return s.mode !== 'result' && !sportsSlideIsLive(s); }),
+      function (a, b) { return sportsCompareDateTime(a, b, false); },
+    );
+  }
+
+  function clearSportsLaneTimers() {
+    Object.keys(sportsLaneTimers).forEach(function (lane) {
+      if (sportsLaneTimers[lane]) {
+        window.clearTimeout(sportsLaneTimers[lane]);
+        sportsLaneTimers[lane] = null;
+      }
+    });
+  }
+
+  function sportsVisibleSportKeys(host, exceptLane) {
+    var keys = [];
+    Array.prototype.forEach.call(host.querySelectorAll('.sports-chip'), function (chip) {
+      if (exceptLane && chip.dataset.sportsLane === exceptLane) return;
+      if (chip.dataset.sportsSport) keys.push(String(chip.dataset.sportsSport).toLowerCase());
+    });
+    return keys;
+  }
+
+  function sportsPickFromPool(pool, avoidKey, avoidSports) {
+    if (!pool.length) return null;
+    var i;
+    var start = 0;
+    if (avoidKey) {
+      for (i = 0; i < pool.length; i += 1) {
+        if (pool[i].key === avoidKey) { start = i + 1; break; }
+      }
+    }
+    var ordered = pool.slice(start).concat(pool.slice(0, start));
+    var prefer = ordered.find(function (slide) {
+      return avoidSports.indexOf(sportsSlideSportKey(slide)) === -1 && slide.key !== avoidKey;
+    });
+    return prefer || ordered.find(function (slide) { return slide.key !== avoidKey; }) || ordered[0] || null;
+  }
+
+  function scheduleSportsLaneRotate(host, lane, delayMs) {
+    if (sportsLaneTimers[lane]) {
+      window.clearTimeout(sportsLaneTimers[lane]);
+      sportsLaneTimers[lane] = null;
+    }
+    var pool = sportsLanePool(lane);
+    if (pool.length < 2 || sportsReducedMotion) return;
+    sportsLaneTimers[lane] = window.setTimeout(function () {
+      sportsLaneTimers[lane] = null;
+      rotateSportsLane(host, lane);
+    }, Math.max(SPORTS_ROTATE_MIN_MS, delayMs | 0));
+  }
+
+  function rotateSportsLane(host, lane) {
+    if (!host || !host.isConnected || !sportsUseSplitLanes()) return;
+    var chip = host.querySelector('.sports-chip[data-sports-lane="' + lane + '"]');
+    var pool = sportsLanePool(lane);
+    var next = sportsPickFromPool(pool, chip && chip.dataset.sportsKey, sportsVisibleSportKeys(host, lane));
+    if (!next || (chip && chip.dataset.sportsKey === next.key)) return;
+    var replace = function () {
+      if (!host.isConnected) return;
+      var anchor = chip && chip.nextSibling;
+      if (chip && chip.parentNode) chip.parentNode.removeChild(chip);
+      var painted = paintSportsChip(host, next, true, { append: true, split: true, before: anchor });
+      if (painted) painted.dataset.sportsLane = lane;
+      syncMastheadWeatherDock();
+      scheduleSportsLaneRotate(host, lane, SPORTS_ROTATE_MIN_MS + 3500);
+    };
+    if (chip && !sportsReducedMotion) {
+      chip.classList.remove('is-arriving');
+      chip.classList.add('is-leaving');
+      chip.style.pointerEvents = 'none';
+      window.setTimeout(replace, SPORTS_CHIP_LEAVE_MS);
+      return;
+    }
+    replace();
+  }
+
+  function paintSportsSplit(host, animate) {
+    clearSportsRotateTimer();
+    clearSportsLaneTimers();
+    host.textContent = '';
+    host.classList.add('masthead-sports--split');
+    var lives = sportsLanePool('live');
+    var results = sportsLanePool('result');
+    var nexts = sportsLanePool('next');
+    var usedSports = [];
+    var resultSlide = sportsPickFromPool(results, '', usedSports);
+    if (resultSlide) usedSports.push(sportsSlideSportKey(resultSlide));
+    var liveSlide = sportsPickFromPool(lives, '', usedSports);
+    if (liveSlide) usedSports.push(sportsSlideSportKey(liveSlide));
+    var nextSlide = sportsPickFromPool(nexts, '', usedSports);
+    var lanes = [];
+    if (resultSlide) lanes.push(['result', resultSlide]);
+    if (liveSlide) lanes.push(['live', liveSlide]);
+    if (nextSlide) lanes.push(['next', nextSlide]);
+    if (!lanes.length) {
+      host.classList.remove('masthead-sports--split');
+      var fallback = orderSportsDeck(sportsSlides.slice())[0] || sportsSlides[0];
+      paintSportsChip(host, fallback, animate);
+      return;
+    }
+    if (lanes.length === 1) {
+      host.classList.remove('masthead-sports--split');
+      paintSportsChip(host, lanes[0][1], animate);
+      return;
+    }
+    lanes.forEach(function (item) {
+      var painted = paintSportsChip(host, item[1], animate, { append: true, split: true });
+      if (painted) painted.dataset.sportsLane = item[0];
+    });
+    syncMastheadWeatherDock();
+    lanes.forEach(function (item) {
+      scheduleSportsLaneRotate(host, item[0], SPORTS_ROTATE_MIN_MS + 3500);
+    });
+  }
+
+  function renderMastheadSports(host, animate) {
+    if (sportsUseSplitLanes()) paintSportsSplit(host, animate);
+    else {
+      clearSportsLaneTimers();
+      host.classList.remove('masthead-sports--split');
+      refillSportsDeck(null);
+      var first = sportsDeck.shift() || sportsSlides[0];
+      paintSportsChip(host, first, animate);
+    }
+  }
+
   function rotateSportsChip() {
     var host = document.querySelector('.masthead-sports[data-sports-payload]');
     if (!host || sportsSlides.length < 2) return;
+    if (sportsUseSplitLanes()) {
+      renderMastheadSports(host, true);
+      return;
+    }
     if (!sportsDeck.length) {
       var current = host.querySelector('.sports-chip');
       refillSportsDeck(current && current.dataset.sportsKey);
@@ -1249,10 +1543,8 @@
       sportsPayloadCache = null;
       return;
     }
-    /* Départ = match le plus récent / prochain le plus proche (orderSportsDeck). */
-    refillSportsDeck(null);
-    var first = sportsDeck.shift() || sportsSlides[0];
-    paintSportsChip(host, first, false);
+    /* Départ : deux voies sur ordinateur, une puce sur mobile. */
+    renderMastheadSports(host, false);
     syncMastheadWeatherDock();
     /* Re-peindre codes ↔ noms+institutions au passage mobile/bureau. */
     if (!initMastheadSports._densityBound) {
@@ -1262,10 +1554,7 @@
       function onDensityChange() {
         var h = document.querySelector('.masthead-sports[data-sports-payload]');
         if (!h || !sportsSlides.length) return;
-        var cur = h.querySelector('.sports-chip');
-        var key = cur && cur.dataset.sportsKey;
-        var slide = sportsSlides.find(function (s) { return s.key === key; }) || sportsSlides[0];
-        paintSportsChip(h, slide, false);
+        renderMastheadSports(h, false);
         syncMastheadWeatherDock();
       }
       if (mq) {

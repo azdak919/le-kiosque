@@ -1063,7 +1063,8 @@ body.with-radio .nav {
 .site-foot,
 .footer {
   margin-top: 20px;
-  padding: 22px 0 40px;
+  /* Assez de place sous la dernière ligne pour les deux boutons flottants. */
+  padding: 22px 0 88px;
   border-top: 1px solid var(--rule);
   font-size: 0.84rem;
   color: var(--muted);
@@ -1170,6 +1171,17 @@ body.with-radio .nav {
 }
 .site-foot__built a {
   font-weight: 600;
+}
+.site-foot__built .site-foot__sep {
+  margin: 0 0.4em;
+}
+.site-foot__redaction {
+  font-weight: 500;
+  color: inherit;
+}
+.site-foot__redaction:hover,
+.site-foot__redaction:focus-visible {
+  color: var(--accent);
 }
 
 /* ─────────────── ARCHIVES (catalogue chronologique / SEO) ─────────────── */
@@ -2107,8 +2119,8 @@ a.masthead-sports__chip:focus-visible {
   font-family: var(--sans);
   font-size: 10px;
   font-weight: 800;
-  letter-spacing: 0.04em;
-  text-transform: uppercase;
+  letter-spacing: 0.02em;
+  text-transform: none;
   line-height: 1.2;
   border-radius: 999px;
   padding: 2px 7px;
@@ -2128,6 +2140,28 @@ a.masthead-sports__chip:focus-visible {
   color: var(--muted);
   background: color-mix(in srgb, var(--rule) 35%, transparent);
   border: 1px solid var(--rule);
+}
+.sports-result--live .sports-result__score--next {
+  color: #b91c1c;
+  font-weight: 800;
+}
+:root[data-theme="dark"] .sports-result--live .sports-result__score--next {
+  color: #fecaca;
+}
+.sports-panel__official {
+  margin: 0.4rem 0 0;
+  font-family: var(--sans);
+  font-size: 12px;
+  font-weight: 650;
+}
+.sports-panel__results-source {
+  color: inherit;
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+.sports-panel__results-source:hover,
+.sports-panel__results-source:focus-visible {
+  color: var(--accent, #6c2163);
 }
 .sports-panel__meta {
   margin: 0;
@@ -2957,19 +2991,16 @@ a.masthead-sports__chip:focus-visible {
   }
 }
 
-/* ── Outils bas de page — parité LE-RADAR ──
- * Flèche haut : gauche, hors colonne de contenu.
- * Loupe : droite, hors colonne (symétrique).
- * Mobile : repli safe-area + 14 px (pas de gutter).
+/* ── Outils bas de page ──
+ * Flèche « haut de page » juste à gauche de la loupe, même taille (48 px)
+ * et même écart (12 px), en bas à droite. Quand la flèche est masquée,
+ * la loupe reste à cette place (flex-end + display:none sur la flèche).
+ * Mobile : repli safe-area + 14 px.
  */
 .page-tools {
   --tools-fab: 48px;
   --tools-outset: 12px;
   --tools-gutter: max(0px, calc((100vw - min(var(--maxw), 100vw)) / 2));
-  --tools-side-left: max(
-    max(14px, env(safe-area-inset-left, 0px)),
-    calc(var(--tools-gutter) - var(--tools-fab) - var(--tools-outset))
-  );
   --tools-side-right: max(
     max(14px, env(safe-area-inset-right, 0px)),
     calc(var(--tools-gutter) - var(--tools-fab) - var(--tools-outset))
@@ -2980,19 +3011,18 @@ a.masthead-sports__chip:focus-visible {
   bottom: calc(max(16px, env(safe-area-inset-bottom, 0px)) + var(--vk-inset, 0px));
   z-index: 180;
   display: flex;
-  /* DOM = [flèche, loupe] — loupe toujours à droite (même sans flèche). */
+  /* DOM = [flèche, loupe] — les deux en bas à droite, flèche à gauche de la loupe. */
   flex-direction: row;
-  justify-content: flex-start;
+  justify-content: flex-end;
   align-items: flex-end;
   gap: 12px;
-  padding-left: var(--tools-side-left);
+  padding-left: 14px;
   padding-right: var(--tools-side-right);
   pointer-events: none;
 }
 .page-tools > * { pointer-events: auto; }
-/* Parité LE-RADAR : la loupe ne bascule pas à gauche quand #page-scroll-top est hidden. */
 .page-tools > .news-search {
-  margin-left: auto;
+  margin-left: 0;
 }
 
 .page-tools__fab,
@@ -3291,6 +3321,156 @@ html {
     display: block !important; font-size: 9px; font-weight: 600; opacity: .72;
     white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
   }
+}
+
+/* Bureau : bandeau à deux (ou trois) voies, puces sur 2 lignes.
+ * On lève le forçage 1 ligne / 32 px du compactage mât pour que la date,
+ * le (F)/(H) et la compétition restent visibles. Hauteur réservée dès le
+ * chargement pour éviter un saut quand le JS peint les puces. */
+@media (min-width: 721px) {
+  /* Bandeau pleine largeur sous la rangée date / météo / outils : les deux
+     (ou trois) voies ont la place de montrer noms, (F)/(H) et dates, sans
+     saut — la rangée est réservée dès qu’un payload est dans le HTML. */
+  .masthead-utility:has(.masthead-sports[data-sports-payload]) {
+    grid-template-columns: max-content minmax(0, 1fr) auto;
+    align-items: center;
+  }
+  .masthead-utility:has(.masthead-sports[data-sports-payload]) .masthead-status {
+    display: contents;
+  }
+  .masthead-utility:has(.masthead-sports[data-sports-payload]) .masthead-clock {
+    grid-column: 1;
+    grid-row: 1;
+  }
+  .masthead-utility:has(.masthead-sports[data-sports-payload]) .masthead-weather {
+    grid-column: 2;
+    grid-row: 1;
+    justify-self: start;
+  }
+  .masthead-utility:has(.masthead-sports[data-sports-payload]) .masthead-tools {
+    grid-column: 3;
+    grid-row: 1;
+  }
+  .masthead-utility:has(.masthead-sports[data-sports-payload]) .masthead-sports {
+    grid-column: 1 / -1;
+    grid-row: 2;
+    width: 100%;
+    margin-top: 4px;
+  }
+  .masthead-status {
+    align-items: center;
+    overflow: visible;
+    min-height: 44px;
+  }
+  .masthead-status .masthead-sports,
+  .masthead-utility:has(.masthead-sports[data-sports-payload]) .masthead-sports {
+    height: auto !important;
+    min-height: 44px;
+    max-height: none !important;
+    align-items: stretch;
+    flex: 1 1 auto;
+  }
+  .masthead-status .masthead-sports.masthead-sports--split {
+    display: flex;
+    gap: 6px;
+  }
+  .masthead-status .sports-chip.sports-chip--match,
+  .masthead-status .masthead-sports__chip.sports-chip--match {
+    height: auto !important;
+    min-height: 44px;
+    max-height: none !important;
+    padding: 5px 10px 5px 7px;
+    border-radius: 6px !important;
+    align-items: center;
+    overflow: hidden;
+  }
+  .masthead-status .masthead-sports--split .sports-chip,
+  .masthead-status .masthead-sports--split .masthead-sports__chip {
+    flex: 1 1 0;
+    width: auto;
+    max-width: none;
+  }
+  .masthead-status .sports-chip .sports-chip__body {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    justify-content: center;
+    min-width: 0;
+  }
+  .masthead-status .sports-chip .sports-chip__sub {
+    display: block !important;
+    font-size: 9px;
+    font-weight: 600;
+    opacity: 0.72;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: clip;
+    max-width: 100%;
+  }
+  .masthead-status .sports-chip .sports-chip__line {
+    font-size: var(--mat-texte);
+    line-height: 1.35;
+  }
+}
+
+/* Match en cours (case « En cours » du Socle, jamais déduit de l’horloge). */
+.sports-chip--live {
+  box-shadow:
+    0 1px 2px rgba(0, 0, 0, 0.28),
+    inset 0 1px 0 rgba(255, 255, 255, 0.12),
+    0 0 0 1px color-mix(in srgb, #dc2626 58%, transparent);
+}
+.sports-chip--live .sports-chip__glyph {
+  color: #fecaca;
+}
+
+/* Sous-ligne trop longue : boucle continue (parité LE-RADAR PR 404/408). */
+.sports-chip--match {
+  --sports-loop-gap: 48px;
+  --sports-scroll-duration-sub: 8s;
+  --sports-scroll-delay: 1.6s;
+}
+.sports-chip--match.is-sub-overflowing .sports-chip__sub-text {
+  max-width: none;
+  overflow: visible;
+  text-overflow: clip;
+  animation: sports-chip-scroll-sub var(--sports-scroll-duration-sub, 8s) linear var(--sports-scroll-delay, 1.6s) infinite backwards;
+  will-change: transform;
+}
+.sports-chip__sub-text:has(> .sports-chip__loop) {
+  position: relative;
+  padding-right: var(--sports-loop-gap, 48px);
+}
+.sports-chip__loop {
+  position: absolute;
+  left: 100%;
+  top: 0;
+  display: inline-block;
+  width: max-content;
+  max-width: none;
+  margin: 0;
+  padding: 0;
+  overflow: visible;
+  white-space: nowrap;
+  font: inherit;
+  letter-spacing: inherit;
+  color: inherit;
+  animation: none !important;
+  transform: none !important;
+  pointer-events: none;
+}
+@keyframes sports-chip-scroll-sub {
+  from { transform: translateX(0); }
+  to { transform: translateX(-100%); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .sports-chip.is-sub-overflowing .sports-chip__sub-text {
+    animation: none;
+    max-width: 100%;
+    overflow: hidden;
+    text-overflow: clip;
+  }
+  .sports-chip__loop { display: none !important; }
 }
 
 /* Cibles tactiles ≥ 44 px (t350u) sans changer l’apparence : zone élargie

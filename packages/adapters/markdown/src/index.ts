@@ -172,6 +172,7 @@ function sportsNextGame(v: unknown): SportsNextGame | undefined {
     home: rec.home === undefined ? undefined : Boolean(rec.home),
     competition: str(rec.competition),
     teamId: str(rec.teamId),
+    live: rec.live === undefined ? undefined : Boolean(rec.live),
   };
 }
 
@@ -197,6 +198,7 @@ function sportsTeam(v: unknown): SportsTeam | undefined {
     sport,
     sportLabel: str(rec.sportLabel),
     sex: str(rec.sex),
+    officialUrl: str(rec.officialUrl) || str(rec.resultsSourceUrl),
     fictional: rec.fictional === undefined ? undefined : Boolean(rec.fictional),
     note: str(rec.note),
     colors: colorsRaw

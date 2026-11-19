@@ -1,7 +1,7 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
 
-import { footCopyright, footRights, footYears, KIOSQUE_SITE_URL } from '../packages/theme-radar/src/templates.ts';
+import { footBuiltHtml, footCopyright, footRights, footYears, KIOSQUE_SITE_URL } from '../packages/theme-radar/src/templates.ts';
 import { readFileSync } from 'node:fs';
 
 // render.js (site vivant) importe des fichiers copiés au build : on le lit comme texte.
@@ -40,3 +40,19 @@ test('site vivant : même pied de page, logo à la place du nom, licence sur les
   assert.doesNotMatch(live, /Contenus sous licence \$\{esc\(publication\.license\)\}, sauf mention contraire/);
 });
 
+
+test('pied de page : lien discret « Espace de rédaction » après Propulsé par, sans logo', () => {
+  const root = footBuiltHtml('/redaction/');
+  const nested = footBuiltHtml('/journal/redaction/');
+  assert.match(root, /Propulsé par/);
+  assert.match(root, /href="\/redaction\/"/);
+  assert.match(nested, /href="\/journal\/redaction\/"/);
+  assert.match(root, /Espace de rédaction/);
+  assert.ok(root.indexOf('Propulsé par') < root.indexOf('Espace de rédaction'));
+  assert.doesNotMatch(root, /<img\b/);
+  const templates = readFileSync(new URL('../packages/theme-radar/src/templates.ts', import.meta.url), 'utf8');
+  assert.match(templates, /footBuiltHtml\(asset\('\/redaction\/', ctx\)\)/);
+  assert.match(live, /footBuiltHtml\(link\(base, '\/redaction\/'\)\)/);
+  assert.match(live, /Espace de rédaction/);
+  assert.doesNotMatch(live, /site-foot__built[\s\S]{0,200}<img/);
+});
