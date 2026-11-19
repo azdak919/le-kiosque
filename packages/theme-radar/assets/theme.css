@@ -675,8 +675,10 @@ body.with-radio .nav {
   line-height: 1.12;
   letter-spacing: -0.02em;
   margin: 4px 0 2px;
-  overflow-wrap: anywhere;
-  hyphens: auto;
+  overflow-wrap: break-word;
+  word-break: normal;
+  hyphens: none;
+  -webkit-hyphens: none;
 }
 .post-subtitle {
   font-family: var(--serif);
@@ -764,6 +766,8 @@ body.with-radio .nav {
 .post-body pre,
 .post-body table {
   text-align: start;
+  hyphens: none;
+  -webkit-hyphens: none;
 }
 .post-body > * + * { margin-top: 1.15em; }
 .post-body h2 {

@@ -1,6 +1,7 @@
 # Journal
 
 ## Non publié
+- Titres d’articles (à la une, dans le fil et sur les pages d’article) : plus de césure. Un mot long passe à la ligne entier, sans trait d’union. Les résumés gardent la césure.
 - Accueil au téléphone : moins d’air perdu sous le bandeau de démonstration, le mât, la radio, la météo, le sport, la navigation et le titre « Le fil étudiant », pour que La une remonte. Les hauteurs réservées (radio, météo, sport) restent en place, pour que la page ne saute pas au chargement.
 - Suite du fil : chaque article qui a une photo garde une vignette, comme sur LE-RADAR (format 3:2). Un article sans photo reste sans case vide. Même dessin sur la démo et sur un journal vivant.
 - Démonstration Le Quorum : le lien « Espace de rédaction » du pied mène à la rédaction de démonstration (`/admin/`), et non plus à une adresse `/demo/redaction/` qui n’existe pas. Les journaux installés gardent `/redaction/`.
