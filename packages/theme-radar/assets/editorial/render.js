@@ -649,7 +649,12 @@ export function applyBranding(bundle, base) {
     credit.insertAdjacentHTML('afterbegin', lines.join(''));
     const built = credit.querySelector('.site-foot__built') || document.createElement('p');
     built.className = 'site-foot__built';
-    built.innerHTML = footBuiltHtml(link(base, '/redaction/'));
+    const editorial = typeof window !== 'undefined' ? window.KIOSQUE_EDITORIAL : undefined;
+    // Démo locale : /admin/. Journal installé (socle-vivant) : /redaction/.
+    const redactionHref = editorial?.mode === 'demo-local' && editorial.adminBasePath
+      ? `${String(editorial.adminBasePath).replace(/\/+$/, '')}/`
+      : link(base, '/redaction/');
+    built.innerHTML = footBuiltHtml(redactionHref);
     credit.append(built);
   });
   document.querySelectorAll('.masthead-meta > span').forEach((node) => { node.textContent = publication.institution || ''; });

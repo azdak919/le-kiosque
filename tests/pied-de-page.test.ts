@@ -51,10 +51,21 @@ test('pied de page : lien discret « Espace de rédaction » après Propulsé pa
   assert.ok(root.indexOf('Propulsé par') < root.indexOf('Espace de rédaction'));
   assert.doesNotMatch(root, /<img\b/);
   const templates = readFileSync(new URL('../packages/theme-radar/src/templates.ts', import.meta.url), 'utf8');
-  assert.match(templates, /footBuiltHtml\(asset\('\/redaction\/', ctx\)\)/);
-  assert.match(live, /footBuiltHtml\(link\(base, '\/redaction\/'\)\)/);
+  assert.match(templates, /footBuiltHtml\(ctx\.redactionHref \?\? asset\('\/redaction\/', ctx\)\)/);
+  assert.match(live, /link\(base, '\/redaction\/'\)/);
   assert.match(live, /Espace de rédaction/);
   assert.doesNotMatch(live, /site-foot__built[\s\S]{0,200}<img/);
+});
+
+test('démo de la vitrine : le pied pointe vers /admin/, les journaux gardent /redaction/', () => {
+  const templates = readFileSync(new URL('../packages/theme-radar/src/templates.ts', import.meta.url), 'utf8');
+  const site = readFileSync(new URL('../tools/build-site.mjs', import.meta.url), 'utf8');
+  assert.match(site, /redactionHref: withBase\(basePath, '\/admin\/'\)/);
+  assert.match(templates, /ctx\.redactionHref \?\? asset\('\/redaction\/', ctx\)/);
+  assert.match(templates, /ctx\.redactionHref \?\? `\$\{ctx\.basePath\}\/admin`/);
+  assert.match(live, /mode === 'demo-local' && editorial\.adminBasePath/);
+  assert.match(live, /link\(base, '\/redaction\/'\)/);
+  assert.doesNotMatch(site, /demo\/redaction/);
 });
 
 test('pied mobile : le « · » de « Espace de rédaction » est masqué comme les autres', () => {

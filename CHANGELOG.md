@@ -1,6 +1,7 @@
 # Journal
 
 ## Non publié
+- Démonstration Le Quorum : le lien « Espace de rédaction » du pied mène à la rédaction de démonstration (`/admin/`), et non plus à une adresse `/demo/redaction/` qui n’existe pas. Les journaux installés gardent `/redaction/`.
 - Version 0.4.0. Socle épinglé à 1.4.1 (7ecf21d).
 - Météo du mât au téléphone : la puce prend toute la largeur et garde « Québec 6° », avec le maximum et le minimum du jour, puis « Demain » avec son icône et sa température. Les données viennent du même appel à Open-Meteo. La puce d’attente a la même hauteur et la même disposition, donc rien ne bouge au chargement. Si Open-Meteo ne répond pas en 10 secondes, la puce se retire. Rien ne change à l’ordinateur.
 - Mât illustré : une image sans crédit n’affiche plus de pastille vide dans le coin ; sur le site vivant, le crédit donne aussi la licence (« Photo : abdallahh (CC BY 2.0) »), comme pendant la rotation des images.
