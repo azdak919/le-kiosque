@@ -1,6 +1,7 @@
 # Journal
 
 ## Non publié
+- Le Socle ne se déploie plus comme Worker Cloudflare. La rédaction va sur un serveur PHP (Node sert au développement et aux tests). Le site public peut rester sur GitHub Pages ou Cloudflare Pages. Le Worker sveltia-cms-auth est conservé.
 - Météo du mât au téléphone : la puce prend toute la largeur et garde « Québec 6° », avec le maximum et le minimum du jour, puis « Demain » avec son icône et sa température. Les données viennent du même appel à Open-Meteo. La puce d’attente a la même hauteur et la même disposition, donc rien ne bouge au chargement. Si Open-Meteo ne répond pas en 10 secondes, la puce se retire. Rien ne change à l’ordinateur.
 - Mât illustré : une image sans crédit n’affiche plus de pastille vide dans le coin ; sur le site vivant, le crédit donne aussi la licence (« Photo : abdallahh (CC BY 2.0) »), comme pendant la rotation des images.
 - Version 0.3.4. Socle épinglé à 1.3.3 (07f8e28).
