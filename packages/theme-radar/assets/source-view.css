@@ -980,6 +980,11 @@
   }
 }
 @media (max-width: 720px) {
+  /* Parité LE-RADAR : moins d’air entre « Le fil étudiant » et La une. */
+  .news-hero > .article--lead,
+  .article--lead { padding-top: 6px; }
+  .article-eyebrow,
+  .article--lead .article-eyebrow { margin-bottom: 4px; }
   .news-tail-body,
   .news-tail-grid { grid-template-columns: 1fr; }
   /*
