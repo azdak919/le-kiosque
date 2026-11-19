@@ -1304,6 +1304,72 @@
     }
   }
 
+  /* Jour i des prévisions quotidiennes Open-Meteo (0 = aujourd’hui, 1 = demain). */
+  function dailyAt(daily, i) {
+    if (!daily || !Array.isArray(daily.temperature_2m_max)) return null;
+    var max = Number(daily.temperature_2m_max[i]);
+    var min = Number(daily.temperature_2m_min && daily.temperature_2m_min[i]);
+    if (!Number.isFinite(max) || !Number.isFinite(min)) return null;
+    return { max: Math.round(max), min: Math.round(min), code: Number(daily.weather_code && daily.weather_code[i]) };
+  }
+
+  function weatherExtrasTitle(value) {
+    var parts = [];
+    if (value.today) parts.push('aujourd’hui max ' + value.today.max + '°, min ' + value.today.min + '°');
+    if (value.tomorrow) parts.push('demain max ' + value.tomorrow.max + '°, min ' + value.tomorrow.min + '°');
+    return parts.length ? ' · ' + parts.join(' · ') : '';
+  }
+
+  /* Maximum et minimum du jour, puis « Demain » avec icône et température.
+     Affiché seulement dans le dock du téléphone (CSS) ; value null = puce
+     d’attente (tirets, rond à la place de l’icône), même gabarit. */
+  function appendWeatherExtras(chip, value, meteoBase) {
+    if (value && !value.today && !value.tomorrow) return;
+    var span = function (cls, text) {
+      var el = document.createElement('span');
+      el.className = cls;
+      if (text != null) el.textContent = text;
+      return el;
+    };
+    var today = span('weather-chip__today');
+    var max = span('weather-chip__max');
+    max.appendChild(span('weather-chip__label', 'Max '));
+    max.appendChild(document.createTextNode(value && value.today ? value.today.max + '°' : '–°'));
+    var min = span('weather-chip__min');
+    min.appendChild(span('weather-chip__label', 'Min '));
+    min.appendChild(document.createTextNode(value && value.today ? value.today.min + '°' : '–°'));
+    today.appendChild(max);
+    today.appendChild(min);
+    if (!value || value.today) chip.appendChild(today);
+    if (value && !value.tomorrow) return;
+    var next = span('weather-chip__tomorrow');
+    next.appendChild(span('weather-chip__label', 'Demain'));
+    var icon;
+    if (value) {
+      icon = document.createElement('img');
+      icon.className = 'weather-icon-meteocon weather-chip__tomorrow-icon';
+      icon.src = meteoBase + weatherIconName(value.tomorrow.code, 1) + '.svg';
+      icon.alt = '';
+      icon.setAttribute('aria-hidden', 'true');
+      icon.width = 18;
+      icon.height = 18;
+    } else {
+      icon = span('weather-icon-meteocon weather-icon-attente weather-chip__tomorrow-icon');
+    }
+    next.appendChild(icon);
+    next.appendChild(span('weather-chip__tomorrow-temp', value ? value.tomorrow.max + '°' : '–°'));
+    chip.appendChild(next);
+  }
+
+  /* Open-Meteo sans réponse : on abandonne après 10 s, la puce d’attente se
+     retire (au lieu de rester « –° » indéfiniment). */
+  function weatherFetch(url) {
+    if (typeof AbortController !== 'function') return fetch(url);
+    var ctrl = new AbortController();
+    var timer = setTimeout(function () { ctrl.abort(); }, 10000);
+    return fetch(url, { signal: ctrl.signal }).finally(function () { clearTimeout(timer); });
+  }
+
   function preloadWeatherIcons(urls) {
     var each = urls.map(function (url) {
       return new Promise(function (resolve) {
@@ -1366,6 +1432,7 @@
         wait.appendChild(dot);
         wait.appendChild(waitName);
         wait.appendChild(waitTemp);
+        appendWeatherExtras(wait, null, '');
         host.appendChild(wait);
         fitWeatherName(waitName, loc.name, host.closest('.masthead-status'));
       });
@@ -1373,7 +1440,7 @@
     }
 
     Promise.all(localities.map(async function (loc) {
-      var cacheKey = 'kiosque-weather:v2:' + loc.name.toLowerCase();
+      var cacheKey = 'kiosque-weather:v3:' + loc.name.toLowerCase();
       try {
         var cached = JSON.parse(localStorage.getItem(cacheKey) || 'null');
         if (cached && Date.now() - cached.savedAt < 30 * 60 * 1000) return cached.value;
@@ -1384,7 +1451,7 @@
       var displayName = loc.name;
       // Géocodage Open-Meteo (données OpenStreetMap) si le CMS n’a pas posé de coords.
       if (!Number.isFinite(lat) || !Number.isFinite(lon)) {
-        var geocode = await fetch(
+        var geocode = await weatherFetch(
           'https://geocoding-api.open-meteo.com/v1/search?count=1&language=fr&countryCode=CA&name='
             + encodeURIComponent(loc.name),
         ).then(function (r) { if (!r.ok) throw new Error('geocoding'); return r.json(); });
@@ -1395,14 +1462,18 @@
         displayName = place.name || loc.name;
       }
 
-      var forecast = await fetch(
-        'https://api.open-meteo.com/v1/forecast?current=temperature_2m,weather_code,is_day&timezone=auto&latitude='
+      var forecast = await weatherFetch(
+        // Même appel : conditions actuelles + maximum/minimum du jour et de demain (puce mobile).
+        'https://api.open-meteo.com/v1/forecast?current=temperature_2m,weather_code,is_day'
+          + '&daily=weather_code,temperature_2m_max,temperature_2m_min&forecast_days=2&timezone=auto&latitude='
           + encodeURIComponent(lat) + '&longitude=' + encodeURIComponent(lon),
       ).then(function (r) { if (!r.ok) throw new Error('forecast'); return r.json(); });
 
       var value = {
         name: displayName,
         temperature: Math.round(forecast.current.temperature_2m),
+        today: dailyAt(forecast.daily, 0),
+        tomorrow: dailyAt(forecast.daily, 1),
         code: Number(forecast.current.weather_code),
         isDay: Number(forecast.current.is_day),
         latitude: lat,
@@ -1416,9 +1487,12 @@
     })).then(function (values) {
       /* Icônes chargées avant la pose : plus de puce sans icône pendant une
          seconde (au pire 1,5 s d'attente, puis on pose quand même). */
-      return preloadWeatherIcons(values.map(function (value) {
-        return meteoBase + weatherIconName(value.code, value.isDay) + '.svg';
-      })).then(function () { return values; });
+      var icons = [];
+      values.forEach(function (value) {
+        icons.push(meteoBase + weatherIconName(value.code, value.isDay) + '.svg');
+        if (value.tomorrow) icons.push(meteoBase + weatherIconName(value.tomorrow.code, 1) + '.svg');
+      });
+      return preloadWeatherIcons(icons).then(function () { return values; });
     }).then(function (values) {
       if (gen !== weatherPaintGen) return;
       host.querySelectorAll('.weather-chip, .masthead-weather__city').forEach(function (node) { node.remove(); });
@@ -1436,7 +1510,7 @@
           var titleParts = ['Prévisions Environnement Canada — ' + value.name];
           if (value.meteomedia) titleParts.push('MétéoMédia : ' + value.meteomedia);
           chip.title = titleParts.join(' · ');
-          chip.setAttribute('aria-label', 'Météo à ' + value.name + ' — ouvrir Environnement Canada');
+          chip.setAttribute('aria-label', 'Météo à ' + value.name + ', ' + value.temperature + '°' + weatherExtrasTitle(value) + ' — ouvrir Environnement Canada');
           if (value.meteomedia) chip.dataset.meteomedia = value.meteomedia;
           if (value.envcan) chip.dataset.envcan = value.envcan;
           if (Number.isFinite(value.latitude) && Number.isFinite(value.longitude)) {
@@ -1461,8 +1535,9 @@
         chip.appendChild(img);
         chip.appendChild(nameEl);
         chip.appendChild(temp);
+        appendWeatherExtras(chip, value, meteoBase);
         host.appendChild(chip);
-        chip.title = value.name + ' · ' + value.temperature + '°';
+        chip.title = value.name + ' · ' + value.temperature + '°' + weatherExtrasTitle(value);
         var status = host.closest('.masthead-status');
         var ajuster = function () { fitWeatherName(nameEl, value.name, status); };
         ajuster();
