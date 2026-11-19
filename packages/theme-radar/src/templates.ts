@@ -51,6 +51,11 @@ export interface RenderContext {
     seedUrl: string;
     databaseKey: string;
   };
+  /**
+   * Lien du pied « Espace de rédaction ». Absent : `<basePath>/redaction/`,
+   * comme sur un vrai journal. La vitrine le pose sur `/admin/`.
+   */
+  redactionHref?: string;
 }
 
 export interface MastheadOptions {
@@ -1016,7 +1021,7 @@ ${content}
             : ''
       }
       <p class="site-foot__legal">${footCopyright(pub, ctx.buildYear)}</p>
-      <p class="site-foot__built">${footBuiltHtml(asset('/redaction/', ctx))}</p>
+      <p class="site-foot__built">${footBuiltHtml(ctx.redactionHref ?? asset('/redaction/', ctx))}</p>
     </div>
   </div>
 </footer>
@@ -1078,7 +1083,7 @@ ${content}
 ${ctx.editorial ? `<script>window.KIOSQUE_EDITORIAL=${JSON.stringify(ctx.editorial.mode === 'socle-vivant'
   // Paquet complet : le socle PHP de la même installation remet le sous-dossier dans ces chemins.
   ? { mode: 'socle-vivant', apiBase: ctx.basePath, publicBasePath: ctx.basePath, adminBasePath: `${ctx.basePath}/redaction`, assetsBase: ctx.editorial.assetsBase }
-  : { mode: 'demo-local', publicBasePath: ctx.basePath, adminBasePath: `${ctx.basePath}/admin`, assetsBase: ctx.editorial.assetsBase, seedUrl: ctx.editorial.seedUrl, publicationSlug: pub.slug, databaseKey: ctx.editorial.databaseKey }).replace(/</g, '\\u003c')};</script>
+  : { mode: 'demo-local', publicBasePath: ctx.basePath, adminBasePath: (ctx.redactionHref ?? `${ctx.basePath}/admin`).replace(/\/+$/, ''), assetsBase: ctx.editorial.assetsBase, seedUrl: ctx.editorial.seedUrl, publicationSlug: pub.slug, databaseKey: ctx.editorial.databaseKey }).replace(/</g, '\\u003c')};</script>
 <script type="module" src="${ctx.editorial.assetsBase}/front.js"></script>` : ''}
 </body>
 </html>

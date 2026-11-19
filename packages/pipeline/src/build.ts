@@ -357,6 +357,7 @@ export async function build(options: BuildOptions): Promise<BuildResult> {
       seedUrl: `${editorialAssetsBase}/seed.json`,
       databaseKey,
     } : undefined,
+    redactionHref: config.editorial?.redactionHref,
   };
 
   const base = bundle.publication.siteUrl.replace(/\/+$/, '');

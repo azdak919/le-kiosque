@@ -157,6 +157,8 @@ await build({
     root: journalRoot,
     source: rootConfig.source ?? { adapter: 'markdown' },
     deploy: { ...rootConfig.deploy, basePath: demoBase },
+    // La rédaction de la vitrine vit à /admin/, pas sous une page redaction du dossier demo.
+    editorial: { ...rootConfig.editorial, redactionHref: withBase(basePath, '/admin/') },
   },
   bundle: demoBundle,
   outDir: path.join(outDir, 'demo'),
