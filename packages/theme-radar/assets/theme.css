@@ -2735,6 +2735,7 @@ a.masthead-sports__chip:focus-visible {
   .masthead-clock,
   .masthead-weather,
   .masthead-sports,
+  .masthead-sports-strip,
   .masthead-status,
   .masthead-weather-dock,
   .masthead-background,
@@ -3261,35 +3262,86 @@ html {
 }
 
 /* ---------------------------------------------------------------------------
- * Mobile façon LE-RADAR (t352u) — ordre : date, titre, outils, radio, météo
- * (grille 2 colonnes), sports pleine largeur sur 2 lignes. Valeurs relevées
- * sur le-radar.ca à 390 px (date r5 h29, outils 35 px, météo r5 h29,
- * carte sports r6 ≈ 54 px, marges latérales 18 px, écarts 4 px).
+ * Mobile façon LE-RADAR — ordre : date, nom, sous-titre, outils, puis crédit
+ * photo dans le coin sous les boutons. Rythme vertical : --mat-gap (8 px).
+ * Boutons espacés également (space-between, écart 4 px, pas de groupes).
+ * Sports : hors du mât, sous la radio / le dock météo.
  * ------------------------------------------------------------------------- */
 @media (max-width: 720px) {
   html { --mat-h: 29px; --mat-rayon: 5px; --mat-texte: 11px; --mat-pad: 0 10px; }
-  :has(> .masthead-utility) { display: flex; flex-direction: column; }
+  .masthead { --mat-gap: 8px; }
+  .masthead--illustrated > .wrap,
+  :has(> .masthead-utility) {
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    gap: var(--mat-gap);
+    padding-top: var(--mat-gap);
+    padding-bottom: var(--mat-gap);
+  }
   .masthead .masthead-utility { display: contents; }
-  .masthead .masthead-clock { order: 1; align-self: flex-start; font-weight: 650; }
+  .masthead .masthead-clock { order: 1; align-self: flex-start; font-weight: 650; margin: 0; }
   :has(> .masthead-utility) > .masthead-top { order: 2; }
   :has(> .masthead-utility) > :not(.masthead-utility):not(.masthead-top) { order: 4; }
   .masthead .masthead-tools {
-    order: 3; width: 100%; display: flex; justify-content: space-between; gap: 4px;
-    margin: 6px 0 8px;
+    order: 3;
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: nowrap;
+    gap: 4px;
+    margin: 0;
   }
-  .masthead .masthead-tools .masthead-tool { width: 35px; height: 35px; min-width: 35px; border-radius: 999px; }
-  .masthead { height: auto !important; max-height: none !important; min-height: 0 !important; }
-  :has(> .masthead-utility) { padding-top: 10px; padding-bottom: 24px; }
-  .masthead .masthead-top { margin: 6px 0 0; }
-  .masthead .masthead-tagline { display: none; }
+  .masthead .masthead-tools > .masthead-tool {
+    flex: 0 0 auto;
+    box-sizing: border-box;
+    width: 35px;
+    height: 35px;
+    min-width: 35px;
+    margin: 0;
+    border-radius: 999px;
+  }
+  .masthead,
+  .masthead--illustrated {
+    height: auto !important;
+    max-height: none !important;
+    min-height: 0 !important;
+    justify-content: flex-start;
+  }
+  .masthead .masthead-top {
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: var(--mat-gap);
+  }
+  .masthead[data-text-alignment="center"] .masthead-top { align-items: center; }
+  .masthead[data-text-alignment="right"] .masthead-top { align-items: flex-end; }
+  .masthead .masthead-top > div:first-child {
+    display: flex;
+    flex-direction: column;
+    gap: var(--mat-gap);
+  }
+  .masthead .wordmark,
+  .masthead .masthead-tagline,
+  .masthead .masthead-meta { margin: 0; }
+  .masthead .masthead-tagline { display: block; }
+  /* Crédit dans le coin, clairement sous les boutons (parité LE-RADAR). */
+  .masthead:has(.masthead-photo-credit:not(:empty)) > .wrap,
+  .masthead--illustrated:has(.masthead-photo-credit:not(:empty)) > .wrap {
+    padding-bottom: calc(var(--mat-gap) * 2 + 16px);
+  }
+  .masthead:has(.masthead-photo-credit:not(:empty)) .masthead-photo-credit {
+    bottom: var(--mat-gap);
+  }
   .masthead-weather-dock { padding: 4px 18px 2px; }
   .masthead-weather-dock .masthead-status {
     display: flex !important; flex-direction: column; align-items: stretch; gap: 4px; width: 100%; overflow: visible;
   }
   /* Puce météo pleine largeur : maintenant, max/min du jour, puis demain. */
   .masthead-weather-dock .masthead-weather { display: grid !important; grid-template-columns: 1fr; gap: 4px; width: 100%; }
-  .masthead-weather-dock .weather-chip,
-  .masthead-weather-dock .masthead-status .sports-chip { background: rgba(42, 46, 54, .92) !important; color: #fff; }
+  .masthead-weather-dock .weather-chip { background: rgba(42, 46, 54, .92) !important; color: #fff; }
   .masthead-weather-dock .weather-chip { width: 100%; justify-content: flex-start; gap: 5px; padding: 0 7px; font-weight: 650; }
   .masthead-weather-dock .weather-chip__today,
   .masthead-weather-dock .weather-chip__tomorrow {
@@ -3309,107 +3361,91 @@ html {
     .masthead-weather-dock .weather-chip__today { gap: 5px; }
     .masthead-weather-dock .weather-chip__tomorrow { margin-left: 6px; padding-left: 6px; }
   }
-  .masthead-weather-dock .masthead-sports { width: 100%; height: auto !important; max-height: none !important; overflow: visible !important; }
-  .masthead-weather-dock .masthead-status .sports-chip {
-    width: 100%; max-width: none; height: auto !important; min-height: 44px;
-    border-radius: 6px !important; padding: 5px 10px 5px 7px; gap: 6px; font-weight: 700; align-items: center;
-  }
-  .masthead-weather-dock .sports-chip__line,
-  .masthead-weather-dock .sports-chip__line-inner { justify-content: flex-start !important; text-align: left !important; }
-  .masthead-weather-dock .sports-chip__body { display: flex; flex-direction: column; align-items: flex-start !important; text-align: left !important; min-width: 0; flex: 1 1 auto; }
-  .masthead-weather-dock .masthead-status .sports-chip__sub {
-    display: block !important; font-size: 9px; font-weight: 600; opacity: .72;
-    white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
-  }
 }
 
-/* Bureau : bandeau à deux (ou trois) voies, puces sur 2 lignes.
- * On lève le forçage 1 ligne / 32 px du compactage mât pour que la date,
- * le (F)/(H) et la compétition restent visibles. Hauteur réservée dès le
- * chargement pour éviter un saut quand le JS peint les puces. */
-@media (min-width: 721px) {
-  /* Bandeau pleine largeur sous la rangée date / météo / outils : les deux
-     (ou trois) voies ont la place de montrer noms, (F)/(H) et dates, sans
-     saut — la rangée est réservée dès qu’un payload est dans le HTML. */
-  .masthead-utility:has(.masthead-sports[data-sports-payload]) {
-    grid-template-columns: max-content minmax(0, 1fr) auto;
-    align-items: center;
-  }
-  .masthead-utility:has(.masthead-sports[data-sports-payload]) .masthead-status {
-    display: contents;
-  }
-  .masthead-utility:has(.masthead-sports[data-sports-payload]) .masthead-clock {
-    grid-column: 1;
-    grid-row: 1;
-  }
-  .masthead-utility:has(.masthead-sports[data-sports-payload]) .masthead-weather {
-    grid-column: 2;
-    grid-row: 1;
-    justify-self: start;
-  }
-  .masthead-utility:has(.masthead-sports[data-sports-payload]) .masthead-tools {
-    grid-column: 3;
-    grid-row: 1;
-  }
-  .masthead-utility:has(.masthead-sports[data-sports-payload]) .masthead-sports {
-    grid-column: 1 / -1;
-    grid-row: 2;
+
+/* Bandeau sports sous la radio (parité LE-RADAR PR 394) : hors du mât,
+ * avant la nav et le fil. Hauteur réservée dès le premier paint pour
+ * éviter un saut quand le JS peint les puces. */
+.masthead-sports-strip {
+  display: none;
+  max-width: var(--maxw);
+  margin: 0 auto;
+  padding: 8px var(--pad, 24px);
+  box-sizing: border-box;
+  gap: 6px;
+  align-items: stretch;
+  min-width: 0;
+}
+.masthead-sports-strip:not([hidden]),
+.masthead-sports-strip[hidden]:not(.is-empty) {
+  min-height: 60px;
+  align-items: stretch;
+  display: flex;
+  flex-wrap: nowrap;
+  overflow: hidden;
+}
+.masthead-sports-strip[hidden]:not(.is-empty) {
+  visibility: hidden;
+  pointer-events: none;
+  opacity: 0;
+}
+.masthead-sports-strip.is-empty {
+  display: none !important;
+  min-height: 0;
+}
+.masthead-sports-strip.masthead-sports--split {
+  display: flex;
+  gap: 6px;
+}
+.masthead-sports-strip .sports-chip,
+.masthead-sports-strip .masthead-sports__chip {
+  flex: 1 1 0;
+  width: auto;
+  max-width: none;
+  height: auto !important;
+  min-height: 44px;
+  max-height: none !important;
+  padding: 5px 10px 5px 7px;
+  border-radius: 6px !important;
+  align-items: center;
+  overflow: hidden;
+}
+.masthead-sports-strip .sports-chip .sports-chip__body {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: center;
+  min-width: 0;
+}
+.masthead-sports-strip .sports-chip .sports-chip__sub {
+  display: block !important;
+  font-size: 9px;
+  font-weight: 600;
+  opacity: 0.72;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: clip;
+  max-width: 100%;
+}
+.masthead-sports-strip .sports-chip .sports-chip__line,
+.masthead-sports-strip .sports-chip .sports-chip__line-inner {
+  font-size: var(--mat-texte, 11px);
+  line-height: 1.35;
+  justify-content: flex-start;
+  text-align: left;
+}
+@media (max-width: 720px) {
+  .masthead-sports-strip {
+    padding: 4px 18px 8px;
     width: 100%;
-    margin-top: 4px;
   }
-  .masthead-status {
-    align-items: center;
-    overflow: visible;
-    min-height: 44px;
-  }
-  .masthead-status .masthead-sports,
-  .masthead-utility:has(.masthead-sports[data-sports-payload]) .masthead-sports {
-    height: auto !important;
-    min-height: 44px;
-    max-height: none !important;
-    align-items: stretch;
-    flex: 1 1 auto;
-  }
-  .masthead-status .masthead-sports.masthead-sports--split {
-    display: flex;
-    gap: 6px;
-  }
-  .masthead-status .sports-chip.sports-chip--match,
-  .masthead-status .masthead-sports__chip.sports-chip--match {
-    height: auto !important;
-    min-height: 44px;
-    max-height: none !important;
-    padding: 5px 10px 5px 7px;
-    border-radius: 6px !important;
-    align-items: center;
-    overflow: hidden;
-  }
-  .masthead-status .masthead-sports--split .sports-chip,
-  .masthead-status .masthead-sports--split .masthead-sports__chip {
-    flex: 1 1 0;
-    width: auto;
+  .masthead-sports-strip .sports-chip,
+  .masthead-sports-strip .masthead-sports__chip {
+    width: 100%;
     max-width: none;
-  }
-  .masthead-status .sports-chip .sports-chip__body {
-    display: flex;
-    flex-direction: column;
-    align-items: flex-start;
-    justify-content: center;
-    min-width: 0;
-  }
-  .masthead-status .sports-chip .sports-chip__sub {
-    display: block !important;
-    font-size: 9px;
-    font-weight: 600;
-    opacity: 0.72;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: clip;
-    max-width: 100%;
-  }
-  .masthead-status .sports-chip .sports-chip__line {
-    font-size: var(--mat-texte);
-    line-height: 1.35;
+    font-weight: 700;
+    gap: 6px;
   }
 }
 

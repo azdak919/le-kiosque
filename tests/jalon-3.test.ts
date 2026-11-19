@@ -140,6 +140,16 @@ test('la vitrine expose le bandeau illustré, les outils et la composition magaz
   assert.match(home, /id="masthead-backgrounds"/);
   assert.match(home, /data-weather-localities="/);
   assert.match(home, /data-sports-payload="/);
+  assert.match(home, /id="masthead-sports-strip"/, 'bandeau sports sous la radio');
+  const mastEnd = home.indexOf('</header>');
+  const dockAt = home.indexOf('id="masthead-weather-dock"');
+  const stripAt = home.indexOf('id="masthead-sports-strip"');
+  const navAt = home.indexOf('class="nav-wrap"');
+  assert.ok(mastEnd > 0 && dockAt > 0 && stripAt > 0 && navAt > 0);
+  assert.ok(stripAt > mastEnd, 'cartes sports hors du mât');
+  assert.ok(stripAt > dockAt, 'cartes sports sous le dock météo');
+  assert.ok(stripAt < navAt, 'cartes sports avant la nav et le fil');
+  assert.ok(!home.slice(0, mastEnd).includes('data-sports-payload="'), 'pas de payload sports dans le mât');
   assert.match(home, /Les Élans|Les &Eacute;lans/);
   assert.match(home, /\/sports\//, 'puce sports pointe vers la page résultats');
   const sportsPage = await readFile(path.join(out, 'sports/index.html'), 'utf8');

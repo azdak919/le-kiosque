@@ -644,64 +644,73 @@ export function applyBranding(bundle, base) {
   const sports = publication.masthead?.sports;
   let statusHost = document.querySelector('[data-masthead-status]');
   let weatherHost = document.querySelector('.masthead-weather');
-  let sportsHost = document.querySelector('.masthead-sports');
+  let sportsHost = document.querySelector('#masthead-sports-strip, .masthead-sports-strip, .masthead-sports');
   const needWeather = Boolean(weather?.enabled && weather.localities?.length);
   const sportsTeams = Array.isArray(sports?.teams) && sports.teams.length
     ? sports.teams
     : (sports?.team ? [sports.team] : []);
   const needSports = Boolean(sports?.enabled !== false && sportsTeams.length);
-  if (needWeather || needSports) {
+  if (needWeather) {
     if (!statusHost) {
       statusHost = document.createElement('div');
       statusHost.className = 'masthead-status';
       statusHost.dataset.mastheadStatus = '';
       document.querySelector('.masthead-tools')?.before(statusHost);
     }
-    if (needWeather) {
-      if (!weatherHost || !statusHost.contains(weatherHost)) {
-        weatherHost = document.createElement('div');
-        weatherHost.className = 'masthead-weather';
-        statusHost.prepend(weatherHost);
-      }
-      weatherHost.dataset.weatherLocalities = JSON.stringify(weather.localities.slice(0, 4));
-    } else weatherHost?.remove();
-    if (needSports) {
-      if (!sportsHost || !statusHost.contains(sportsHost)) {
-        sportsHost = document.createElement('div');
-        sportsHost.className = 'masthead-sports';
-        statusHost.append(sportsHost);
-      }
-      const sportsHref = sportsBoardHref(base, sports);
-      // setAttribute : évite les surprises dataset + garantit le re-parse kiosque.js
-      const sportsPayload = pruneSportsPayload({
-        teams: sportsTeams,
-        results: sports.results || [],
-        nextGame: sports.nextGame || null,
-        nextGames: sports.nextGames || [],
-        demoAsOf: sports.demoAsOf || null,
-        demoLive: sports.demoLive,
-      }, { demoAsOf: sports.demoAsOf, demoLive: sports.demoLive });
-      const prunedTeams = Array.isArray(sportsPayload.teams) && sportsPayload.teams.length
-        ? sportsPayload.teams
-        : sportsTeams;
-      sportsHost.setAttribute('data-sports-payload', JSON.stringify({
-        teams: prunedTeams,
-        team: prunedTeams[0],
-        results: sportsPayload.results || [],
-        nextGame: sportsPayload.nextGame || null,
-        nextGames: sportsPayload.nextGames || [],
-        href: sportsHref,
-        demoAsOf: sportsPayload.demoAsOf || sports.demoAsOf || null,
-        demoLive: sports.demoLive || null,
-        timeZone: bundle.publication.timeZone || 'America/Toronto',
-      }));
-      sportsHost.setAttribute('aria-label', 'Au tableau — scores et matchs');
-    } else sportsHost?.remove();
+    if (!weatherHost || !statusHost.contains(weatherHost)) {
+      weatherHost = document.createElement('div');
+      weatherHost.className = 'masthead-weather';
+      statusHost.prepend(weatherHost);
+    }
+    weatherHost.dataset.weatherLocalities = JSON.stringify(weather.localities.slice(0, 4));
   } else {
-    statusHost?.remove();
     weatherHost?.remove();
-    sportsHost?.remove();
+    if (statusHost && !statusHost.querySelector('.masthead-weather')) statusHost.remove();
   }
+  if (needSports) {
+    const inMast = Boolean(sportsHost && sportsHost.closest('header.masthead, .masthead-status'));
+    if (!sportsHost || inMast) {
+      const strip = document.createElement('div');
+      strip.className = 'masthead-sports-strip masthead-sports';
+      strip.id = 'masthead-sports-strip';
+      strip.hidden = true;
+      strip.setAttribute('aria-live', 'polite');
+      const dock = document.getElementById('masthead-weather-dock');
+      const nav = document.querySelector('.nav-wrap');
+      if (dock) dock.after(strip);
+      else if (nav) nav.before(strip);
+      else document.querySelector('.masthead')?.after(strip);
+      if (sportsHost && sportsHost !== strip) sportsHost.remove();
+      sportsHost = strip;
+    }
+    sportsHost.classList.add('masthead-sports-strip', 'masthead-sports');
+    if (!sportsHost.id) sportsHost.id = 'masthead-sports-strip';
+    const sportsHref = sportsBoardHref(base, sports);
+    // setAttribute : évite les surprises dataset + garantit le re-parse kiosque.js
+    const sportsPayload = pruneSportsPayload({
+      teams: sportsTeams,
+      results: sports.results || [],
+      nextGame: sports.nextGame || null,
+      nextGames: sports.nextGames || [],
+      demoAsOf: sports.demoAsOf || null,
+      demoLive: sports.demoLive,
+    }, { demoAsOf: sports.demoAsOf, demoLive: sports.demoLive });
+    const prunedTeams = Array.isArray(sportsPayload.teams) && sportsPayload.teams.length
+      ? sportsPayload.teams
+      : sportsTeams;
+    sportsHost.setAttribute('data-sports-payload', JSON.stringify({
+      teams: prunedTeams,
+      team: prunedTeams[0],
+      results: sportsPayload.results || [],
+      nextGame: sportsPayload.nextGame || null,
+      nextGames: sportsPayload.nextGames || [],
+      href: sportsHref,
+      demoAsOf: sportsPayload.demoAsOf || sports.demoAsOf || null,
+      demoLive: sports.demoLive || null,
+      timeZone: bundle.publication.timeZone || 'America/Toronto',
+    }));
+    sportsHost.setAttribute('aria-label', 'Au tableau — scores et matchs');
+  } else sportsHost?.remove();
   /* Peint la puce sports (kiosque.js) après injection du payload — init DOM a déjà tourné. */
   try {
     if (typeof window.KiosqueRefreshMasthead === 'function') window.KiosqueRefreshMasthead();

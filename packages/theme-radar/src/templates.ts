@@ -252,9 +252,14 @@ function radioTuner(ctx: RenderContext): string {
   return radioBarHtml(ctx.publication.radio);
 }
 
-/** Emplacement sous le tuner pour dock météo + sports mobile (rempli en JS). */
+/** Emplacement sous le tuner pour la météo mobile (rempli en JS). */
 function weatherDockHtml(): string {
-  return `<div class="masthead-weather-dock" id="masthead-weather-dock" hidden aria-label="Météo et sports"></div>`;
+  return `<div class="masthead-weather-dock" id="masthead-weather-dock" hidden aria-label="Météo"></div>`;
+}
+
+/** Cartes sports sous la radio (et sous le dock météo sur téléphone), hors du mât. */
+function sportsStripHtml(ctx: RenderContext): string {
+  return sportsPayload(ctx);
 }
 
 /**
@@ -405,7 +410,7 @@ function sportsPayload(ctx: RenderContext): string {
     demoLive: sports.demoLive,
     timeZone: ctx.publication.timeZone || 'America/Toronto',
   };
-  return `<div class="masthead-sports" data-sports-payload="${esc(JSON.stringify(payload))}" aria-label="Au tableau — scores et matchs" aria-live="polite"></div>`;
+  return `<div class="masthead-sports-strip masthead-sports" id="masthead-sports-strip" hidden data-sports-payload="${esc(JSON.stringify(payload))}" aria-label="Au tableau — scores et matchs" aria-live="polite"></div>`;
 }
 
 function sportsGlyphHtml(sport: string): string {
@@ -741,15 +746,13 @@ function mastheadTools(ctx: RenderContext, current?: string): string {
   const localities = weather?.enabled === false ? [] : (weather?.localities ?? []);
   const assetsBase = asset('/assets/', ctx);
   const homeHref = asset('/', ctx);
-  const sportsHtml = sportsPayload(ctx);
   const button = (href: string, label: string, glyph: string, extraClass = '', currentPage = false) =>
     `<a class="masthead-tool${extraClass ? ` ${extraClass}` : ''}" href="${safeUrl(href)}" aria-label="${esc(label)}" title="${esc(label)}"${currentPage ? ' aria-current="page"' : ''}>${glyph}</a>`;
   return `<div class="masthead-utility">
     <p class="masthead-clock"><span data-masthead-date></span><time data-masthead-time></time></p>
-    ${localities.length || sportsHtml
+    ${localities.length
       ? `<div class="masthead-status" data-masthead-status>
-    ${localities.length ? `<div class="masthead-weather" data-weather-localities="${esc(JSON.stringify(localities))}" data-meteocons-base="${esc(asset('/assets/meteocons/animated/', ctx))}" aria-label="Météo"></div>` : ''}
-    ${sportsHtml}
+    <div class="masthead-weather" data-weather-localities="${esc(JSON.stringify(localities))}" data-meteocons-base="${esc(asset('/assets/meteocons/animated/', ctx))}" aria-label="Météo"></div>
   </div>`
       : ''}
     <div class="masthead-tools">
@@ -932,6 +935,7 @@ ${demoBannerHtml(ctx.demoNotice)}
 </header>
 ${radio}
 ${weatherDockHtml()}
+${sportsStripHtml(ctx)}
 <nav class="nav-wrap" aria-label="Sections">
   <div class="wrap">
     <div class="nav-shell" data-nav-shell>

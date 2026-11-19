@@ -652,14 +652,25 @@
     : null;
 
   /**
-   * Dock mobile : on déplace le bandeau .masthead-status (météo + sports)
-   * sous le tuner, pour ne pas écraser le mât et éviter le clipping.
-   * Repli : ancienne cible .masthead-weather seule.
+   * Dock mobile : on déplace seulement la météo (.masthead-status) sous le
+   * tuner. Les cartes sports restent dans #masthead-sports-strip, sous la
+   * radio (et sous le dock), hors du mât — parité LE-RADAR PR 394.
    */
   function mastheadStatusHost() {
     return document.querySelector('[data-masthead-status]')
-      || document.querySelector('.masthead-weather[data-weather-localities]')
-      || document.querySelector('.masthead-sports[data-sports-payload]');
+      || document.querySelector('.masthead-weather[data-weather-localities]');
+  }
+
+  function syncSportsStripVisibility(host, hasItems) {
+    if (!host) return;
+    if (hasItems) {
+      host.classList.remove('is-empty');
+      host.hidden = false;
+    } else {
+      host.classList.add('is-empty');
+      host.hidden = true;
+      host.textContent = '';
+    }
   }
 
   function setMastheadWeatherDocked(docked) {
@@ -1533,17 +1544,18 @@
       payload = null;
     }
     if (!payload) {
-      host.remove();
+      syncSportsStripVisibility(host, false);
       return;
     }
     sportsPayloadCache = payload;
     sportsSlides = buildSportsSlides(payload);
     if (!sportsSlides.length) {
-      host.remove();
+      syncSportsStripVisibility(host, false);
       sportsPayloadCache = null;
       return;
     }
     /* Départ : deux voies sur ordinateur, une puce sur mobile. */
+    syncSportsStripVisibility(host, true);
     renderMastheadSports(host, false);
     syncMastheadWeatherDock();
     /* Re-peindre codes ↔ noms+institutions au passage mobile/bureau. */
