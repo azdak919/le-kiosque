@@ -1649,6 +1649,9 @@ a.masthead-weather__city:focus-visible {
   flex: 0 0 auto;
   filter: brightness(1.12) saturate(1.05);
 }
+/* Prévisions de la puce (max/min, demain) : seulement dans le dock du téléphone. */
+.weather-chip__today,
+.weather-chip__tomorrow { display: none; }
 /* Puce d'attente (requête météo en cours) : même gabarit, icône en rond. */
 .weather-icon-attente {
   border-radius: 50%;
@@ -2607,6 +2610,8 @@ a.masthead-sports__chip:focus-visible {
 .masthead--image-error .masthead-background,
 .masthead--image-error .masthead-background-shade,
 .masthead--image-error .masthead-photo-credit { display: none; }
+/* Image sans crédit : pas de pastille vide dans le coin du mât. */
+.masthead-photo-credit:empty { display: none; }
 .masthead--image-error { color: var(--ink); min-height: 0; }
 
 /* Enchaînement mât → nav sans bande parasite */
@@ -3251,10 +3256,29 @@ html {
   .masthead-weather-dock .masthead-status {
     display: flex !important; flex-direction: column; align-items: stretch; gap: 4px; width: 100%; overflow: visible;
   }
-  .masthead-weather-dock .masthead-weather { display: grid !important; grid-template-columns: 1fr 1fr; gap: 4px; width: 100%; }
+  /* Puce météo pleine largeur : maintenant, max/min du jour, puis demain. */
+  .masthead-weather-dock .masthead-weather { display: grid !important; grid-template-columns: 1fr; gap: 4px; width: 100%; }
   .masthead-weather-dock .weather-chip,
   .masthead-weather-dock .masthead-status .sports-chip { background: rgba(42, 46, 54, .92) !important; color: #fff; }
   .masthead-weather-dock .weather-chip { width: 100%; justify-content: flex-start; gap: 5px; padding: 0 7px; font-weight: 650; }
+  .masthead-weather-dock .weather-chip__today,
+  .masthead-weather-dock .weather-chip__tomorrow {
+    display: inline-flex; align-items: center; gap: 4px; flex: 0 0 auto; white-space: nowrap;
+    font-variant-numeric: tabular-nums; font-weight: 650;
+  }
+  .masthead-weather-dock .weather-chip__today { margin-left: auto; gap: 7px; }
+  .masthead-weather-dock .weather-chip__tomorrow {
+    margin-left: 8px; padding-left: 8px; border-left: 1px solid rgba(255, 255, 255, 0.28);
+  }
+  .masthead-weather-dock .weather-chip__label { font-weight: 600; opacity: .72; }
+  .masthead-weather-dock .weather-chip__tomorrow .weather-chip__label { margin-right: 1px; }
+  .masthead-weather-dock .weather-chip .weather-chip__tomorrow-icon { width: 18px; height: 18px; }
+  .masthead-weather-dock .weather-chip--attente .weather-chip__today,
+  .masthead-weather-dock .weather-chip--attente .weather-chip__tomorrow-temp { opacity: .6; }
+  @media (max-width: 374.98px) {
+    .masthead-weather-dock .weather-chip__today { gap: 5px; }
+    .masthead-weather-dock .weather-chip__tomorrow { margin-left: 6px; padding-left: 6px; }
+  }
   .masthead-weather-dock .masthead-sports { width: 100%; height: auto !important; max-height: none !important; overflow: visible !important; }
   .masthead-weather-dock .masthead-status .sports-chip {
     width: 100%; max-width: none; height: auto !important; min-height: 44px;

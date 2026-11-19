@@ -1,6 +1,8 @@
 # Journal
 
 ## Non publié
+- Météo du mât au téléphone : la puce prend toute la largeur et garde « Québec 6° », avec le maximum et le minimum du jour, puis « Demain » avec son icône et sa température. Les données viennent du même appel à Open-Meteo. La puce d’attente a la même hauteur et la même disposition, donc rien ne bouge au chargement. Si Open-Meteo ne répond pas en 10 secondes, la puce se retire. Rien ne change à l’ordinateur.
+- Mât illustré : une image sans crédit n’affiche plus de pastille vide dans le coin ; sur le site vivant, le crédit donne aussi la licence (« Photo : abdallahh (CC BY 2.0) »), comme pendant la rotation des images.
 - Version 0.3.4. Socle épinglé à 1.3.3 (07f8e28).
 - Archives : l’année n’est plus répétée (« 2026 / 4 / 2026 ») quand le journal n’en compte qu’une ; la barre des années ne paraît qu’à partir de deux. Sur le site vivant, les articles sont rangés du plus récent au plus ancien, aux archives comme à l’accueil : le dernier article publié prend la grande place.
 - Accueil à l’ordinateur : la colonne vide à droite du fil reçoit « Au tableau » (dernier résultat et prochain match de chaque équipe) et « Rubriques » (nombre d’articles, lien vers les archives). Quand il y a assez d’articles, la colonne « En bref » garde sa place. Au téléphone, ces encadrés passent sous le fil.
