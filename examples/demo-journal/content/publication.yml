@@ -185,6 +185,7 @@ masthead:
         sportLabel: Volleyball
         sex: F
         fictional: true
+        officialUrl: https://rseq.ca/
         colors: { primary: '#6c2163', secondary: '#f4e8f2' }
         results:
           - date: '2026-09-18'
@@ -338,6 +339,7 @@ masthead:
         sportLabel: Soccer
         sex: mixte
         fictional: true
+        officialUrl: https://rseq.ca/
         colors: { primary: '#1a7a4c', secondary: '#e6f5ed' }
         results:
           - date: '2026-09-17'
@@ -362,7 +364,7 @@ masthead:
             competition: RSEQ collégial
         nextGame:
           date: '2026-09-20'
-          time: '16:00'
+          time: '9:00'
           opponent: Barons
           opponentCode: SLA
           opponentInstitution: Champlain College Saint-Lambert
@@ -439,6 +441,7 @@ masthead:
         nextGame:
           date: '2026-09-20'
           time: '20:00'
+          live: true
           opponent: Géants
           opponentCode: CSF
           opponentInstitution: Cégep de Sainte-Foy

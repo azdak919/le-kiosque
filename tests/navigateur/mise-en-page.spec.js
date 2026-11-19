@@ -130,7 +130,7 @@ for (const theme of ['light', 'dark']) for (const largeur of [360, 390, 430]) {
       });
       const sep = [...document.querySelectorAll('.site-foot__sep')].filter((e) => e.getBoundingClientRect().width > 0).length;
       return { vw: innerWidth, horloge: r('.masthead-clock'), titre: r('.masthead-top'), outils, rangee: r('.masthead-tools'),
-        radio: r('.radar-radio-slot'), meteo: r('.masthead-weather-dock .weather-chip'), sports: r('.masthead-weather-dock .sports-chip'),
+        radio: r('.radar-radio-slot'), meteo: r('.masthead-weather-dock .weather-chip'), sports: r('#masthead-sports-strip .sports-chip, .masthead-sports-strip .sports-chip'),
         coupe: [...document.querySelectorAll('.masthead-clock, .masthead-weather-dock .weather-chip__name')].some((e) => e.scrollWidth > e.clientWidth + 1),
         sep, hscroll: document.documentElement.scrollWidth > innerWidth + 1 };
     });

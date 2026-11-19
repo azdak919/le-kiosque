@@ -1063,7 +1063,8 @@ body.with-radio .nav {
 .site-foot,
 .footer {
   margin-top: 20px;
-  padding: 22px 0 40px;
+  /* Assez de place sous la dernière ligne pour les deux boutons flottants. */
+  padding: 22px 0 88px;
   border-top: 1px solid var(--rule);
   font-size: 0.84rem;
   color: var(--muted);
@@ -1170,6 +1171,17 @@ body.with-radio .nav {
 }
 .site-foot__built a {
   font-weight: 600;
+}
+.site-foot__built .site-foot__sep {
+  margin: 0 0.4em;
+}
+.site-foot__redaction {
+  font-weight: 500;
+  color: inherit;
+}
+.site-foot__redaction:hover,
+.site-foot__redaction:focus-visible {
+  color: var(--accent);
 }
 
 /* ─────────────── ARCHIVES (catalogue chronologique / SEO) ─────────────── */
@@ -2107,8 +2119,8 @@ a.masthead-sports__chip:focus-visible {
   font-family: var(--sans);
   font-size: 10px;
   font-weight: 800;
-  letter-spacing: 0.04em;
-  text-transform: uppercase;
+  letter-spacing: 0.02em;
+  text-transform: none;
   line-height: 1.2;
   border-radius: 999px;
   padding: 2px 7px;
@@ -2128,6 +2140,28 @@ a.masthead-sports__chip:focus-visible {
   color: var(--muted);
   background: color-mix(in srgb, var(--rule) 35%, transparent);
   border: 1px solid var(--rule);
+}
+.sports-result--live .sports-result__score--next {
+  color: #b91c1c;
+  font-weight: 800;
+}
+:root[data-theme="dark"] .sports-result--live .sports-result__score--next {
+  color: #fecaca;
+}
+.sports-panel__official {
+  margin: 0.4rem 0 0;
+  font-family: var(--sans);
+  font-size: 12px;
+  font-weight: 650;
+}
+.sports-panel__results-source {
+  color: inherit;
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+.sports-panel__results-source:hover,
+.sports-panel__results-source:focus-visible {
+  color: var(--accent, #6c2163);
 }
 .sports-panel__meta {
   margin: 0;
@@ -2701,6 +2735,7 @@ a.masthead-sports__chip:focus-visible {
   .masthead-clock,
   .masthead-weather,
   .masthead-sports,
+  .masthead-sports-strip,
   .masthead-status,
   .masthead-weather-dock,
   .masthead-background,
@@ -2957,19 +2992,16 @@ a.masthead-sports__chip:focus-visible {
   }
 }
 
-/* ── Outils bas de page — parité LE-RADAR ──
- * Flèche haut : gauche, hors colonne de contenu.
- * Loupe : droite, hors colonne (symétrique).
- * Mobile : repli safe-area + 14 px (pas de gutter).
+/* ── Outils bas de page ──
+ * Flèche « haut de page » juste à gauche de la loupe, même taille (48 px)
+ * et même écart (12 px), en bas à droite. Quand la flèche est masquée,
+ * la loupe reste à cette place (flex-end + display:none sur la flèche).
+ * Mobile : repli safe-area + 14 px.
  */
 .page-tools {
   --tools-fab: 48px;
   --tools-outset: 12px;
   --tools-gutter: max(0px, calc((100vw - min(var(--maxw), 100vw)) / 2));
-  --tools-side-left: max(
-    max(14px, env(safe-area-inset-left, 0px)),
-    calc(var(--tools-gutter) - var(--tools-fab) - var(--tools-outset))
-  );
   --tools-side-right: max(
     max(14px, env(safe-area-inset-right, 0px)),
     calc(var(--tools-gutter) - var(--tools-fab) - var(--tools-outset))
@@ -2980,19 +3012,18 @@ a.masthead-sports__chip:focus-visible {
   bottom: calc(max(16px, env(safe-area-inset-bottom, 0px)) + var(--vk-inset, 0px));
   z-index: 180;
   display: flex;
-  /* DOM = [flèche, loupe] — loupe toujours à droite (même sans flèche). */
+  /* DOM = [flèche, loupe] — les deux en bas à droite, flèche à gauche de la loupe. */
   flex-direction: row;
-  justify-content: flex-start;
+  justify-content: flex-end;
   align-items: flex-end;
   gap: 12px;
-  padding-left: var(--tools-side-left);
+  padding-left: 14px;
   padding-right: var(--tools-side-right);
   pointer-events: none;
 }
 .page-tools > * { pointer-events: auto; }
-/* Parité LE-RADAR : la loupe ne bascule pas à gauche quand #page-scroll-top est hidden. */
 .page-tools > .news-search {
-  margin-left: auto;
+  margin-left: 0;
 }
 
 .page-tools__fab,
@@ -3231,35 +3262,86 @@ html {
 }
 
 /* ---------------------------------------------------------------------------
- * Mobile façon LE-RADAR (t352u) — ordre : date, titre, outils, radio, météo
- * (grille 2 colonnes), sports pleine largeur sur 2 lignes. Valeurs relevées
- * sur le-radar.ca à 390 px (date r5 h29, outils 35 px, météo r5 h29,
- * carte sports r6 ≈ 54 px, marges latérales 18 px, écarts 4 px).
+ * Mobile façon LE-RADAR — ordre : date, nom, sous-titre, outils, puis crédit
+ * photo dans le coin sous les boutons. Rythme vertical : --mat-gap (8 px).
+ * Boutons espacés également (space-between, écart 4 px, pas de groupes).
+ * Sports : hors du mât, sous la radio / le dock météo.
  * ------------------------------------------------------------------------- */
 @media (max-width: 720px) {
   html { --mat-h: 29px; --mat-rayon: 5px; --mat-texte: 11px; --mat-pad: 0 10px; }
-  :has(> .masthead-utility) { display: flex; flex-direction: column; }
+  .masthead { --mat-gap: 8px; }
+  .masthead--illustrated > .wrap,
+  :has(> .masthead-utility) {
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    gap: var(--mat-gap);
+    padding-top: var(--mat-gap);
+    padding-bottom: var(--mat-gap);
+  }
   .masthead .masthead-utility { display: contents; }
-  .masthead .masthead-clock { order: 1; align-self: flex-start; font-weight: 650; }
+  .masthead .masthead-clock { order: 1; align-self: flex-start; font-weight: 650; margin: 0; }
   :has(> .masthead-utility) > .masthead-top { order: 2; }
   :has(> .masthead-utility) > :not(.masthead-utility):not(.masthead-top) { order: 4; }
   .masthead .masthead-tools {
-    order: 3; width: 100%; display: flex; justify-content: space-between; gap: 4px;
-    margin: 6px 0 8px;
+    order: 3;
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: nowrap;
+    gap: 4px;
+    margin: 0;
   }
-  .masthead .masthead-tools .masthead-tool { width: 35px; height: 35px; min-width: 35px; border-radius: 999px; }
-  .masthead { height: auto !important; max-height: none !important; min-height: 0 !important; }
-  :has(> .masthead-utility) { padding-top: 10px; padding-bottom: 24px; }
-  .masthead .masthead-top { margin: 6px 0 0; }
-  .masthead .masthead-tagline { display: none; }
+  .masthead .masthead-tools > .masthead-tool {
+    flex: 0 0 auto;
+    box-sizing: border-box;
+    width: 35px;
+    height: 35px;
+    min-width: 35px;
+    margin: 0;
+    border-radius: 999px;
+  }
+  .masthead,
+  .masthead--illustrated {
+    height: auto !important;
+    max-height: none !important;
+    min-height: 0 !important;
+    justify-content: flex-start;
+  }
+  .masthead .masthead-top {
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: var(--mat-gap);
+  }
+  .masthead[data-text-alignment="center"] .masthead-top { align-items: center; }
+  .masthead[data-text-alignment="right"] .masthead-top { align-items: flex-end; }
+  .masthead .masthead-top > div:first-child {
+    display: flex;
+    flex-direction: column;
+    gap: var(--mat-gap);
+  }
+  .masthead .wordmark,
+  .masthead .masthead-tagline,
+  .masthead .masthead-meta { margin: 0; }
+  .masthead .masthead-tagline { display: block; }
+  /* Crédit dans le coin, clairement sous les boutons (parité LE-RADAR). */
+  .masthead:has(.masthead-photo-credit:not(:empty)) > .wrap,
+  .masthead--illustrated:has(.masthead-photo-credit:not(:empty)) > .wrap {
+    padding-bottom: calc(var(--mat-gap) * 2 + 16px);
+  }
+  .masthead:has(.masthead-photo-credit:not(:empty)) .masthead-photo-credit {
+    bottom: var(--mat-gap);
+  }
   .masthead-weather-dock { padding: 4px 18px 2px; }
   .masthead-weather-dock .masthead-status {
     display: flex !important; flex-direction: column; align-items: stretch; gap: 4px; width: 100%; overflow: visible;
   }
   /* Puce météo pleine largeur : maintenant, max/min du jour, puis demain. */
   .masthead-weather-dock .masthead-weather { display: grid !important; grid-template-columns: 1fr; gap: 4px; width: 100%; }
-  .masthead-weather-dock .weather-chip,
-  .masthead-weather-dock .masthead-status .sports-chip { background: rgba(42, 46, 54, .92) !important; color: #fff; }
+  .masthead-weather-dock .weather-chip { background: rgba(42, 46, 54, .92) !important; color: #fff; }
   .masthead-weather-dock .weather-chip { width: 100%; justify-content: flex-start; gap: 5px; padding: 0 7px; font-weight: 650; }
   .masthead-weather-dock .weather-chip__today,
   .masthead-weather-dock .weather-chip__tomorrow {
@@ -3279,18 +3361,152 @@ html {
     .masthead-weather-dock .weather-chip__today { gap: 5px; }
     .masthead-weather-dock .weather-chip__tomorrow { margin-left: 6px; padding-left: 6px; }
   }
-  .masthead-weather-dock .masthead-sports { width: 100%; height: auto !important; max-height: none !important; overflow: visible !important; }
-  .masthead-weather-dock .masthead-status .sports-chip {
-    width: 100%; max-width: none; height: auto !important; min-height: 44px;
-    border-radius: 6px !important; padding: 5px 10px 5px 7px; gap: 6px; font-weight: 700; align-items: center;
+}
+
+
+/* Bandeau sports sous la radio (parité LE-RADAR PR 394) : hors du mât,
+ * avant la nav et le fil. Hauteur réservée dès le premier paint pour
+ * éviter un saut quand le JS peint les puces. */
+.masthead-sports-strip {
+  display: none;
+  max-width: var(--maxw);
+  margin: 0 auto;
+  padding: 8px var(--pad, 24px);
+  box-sizing: border-box;
+  gap: 6px;
+  align-items: stretch;
+  min-width: 0;
+}
+.masthead-sports-strip:not([hidden]),
+.masthead-sports-strip[hidden]:not(.is-empty) {
+  min-height: 60px;
+  align-items: stretch;
+  display: flex;
+  flex-wrap: nowrap;
+  overflow: hidden;
+}
+.masthead-sports-strip[hidden]:not(.is-empty) {
+  visibility: hidden;
+  pointer-events: none;
+  opacity: 0;
+}
+.masthead-sports-strip.is-empty {
+  display: none !important;
+  min-height: 0;
+}
+.masthead-sports-strip.masthead-sports--split {
+  display: flex;
+  gap: 6px;
+}
+.masthead-sports-strip .sports-chip,
+.masthead-sports-strip .masthead-sports__chip {
+  flex: 1 1 0;
+  width: auto;
+  max-width: none;
+  height: auto !important;
+  min-height: 44px;
+  max-height: none !important;
+  padding: 5px 10px 5px 7px;
+  border-radius: 6px !important;
+  align-items: center;
+  overflow: hidden;
+}
+.masthead-sports-strip .sports-chip .sports-chip__body {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: center;
+  min-width: 0;
+}
+.masthead-sports-strip .sports-chip .sports-chip__sub {
+  display: block !important;
+  font-size: 9px;
+  font-weight: 600;
+  opacity: 0.72;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: clip;
+  max-width: 100%;
+}
+.masthead-sports-strip .sports-chip .sports-chip__line,
+.masthead-sports-strip .sports-chip .sports-chip__line-inner {
+  font-size: var(--mat-texte, 11px);
+  line-height: 1.35;
+  justify-content: flex-start;
+  text-align: left;
+}
+@media (max-width: 720px) {
+  .masthead-sports-strip {
+    padding: 4px 18px 8px;
+    width: 100%;
   }
-  .masthead-weather-dock .sports-chip__line,
-  .masthead-weather-dock .sports-chip__line-inner { justify-content: flex-start !important; text-align: left !important; }
-  .masthead-weather-dock .sports-chip__body { display: flex; flex-direction: column; align-items: flex-start !important; text-align: left !important; min-width: 0; flex: 1 1 auto; }
-  .masthead-weather-dock .masthead-status .sports-chip__sub {
-    display: block !important; font-size: 9px; font-weight: 600; opacity: .72;
-    white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+  .masthead-sports-strip .sports-chip,
+  .masthead-sports-strip .masthead-sports__chip {
+    width: 100%;
+    max-width: none;
+    font-weight: 700;
+    gap: 6px;
   }
+}
+
+/* Match en cours (case « En cours » du Socle, jamais déduit de l’horloge). */
+.sports-chip--live {
+  box-shadow:
+    0 1px 2px rgba(0, 0, 0, 0.28),
+    inset 0 1px 0 rgba(255, 255, 255, 0.12),
+    0 0 0 1px color-mix(in srgb, #dc2626 58%, transparent);
+}
+.sports-chip--live .sports-chip__glyph {
+  color: #fecaca;
+}
+
+/* Sous-ligne trop longue : boucle continue (parité LE-RADAR PR 404/408). */
+.sports-chip--match {
+  --sports-loop-gap: 48px;
+  --sports-scroll-duration-sub: 8s;
+  --sports-scroll-delay: 1.6s;
+}
+.sports-chip--match.is-sub-overflowing .sports-chip__sub-text {
+  max-width: none;
+  overflow: visible;
+  text-overflow: clip;
+  animation: sports-chip-scroll-sub var(--sports-scroll-duration-sub, 8s) linear var(--sports-scroll-delay, 1.6s) infinite backwards;
+  will-change: transform;
+}
+.sports-chip__sub-text:has(> .sports-chip__loop) {
+  position: relative;
+  padding-right: var(--sports-loop-gap, 48px);
+}
+.sports-chip__loop {
+  position: absolute;
+  left: 100%;
+  top: 0;
+  display: inline-block;
+  width: max-content;
+  max-width: none;
+  margin: 0;
+  padding: 0;
+  overflow: visible;
+  white-space: nowrap;
+  font: inherit;
+  letter-spacing: inherit;
+  color: inherit;
+  animation: none !important;
+  transform: none !important;
+  pointer-events: none;
+}
+@keyframes sports-chip-scroll-sub {
+  from { transform: translateX(0); }
+  to { transform: translateX(-100%); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .sports-chip.is-sub-overflowing .sports-chip__sub-text {
+    animation: none;
+    max-width: 100%;
+    overflow: hidden;
+    text-overflow: clip;
+  }
+  .sports-chip__loop { display: none !important; }
 }
 
 /* Cibles tactiles ≥ 44 px (t350u) sans changer l’apparence : zone élargie
@@ -3315,8 +3531,10 @@ html {
 
 /* Pied mobile (t350u) : pas de « · » orphelin en début de ligne. */
 @media (max-width: 720px) {
-  .site-foot__nav .site-foot__sep, .site-foot__links .site-foot__sep { display: none; }
-  .site-foot__nav, .site-foot__links { display: flex; flex-wrap: wrap; gap: 4px 18px; }
+  .site-foot__nav .site-foot__sep,
+  .site-foot__links .site-foot__sep,
+  .site-foot__built .site-foot__sep { display: none; }
+  .site-foot__nav, .site-foot__links, .site-foot__built { display: flex; flex-wrap: wrap; gap: 4px 18px; }
   .site-foot { padding-bottom: 88px; }
 }
 

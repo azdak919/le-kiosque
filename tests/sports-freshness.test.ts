@@ -2,14 +2,19 @@ import assert from 'node:assert/strict';
 import test from 'node:test';
 import {
   alignDemoSportsToToday,
+  genderMark,
   isNextGameInHorizon,
   isWithinFreshnessWindow,
+  officialSportsUrl,
+  parseSportsTimeMinutes,
   prunePastGames,
   pruneSportsPayload,
   pruneSportsTeam,
   resolveSportsReferenceDate,
   shiftIsoDate,
   shiftSportsPayloadDates,
+  sportsRelativeDayLabel,
+  sportsSexLabel,
 } from '../packages/theme-radar/src/sports-freshness.js';
 
 const REF = new Date('2026-07-30T15:00:00');
@@ -125,4 +130,66 @@ test('sans demoLive, les dates YAML restent figées', () => {
   assert.equal(shifted.teams[0].nextGame.date, '2026-10-07');
   const frozen = pruneSportsPayload(payload, { demoAsOf: '2026-09-20' });
   assert.equal(frozen.teams[0].nextGame.date, '2026-10-02');
+});
+
+test('genderMark : (F) / (H), rien si mixte ou vide', () => {
+  assert.equal(genderMark('F'), '(F)');
+  assert.equal(genderMark('féminin'), '(F)');
+  assert.equal(genderMark('M'), '(H)');
+  assert.equal(genderMark('masculin'), '(H)');
+  assert.equal(genderMark('mixte'), '');
+  assert.equal(genderMark('X'), '');
+  assert.equal(genderMark(''), '');
+});
+
+test('sportsSexLabel : libellés longs pour Au tableau', () => {
+  assert.equal(sportsSexLabel('F'), 'Féminin');
+  assert.equal(sportsSexLabel('H'), 'Masculin');
+  assert.equal(sportsSexLabel('mixte'), 'Ouvert / mixte');
+  assert.equal(sportsSexLabel(''), '');
+});
+
+test('parseSportsTimeMinutes trie 9:00 avant 19:00', () => {
+  assert.ok(parseSportsTimeMinutes('9:00') < parseSportsTimeMinutes('19:00'));
+  assert.ok(parseSportsTimeMinutes('09:00') < parseSportsTimeMinutes('19:00'));
+  assert.equal(parseSportsTimeMinutes('9:00'), parseSportsTimeMinutes('09h00'));
+  assert.equal(parseSportsTimeMinutes(''), Number.POSITIVE_INFINITY);
+});
+
+test('officialSportsUrl n’accepte que http(s)', () => {
+  assert.equal(officialSportsUrl('https://rseq.ca/'), 'https://rseq.ca/');
+  assert.equal(officialSportsUrl('http://example.org/scores'), 'http://example.org/scores');
+  assert.equal(officialSportsUrl('javascript:alert(1)'), '');
+  assert.equal(officialSportsUrl('/relatif'), '');
+  assert.equal(officialSportsUrl(''), '');
+});
+
+test('sportsRelativeDayLabel : Aujourd’hui / Demain / Hier', () => {
+  const now = new Date('2026-09-20T15:00:00-04:00');
+  const tz = 'America/Toronto';
+  assert.equal(sportsRelativeDayLabel('2026-09-20', tz, now), 'Aujourd’hui');
+  assert.equal(sportsRelativeDayLabel('2026-09-21', tz, now), 'Demain');
+  assert.equal(sportsRelativeDayLabel('2026-09-19', tz, now), 'Hier');
+  assert.equal(sportsRelativeDayLabel('2026-09-10', tz, now), '');
+});
+
+test('prune et décalage conservent officialUrl et live', () => {
+  const payload = {
+    demoAsOf: '2026-09-20',
+    teams: [
+      {
+        id: 't1',
+        officialUrl: 'https://rseq.ca/',
+        results: [{ date: '2026-09-18', result: 'W', scoreFor: 3, scoreAgainst: 1, opponent: 'X' }],
+        nextGame: { date: '2026-09-20', time: '20:00', live: true, opponent: 'Z' },
+      },
+    ],
+  };
+  const pruned = pruneSportsPayload(payload, { demoAsOf: '2026-09-20' });
+  assert.equal(pruned.teams?.[0].officialUrl, 'https://rseq.ca/');
+  assert.equal(pruned.teams?.[0].nextGame?.live, true);
+  const shifted = shiftSportsPayloadDates(pruned, 2);
+  assert.equal(shifted.teams?.[0].officialUrl, 'https://rseq.ca/');
+  assert.equal(shifted.teams?.[0].nextGame?.live, true);
+  assert.equal(shifted.teams?.[0].nextGame?.date, '2026-09-22');
 });

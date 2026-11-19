@@ -22,3 +22,18 @@ test('mât illustré : pas de pastille de crédit vide ; crédit et licence comm
   const live = read('packages/theme-radar/assets/editorial/render.js');
   assert.match(live, /const label = `Photo : \$\{images\[0\]\.credit\}\$\{images\[0\]\.license \? ` \(\$\{images\[0\]\.license\}\)` : ''\}`;/);
 });
+
+test('mât mobile : boutons également espacés, crédit sous les outils, sports hors du mât', () => {
+  const css = read('packages/theme-radar/assets/theme.css');
+  assert.match(css, /justify-content: space-between;/);
+  assert.match(css, /padding-bottom: calc\(var\(--mat-gap\) \* 2 \+ 16px\)/);
+  assert.match(css, /\.masthead:has\(\.masthead-photo-credit:not\(:empty\)\) \.masthead-photo-credit \{[\s\S]*?bottom: var\(--mat-gap\);/);
+  assert.match(css, /\.masthead-sports-strip\[hidden\]:not\(\.is-empty\)/);
+  assert.match(css, /min-height: 60px/);
+  const tpl = read('packages/theme-radar/src/templates.ts');
+  assert.match(tpl, /id="masthead-sports-strip"/);
+  assert.match(tpl, /sportsStripHtml\(ctx\)/);
+  const js = read('packages/theme-radar/assets/kiosque.js');
+  assert.match(js, /function syncSportsStripVisibility/);
+  assert.match(js, /#masthead-sports-strip/);
+});
