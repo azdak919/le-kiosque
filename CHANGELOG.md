@@ -1,9 +1,10 @@
 # Journal
 
 ## Non publié
-- Le Kiosque a un logo : un journal plié (emoji Twemoji, CC BY 4.0, voir THIRD_PARTY.md). Il paraît sur la page de présentation, le guide, le configurateur et le README, et comme icône d’onglet (aussi sur la démo). Il ne paraît jamais sur le site Web d’un journal. Captures de la page de présentation refaites avec le nouvel espace de rédaction.
-- Mât : un monogramme d’initiales généré (cercle « LV » et assimilés, encore stocké comme logo dans des journaux déjà installés) n’est plus affiché. Sans vrai logo téléversé, le nom du journal paraît en grand, en caractères de titre de journal. Un logo téléversé continue de remplacer le nom. L’assistant et le configurateur ne fabriquent jamais de logo à initiales.
-- « À la une » n’apparaît plus sur le premier article par défaut. L’étiquette est réservée à un article vraiment mis en avant (`featured`). Sans sélection, pas d’étiquette ; l’article choisi, s’il y en a un, prend la place de la manchette.
+- Version 0.3.2.
+- En haut du site : si le journal n’a pas téléversé de vrai logo, son nom s’affiche en grand, en lettres de titre de journal. Les anciens « logos » faits seulement d’initiales dans un cercle ne s’affichent plus. Un vrai logo téléversé remplace toujours le nom.
+- L’étiquette « À la une » ne se met plus toute seule sur le premier article. Elle paraît seulement sur l’article que la rédaction choisit avec la case « Mettre à la une ». Cet article prend alors la grande place en haut de l’accueil.
+- Le Kiosque a maintenant un logo, un journal plié. On le voit sur la page de présentation du Kiosque et dans l’onglet du navigateur. Il ne s’affiche jamais sur le site de votre journal.
 - Version 0.3.1. Socle épinglé à 1.3.1 (b38ea68).
 - Le ZIP à adresse fixe (`kiosque-journal.zip`) contient de nouveau un seul dossier `kiosque-journal/`, avec le fichier `INSTALLER-A-LA-RACINE.txt`. Les journaux en 0.2.x peuvent se mettre à jour en un clic. Première installation : déposer le *contenu* de ce dossier à la racine du domaine, pas le dossier lui-même. Un test rejoue l’installateur réel de la 0.2.1 (Socle 1.2.2).
 - Site : réseaux sociaux du journal en icônes, dans le mât et au pied de page (Facebook, Instagram, X, Bluesky, Mastodon, TikTok, YouTube, LinkedIn, Threads, courriel), avec les mêmes icônes que LE-RADAR (Simple Icons, CC0 ; Bootstrap Icons, MIT, pour LinkedIn et le courriel ; voir THIRD_PARTY.md). Neutres au repos, couleur principale du journal au survol et au focus clavier ; un réseau vide n’est pas affiché ; chaque lien est nommé (« La Vigie sur Instagram ») et s’ouvre avec `rel="me noopener"`. Les adresses viennent de `publication.social` (Configuration du socle, ou Sveltia CMS avec la même vérification).
