@@ -1,6 +1,7 @@
 # Journal
 
 ## Non publié
+- Version 0.3.3.
 - Nouveau logo du Kiosque : un kiosque à journaux avec un auvent rayé rouge et blanc, dessiné pour le projet. Il remplace le journal plié sur la page de présentation, le guide, le configurateur et dans l’onglet du navigateur. Il ne s’affiche jamais sur le site de votre journal.
 - Version 0.3.2.
 - En haut du site : si le journal n’a pas téléversé de vrai logo, son nom s’affiche en grand, en lettres de titre de journal. Les anciens « logos » faits seulement d’initiales dans un cercle ne s’affichent plus. Un vrai logo téléversé remplace toujours le nom.
