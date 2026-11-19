@@ -1,9 +1,14 @@
 # Journal
 
 ## Non publié
-- Le Socle ne se déploie plus comme Worker Cloudflare. La rédaction va sur un serveur PHP (Node sert au développement et aux tests). Le site public peut rester sur GitHub Pages ou Cloudflare Pages. Le Worker sveltia-cms-auth est conservé.
+- Version 0.4.0. Socle épinglé à 1.4.1 (7ecf21d).
 - Météo du mât au téléphone : la puce prend toute la largeur et garde « Québec 6° », avec le maximum et le minimum du jour, puis « Demain » avec son icône et sa température. Les données viennent du même appel à Open-Meteo. La puce d’attente a la même hauteur et la même disposition, donc rien ne bouge au chargement. Si Open-Meteo ne répond pas en 10 secondes, la puce se retire. Rien ne change à l’ordinateur.
 - Mât illustré : une image sans crédit n’affiche plus de pastille vide dans le coin ; sur le site vivant, le crédit donne aussi la licence (« Photo : abdallahh (CC BY 2.0) »), comme pendant la rotation des images.
+- Sports : chaque équipe a un genre (Féminin, Masculin, Mixte), un lien officiel facultatif vers les résultats, et une case « En cours » pour le prochain match. Sous la radio, un bandeau à deux voies montre les scores, les matchs en cours et ceux à venir ; au téléphone, une puce reprend le même rythme sous la météo.
+- Pied de page : après « Propulsé par Le Kiosque », un lien discret « Espace de rédaction » mène à la rédaction du journal.
+- À côté de la loupe, une flèche ramène en haut de la page, de la même taille et avec le même écart.
+- La banque de photos n’est plus alimentée par une suggestion de photos libres (Openverse ou Wikimedia). Les photos d’exemple du Quorum restent dans la démo. Le site public sert les miniatures préparées par l’espace de rédaction.
+- Le Socle ne se déploie plus comme Worker Cloudflare. La rédaction va sur un serveur PHP (Node sert au développement et aux tests). Le site public peut rester sur GitHub Pages ou Cloudflare Pages. Le Worker sveltia-cms-auth est conservé.
 - Version 0.3.4. Socle épinglé à 1.3.3 (07f8e28).
 - Archives : l’année n’est plus répétée (« 2026 / 4 / 2026 ») quand le journal n’en compte qu’une ; la barre des années ne paraît qu’à partir de deux. Sur le site vivant, les articles sont rangés du plus récent au plus ancien, aux archives comme à l’accueil : le dernier article publié prend la grande place.
 - Accueil à l’ordinateur : la colonne vide à droite du fil reçoit « Au tableau » (dernier résultat et prochain match de chaque équipe) et « Rubriques » (nombre d’articles, lien vers les archives). Quand il y a assez d’articles, la colonne « En bref » garde sa place. Au téléphone, ces encadrés passent sous le fil.
