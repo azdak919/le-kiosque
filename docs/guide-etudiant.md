@@ -184,8 +184,7 @@ Il faut un compte GitHub. Comptez environ une heure.
   seul l'hébergeur peut ajouter ; voir `LISEZMOI.txt` dans le paquet.
 - Une adresse courriel de contact pour le journal.
 
-Cloudflare : voir la section B10. Ce n'est **pas** faisable sans ligne de
-commande aujourd'hui.
+Cloudflare Pages peut servir le site public (fichiers statiques), comme GitHub Pages. Voir la section B10.
 
 ## B1. Créer le dépôt du journal
 
@@ -302,12 +301,8 @@ sauvegarde JSON**).
 
 ## B10. Autres hébergements
 
-- **Cloudflare (Worker et D1)** : possible, mais **pas sans ligne de
-  commande**. Il faut l'outil `wrangler`, créer une base D1 et protéger
-  l'admin avec Cloudflare Access (Zero Trust), car la connexion par mot de
-  passe dépasse le temps de calcul du forfait gratuit. Guide :
-  [adopter Le Socle](https://github.com/azdak919/le-socle/blob/main/docs/adoption.md).
-- **Serveur Node** (VPS, serveur du département) : même guide.
+- **Cloudflare Pages** : pour le site public seulement (fichiers statiques), comme GitHub Pages. Ce n’est pas un Worker du Socle. La rédaction reste sur un serveur PHP, ou sur Node pour essayer. Guide : [adopter Le Socle](https://github.com/azdak919/le-socle/blob/main/docs/adoption.md).
+- **Serveur Node** (VPS, serveur du département) : utile pour le développement et les tests. Le chemin habituel d’un journal en ligne reste le PHP. Même guide.
 - **Sans hébergement du tout** : le journal peut vivre seulement dans GitHub
   (articles en Markdown), voir [installation.md](installation.md). L'équipe
   écrit alors dans des fichiers, pas dans une admin.

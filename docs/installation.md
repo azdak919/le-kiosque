@@ -108,7 +108,8 @@ LE-RADAR les acceptera. Aucun changement du dépôt LE-RADAR n’est requis.
 Le site peut rester sur GitHub Pages pendant que la rédaction vit dans un
 [socle](https://github.com/azdak919/le-socle/blob/main/docs/adoption.md)
 hébergé ailleurs : hébergement PHP (voir le [guide étudiant](guide-etudiant.md)),
-serveur Node, ou Worker Cloudflare sur D1 (ligne de commande obligatoire).
+ou serveur Node pour le développement et les tests. Le site public peut rester
+sur GitHub Pages ou Cloudflare Pages (fichiers statiques).
 
 1. Le configurateur l’écrit pour vous (étape « C’est prêt », « Dans le socle ») :
    `source: { adapter: 'socle', options: { baseUrl: 'https://<adresse de Le Socle>' } }`
