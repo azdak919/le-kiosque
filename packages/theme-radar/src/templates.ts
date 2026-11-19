@@ -213,6 +213,38 @@ function asset(path: string, ctx: RenderContext): string {
   return `${ctx.basePath}${path}`;
 }
 
+
+type ResponsiveImage = {
+  src: string;
+  width?: number;
+  height?: number;
+  variants?: Array<{ src: string; width: number; height: number }>;
+};
+
+const SIZES_CARD = '(max-width: 40rem) 100vw, (max-width: 70rem) 50vw, 22rem';
+const SIZES_LEAD_CARD = '(max-width: 40rem) 100vw, 45rem';
+const SIZES_POST = '(max-width: 40rem) 100vw, 70rem';
+const SIZES_MASTHEAD = '100vw';
+
+/** srcset des miniatures du Socle (480, 960, 1600) plus l’original. */
+export function responsiveAttrs(image: ResponsiveImage, ctx: RenderContext, sizes: string): { src: string; srcset?: string; sizes?: string } {
+  const src = safeUrl(asset(image.src, ctx));
+  const variants = image.variants ?? [];
+  if (!variants.length) return { src };
+  const originalWidth = image.width ?? Math.max(2400, ...variants.map((item) => item.width));
+  const srcset = [
+    ...variants.map((item) => `${safeUrl(asset(item.src, ctx))} ${item.width}w`),
+    `${src} ${originalWidth}w`,
+  ].join(', ');
+  return { src, srcset, sizes };
+}
+
+function srcsetHtml(attrs: { src: string; srcset?: string; sizes?: string }): string {
+  const srcset = attrs.srcset ? ` srcset="${esc(attrs.srcset)}"` : '';
+  const sizes = attrs.sizes ? ` sizes="${esc(attrs.sizes)}"` : '';
+  return `src="${attrs.src}"${srcset}${sizes}`;
+}
+
 /**
  * Couleur du journal en mode sombre, que le mode vienne du bouton ou du
  * système : sans la seconde règle, le violet de démonstration de tokens.css
@@ -316,11 +348,15 @@ function mastheadBackground(ctx: RenderContext, options: MastheadOptions): strin
       ? `<a href="${safeUrl(image.creditUrl)}" rel="noopener">${esc(photoCredit(image))}</a>`
       : esc(photoCredit(image))
     : '';
-  const manifest = settings.images.map((item) => ({
-    src: asset(item.src, ctx), alt: item.alt, credit: item.credit ?? '', license: item.license ?? '', creditUrl: item.creditUrl ?? '',
-    backgroundPosition: `${clampPercent(item.focalPoint?.x)}% ${clampPercent(item.focalPoint?.y)}%`,
-  }));
-  return `<img class="masthead-background" src="${safeUrl(asset(image.src, ctx))}" alt="" data-masthead-background style="object-position:${esc(options.backgroundPosition)}">
+  const manifest = settings.images.map((item) => {
+    const attrs = responsiveAttrs(item, ctx, SIZES_MASTHEAD);
+    return {
+      src: attrs.src, srcset: attrs.srcset, sizes: attrs.sizes, alt: item.alt, credit: item.credit ?? '', license: item.license ?? '', creditUrl: item.creditUrl ?? '',
+      backgroundPosition: `${clampPercent(item.focalPoint?.x)}% ${clampPercent(item.focalPoint?.y)}%`,
+    };
+  });
+  const first = responsiveAttrs(image, ctx, SIZES_MASTHEAD);
+  return `<img class="masthead-background" ${srcsetHtml(first)} alt="" data-masthead-background style="object-position:${esc(options.backgroundPosition)}">
   <span class="masthead-background-shade" aria-hidden="true"></span>
   <span class="masthead-photo-credit" data-masthead-credit>${credit}</span>
   <script type="application/json" id="masthead-backgrounds">${JSON.stringify(manifest).replace(/</g, '\\u003c')}</script>`;
@@ -797,7 +833,7 @@ export function articleCard(article: Article, ctx: RenderContext, variant: boole
       href: safeUrl(relative(authorUrl(ctx.publication, slug), ctx)),
     })),
     image: article.lead ? {
-      src: safeUrl(asset(article.lead.src, ctx)),
+      ...responsiveAttrs(article.lead, ctx, role === 'lead' ? SIZES_LEAD_CARD : SIZES_CARD),
       alt: article.lead.alt,
       caption: article.lead.caption,
       credit: article.lead.credit,
@@ -1215,7 +1251,7 @@ export function articlePage(article: Article, ctx: RenderContext, relatedArticle
               /* Pas d’aspect-ratio forcé en HTML : l’impression doit pouvoir
                  compresser la lead sans min-height / ratio écran. */
               return `<figure class="post-lead">
-        <img class="post-lead__img" src="${safeUrl(asset(lead.src, ctx))}" alt="${esc(lead.alt || '')}" decoding="async" fetchpriority="high"${lead.width ? ` width="${lead.width}"` : ''}${lead.height ? ` height="${lead.height}"` : ''} style="${pos}">
+        <img class="post-lead__img" ${srcsetHtml(responsiveAttrs(lead, ctx, SIZES_POST))} alt="${esc(lead.alt || '')}" decoding="async" fetchpriority="high"${lead.width ? ` width="${lead.width}"` : ''}${lead.height ? ` height="${lead.height}"` : ''} style="${pos}">
         ${caption ? `<figcaption class="post-lead__credit">${caption}</figcaption>` : ''}
       </figure>`;
             })()

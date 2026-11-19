@@ -336,6 +336,16 @@ function mediaFrom(
     usages: list(raw.usages) as NonNullable<MediaAsset['usages']>,
     mime: str(raw.mime),
     checksum: str(raw.checksum),
+    variants: Array.isArray(raw.variants)
+      ? (raw.variants as unknown[]).flatMap((item) => {
+          if (!item || typeof item !== 'object') return [];
+          const variant = item as Record<string, unknown>;
+          const src = str(variant.src);
+          const width = finiteNumber(variant.width);
+          const height = finiteNumber(variant.height);
+          return src && width && height ? [{ src, width, height }] : [];
+        })
+      : undefined,
     source: attribution,
   };
 }
@@ -513,14 +523,6 @@ export class MarkdownSource implements ContentSource<MarkdownConfig> {
             return {
               wireTitle,
               leadEyebrow,
-            };
-          })()
-        : undefined,
-      media: raw.media
-        ? (() => {
-            const media = raw.media as Record<string, unknown>;
-            return {
-              autoStockPhoto: Boolean(media.autoStockPhoto),
             };
           })()
         : undefined,
