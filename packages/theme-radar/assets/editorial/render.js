@@ -1,7 +1,7 @@
 import { renderSourceArticle } from './source-view.js';
 import { isInitialsMonogramCandidate, pixelsLookLikeInitialsMonogram, usablePublicationLogo } from './generated-logo.js';
 import { radioSlotElement, radioStation } from './radio.js';
-import { pruneSportsPayload } from './sports-freshness.js';
+import { officialSportsUrl, pruneSportsPayload, sportsSexLabel } from './sports-freshness.js';
 import { socialNavHtml } from './social.js';
 import { homeRailHtml } from './home-rail.js';
 
@@ -331,12 +331,16 @@ export function renderRoute(bundle, base, pathname, renderBody, search = '') {
         return `${nick}<span class="sports-result__opp-school">${esc(short)}</span>`;
       };
       const sexBadge = (sex) => {
-        if (!sex) return '';
-        const s = String(sex).toLowerCase();
-        if (s === 'f' || s.startsWith('fémin') || s.startsWith('femin')) return '<span class="sports-panel__sex sports-panel__sex--f" title="Féminin">F</span>';
-        if (s === 'm' || s.startsWith('mascul')) return '<span class="sports-panel__sex sports-panel__sex--m" title="Masculin">M</span>';
-        if (s.includes('mix')) return '<span class="sports-panel__sex sports-panel__sex--x" title="Mixte">Mixte</span>';
-        return `<span class="sports-panel__sex sports-panel__sex--x">${esc(sex)}</span>`;
+        const label = sportsSexLabel(sex);
+        if (!label) return '';
+        const key = label === 'Féminin' ? 'f' : label === 'Masculin' ? 'm' : 'x';
+        const title = key === 'x' ? ' title="Ouvert / mixte"' : '';
+        return ` <span class="sports-panel__sex sports-panel__sex--${key}"${title}>${esc(label)}</span>`;
+      };
+      const officialLink = (team) => {
+        const href = officialSportsUrl(team.officialUrl);
+        if (!href) return '';
+        return `<p class="sports-panel__official"><a class="sports-panel__results-source" href="${esc(href)}" rel="noopener noreferrer" target="_blank">Résultats officiels</a></p>`;
       };
       const activityDate = (team) => {
         let next = team.nextGame || null;
@@ -393,13 +397,15 @@ export function renderRoute(bundle, base, pathname, renderBody, search = '') {
             ? `<span class="sports-result__day">${esc(day)}</span><span class="sports-result__clock">${esc(clock)}</span>`
             : esc(day);
           const homeAttr = next.home === true ? ' data-home="1"' : next.home === false ? ' data-home="0"' : '';
-          rows.push(`<li class="sports-result sports-result--next"${homeAttr}><time class="sports-result__time" datetime="${esc(next.date)}">${timeInner}</time><span class="sports-result__score sports-result__score--next">À venir</span><span class="sports-result__title"><span class="sports-result__vs">vs</span> ${oppHtml(next.opponent, next.opponentInstitution)}${venueHtml(next.home)}</span><span class="sports-result__badge sports-result__badge--next">→</span></li>`);
+          const isLive = next.live === true;
+          const nextLabel = isLive ? 'En cours' : 'À venir';
+          rows.push(`<li class="sports-result sports-result--next${isLive ? ' sports-result--live' : ''}"${homeAttr}><time class="sports-result__time" datetime="${esc(next.date)}">${timeInner}</time><span class="sports-result__score sports-result__score--next">${esc(nextLabel)}</span><span class="sports-result__title"><span class="sports-result__vs">vs</span> ${oppHtml(next.opponent, next.opponentInstitution)}${venueHtml(next.home)}</span><span class="sports-result__badge sports-result__badge--next">${isLive ? '●' : '→'}</span></li>`);
         }
         olderResults.forEach(pushPast);
         const list = rows.length ? `<ul class="sports-panel__list">${rows.join('')}</ul>` : '<p class="sports-panel__empty">Aucun résultat.</p>';
         const color = team.colors?.primary || 'var(--accent)';
         const code = team.code ? ` <span class="sports-panel__code">${esc(team.code)}</span>` : '';
-        return `<section class="sports-panel" data-sport="${esc(team.sport || '')}" data-team="${esc(team.id || '')}" style="--sports-panel-c:${esc(color)}"><header class="sports-panel__head"><span class="sports-panel__glyph" aria-hidden="true">${glyph(team.sport)}</span><div class="sports-panel__identity"><h2 class="sports-panel__name sports-panel__name--branded"><span class="sports-panel__brand">${esc(team.name)}</span>${code}${sexBadge(team.sex)}</h2><p class="sports-panel__meta">${esc(team.sportLabel || team.sport)}${team.institution ? ` · ${esc(team.institution)}` : ''}</p></div></header>${list}</section>`;
+        return `<section class="sports-panel" data-sport="${esc(team.sport || '')}" data-team="${esc(team.id || '')}" style="--sports-panel-c:${esc(color)}"><header class="sports-panel__head"><span class="sports-panel__glyph" aria-hidden="true">${glyph(team.sport)}</span><div class="sports-panel__identity"><h2 class="sports-panel__name sports-panel__name--branded"><span class="sports-panel__brand">${esc(team.name)}</span>${code}${sexBadge(team.sex)}</h2><p class="sports-panel__meta">${esc(team.sportLabel || team.sport)}${team.institution ? ` · ${esc(team.institution)}` : ''}</p>${officialLink(team)}</div></header>${list}</section>`;
       }).join('');
       const feed = sportsArticles.length
         ? `<div class="sports-articles"><div class="wire-head"><h2 class="wire-title">Dans le journal</h2><span class="wire-status">${sportsArticles.length} article${sportsArticles.length > 1 ? 's' : ''}</span></div>${magazineFeedHtml(sportsArticles, bundle, base, 'Sports', 'Aucun article.')}</div>`
@@ -562,6 +568,14 @@ export function footCopyright(publication, year) {
   return `© ${footYears(publication.founded, year)}${name ? ` ${esc(name)}` : ''}. ${footRights(publication.license)}`;
 }
 
+const KIOSQUE_SITE_URL = 'https://azdak919.github.io/le-kiosque/';
+const POWERED_BY = `Propulsé par <a href="${KIOSQUE_SITE_URL}" rel="noopener">Le Kiosque</a>, plateforme libre sous licence GPL pour les journaux étudiants.`;
+
+/** Ligne du bas : mention Propulsé par, puis un lien discret vers l’espace de rédaction. */
+export function footBuiltHtml(redactionHref) {
+  return `${POWERED_BY} <span class="site-foot__sep" aria-hidden="true">·</span> <a class="site-foot__redaction" href="${esc(redactionHref)}">Espace de rédaction</a>`;
+}
+
 
 function wordmarkLogoHtml(publication, src) {
   return `<img class="publication-logo" src="${esc(src)}" alt="${esc(publication.logo.alt || publication.name)}">`;
@@ -633,6 +647,10 @@ export function applyBranding(bundle, base) {
     else if (steward) lines.push(`<p class="site-foot__contact">${esc(steward)}</p>`);
     lines.push(`<p class="site-foot__legal">${footCopyright(publication, new Date().getFullYear())}</p>`);
     credit.insertAdjacentHTML('afterbegin', lines.join(''));
+    const built = credit.querySelector('.site-foot__built') || document.createElement('p');
+    built.className = 'site-foot__built';
+    built.innerHTML = footBuiltHtml(link(base, '/redaction/'));
+    credit.append(built);
   });
   document.querySelectorAll('.masthead-meta > span').forEach((node) => { node.textContent = publication.institution || ''; });
   // Réseaux sociaux : au mât et au pied de page, un réseau vide n'est pas affiché.
@@ -665,63 +683,73 @@ export function applyBranding(bundle, base) {
   const sports = publication.masthead?.sports;
   let statusHost = document.querySelector('[data-masthead-status]');
   let weatherHost = document.querySelector('.masthead-weather');
-  let sportsHost = document.querySelector('.masthead-sports');
+  let sportsHost = document.querySelector('#masthead-sports-strip, .masthead-sports-strip, .masthead-sports');
   const needWeather = Boolean(weather?.enabled && weather.localities?.length);
   const sportsTeams = Array.isArray(sports?.teams) && sports.teams.length
     ? sports.teams
     : (sports?.team ? [sports.team] : []);
   const needSports = Boolean(sports?.enabled !== false && sportsTeams.length);
-  if (needWeather || needSports) {
+  if (needWeather) {
     if (!statusHost) {
       statusHost = document.createElement('div');
       statusHost.className = 'masthead-status';
       statusHost.dataset.mastheadStatus = '';
       document.querySelector('.masthead-tools')?.before(statusHost);
     }
-    if (needWeather) {
-      if (!weatherHost || !statusHost.contains(weatherHost)) {
-        weatherHost = document.createElement('div');
-        weatherHost.className = 'masthead-weather';
-        statusHost.prepend(weatherHost);
-      }
-      weatherHost.dataset.weatherLocalities = JSON.stringify(weather.localities.slice(0, 4));
-    } else weatherHost?.remove();
-    if (needSports) {
-      if (!sportsHost || !statusHost.contains(sportsHost)) {
-        sportsHost = document.createElement('div');
-        sportsHost.className = 'masthead-sports';
-        statusHost.append(sportsHost);
-      }
-      const sportsHref = sportsBoardHref(base, sports);
-      // setAttribute : évite les surprises dataset + garantit le re-parse kiosque.js
-      const sportsPayload = pruneSportsPayload({
-        teams: sportsTeams,
-        results: sports.results || [],
-        nextGame: sports.nextGame || null,
-        nextGames: sports.nextGames || [],
-        demoAsOf: sports.demoAsOf || null,
-        demoLive: sports.demoLive,
-      }, { demoAsOf: sports.demoAsOf, demoLive: sports.demoLive });
-      const prunedTeams = Array.isArray(sportsPayload.teams) && sportsPayload.teams.length
-        ? sportsPayload.teams
-        : sportsTeams;
-      sportsHost.setAttribute('data-sports-payload', JSON.stringify({
-        teams: prunedTeams,
-        team: prunedTeams[0],
-        results: sportsPayload.results || [],
-        nextGame: sportsPayload.nextGame || null,
-        nextGames: sportsPayload.nextGames || [],
-        href: sportsHref,
-        demoAsOf: sportsPayload.demoAsOf || sports.demoAsOf || null,
-        demoLive: sports.demoLive || null,
-      }));
-      sportsHost.setAttribute('aria-label', 'Au tableau — scores et matchs');
-    } else sportsHost?.remove();
+    if (!weatherHost || !statusHost.contains(weatherHost)) {
+      weatherHost = document.createElement('div');
+      weatherHost.className = 'masthead-weather';
+      statusHost.prepend(weatherHost);
+    }
+    weatherHost.dataset.weatherLocalities = JSON.stringify(weather.localities.slice(0, 4));
   } else {
-    statusHost?.remove();
     weatherHost?.remove();
-    sportsHost?.remove();
+    if (statusHost && !statusHost.querySelector('.masthead-weather')) statusHost.remove();
   }
+  if (needSports) {
+    const inMast = Boolean(sportsHost && sportsHost.closest('header.masthead, .masthead-status'));
+    if (!sportsHost || inMast) {
+      const strip = document.createElement('div');
+      strip.className = 'masthead-sports-strip masthead-sports';
+      strip.id = 'masthead-sports-strip';
+      strip.hidden = true;
+      strip.setAttribute('aria-live', 'polite');
+      const dock = document.getElementById('masthead-weather-dock');
+      const nav = document.querySelector('.nav-wrap');
+      if (dock) dock.after(strip);
+      else if (nav) nav.before(strip);
+      else document.querySelector('.masthead')?.after(strip);
+      if (sportsHost && sportsHost !== strip) sportsHost.remove();
+      sportsHost = strip;
+    }
+    sportsHost.classList.add('masthead-sports-strip', 'masthead-sports');
+    if (!sportsHost.id) sportsHost.id = 'masthead-sports-strip';
+    const sportsHref = sportsBoardHref(base, sports);
+    // setAttribute : évite les surprises dataset + garantit le re-parse kiosque.js
+    const sportsPayload = pruneSportsPayload({
+      teams: sportsTeams,
+      results: sports.results || [],
+      nextGame: sports.nextGame || null,
+      nextGames: sports.nextGames || [],
+      demoAsOf: sports.demoAsOf || null,
+      demoLive: sports.demoLive,
+    }, { demoAsOf: sports.demoAsOf, demoLive: sports.demoLive });
+    const prunedTeams = Array.isArray(sportsPayload.teams) && sportsPayload.teams.length
+      ? sportsPayload.teams
+      : sportsTeams;
+    sportsHost.setAttribute('data-sports-payload', JSON.stringify({
+      teams: prunedTeams,
+      team: prunedTeams[0],
+      results: sportsPayload.results || [],
+      nextGame: sportsPayload.nextGame || null,
+      nextGames: sportsPayload.nextGames || [],
+      href: sportsHref,
+      demoAsOf: sportsPayload.demoAsOf || sports.demoAsOf || null,
+      demoLive: sports.demoLive || null,
+      timeZone: bundle.publication.timeZone || 'America/Toronto',
+    }));
+    sportsHost.setAttribute('aria-label', 'Au tableau — scores et matchs');
+  } else sportsHost?.remove();
   /* Peint la puce sports (kiosque.js) après injection du payload — init DOM a déjà tourné. */
   try {
     if (typeof window.KiosqueRefreshMasthead === 'function') window.KiosqueRefreshMasthead();

@@ -250,3 +250,87 @@ export function pruneSportsPayload(payload, opts = {}) {
   if (aligned.demoLive != null) out.demoLive = aligned.demoLive;
   return out;
 }
+
+/**
+ * Libellés de genre, repris de LE-RADAR (`genderMark` dans
+ * scripts/magazine-front-page-lib.js) : « (F) » / « (H) » d’après la donnée ;
+ * inconnu ou mixte : rien. Jamais deviné.
+ */
+export function sportsSexKey(sex) {
+  const s = String(sex || '').trim().toLowerCase();
+  if (['f', 'w', 'women', 'woman', 'femmes', 'féminin', 'feminin', 'female'].includes(s)) return 'F';
+  if (['m', 'h', 'men', 'man', 'hommes', 'masculin', 'male'].includes(s)) return 'M';
+  if (['x', 'mixte', 'mixed', 'coed', 'co-ed', 'open', 'ouvert'].includes(s)) return 'X';
+  return '';
+}
+
+export function genderMark(sex) {
+  const key = sportsSexKey(sex);
+  if (key === 'F') return '(F)';
+  if (key === 'M') return '(H)';
+  return '';
+}
+
+/** Libellés écrits au long pour la page « Au tableau ». */
+export function sportsSexLabel(sex) {
+  const key = sportsSexKey(sex);
+  if (key === 'F') return 'Féminin';
+  if (key === 'M') return 'Masculin';
+  if (key === 'X') return 'Ouvert / mixte';
+  return '';
+}
+
+/** Minutes depuis minuit pour un tri numérique (9:00 avant 19:00). */
+export function parseSportsTimeMinutes(time) {
+  const raw = String(time || '').trim();
+  const m = raw.match(/^(\d{1,2})\s*[:hH.]\s*(\d{2})/);
+  if (!m) return Number.POSITIVE_INFINITY;
+  const hours = Number(m[1]);
+  const mins = Number(m[2]);
+  if (!Number.isFinite(hours) || !Number.isFinite(mins) || hours > 23 || mins > 59) {
+    return Number.POSITIVE_INFINITY;
+  }
+  return hours * 60 + mins;
+}
+
+export function officialSportsUrl(url) {
+  const raw = String(url || '').trim();
+  if (!/^https?:\/\//i.test(raw)) return '';
+  try { return new URL(raw).href; } catch { return ''; }
+}
+
+/**
+ * « Aujourd’hui », « Demain », « Hier », sinon vide (le format long reste
+ * à l’appelant). `iso` = AAAA-MM-JJ, `timeZone` IANA.
+ */
+export function sportsRelativeDayLabel(iso, timeZone, now = new Date()) {
+  const day = String(iso || '').slice(0, 10);
+  if (!/^\d{4}-\d{2}-\d{2}$/.test(day)) return '';
+  try {
+    const parts = new Intl.DateTimeFormat('en-CA', {
+      timeZone,
+      year: 'numeric',
+      month: '2-digit',
+      day: '2-digit',
+    }).formatToParts(now);
+    const y = parts.find((p) => p.type === 'year')?.value;
+    const m = parts.find((p) => p.type === 'month')?.value;
+    const d = parts.find((p) => p.type === 'day')?.value;
+    const todayKey = y && m && d ? `${y}-${m}-${d}` : '';
+    if (!todayKey) return '';
+    if (day === todayKey) return 'Aujourd’hui';
+    const shift = (delta) => {
+      const noon = new Date(`${todayKey}T12:00:00`);
+      noon.setDate(noon.getDate() + delta);
+      const yy = noon.getFullYear();
+      const mm = String(noon.getMonth() + 1).padStart(2, '0');
+      const dd = String(noon.getDate()).padStart(2, '0');
+      return `${yy}-${mm}-${dd}`;
+    };
+    if (day === shift(1)) return 'Demain';
+    if (day === shift(-1)) return 'Hier';
+    return '';
+  } catch {
+    return '';
+  }
+}

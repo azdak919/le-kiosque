@@ -28,7 +28,7 @@ import { inflateSync } from 'node:zlib';
 import { radioBarHtml } from './radio.js';
 import { socialNavHtml } from './social.js';
 import { homeRailHtml } from './home-rail.js';
-import { pruneSportsPayload } from './sports-freshness.js';
+import { officialSportsUrl, pruneSportsPayload, sportsSexLabel } from './sports-freshness.js';
 
 export interface RenderContext {
   publication: Publication;
@@ -102,6 +102,11 @@ export function footCopyright(pub: { name?: string; founded?: string; license?: 
 export const KIOSQUE_SITE_URL = 'https://azdak919.github.io/le-kiosque/';
 
 const POWERED_BY = `Propulsé par <a href="${KIOSQUE_SITE_URL}" rel="noopener">Le Kiosque</a>, plateforme libre sous licence GPL pour les journaux étudiants.`;
+
+/** Ligne du bas : mention Propulsé par, puis un lien discret vers l’espace de rédaction. */
+export function footBuiltHtml(redactionHref: string): string {
+  return `${POWERED_BY} <span class="site-foot__sep" aria-hidden="true">·</span> <a class="site-foot__redaction" href="${esc(redactionHref)}">Espace de rédaction</a>`;
+}
 
 /** L'organisme responsable, sauf s'il répète ce que le pied de page dit déjà. */
 function footSteward(pub: { name?: string; institution?: string; governance: { stewardEntity?: string } }): string {
@@ -279,9 +284,14 @@ function radioTuner(ctx: RenderContext): string {
   return radioBarHtml(ctx.publication.radio);
 }
 
-/** Emplacement sous le tuner pour dock météo + sports mobile (rempli en JS). */
+/** Emplacement sous le tuner pour la météo mobile (rempli en JS). */
 function weatherDockHtml(): string {
-  return `<div class="masthead-weather-dock" id="masthead-weather-dock" hidden aria-label="Météo et sports"></div>`;
+  return `<div class="masthead-weather-dock" id="masthead-weather-dock" hidden aria-label="Météo"></div>`;
+}
+
+/** Cartes sports sous la radio (et sous le dock météo sur téléphone), hors du mât. */
+function sportsStripHtml(ctx: RenderContext): string {
+  return sportsPayload(ctx);
 }
 
 /**
@@ -434,8 +444,9 @@ function sportsPayload(ctx: RenderContext): string {
     href: sportsPagePath(sports, ctx),
     demoAsOf: pruned.demoAsOf ?? sports.demoAsOf,
     demoLive: sports.demoLive,
+    timeZone: ctx.publication.timeZone || 'America/Toronto',
   };
-  return `<div class="masthead-sports" data-sports-payload="${esc(JSON.stringify(payload))}" aria-label="Au tableau — scores et matchs" aria-live="polite"></div>`;
+  return `<div class="masthead-sports-strip masthead-sports" id="masthead-sports-strip" hidden data-sports-payload="${esc(JSON.stringify(payload))}" aria-label="Au tableau — scores et matchs" aria-live="polite"></div>`;
 }
 
 function sportsGlyphHtml(sport: string): string {
@@ -534,18 +545,17 @@ function sportsOppHtml(opponent: string, institution?: string): string {
 }
 
 function sportsSexBadgeHtml(sex?: string): string {
-  if (!sex) return '';
-  const s = sex.toLowerCase();
-  if (s === 'f' || s.startsWith('fémin') || s.startsWith('femin')) {
-    return `<span class="sports-panel__sex sports-panel__sex--f" title="Féminin">F</span>`;
-  }
-  if (s === 'm' || s.startsWith('mascul')) {
-    return `<span class="sports-panel__sex sports-panel__sex--m" title="Masculin">M</span>`;
-  }
-  if (s.includes('mix')) {
-    return `<span class="sports-panel__sex sports-panel__sex--x" title="Mixte">Mixte</span>`;
-  }
-  return `<span class="sports-panel__sex sports-panel__sex--x">${esc(sex)}</span>`;
+  const label = sportsSexLabel(sex);
+  if (!label) return '';
+  const key = label === 'Féminin' ? 'f' : label === 'Masculin' ? 'm' : 'x';
+  const title = key === 'x' ? ' title="Ouvert / mixte"' : '';
+  return ` <span class="sports-panel__sex sports-panel__sex--${key}"${title}>${esc(label)}</span>`;
+}
+
+function sportsOfficialLinkHtml(team: SportsTeam): string {
+  const href = officialSportsUrl(team.officialUrl);
+  if (!href) return '';
+  return `<p class="sports-panel__official"><a class="sports-panel__results-source" href="${esc(href)}" rel="noopener noreferrer" target="_blank">Résultats officiels</a></p>`;
 }
 
 /** Jour de référence éditorial (demoAsOf ou aujourd’hui dans le fuseau). */
@@ -632,11 +642,13 @@ function sportsResultRows(
     const opp = sportsOppHtml(next.opponent, next.opponentInstitution);
     const venue = sportsVenueHtml(next.home);
     const homeAttr = next.home === true ? ' data-home="1"' : next.home === false ? ' data-home="0"' : '';
-    rows.push(`<li class="sports-result sports-result--next"${homeAttr}>
+    const isLive = next.live === true;
+    const nextLabel = isLive ? 'En cours' : 'À venir';
+    rows.push(`<li class="sports-result sports-result--next${isLive ? ' sports-result--live' : ''}"${homeAttr}>
   <time class="sports-result__time" datetime="${esc(next.date)}">${timeInner}</time>
-  <span class="sports-result__score sports-result__score--next" aria-label="Prochain match">À venir</span>
+  <span class="sports-result__score sports-result__score--next" aria-label="${esc(nextLabel)}">${esc(nextLabel)}</span>
   <span class="sports-result__title"><span class="sports-result__vs">vs</span> ${opp}${venue}</span>
-  <span class="sports-result__badge sports-result__badge--next" title="Prochain match">→</span>
+  <span class="sports-result__badge sports-result__badge--next" title="${esc(nextLabel)}">${isLive ? '●' : '→'}</span>
 </li>`);
   }
 
@@ -714,6 +726,7 @@ export function sportsResultsPage(ctx: RenderContext, sportsArticles: Article[] 
     <div class="sports-panel__identity">
       <h2 class="sports-panel__name sports-panel__name--branded"><span class="sports-panel__brand">${esc(team.name)}</span>${codeHtml}${sexBadge}</h2>
       <p class="sports-panel__meta">${esc(team.sportLabel || team.sport)}${team.institution ? ` · ${esc(team.institution)}` : ''}</p>
+      ${sportsOfficialLinkHtml(team)}
     </div>
   </header>
   ${sportsResultRows(team, sportsForRows, tz)}
@@ -769,15 +782,13 @@ function mastheadTools(ctx: RenderContext, current?: string): string {
   const localities = weather?.enabled === false ? [] : (weather?.localities ?? []);
   const assetsBase = asset('/assets/', ctx);
   const homeHref = asset('/', ctx);
-  const sportsHtml = sportsPayload(ctx);
   const button = (href: string, label: string, glyph: string, extraClass = '', currentPage = false) =>
     `<a class="masthead-tool${extraClass ? ` ${extraClass}` : ''}" href="${safeUrl(href)}" aria-label="${esc(label)}" title="${esc(label)}"${currentPage ? ' aria-current="page"' : ''}>${glyph}</a>`;
   return `<div class="masthead-utility">
     <p class="masthead-clock"><span data-masthead-date></span><time data-masthead-time></time></p>
-    ${localities.length || sportsHtml
+    ${localities.length
       ? `<div class="masthead-status" data-masthead-status>
-    ${localities.length ? `<div class="masthead-weather" data-weather-localities="${esc(JSON.stringify(localities))}" data-meteocons-base="${esc(asset('/assets/meteocons/animated/', ctx))}" aria-label="Météo"></div>` : ''}
-    ${sportsHtml}
+    <div class="masthead-weather" data-weather-localities="${esc(JSON.stringify(localities))}" data-meteocons-base="${esc(asset('/assets/meteocons/animated/', ctx))}" aria-label="Météo"></div>
   </div>`
       : ''}
     <div class="masthead-tools">
@@ -960,6 +971,7 @@ ${demoBannerHtml(ctx.demoNotice)}
 </header>
 ${radio}
 ${weatherDockHtml()}
+${sportsStripHtml(ctx)}
 <nav class="nav-wrap" aria-label="Sections">
   <div class="wrap">
     <div class="nav-shell" data-nav-shell>
@@ -1004,11 +1016,11 @@ ${content}
             : ''
       }
       <p class="site-foot__legal">${footCopyright(pub, ctx.buildYear)}</p>
-      <p class="site-foot__built">${POWERED_BY}</p>
+      <p class="site-foot__built">${footBuiltHtml(asset('/redaction/', ctx))}</p>
     </div>
   </div>
 </footer>
-<!-- Outils bas de page : haut (gauche) + loupe (droite) — parité LE-RADAR. -->
+<!-- Outils bas de page : flèche « haut de page » juste à gauche de la loupe, en bas à droite. -->
 <div class="page-tools" id="page-tools" data-page-tools>
   <button
     type="button"

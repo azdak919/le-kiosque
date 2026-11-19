@@ -166,7 +166,13 @@ export function buildCmsConfig(options: CmsConfigOptions): Record<string, unknow
                   { name: 'institution', label: 'Établissement', widget: 'string', required: false },
                   { name: 'sport', label: 'Sport (slug)', widget: 'string', required: true },
                   { name: 'sportLabel', label: 'Libellé du sport', widget: 'string', required: false },
-                  { name: 'sex', label: 'Catégorie (F / M / mixte)', widget: 'string', required: false },
+                  { name: 'sex', label: 'Genre (Féminin / Masculin / Mixte)', widget: 'select', required: false, options: [
+                    { label: 'Non précisé', value: '' },
+                    { label: 'Féminin', value: 'F' },
+                    { label: 'Masculin', value: 'M' },
+                    { label: 'Mixte', value: 'mixte' },
+                  ] },
+                  { name: 'officialUrl', label: 'Lien officiel des résultats', widget: 'string', required: false },
                   { name: 'fictional', label: 'Équipe fictive (démo)', widget: 'boolean', default: false },
                   { name: 'note', label: 'Note', widget: 'text', required: false },
                   { name: 'colors', label: 'Couleurs', widget: 'object', required: false, fields: [
@@ -193,6 +199,7 @@ export function buildCmsConfig(options: CmsConfigOptions): Record<string, unknow
                     { name: 'opponentInstitution', label: 'Établissement adverse', widget: 'string', required: false },
                     { name: 'home', label: 'À domicile', widget: 'boolean', required: false },
                     { name: 'competition', label: 'Compétition', widget: 'string', required: false },
+                    { name: 'live', label: 'En cours', widget: 'boolean', required: false },
                   ] },
                 ] },
               ] },
