@@ -395,7 +395,7 @@ function mastheadBackground(ctx: RenderContext, options: MastheadOptions): strin
     if(creditEl&&item.credit){
       var label='Photo : '+item.credit+(item.license?' ('+item.license+')':'');
       creditEl.replaceChildren();
-      if(item.creditUrl&&/^https:\/\//i.test(item.creditUrl)){
+      if(item.creditUrl&&item.creditUrl.indexOf('https://')===0){
         var a=document.createElement('a'); a.href=item.creditUrl; a.rel='noopener'; a.textContent=label; creditEl.appendChild(a);
       } else creditEl.textContent=label;
     }

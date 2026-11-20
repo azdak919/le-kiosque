@@ -1,7 +1,7 @@
 # Journal
 
 ## Non publié
-- Photos du mât : le journal peut en retenir plusieurs, choisies dans la médiathèque. Le bouton de rotation (↻) apparaît dès qu’il y a au moins deux photos, et se cache s’il n’y en a qu’une. Réglage « Ordre aléatoire » (activé par défaut) : une photo au hasard à chaque visite ; désactivé, le mât commence toujours par la première de la liste. La rotation reprend le comportement de LE-RADAR (même transition, crédit qui suit la photo, préchargement, mouvement réduit). La démonstration Le Quorum en montre plusieurs.
+- Photos du mât : le journal peut en retenir plusieurs, choisies dans la médiathèque. Le bouton de rotation (↻) apparaît dès qu’il y a au moins deux photos, et se cache s’il n’y en a qu’une. Réglage « Ordre aléatoire » (activé par défaut) : une photo au hasard à chaque visite ; désactivé, le mât commence toujours par la première de la liste. La rotation reprend le comportement de LE-RADAR (même transition, crédit qui suit la photo, préchargement, mouvement réduit). La démonstration Le Quorum en montre plusieurs. Le tirage au sort du premier écran ne casse plus le chargement de la page.
 - Version 0.4.1. Socle épinglé à 1.4.1 (7ecf21d).
 - Accueil au téléphone : un petit espace entre le mât et la barre radio, le même qu’entre la météo et la carte sport. La place de la barre reste réservée pendant le chargement.
 - Accueil au téléphone, façon LE-RADAR : mât plus court, météo et sport plus compacts, navigation en ligne de liens séparés par des points, « Le fil étudiant » juste en dessous. Les hauteurs réservées et les cibles tactiles de 44 px sont conservées. Toutes les rubriques restent accessibles.

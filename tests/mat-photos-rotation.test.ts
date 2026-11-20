@@ -25,3 +25,14 @@ test('réglage ordre aléatoire, manifeste enrichi, lib de rotation LE-RADAR', (
   const lib = read('packages/theme-radar/assets/bg-rotation-lib.js');
   assert.match(lib, /root\.BgRotation = api/);
 });
+
+test('le script de départ aléatoire est du JS valide (pas de regex // dans un gabarit)', () => {
+  const tpl = read('packages/theme-radar/src/templates.ts');
+  assert.match(tpl, /creditUrl\.indexOf\('https:\/\/'\)===0/);
+  const start = tpl.indexOf('(function(){');
+  const end = tpl.indexOf('})();', start);
+  assert.ok(start >= 0 && end > start, 'script de départ présent');
+  const body = tpl.slice(start, end + 5);
+  assert.doesNotThrow(() => new Function(body));
+});
+
