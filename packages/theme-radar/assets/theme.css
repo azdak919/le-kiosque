@@ -265,8 +265,10 @@ a { color: inherit; }
 :root {
   --demo-banner-sticky-h: 0px;
 }
-body:has(.demo-banner) {
-  /* 1 ligne : 7+7 padding + ~14 px de ligne ≈ 28–32 px. */
+html:has(.demo-banner) {
+  /* 1 ligne : 7+7 padding + ~14 px de ligne ≈ 28–32 px.
+   * Posé sur :root (pas sur body) pour que la mesure JS
+   * (documentElement.style) ne soit pas écrasée par un jeton body. */
   --demo-banner-sticky-h: 2rem;
 }
 
@@ -305,7 +307,7 @@ body:has(.demo-banner) {
  *   JOURNAL ÉTUDIANT FICTIF
  * (évite « FICTIF » seul sur la 2ᵉ ligne par wrap naturel). */
 @media (max-width: 720px) {
-  body:has(.demo-banner) {
+  html:has(.demo-banner) {
     /* Fallback 2 lignes tant que le JS n’a pas mesuré. */
     --demo-banner-sticky-h: 2.85rem;
   }
@@ -346,6 +348,51 @@ body:has(.demo-banner) {
   margin: 10px auto 0;
   padding: 0 var(--pad, 16px);
   box-sizing: border-box;
+}
+/*
+ * Barre radio collante (parité LE-RADAR .tuner) : quand la radio est
+ * activée, l'emplacement reste en haut du viewport au défilement.
+ * top = hauteur du bandeau démo (0 sans bandeau) ; encoche : on s'ancre
+ * sous safe-area seulement s'il n'y a pas de bandeau (sinon double compte).
+ * z-index 100, sous le bandeau démo (110), au-dessus du fil.
+ * Fond de page sur l'emplacement : le contenu ne transparaît pas dans le
+ * padding autour de la barre arrondie. Rien ne saute : sticky n'ôte
+ * aucune place du flux. Radio éteinte : ces règles ne s'appliquent pas
+ * (l'emplacement reste display:none).
+ */
+body.with-radio .radar-radio-slot:not([data-radar-radio]),
+body.with-radio .radar-radio-slot[data-radar-radio="ready"] {
+  position: sticky;
+  top: var(--demo-banner-sticky-h, 0px);
+  z-index: 100;
+  background: var(--bg);
+  /* La barre reste dans la colonne (mêmes max-width et padding que
+   * le dock météo et les cartes sports). Seul le fond opaque (::after)
+   * traverse le viewport, pour que le fil ne transparaîsse pas à côté
+   * de la barre une fois collée. */
+  isolation: isolate;
+}
+body.with-radio .radar-radio-slot:not([data-radar-radio])::after,
+body.with-radio .radar-radio-slot[data-radar-radio="ready"]::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: calc(50% - 50vw);
+  width: 100vw;
+  background: var(--bg);
+  z-index: -1;
+}
+body.with-radio:not(:has(.demo-banner)) .radar-radio-slot:not([data-radar-radio]),
+body.with-radio:not(:has(.demo-banner)) .radar-radio-slot[data-radar-radio="ready"] {
+  top: env(safe-area-inset-top, 0px);
+}
+/* Ancres : s'arrêter sous la barre collante, pas sous elle. */
+body.with-radio #contenu,
+body.with-radio .nav-wrap,
+body.with-radio .sports-panel,
+body.with-radio [id] {
+  scroll-margin-top: calc(var(--demo-banner-sticky-h, 0px) + var(--radio-sticky-h, 5.5rem) + 8px);
 }
 .radar-radio-slot:not([data-radar-radio])::before {
   content: "";

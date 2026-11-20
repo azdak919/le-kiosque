@@ -2677,12 +2677,29 @@
     var root = document.documentElement;
     if (!banner) {
       root.style.removeProperty('--demo-banner-sticky-h');
+      if (document.body) document.body.style.removeProperty('--demo-banner-sticky-h');
+    } else {
+      var h = Math.ceil(banner.getBoundingClientRect().height);
+      if (h > 0) {
+        /* Sur :root ET body : un jeton posé seulement sur html était
+           écrasé par le fallback 2.85rem déclaré sur body (mobile). */
+        root.style.setProperty('--demo-banner-sticky-h', h + 'px');
+        if (document.body) document.body.style.setProperty('--demo-banner-sticky-h', h + 'px');
+      }
+    }
+    syncRadioStickyOffset();
+  }
+
+  /** Hauteur réelle de la barre radio → scroll-margin des ancres. */
+  function syncRadioStickyOffset() {
+    var root = document.documentElement;
+    var slot = document.querySelector('.radar-radio-slot:not([data-radar-radio="off"])');
+    if (!slot || !document.body.classList.contains('with-radio')) {
+      root.style.removeProperty('--radio-sticky-h');
       return;
     }
-    var h = Math.ceil(banner.getBoundingClientRect().height);
-    if (h > 0) {
-      root.style.setProperty('--demo-banner-sticky-h', h + 'px');
-    }
+    var h = Math.ceil(slot.getBoundingClientRect().height);
+    if (h > 0) root.style.setProperty('--radio-sticky-h', h + 'px');
   }
 
   function initDemoBannerStickyOffset() {
@@ -2691,13 +2708,13 @@
     initDemoBannerStickyOffset._bound = true;
     window.addEventListener('resize', syncDemoBannerStickyOffset, { passive: true });
     if (typeof ResizeObserver === 'function') {
-      var banner = document.querySelector('.demo-banner');
-      if (banner) {
-        try {
-          var ro = new ResizeObserver(function () { syncDemoBannerStickyOffset(); });
-          ro.observe(banner);
-        } catch (_) { /* ignore */ }
-      }
+      try {
+        var ro = new ResizeObserver(function () { syncDemoBannerStickyOffset(); });
+        var banner = document.querySelector('.demo-banner');
+        if (banner) ro.observe(banner);
+        var slot = document.querySelector('.radar-radio-slot');
+        if (slot) ro.observe(slot);
+      } catch (_) { /* ignore */ }
     }
   }
 
