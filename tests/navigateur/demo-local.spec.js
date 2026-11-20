@@ -137,10 +137,14 @@ test('configurer, rédiger, prévisualiser, publier, persister et exporter sans 
   await expect(page.getByText('Exemple local').first()).toBeVisible({ timeout: 60_000 });
 
   await page.locator('.admin-nav').getByRole('link', { name: 'Configuration', exact: true }).click();
-  await page.getByRole('button', { name: 'Choisir une photo' }).click();
+  // Socle 1.4.2 : le mât prend plusieurs photos. On vide la liste héritée du
+  // Quorum, puis on retient McGill seule, pour qu’elle reste en tête.
+  await page.getByRole('button', { name: 'Retirer toutes les images' }).click();
+  await page.getByRole('button', { name: 'Choisir des photos' }).click();
   const mastheadPicker = page.locator('.media-picker');
   await mastheadPicker.getByLabel('Rechercher une photo (lieu, sujet, mot-clé)').fill('McGill');
   await mastheadPicker.getByRole('button', { name: 'Choisir cette photo' }).first().click();
+  await mastheadPicker.getByRole('button', { name: 'Utiliser ces photos' }).click();
   await page.getByLabel('Cadrage horizontal').fill('73');
   await page.getByLabel('Cadrage vertical').fill('42');
   await page.getByRole('button', { name: 'Enregistrer' }).click();
