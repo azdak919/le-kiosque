@@ -714,7 +714,10 @@
   }
 
   function syncMastheadWeatherDock() {
-    var shouldDock = WEATHER_PHONE_MQ ? WEATHER_PHONE_MQ.matches : (window.innerWidth <= 720);
+    /* Toujours sous la radio (ordinateur comme téléphone) : la puce élargie
+     * (max/min du jour + demain) ne tient pas dans la rangée d’utilitaires du mât. */
+    var dock = document.getElementById('masthead-weather-dock');
+    var shouldDock = Boolean(dock && mastheadStatusHost());
     setMastheadWeatherDocked(shouldDock);
   }
 

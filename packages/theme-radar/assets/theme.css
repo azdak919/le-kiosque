@@ -1678,6 +1678,23 @@ a.masthead-weather__city:focus-visible {
 /* Prévisions de la puce (max/min, demain) : seulement dans le dock du téléphone. */
 .weather-chip__today,
 .weather-chip__tomorrow { display: none; }
+/* Dock sous la radio (tous les formats) : max/min du jour et demain visibles. */
+.masthead-weather-dock .weather-chip__today,
+.masthead-weather-dock .weather-chip__tomorrow {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  flex: 0 0 auto;
+  white-space: nowrap;
+  font-variant-numeric: tabular-nums;
+  font-weight: 650;
+}
+.masthead-weather-dock .weather-chip,
+.masthead-status--docked .weather-chip {
+  height: auto !important;
+  max-height: none !important;
+  min-height: var(--mat-h, 32px);
+}
 /* Puce d'attente (requête météo en cours) : même gabarit, icône en rond. */
 .weather-icon-attente {
   border-radius: 50%;
@@ -3388,6 +3405,44 @@ html {
   }
 }
 
+
+/* Puce météo élargie sous la radio, ordinateur compris (parité visuelle
+ * des pastilles LE-RADAR : verre ardoise, ton de condition). */
+.masthead-weather-dock:not(:empty) { padding: 8px var(--pad, 24px) 0; }
+.masthead-weather-dock:not(:has(.weather-chip)) { display: none; }
+.masthead-weather-dock .masthead-status {
+  display: flex !important;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 4px;
+  width: 100%;
+  overflow: visible;
+}
+.masthead-weather-dock .masthead-weather { display: grid !important; grid-template-columns: 1fr; gap: 4px; width: 100%; }
+.masthead-weather-dock .weather-chip {
+  width: 100%;
+  justify-content: flex-start;
+  gap: 5px;
+  padding: 0 10px;
+  font-weight: 650;
+  border-radius: var(--mat-rayon, 16px) !important;
+}
+.masthead-weather-dock .weather-chip__today { margin-left: auto; gap: 7px; }
+.masthead-weather-dock .weather-chip__tomorrow {
+  margin-left: 8px;
+  padding-left: 8px;
+  border-left: 1px solid rgba(255, 255, 255, 0.28);
+}
+.masthead-weather-dock .weather-chip__label { font-weight: 600; opacity: .72; }
+.masthead-weather-dock .weather-chip__tomorrow .weather-chip__label { margin-right: 1px; }
+.masthead-weather-dock .weather-chip .weather-chip__tomorrow-icon { width: 18px; height: 18px; }
+.masthead-weather-dock .weather-chip--attente .weather-chip__today,
+.masthead-weather-dock .weather-chip--attente .weather-chip__tomorrow-temp { opacity: .6; }
+@media (max-width: 374.98px) {
+  .masthead-weather-dock .weather-chip { padding: 0 8px; gap: 4px; }
+  .masthead-weather-dock .weather-chip__today { gap: 4px; }
+  .masthead-weather-dock .weather-chip__tomorrow { margin-left: 4px; padding-left: 4px; }
+}
 
 /* Bandeau sports sous la radio (parité LE-RADAR PR 394) : hors du mât,
  * avant la nav et le fil. Hauteur réservée dès le premier paint pour
