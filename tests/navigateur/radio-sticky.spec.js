@@ -3,6 +3,9 @@ import { expect, test } from '@playwright/test';
 /**
  * Barre radio activée : collée en haut du viewport au défilement
  * (parité LE-RADAR). Radio éteinte : rien ne change.
+ * Les bords gauche et droit de la barre suivent la colonne
+ * (dock météo, cartes sports), à 1 px près. Seul le fond opaque
+ * derrière la barre collée traverse le viewport.
  */
 
 const FAUX_MODULE = `(function () {
@@ -28,6 +31,8 @@ async function metrics(page) {
     const banner = document.querySelector('.demo-banner');
     const nav = document.querySelector('.nav-wrap');
     const sports = document.querySelector('.masthead-sports-strip');
+    const dock = document.querySelector('.masthead-weather-dock');
+    const bar = document.querySelector('.radar-radio');
     const remonter = document.getElementById('page-scroll-top');
     const tools = document.getElementById('page-tools');
     const box = (el) => {
@@ -41,25 +46,54 @@ async function metrics(page) {
         stickyTop: cs.top,
       };
     };
+    const contentBox = (el) => {
+      if (!el) return null;
+      const r = el.getBoundingClientRect();
+      const cs = getComputedStyle(el);
+      const left = r.left + (parseFloat(cs.paddingLeft) || 0);
+      const right = r.right - (parseFloat(cs.paddingRight) || 0);
+      return { left, right, width: right - left };
+    };
+    const midY = slot ? slot.getBoundingClientRect().top + Math.min(20, slot.getBoundingClientRect().height / 2) : 0;
+    const tag = (el) => (el ? (el.className || el.id || el.tagName) : null);
+    const after = slot ? getComputedStyle(slot, '::after') : null;
     return {
       withRadio: document.body.classList.contains('with-radio'),
       scrollY: window.scrollY || document.documentElement.scrollTop || 0,
       banner: box(banner),
       slot: box(slot),
+      bar: box(bar),
+      dockContent: contentBox(dock),
+      sportsContent: contentBox(sports),
+      navContent: contentBox(nav),
       nav: box(nav),
       sports: box(sports),
       remonter: box(remonter),
       tools: box(tools),
+      after: after ? { content: after.content, width: after.width, bg: after.backgroundColor } : null,
+      hits: {
+        left: tag(document.elementFromPoint(4, midY)),
+        right: tag(document.elementFromPoint(Math.max(0, innerWidth - 4), midY)),
+      },
       viewport: { w: window.innerWidth, h: window.innerHeight },
       radioVar: getComputedStyle(document.documentElement).getPropertyValue('--radio-sticky-h').trim(),
     };
   });
 }
 
+function align(label, a, b) {
+  expect(a, `${label} présent`).toBeTruthy();
+  expect(b, `${label} colonne présente`).toBeTruthy();
+  expect(Math.abs(a.left - b.left), `${label} left bar=${a.left} col=${b.left}`).toBeLessThanOrEqual(1);
+  expect(Math.abs(a.right - b.right), `${label} right bar=${a.right} col=${b.right}`).toBeLessThanOrEqual(1);
+}
+
 for (const theme of ['light', 'dark']) {
   for (const viewport of [
-    { name: 'mobile', width: 390, height: 844 },
-    { name: 'bureau', width: 1440, height: 900 },
+    { name: 'mobile-390', width: 390, height: 844 },
+    { name: 'bureau-1024', width: 1024, height: 800 },
+    { name: 'bureau-1440', width: 1440, height: 900 },
+    { name: 'bureau-1920', width: 1920, height: 900 },
   ]) {
     test(`radio collante au milieu de page ${viewport.name} ${theme}`, async ({ browser }) => {
       const ctx = await browser.newContext({
@@ -69,6 +103,8 @@ for (const theme of ['light', 'dark']) {
       await fauxRadar(ctx);
       const page = await ctx.newPage();
       await page.goto('/autre-nom/demo/');
+      await page.waitForSelector('.radar-radio');
+      await page.waitForSelector('.masthead-sports-strip .sports-chip, .masthead-sports-strip:not([hidden])', { timeout: 10_000 }).catch(() => {});
       await page.waitForTimeout(400);
       const atTop = await metrics(page);
       expect(atTop.withRadio).toBe(true);
@@ -79,16 +115,32 @@ for (const theme of ['light', 'dark']) {
       const bannerH = atTop.banner?.height || 0;
       expect(atTop.slot.top).toBeGreaterThan(bannerH + 20);
 
-      await page.evaluate(() => window.scrollTo(0, 900));
+      expect(atTop.bar, 'barre visible').toBeTruthy();
+      if (atTop.sportsContent && atTop.sportsContent.width > 40) {
+        align('haut sports', atTop.bar, atTop.sportsContent);
+      }
+      if (atTop.dockContent && atTop.dockContent.width > 40) {
+        align('haut météo', atTop.bar, atTop.dockContent);
+      }
+
+      await page.evaluate(() => window.scrollTo(0, 1100));
       await page.waitForTimeout(200);
       const mid = await metrics(page);
       expect(mid.scrollY).toBeGreaterThan(400);
       const expectedTop = mid.banner?.height || 0;
       expect(Math.abs(mid.slot.top - expectedTop), `slot.top=${mid.slot.top} attendu ${expectedTop}`).toBeLessThanOrEqual(2);
       expect(Number(mid.slot.zIndex)).toBe(100);
-      // Pleine largeur : rien du fil ne transparaît à côté de la barre.
-      expect(Math.abs(mid.slot.left), `slot.left=${mid.slot.left}`).toBeLessThanOrEqual(1);
-      expect(Math.abs(mid.slot.width - mid.viewport.w), `slot.w=${mid.slot.width} vp=${mid.viewport.w}`).toBeLessThanOrEqual(2);
+      // La barre collée garde les bords de la colonne mesurés en haut de page.
+      expect(mid.bar, 'barre visible à mi-défilement').toBeTruthy();
+      if (atTop.sportsContent && atTop.sportsContent.width > 40) {
+        align('milieu sports', mid.bar, atTop.sportsContent);
+      }
+      if (atTop.dockContent && atTop.dockContent.width > 40) {
+        align('milieu météo', mid.bar, atTop.dockContent);
+      }
+      // Fond opaque plein viewport : les gouttières appartiennent à l'emplacement, pas au fil.
+      expect(String(mid.hits.left)).toMatch(/radar-radio/);
+      expect(String(mid.hits.right)).toMatch(/radar-radio/);
       // Sports et nav ont défilé (plus bas que le haut de page, éventuellement sous la barre).
       if (mid.sports && mid.sports.height > 0) {
         expect(mid.sports.top).toBeLessThan(mid.slot.top);

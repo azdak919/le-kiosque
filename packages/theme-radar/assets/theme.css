@@ -366,16 +366,22 @@ body.with-radio .radar-radio-slot[data-radar-radio="ready"] {
   top: var(--demo-banner-sticky-h, 0px);
   z-index: 100;
   background: var(--bg);
-  /* Pleine largeur du viewport, comme .tuner de LE-RADAR : le contenu
-   * ne transparaît pas dans les marges autour de la barre arrondie.
-   * Le padding recentre la barre sur la même colonne (--maxw). */
-  width: 100%;
-  max-width: none;
-  margin-left: 0;
-  margin-right: 0;
-  padding-left: max(var(--pad, 16px), calc((100% - var(--maxw, 1200px)) / 2));
-  padding-right: max(var(--pad, 16px), calc((100% - var(--maxw, 1200px)) / 2));
-  box-sizing: border-box;
+  /* La barre reste dans la colonne (mêmes max-width et padding que
+   * le dock météo et les cartes sports). Seul le fond opaque (::after)
+   * traverse le viewport, pour que le fil ne transparaîsse pas à côté
+   * de la barre une fois collée. */
+  isolation: isolate;
+}
+body.with-radio .radar-radio-slot:not([data-radar-radio])::after,
+body.with-radio .radar-radio-slot[data-radar-radio="ready"]::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: calc(50% - 50vw);
+  width: 100vw;
+  background: var(--bg);
+  z-index: -1;
 }
 body.with-radio:not(:has(.demo-banner)) .radar-radio-slot:not([data-radar-radio]),
 body.with-radio:not(:has(.demo-banner)) .radar-radio-slot[data-radar-radio="ready"] {

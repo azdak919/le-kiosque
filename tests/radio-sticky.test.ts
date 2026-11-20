@@ -19,5 +19,13 @@ test('barre radio collante : mêmes repères que LE-RADAR, seulement si elle est
   assert.match(js, /--radio-sticky-h/);
   assert.match(js, /body.style.setProperty\('--demo-banner-sticky-h'/);
   assert.match(css, /html:has\(\.demo-banner\)/);
-  assert.match(css, /max-width: none;/);
+  // Fond plein viewport : seulement le ::after, pas l'emplacement (sinon la barre s'élargit).
+  const stickyStart = css.indexOf('body.with-radio .radar-radio-slot:not([data-radar-radio]),');
+  const stickyEnd = css.indexOf('body.with-radio:not(:has(.demo-banner))');
+  const sticky = css.slice(stickyStart, stickyEnd);
+  assert.doesNotMatch(sticky, /max-width:\s*none/);
+  assert.match(sticky, /isolation: isolate;/);
+  assert.match(css, /body\.with-radio \.radar-radio-slot:not\(\[data-radar-radio\]\)::after,/);
+  assert.match(css, /left: calc\(50% - 50vw\);/);
+  assert.match(css, /width: 100vw;/);
 });
