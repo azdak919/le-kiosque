@@ -675,7 +675,23 @@ export function applyBranding(bundle, base) {
     const image = document.createElement('img'); image.className = 'masthead-background'; image.dataset.mastheadBackground = ''; image.alt = ''; applyResponsive(image, responsiveAttrs(images[0], base, SIZES_MASTHEAD)); image.style.objectPosition = `${images[0].focalPoint?.x ?? 50}% ${images[0].focalPoint?.y ?? 50}%`;
     const shade = document.createElement('span'); shade.className = 'masthead-background-shade'; shade.setAttribute('aria-hidden', 'true');
     const credit = document.createElement('span'); credit.className = 'masthead-photo-credit'; credit.dataset.mastheadCredit = ''; if (images[0].credit) { /* Même libellé que kiosque.js (rotation) : crédit et licence ; lien seulement s'il existe. */ const label = `Photo : ${images[0].credit}${images[0].license ? ` (${images[0].license})` : ''}`; const href = images[0].creditUrl || images[0].sourceUrl || ''; if (/^https:\/\//i.test(href)) { const anchor = document.createElement('a'); anchor.href = href; anchor.rel = 'noopener'; anchor.textContent = label; credit.append(anchor); } else credit.textContent = label; }
-    const manifest = document.createElement('script'); manifest.type = 'application/json'; manifest.id = 'masthead-backgrounds'; manifest.textContent = JSON.stringify(images.map((item) => { const attrs = responsiveAttrs(item, base, SIZES_MASTHEAD); return { ...item, src: attrs.src, srcset: attrs.srcset, sizes: attrs.sizes, backgroundPosition: `${item.focalPoint?.x ?? 50}% ${item.focalPoint?.y ?? 50}%` }; }));
+    const manifest = document.createElement('script'); manifest.type = 'application/json'; manifest.id = 'masthead-backgrounds'; manifest.textContent = JSON.stringify({ randomOrder: backgrounds?.randomOrder !== false, images: images.map((item) => { const attrs = responsiveAttrs(item, base, SIZES_MASTHEAD); return { ...item, src: attrs.src, srcset: attrs.srcset, sizes: attrs.sizes, backgroundPosition: `${item.focalPoint?.x ?? 50}% ${item.focalPoint?.y ?? 50}%` }; }) });
+    if (backgrounds?.randomOrder !== false && images.length > 1) {
+      let i = 0;
+      try { i = (window.BgRotation && typeof window.BgRotation.randInt === 'function') ? window.BgRotation.randInt(images.length) : Math.floor(Math.random() * images.length); } catch (_) { i = Math.floor(Math.random() * images.length); }
+      const chosen = images[i];
+      if (chosen) {
+        applyResponsive(image, responsiveAttrs(chosen, base, SIZES_MASTHEAD));
+        image.style.objectPosition = `${chosen.focalPoint?.x ?? 50}% ${chosen.focalPoint?.y ?? 50}%`;
+        image.setAttribute('data-masthead-start', String(i));
+        if (chosen.credit) {
+          const label = `Photo : ${chosen.credit}${chosen.license ? ` (${chosen.license})` : ''}`;
+          const href = chosen.creditUrl || chosen.sourceUrl || '';
+          credit.replaceChildren();
+          if (/^https:\/\//i.test(href)) { const anchor = document.createElement('a'); anchor.href = href; anchor.rel = 'noopener'; anchor.textContent = label; credit.append(anchor); } else credit.textContent = label;
+        }
+      }
+    }
     masthead.prepend(image, shade); masthead.append(credit, manifest);
     /* Rebrancher le shuffle sur le nouvel <img> + manifeste (sinon nœud mort). */
     try {

@@ -136,6 +136,7 @@ export function buildCmsConfig(options: CmsConfigOptions): Record<string, unknow
             { name: 'masthead', label: 'Mât', widget: 'object', required: false, fields: [
               { name: 'backgrounds', label: 'Arrière-plans', widget: 'object', fields: [
                 { name: 'enabled', label: 'Afficher les arrière-plans', widget: 'boolean', default: true },
+                { name: 'randomOrder', label: 'Ordre aléatoire', widget: 'boolean', default: true, hint: 'Une photo au hasard à chaque visite. Désactivé : toujours la première de la liste.' },
                 { name: 'images', label: 'Images locales', widget: 'list', required: false, fields: mediaFields() },
               ] },
               { name: 'weather', label: 'Météo', widget: 'object', fields: [

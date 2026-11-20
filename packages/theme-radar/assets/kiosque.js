@@ -274,15 +274,56 @@
     }
   }
 
-  function readMastheadImages() {
+  function readMastheadPayload() {
     var data = document.getElementById('masthead-backgrounds');
-    if (!data) return [];
-    var images = [];
-    try { images = JSON.parse(data.textContent || '[]'); } catch (_) { images = []; }
-    if (!Array.isArray(images)) return [];
-    return images.filter(function (item) { return item && item.src; }).map(function (item) {
+    if (!data) return { randomOrder: true, images: [] };
+    var parsed;
+    try { parsed = JSON.parse(data.textContent || '[]'); } catch (_) { parsed = []; }
+    if (Array.isArray(parsed)) return { randomOrder: true, images: parsed };
+    var images = Array.isArray(parsed && parsed.images) ? parsed.images : [];
+    return { randomOrder: parsed.randomOrder !== false, images: images };
+  }
+
+  function readMastheadImages() {
+    return readMastheadPayload().images.filter(function (item) { return item && item.src; }).map(function (item) {
       return Object.assign({}, item, { src: resolveAssetUrl(item.src) });
     });
+  }
+
+  function mastheadRandomOrder() {
+    return readMastheadPayload().randomOrder !== false;
+  }
+
+  function mastheadRandInt(n) {
+    if (n <= 1) return 0;
+    try {
+      if (window.BgRotation && typeof window.BgRotation.randInt === 'function') {
+        return window.BgRotation.randInt(n);
+      }
+    } catch (_) {}
+    try {
+      if (window.crypto && crypto.getRandomValues) {
+        var buf = new Uint32Array(1);
+        var max = 0x100000000;
+        var limit = max - (max % n);
+        var x;
+        do { crypto.getRandomValues(buf); x = buf[0]; } while (x >= limit);
+        return x % n;
+      }
+    } catch (_) {}
+    return Math.floor(Math.random() * n);
+  }
+
+  function preloadMastheadIndex(index) {
+    var images = readMastheadImages();
+    var item = images[index];
+    if (!item || !item.src) return;
+    try {
+      var preload = new Image();
+      preload.decoding = 'async';
+      if (item.srcset) preload.srcset = item.srcset;
+      preload.src = item.src;
+    } catch (_) {}
   }
 
   function liveMastheadImage() {
@@ -368,6 +409,11 @@
     updateMastheadCredit(item);
     mastheadBgState.hasShown = true;
     markMastheadPhotoReady();
+    var images = readMastheadImages();
+    var nextIndex = mastheadRandomOrder()
+      ? pickNextMastheadIndex()
+      : (mastheadBgState.index + 1) % Math.max(1, images.length);
+    preloadMastheadIndex(nextIndex);
   }
 
   function showMastheadIndex(next, options) {
@@ -500,7 +546,8 @@
       if (!sameSrc(images[i].src, current)) candidates.push(i);
     }
     if (!candidates.length) return (mastheadBgState.index + 1) % images.length;
-    return candidates[Math.floor(Math.random() * candidates.length)];
+    if (!mastheadRandomOrder()) return (mastheadBgState.index + 1) % images.length;
+    return candidates[mastheadRandInt(candidates.length)];
   }
 
   function rebindMastheadBackgrounds() {
@@ -509,16 +556,36 @@
     if (!images.length || !image) return;
     // Resync l’index sur la photo actuellement peinte (après applyBranding).
     var paintedSrc = image.getAttribute('src') || image.currentSrc || '';
+    var startAttr = image.getAttribute('data-masthead-start');
     mastheadBgState.index = 0;
-    for (var i = 0; i < images.length; i++) {
-      if (sameSrc(images[i].src, paintedSrc)) {
-        mastheadBgState.index = i;
-        break;
+    var found = false;
+    if (startAttr != null && startAttr !== '') {
+      var start = Number(startAttr);
+      if (isFinite(start) && start >= 0 && start < images.length) {
+        mastheadBgState.index = start;
+        found = true;
       }
+    }
+    if (!found) {
+      for (var i = 0; i < images.length; i++) {
+        if (sameSrc(images[i].src, paintedSrc)) {
+          mastheadBgState.index = i;
+          found = true;
+          break;
+        }
+      }
+    }
+    if (!found && mastheadRandomOrder() && images.length > 1 && !mastheadBgState.hasShown) {
+      mastheadBgState.index = mastheadRandInt(images.length);
+      showMastheadIndex(mastheadBgState.index, { animate: false, preservePosition: true });
     }
     // Ne pas recharger si c’est déjà la bonne photo ; marquer hasShown pour le prochain shuffle.
     mastheadBgState.hasShown = true;
     markMastheadPhotoReady();
+    var nextIndex = mastheadRandomOrder()
+      ? pickNextMastheadIndex()
+      : (mastheadBgState.index + 1) % images.length;
+    preloadMastheadIndex(nextIndex);
     cancelMastheadTransition();
     if (!image.dataset.errorBound) {
       image.dataset.errorBound = '1';
