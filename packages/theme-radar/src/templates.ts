@@ -1079,6 +1079,7 @@ ${content}
     </button>
   </div>
 </div>
+<script src="${asset('/assets/sports-board-lib.js', ctx)}" defer></script>
 <script src="${asset('/assets/kiosque.js', ctx)}" defer></script>
 ${ctx.editorial ? `<script>window.KIOSQUE_EDITORIAL=${JSON.stringify(ctx.editorial.mode === 'socle-vivant'
   // Paquet complet : le socle PHP de la même installation remet le sous-dossier dans ces chemins.

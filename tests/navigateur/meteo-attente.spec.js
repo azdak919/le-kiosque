@@ -84,14 +84,15 @@ for (const largeur of [360, 390]) {
     await ctx.close();
   });
 }
-test('ordinateur : la puce météo reste « Ville 6° »', async ({ browser }) => {
+test('ordinateur : la puce météo élargie (max/min et demain) est dans le dock', async ({ browser }) => {
   const ctx = await browser.newContext({ viewport: { width: 1280, height: 900 } });
   await fausseMeteo(ctx);
   const page = await ctx.newPage();
   await page.goto('/autre-nom/demo/');
-  const puce = page.locator('.masthead-status .weather-chip:not(.weather-chip--attente)').first();
+  const puce = page.locator('.masthead-weather-dock .weather-chip:not(.weather-chip--attente)').first();
   await expect(puce).toBeVisible({ timeout: 10000 });
-  await expect(puce.locator('.weather-chip__max')).toBeHidden();
-  await expect(puce.locator('.weather-chip__tomorrow')).toBeHidden();
+  await expect(puce.locator('.weather-chip__max')).toBeVisible();
+  await expect(puce.locator('.weather-chip__tomorrow')).toBeVisible();
+  await expect(page.locator('.masthead-utilities .weather-chip, .masthead-top .weather-chip')).toHaveCount(0);
   await ctx.close();
 });
