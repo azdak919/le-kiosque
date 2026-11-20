@@ -144,7 +144,11 @@ test('configurer, rédiger, prévisualiser, publier, persister et exporter sans 
   await page.getByLabel('Cadrage horizontal').fill('73');
   await page.getByLabel('Cadrage vertical').fill('42');
   await page.getByRole('button', { name: 'Enregistrer' }).click();
-  await expect(front.locator('.masthead-background')).toHaveAttribute('src', /mcgill-(roddick|campus|arts)\.jpg/);
+  // Le manifeste retient McGill en tête ; l’image peinte peut être une autre
+  // des photos retenues si l’ordre aléatoire est actif (plusieurs photos).
+  await expect(front.locator('.masthead-background')).toHaveAttribute('src', /\/media\/.+\.(jpe?g|webp)$/i);
+  const mastheadPayload = JSON.parse(await front.locator('#masthead-backgrounds').textContent());
+  expect(mastheadPayload.images[0].src).toMatch(/mcgill-(roddick|campus|arts)\.jpg/);
 
   await page.locator('.admin-nav').getByRole('link', { name: 'Exporter', exact: true }).click();
   const jsonEvent = page.waitForEvent('download');
