@@ -13,7 +13,7 @@ const ROOT = path.resolve(import.meta.dirname, '..');
 const DEMO = path.join(ROOT, 'examples/demo-journal');
 const silent = { info: () => {}, warn: () => {}, error: () => {} };
 
-test('le noyau de carte conserve les règles image, métadonnées et absence d’image de la suite', () => {
+test('le noyau de carte conserve les règles image, métadonnées et les vignettes de la suite', () => {
   const view = {
     section: 'Campus',
     href: '/depot/articles/essai/',
@@ -49,8 +49,16 @@ test('le noyau de carte conserve les règles image, métadonnées et absence d�
   // Texte et lien séparés : le line-clamp En bref ne doit pas avaler le lien.
   assert.match(brief, /article-brief-text/);
   assert.match(brief, /<\/span>\s*<a class="article-more"/);
-  assert.doesNotMatch(tail, /<figure class="article-media">/);
+  assert.match(tail, /<figure class="article-media">/);
   assert.match(tail, /article--tail/);
+  assert.match(tail, /article--thumb/);
+  assert.match(tail, /has-image/);
+  assert.doesNotMatch(tail, /width="1200"/, 'vignette de la suite : pas d’attrs width/height');
+  const tailSansPhoto = renderSourceArticle({ ...view, image: undefined }, 'tail');
+  assert.match(tailSansPhoto, /article--tail/);
+  assert.doesNotMatch(tailSansPhoto, /<figure class="article-media">/);
+  assert.doesNotMatch(tailSansPhoto, /article--thumb/);
+  assert.doesNotMatch(tailSansPhoto, /has-image/);
   assert.doesNotMatch(lead, /article-eyebrow/, 'sans sélection, pas d’étiquette « À la une »');
   const une = renderSourceArticle({ ...view, leadEyebrow: 'À la une' }, 'lead');
   assert.match(une, /<span class="article-eyebrow">À la une<\/span>/);

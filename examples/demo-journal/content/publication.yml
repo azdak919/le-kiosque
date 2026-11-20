@@ -28,8 +28,9 @@ labels:
 masthead:
   backgrounds:
     enabled: true
+    randomOrder: true
     # Pool mât : extérieurs campus lisibles (pas d’intérieurs / toits plats /
-    # terrains vides). Ordre = priorité d’affichage et de shuffle.
+    # terrains vides). Ordre = priorité d’affichage ; aléatoire à chaque visite.
     images:
       - id: 1c05402e-3d91-54df-8638-1105d7dbcdd8
         src: /media/demo-library/mcgill-roddick.jpg

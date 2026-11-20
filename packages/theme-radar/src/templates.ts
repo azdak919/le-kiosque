@@ -51,6 +51,11 @@ export interface RenderContext {
     seedUrl: string;
     databaseKey: string;
   };
+  /**
+   * Lien du pied « Espace de rédaction ». Absent : `<basePath>/redaction/`,
+   * comme sur un vrai journal. La vitrine le pose sur `/admin/`.
+   */
+  redactionHref?: string;
 }
 
 export interface MastheadOptions {
@@ -356,10 +361,46 @@ function mastheadBackground(ctx: RenderContext, options: MastheadOptions): strin
     };
   });
   const first = responsiveAttrs(image, ctx, SIZES_MASTHEAD);
+  const payload = { randomOrder: settings.randomOrder !== false, images: manifest };
   return `<img class="masthead-background" ${srcsetHtml(first)} alt="" data-masthead-background style="object-position:${esc(options.backgroundPosition)}">
   <span class="masthead-background-shade" aria-hidden="true"></span>
   <span class="masthead-photo-credit" data-masthead-credit>${credit}</span>
-  <script type="application/json" id="masthead-backgrounds">${JSON.stringify(manifest).replace(/</g, '\\u003c')}</script>`;
+  <script type="application/json" id="masthead-backgrounds">${JSON.stringify(payload).replace(/</g, '\\u003c')}</script>
+  <script>
+  (function(){
+    var data=document.getElementById('masthead-backgrounds');
+    if(!data) return;
+    var parsed; try{parsed=JSON.parse(data.textContent||'[]');}catch(e){return;}
+    var images=Array.isArray(parsed)?parsed:(parsed&&parsed.images)||[];
+    var random=Array.isArray(parsed)?true:parsed.randomOrder!==false;
+    if(!random||images.length<2) return;
+    var img=document.querySelector('[data-masthead-background]');
+    if(!img) return;
+    var n=images.length, i=0;
+    try{
+      if(window.crypto&&crypto.getRandomValues){
+        var buf=new Uint32Array(1), max=0x100000000, limit=max-(max%n), x;
+        do{crypto.getRandomValues(buf);x=buf[0];}while(x>=limit);
+        i=x%n;
+      }else i=Math.floor(Math.random()*n);
+    }catch(e){i=Math.floor(Math.random()*n);}
+    var item=images[i];
+    if(!item||!item.src) return;
+    if(item.srcset) img.setAttribute('srcset',item.srcset); else img.removeAttribute('srcset');
+    if(item.sizes) img.setAttribute('sizes',item.sizes); else if(item.srcset) img.setAttribute('sizes','100vw');
+    img.src=item.src;
+    if(item.backgroundPosition) img.style.objectPosition=item.backgroundPosition;
+    img.setAttribute('data-masthead-start', String(i));
+    var creditEl=document.querySelector('[data-masthead-credit]');
+    if(creditEl&&item.credit){
+      var label='Photo : '+item.credit+(item.license?' ('+item.license+')':'');
+      creditEl.replaceChildren();
+      if(item.creditUrl&&item.creditUrl.indexOf('https://')===0){
+        var a=document.createElement('a'); a.href=item.creditUrl; a.rel='noopener'; a.textContent=label; creditEl.appendChild(a);
+      } else creditEl.textContent=label;
+    }
+  })();
+  </script>`;
 }
 
 /** Route de la page résultats (puce mât) — `/sports/` par défaut. */
@@ -1016,7 +1057,7 @@ ${content}
             : ''
       }
       <p class="site-foot__legal">${footCopyright(pub, ctx.buildYear)}</p>
-      <p class="site-foot__built">${footBuiltHtml(asset('/redaction/', ctx))}</p>
+      <p class="site-foot__built">${footBuiltHtml(ctx.redactionHref ?? asset('/redaction/', ctx))}</p>
     </div>
   </div>
 </footer>
@@ -1074,11 +1115,13 @@ ${content}
     </button>
   </div>
 </div>
+<script src="${asset('/assets/bg-rotation-lib.js', ctx)}" defer></script>
+<script src="${asset('/assets/sports-board-lib.js', ctx)}" defer></script>
 <script src="${asset('/assets/kiosque.js', ctx)}" defer></script>
 ${ctx.editorial ? `<script>window.KIOSQUE_EDITORIAL=${JSON.stringify(ctx.editorial.mode === 'socle-vivant'
   // Paquet complet : le socle PHP de la même installation remet le sous-dossier dans ces chemins.
   ? { mode: 'socle-vivant', apiBase: ctx.basePath, publicBasePath: ctx.basePath, adminBasePath: `${ctx.basePath}/redaction`, assetsBase: ctx.editorial.assetsBase }
-  : { mode: 'demo-local', publicBasePath: ctx.basePath, adminBasePath: `${ctx.basePath}/admin`, assetsBase: ctx.editorial.assetsBase, seedUrl: ctx.editorial.seedUrl, publicationSlug: pub.slug, databaseKey: ctx.editorial.databaseKey }).replace(/</g, '\\u003c')};</script>
+  : { mode: 'demo-local', publicBasePath: ctx.basePath, adminBasePath: (ctx.redactionHref ?? `${ctx.basePath}/admin`).replace(/\/+$/, ''), assetsBase: ctx.editorial.assetsBase, seedUrl: ctx.editorial.seedUrl, publicationSlug: pub.slug, databaseKey: ctx.editorial.databaseKey }).replace(/</g, '\\u003c')};</script>
 <script type="module" src="${ctx.editorial.assetsBase}/front.js"></script>` : ''}
 </body>
 </html>

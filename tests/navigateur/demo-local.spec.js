@@ -84,9 +84,15 @@ test('configurer, rédiger, prévisualiser, publier, persister et exporter sans 
   await expect(front.locator('.publication-logo')).toBeVisible();
   await expect(front.locator('html')).toHaveAttribute('data-typography', 'editorial-classic');
   // La démo (sql.js) doit employer le même noyau de carte que le HTML statique :
-  // vignettes en bref, mais aucune image réintroduite dans la suite du fil.
+  // vignettes en bref et, comme sur LE-RADAR, dans la suite du fil quand
+  // l’article a une photo. Sans photo, pas de case vide.
   await expect(front.locator('article.article--brief.has-image .article-media').first()).toBeVisible();
-  await expect(front.locator('article.article--tail .article-media')).toHaveCount(0);
+  await expect(front.locator('article.article--tail.has-image .article-media').first()).toBeVisible();
+  const tailsSansPhoto = front.locator('article.article--tail:not(.has-image)');
+  const nSans = await tailsSansPhoto.count();
+  for (let i = 0; i < nSans; i += 1) {
+    await expect(tailsSansPhoto.nth(i).locator('.article-media')).toHaveCount(0);
+  }
   await expect(front.getByText('Un article créé dans le navigateur')).toHaveCount(0);
 
   await row.getByRole('button', { name: 'Modifier' }).click();
@@ -131,14 +137,22 @@ test('configurer, rédiger, prévisualiser, publier, persister et exporter sans 
   await expect(page.getByText('Exemple local').first()).toBeVisible({ timeout: 60_000 });
 
   await page.locator('.admin-nav').getByRole('link', { name: 'Configuration', exact: true }).click();
-  await page.getByRole('button', { name: 'Choisir une photo' }).click();
+  // Socle 1.4.2 : le mât prend plusieurs photos. On vide la liste héritée du
+  // Quorum, puis on retient McGill seule, pour qu’elle reste en tête.
+  await page.getByRole('button', { name: 'Retirer toutes les images' }).click();
+  await page.getByRole('button', { name: 'Choisir des photos' }).click();
   const mastheadPicker = page.locator('.media-picker');
   await mastheadPicker.getByLabel('Rechercher une photo (lieu, sujet, mot-clé)').fill('McGill');
   await mastheadPicker.getByRole('button', { name: 'Choisir cette photo' }).first().click();
+  await mastheadPicker.getByRole('button', { name: 'Utiliser ces photos' }).click();
   await page.getByLabel('Cadrage horizontal').fill('73');
   await page.getByLabel('Cadrage vertical').fill('42');
   await page.getByRole('button', { name: 'Enregistrer' }).click();
-  await expect(front.locator('.masthead-background')).toHaveAttribute('src', /mcgill-(roddick|campus|arts)\.jpg/);
+  // Le manifeste retient McGill en tête ; l’image peinte peut être une autre
+  // des photos retenues si l’ordre aléatoire est actif (plusieurs photos).
+  await expect(front.locator('.masthead-background')).toHaveAttribute('src', /\/media\/.+\.(jpe?g|webp)$/i);
+  const mastheadPayload = JSON.parse(await front.locator('#masthead-backgrounds').textContent());
+  expect(mastheadPayload.images[0].src).toMatch(/mcgill-(roddick|campus|arts)\.jpg/);
 
   await page.locator('.admin-nav').getByRole('link', { name: 'Exporter', exact: true }).click();
   const jsonEvent = page.waitForEvent('download');

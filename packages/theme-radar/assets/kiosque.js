@@ -274,15 +274,56 @@
     }
   }
 
-  function readMastheadImages() {
+  function readMastheadPayload() {
     var data = document.getElementById('masthead-backgrounds');
-    if (!data) return [];
-    var images = [];
-    try { images = JSON.parse(data.textContent || '[]'); } catch (_) { images = []; }
-    if (!Array.isArray(images)) return [];
-    return images.filter(function (item) { return item && item.src; }).map(function (item) {
+    if (!data) return { randomOrder: true, images: [] };
+    var parsed;
+    try { parsed = JSON.parse(data.textContent || '[]'); } catch (_) { parsed = []; }
+    if (Array.isArray(parsed)) return { randomOrder: true, images: parsed };
+    var images = Array.isArray(parsed && parsed.images) ? parsed.images : [];
+    return { randomOrder: parsed.randomOrder !== false, images: images };
+  }
+
+  function readMastheadImages() {
+    return readMastheadPayload().images.filter(function (item) { return item && item.src; }).map(function (item) {
       return Object.assign({}, item, { src: resolveAssetUrl(item.src) });
     });
+  }
+
+  function mastheadRandomOrder() {
+    return readMastheadPayload().randomOrder !== false;
+  }
+
+  function mastheadRandInt(n) {
+    if (n <= 1) return 0;
+    try {
+      if (window.BgRotation && typeof window.BgRotation.randInt === 'function') {
+        return window.BgRotation.randInt(n);
+      }
+    } catch (_) {}
+    try {
+      if (window.crypto && crypto.getRandomValues) {
+        var buf = new Uint32Array(1);
+        var max = 0x100000000;
+        var limit = max - (max % n);
+        var x;
+        do { crypto.getRandomValues(buf); x = buf[0]; } while (x >= limit);
+        return x % n;
+      }
+    } catch (_) {}
+    return Math.floor(Math.random() * n);
+  }
+
+  function preloadMastheadIndex(index) {
+    var images = readMastheadImages();
+    var item = images[index];
+    if (!item || !item.src) return;
+    try {
+      var preload = new Image();
+      preload.decoding = 'async';
+      if (item.srcset) preload.srcset = item.srcset;
+      preload.src = item.src;
+    } catch (_) {}
   }
 
   function liveMastheadImage() {
@@ -368,6 +409,11 @@
     updateMastheadCredit(item);
     mastheadBgState.hasShown = true;
     markMastheadPhotoReady();
+    var images = readMastheadImages();
+    var nextIndex = mastheadRandomOrder()
+      ? pickNextMastheadIndex()
+      : (mastheadBgState.index + 1) % Math.max(1, images.length);
+    preloadMastheadIndex(nextIndex);
   }
 
   function showMastheadIndex(next, options) {
@@ -500,7 +546,8 @@
       if (!sameSrc(images[i].src, current)) candidates.push(i);
     }
     if (!candidates.length) return (mastheadBgState.index + 1) % images.length;
-    return candidates[Math.floor(Math.random() * candidates.length)];
+    if (!mastheadRandomOrder()) return (mastheadBgState.index + 1) % images.length;
+    return candidates[mastheadRandInt(candidates.length)];
   }
 
   function rebindMastheadBackgrounds() {
@@ -509,16 +556,36 @@
     if (!images.length || !image) return;
     // Resync l’index sur la photo actuellement peinte (après applyBranding).
     var paintedSrc = image.getAttribute('src') || image.currentSrc || '';
+    var startAttr = image.getAttribute('data-masthead-start');
     mastheadBgState.index = 0;
-    for (var i = 0; i < images.length; i++) {
-      if (sameSrc(images[i].src, paintedSrc)) {
-        mastheadBgState.index = i;
-        break;
+    var found = false;
+    if (startAttr != null && startAttr !== '') {
+      var start = Number(startAttr);
+      if (isFinite(start) && start >= 0 && start < images.length) {
+        mastheadBgState.index = start;
+        found = true;
       }
+    }
+    if (!found) {
+      for (var i = 0; i < images.length; i++) {
+        if (sameSrc(images[i].src, paintedSrc)) {
+          mastheadBgState.index = i;
+          found = true;
+          break;
+        }
+      }
+    }
+    if (!found && mastheadRandomOrder() && images.length > 1 && !mastheadBgState.hasShown) {
+      mastheadBgState.index = mastheadRandInt(images.length);
+      showMastheadIndex(mastheadBgState.index, { animate: false, preservePosition: true });
     }
     // Ne pas recharger si c’est déjà la bonne photo ; marquer hasShown pour le prochain shuffle.
     mastheadBgState.hasShown = true;
     markMastheadPhotoReady();
+    var nextIndex = mastheadRandomOrder()
+      ? pickNextMastheadIndex()
+      : (mastheadBgState.index + 1) % images.length;
+    preloadMastheadIndex(nextIndex);
     cancelMastheadTransition();
     if (!image.dataset.errorBound) {
       image.dataset.errorBound = '1';
@@ -714,7 +781,10 @@
   }
 
   function syncMastheadWeatherDock() {
-    var shouldDock = WEATHER_PHONE_MQ ? WEATHER_PHONE_MQ.matches : (window.innerWidth <= 720);
+    /* Toujours sous la radio (ordinateur comme téléphone) : la puce élargie
+     * (max/min du jour + demain) ne tient pas dans la rangée d’utilitaires du mât. */
+    var dock = document.getElementById('masthead-weather-dock');
+    var shouldDock = Boolean(dock && mastheadStatusHost());
     setMastheadWeatherDocked(shouldDock);
   }
 
@@ -747,6 +817,14 @@
       && window.matchMedia('(prefers-reduced-motion: reduce)').matches);
   } catch (_) {}
   var sportsLaneTimers = { result: null, next: null, live: null };
+  var sportsVisible = [];
+  var sportsSlotTimers = [];
+  var sportsWaveTimer = 0;
+  var sportsNextCursor = 0;
+  var SPORTS_CASCADE_STEP_MS = (window.KiosqueSportsBoard && window.KiosqueSportsBoard.SPORTS_CASCADE_STEP_MS) || 440;
+  var SPORTS_BOARD_HOLD_MIN_MS = (window.KiosqueSportsBoard && window.KiosqueSportsBoard.SPORTS_BOARD_HOLD_MIN_MS) || 9000;
+  var SPORTS_BOARD_HOLD_MAX_MS = (window.KiosqueSportsBoard && window.KiosqueSportsBoard.SPORTS_BOARD_HOLD_MAX_MS) || 12000;
+
   var SPORTS_SUB_MARQUEE_PX_PER_S = 16;
   var SPORTS_SUB_MARQUEE_MIN_SEC = 8;
 
@@ -1374,10 +1452,65 @@
     chip.classList.toggle('is-abrege', i > 0);
   }
 
-  function sportsUseSplitLanes() {
-    return sportsIsDesktopLabel() && sportsSlides.filter(function (s) {
-      return s.mode === 'result' || s.mode === 'next' || sportsSlideIsLive(s);
-    }).length >= 2;
+  function sportsBoardLib() {
+    return window.KiosqueSportsBoard || null;
+  }
+
+  function sportsSlideToBoardItem(slide) {
+    if (!slide) return null;
+    return {
+      key: slide.key,
+      mode: sportsSlideIsLive(slide) ? 'live' : slide.mode,
+      live: sportsSlideIsLive(slide),
+      sport: sportsSlideSportKey(slide),
+      slide: slide,
+    };
+  }
+
+  function sportsBoardPool() {
+    return sportsSlides.map(sportsSlideToBoardItem).filter(Boolean);
+  }
+
+  function sportsStripAvailWidth(host) {
+    if (!host) return 0;
+    var w = host.clientWidth;
+    if (w > 0) return w;
+    var parent = host.parentNode;
+    if (parent && parent.clientWidth) return parent.clientWidth;
+    return window.innerWidth || 0;
+  }
+
+  function sportsBoardCount(host) {
+    var lib = sportsBoardLib();
+    var avail = sportsStripAvailWidth(host);
+    if (lib && typeof lib.sportsBoardCountFromWidth === 'function') {
+      return lib.sportsBoardCountFromWidth(avail, { desktop: sportsIsDesktopLabel() });
+    }
+    if (!sportsIsDesktopLabel()) return 1;
+    var minSlot = 240, gap = 6, maxN = avail >= 1100 ? 5 : 4;
+    var n = 1;
+    for (var tryN = maxN; tryN >= 2; tryN -= 1) {
+      if (avail >= tryN * minSlot + gap * (tryN - 1)) { n = tryN; break; }
+    }
+    return n;
+  }
+
+  function sportsUseSplitLanes(host) {
+    var count = sportsBoardCount(host || document.querySelector('.masthead-sports[data-sports-payload]'));
+    return count >= 2 && sportsSlides.length >= 2;
+  }
+
+  function sportsPickVisible(host) {
+    var lib = sportsBoardLib();
+    var n = sportsBoardCount(host);
+    var pool = sportsBoardPool();
+    var picked;
+    if (lib && typeof lib.sportsSplitVisible === 'function') {
+      picked = lib.sportsSplitVisible(pool, n);
+    } else {
+      picked = pool.slice(0, n);
+    }
+    return picked.map(function (item) { return item.slide || sportsSlides.find(function (s) { return s.key === item.key; }); }).filter(Boolean);
   }
 
   function sportsLanePool(lane) {
@@ -1399,69 +1532,106 @@
         sportsLaneTimers[lane] = null;
       }
     });
+    clearSportsWave();
+    clearSportsSlotTimers();
   }
 
-  function sportsVisibleSportKeys(host, exceptLane) {
-    var keys = [];
-    Array.prototype.forEach.call(host.querySelectorAll('.sports-chip'), function (chip) {
-      if (exceptLane && chip.dataset.sportsLane === exceptLane) return;
-      if (chip.dataset.sportsSport) keys.push(String(chip.dataset.sportsSport).toLowerCase());
-    });
-    return keys;
+  function clearSportsSlotTimers() {
+    sportsSlotTimers.forEach(function (id) { if (id) window.clearTimeout(id); });
+    sportsSlotTimers = [];
   }
 
-  function sportsPickFromPool(pool, avoidKey, avoidSports) {
-    if (!pool.length) return null;
-    var i;
-    var start = 0;
-    if (avoidKey) {
-      for (i = 0; i < pool.length; i += 1) {
-        if (pool[i].key === avoidKey) { start = i + 1; break; }
-      }
+  function clearSportsWave() {
+    if (sportsWaveTimer) {
+      window.clearTimeout(sportsWaveTimer);
+      sportsWaveTimer = 0;
     }
-    var ordered = pool.slice(start).concat(pool.slice(0, start));
-    var prefer = ordered.find(function (slide) {
-      return avoidSports.indexOf(sportsSlideSportKey(slide)) === -1 && slide.key !== avoidKey;
+  }
+
+  function sportsBoardHoldMs() {
+    var n = Math.max(1, sportsVisible.length);
+    var hold = Math.max(SPORTS_BOARD_HOLD_MIN_MS, 1400 * n);
+    return Math.min(SPORTS_BOARD_HOLD_MAX_MS, hold);
+  }
+
+  function sportsVisibleOccupyKeys(exceptSlot) {
+    var used = new Set();
+    sportsVisible.forEach(function (slide, i) {
+      if (i === exceptSlot || !slide || !slide.key) return;
+      used.add(slide.key);
     });
-    return prefer || ordered.find(function (slide) { return slide.key !== avoidKey; }) || ordered[0] || null;
+    return used;
   }
 
-  function scheduleSportsLaneRotate(host, lane, delayMs) {
-    if (sportsLaneTimers[lane]) {
-      window.clearTimeout(sportsLaneTimers[lane]);
-      sportsLaneTimers[lane] = null;
-    }
-    var pool = sportsLanePool(lane);
-    if (pool.length < 2 || sportsReducedMotion) return;
-    sportsLaneTimers[lane] = window.setTimeout(function () {
-      sportsLaneTimers[lane] = null;
-      rotateSportsLane(host, lane);
-    }, Math.max(SPORTS_ROTATE_MIN_MS, delayMs | 0));
-  }
-
-  function rotateSportsLane(host, lane) {
-    if (!host || !host.isConnected || !sportsUseSplitLanes()) return;
-    var chip = host.querySelector('.sports-chip[data-sports-lane="' + lane + '"]');
-    var pool = sportsLanePool(lane);
-    var next = sportsPickFromPool(pool, chip && chip.dataset.sportsKey, sportsVisibleSportKeys(host, lane));
-    if (!next || (chip && chip.dataset.sportsKey === next.key)) return;
+  function rotateSportsSlot(host, slot) {
+    if (!host || !host.isConnected || slot < 0 || slot >= sportsVisible.length) return 80;
+    var chips = host.querySelectorAll('.sports-chip');
+    var oldChip = chips[slot];
+    if (oldChip && document.activeElement && oldChip.contains(document.activeElement)) return 0;
+    var lib = sportsBoardLib();
+    var pool = sportsBoardPool();
+    var visibleItems = sportsVisible.map(sportsSlideToBoardItem);
+    var nextItem = lib && typeof lib.sportsNextForSlot === 'function'
+      ? lib.sportsNextForSlot(pool, visibleItems, slot, sportsNextCursor++)
+      : null;
+    var next = nextItem && (nextItem.slide || sportsSlides.find(function (s) { return s.key === nextItem.key; }));
+    if (!next || (sportsVisible[slot] && sportsVisible[slot].key === next.key)) return 80;
+    sportsVisible[slot] = next;
     var replace = function () {
       if (!host.isConnected) return;
-      var anchor = chip && chip.nextSibling;
-      if (chip && chip.parentNode) chip.parentNode.removeChild(chip);
-      var painted = paintSportsChip(host, next, true, { append: true, split: true, before: anchor });
-      if (painted) painted.dataset.sportsLane = lane;
+      var painted = paintSportsChip(host, next, true, { append: true, split: true, before: oldChip && oldChip.nextSibling });
+      if (oldChip && oldChip.parentNode) oldChip.parentNode.removeChild(oldChip);
+      if (painted) painted.dataset.sportsSlot = String(slot);
       syncMastheadWeatherDock();
-      scheduleSportsLaneRotate(host, lane, SPORTS_ROTATE_MIN_MS + 3500);
     };
-    if (chip && !sportsReducedMotion) {
-      chip.classList.remove('is-arriving');
-      chip.classList.add('is-leaving');
-      chip.style.pointerEvents = 'none';
+    if (oldChip && !sportsReducedMotion) {
+      oldChip.classList.remove('is-arriving');
+      oldChip.classList.add('is-leaving');
+      oldChip.style.pointerEvents = 'none';
       window.setTimeout(replace, SPORTS_CHIP_LEAVE_MS);
-      return;
+      return SPORTS_CHIP_LEAVE_MS + SPORTS_ARRIVE_MS;
     }
     replace();
+    return 80;
+  }
+
+  function scheduleSportsWave(host, opts) {
+    opts = opts || {};
+    clearSportsSlotTimers();
+    clearSportsWave();
+    if (!host || !host.isConnected) return;
+    var n = sportsVisible.length;
+    if (n < 1 || sportsSlides.length < 2) return;
+    var fromSlot = opts.fromSlot | 0;
+    var firstWait = opts.firstWait !== false;
+    var stepMs = sportsReducedMotion ? 80 : SPORTS_CASCADE_STEP_MS;
+    var lib = sportsBoardLib();
+    var plan = lib && typeof lib.sportsWaveSchedule === 'function'
+      ? lib.sportsWaveSchedule(n, { stepMs: stepMs, holdMs: sportsBoardHoldMs(), firstWait: firstWait, fromSlot: fromSlot })
+      : null;
+    var step = function (index) {
+      if (!host.isConnected) return;
+      var liveN = sportsVisible.length;
+      if (liveN < 1) return;
+      if (index >= liveN) {
+        sportsWaveTimer = window.setTimeout(function () {
+          sportsWaveTimer = 0;
+          scheduleSportsWave(host, { fromSlot: 0, firstWait: false });
+        }, sportsBoardHoldMs());
+        return;
+      }
+      rotateSportsSlot(host, index);
+      sportsWaveTimer = window.setTimeout(function () { step(index + 1); }, stepMs);
+    };
+    if (firstWait) {
+      var wait = plan && plan[0] ? plan[0].at : sportsBoardHoldMs();
+      sportsWaveTimer = window.setTimeout(function () {
+        sportsWaveTimer = 0;
+        step(fromSlot);
+      }, wait);
+      return;
+    }
+    step(fromSlot);
   }
 
   function paintSportsSplit(host, animate) {
@@ -1469,48 +1639,40 @@
     clearSportsLaneTimers();
     host.textContent = '';
     host.classList.add('masthead-sports--split');
-    var lives = sportsLanePool('live');
-    var results = sportsLanePool('result');
-    var nexts = sportsLanePool('next');
-    var usedSports = [];
-    var resultSlide = sportsPickFromPool(results, '', usedSports);
-    if (resultSlide) usedSports.push(sportsSlideSportKey(resultSlide));
-    var liveSlide = sportsPickFromPool(lives, '', usedSports);
-    if (liveSlide) usedSports.push(sportsSlideSportKey(liveSlide));
-    var nextSlide = sportsPickFromPool(nexts, '', usedSports);
-    var lanes = [];
-    if (resultSlide) lanes.push(['result', resultSlide]);
-    if (liveSlide) lanes.push(['live', liveSlide]);
-    if (nextSlide) lanes.push(['next', nextSlide]);
-    if (!lanes.length) {
+    var slides = sportsPickVisible(host);
+    if (!slides.length) {
       host.classList.remove('masthead-sports--split');
       var fallback = orderSportsDeck(sportsSlides.slice())[0] || sportsSlides[0];
-      paintSportsChip(host, fallback, animate);
+      sportsVisible = fallback ? [fallback] : [];
+      if (fallback) paintSportsChip(host, fallback, animate);
       return;
     }
-    if (lanes.length === 1) {
+    if (slides.length === 1) {
       host.classList.remove('masthead-sports--split');
-      paintSportsChip(host, lanes[0][1], animate);
+      sportsVisible = [slides[0]];
+      paintSportsChip(host, slides[0], animate);
+      scheduleSportsWave(host, { firstWait: true });
       return;
     }
-    lanes.forEach(function (item) {
-      var painted = paintSportsChip(host, item[1], animate, { append: true, split: true });
-      if (painted) painted.dataset.sportsLane = item[0];
+    sportsVisible = slides.slice();
+    sportsVisible.forEach(function (slide, index) {
+      var painted = paintSportsChip(host, slide, animate, { append: true, split: true });
+      if (painted) painted.dataset.sportsSlot = String(index);
     });
     syncMastheadWeatherDock();
-    lanes.forEach(function (item) {
-      scheduleSportsLaneRotate(host, item[0], SPORTS_ROTATE_MIN_MS + 3500);
-    });
+    scheduleSportsWave(host, { fromSlot: 0, firstWait: true });
   }
 
   function renderMastheadSports(host, animate) {
-    if (sportsUseSplitLanes()) paintSportsSplit(host, animate);
+    if (sportsUseSplitLanes(host)) paintSportsSplit(host, animate);
     else {
       clearSportsLaneTimers();
       host.classList.remove('masthead-sports--split');
       refillSportsDeck(null);
       var first = sportsDeck.shift() || sportsSlides[0];
+      sportsVisible = first ? [first] : [];
       paintSportsChip(host, first, animate);
+      if (sportsSlides.length >= 2) scheduleSportsRotate(SPORTS_ROTATE_MIN_MS + 3500);
     }
   }
 
@@ -1583,6 +1745,17 @@
       if (mq) {
         if (typeof mq.addEventListener === 'function') mq.addEventListener('change', onDensityChange);
         else if (typeof mq.addListener === 'function') mq.addListener(onDensityChange);
+      }
+      if (!initMastheadSports._resizeBound) {
+        initMastheadSports._resizeBound = true;
+        var resizeTimer = 0;
+        window.addEventListener('resize', function () {
+          window.clearTimeout(resizeTimer);
+          resizeTimer = window.setTimeout(onDensityChange, 180);
+        }, { passive: true });
+        document.addEventListener('visibilitychange', function () {
+          if (document.visibilityState === 'visible') onDensityChange();
+        });
       }
     }
   }
@@ -1874,39 +2047,15 @@
     if (!nav || !btn) return;
 
     var expanded = false;
-    var phoneMq = typeof window.matchMedia === 'function'
-      ? window.matchMedia('(max-width: 720px)')
-      : null;
-
-    function isPhone() {
-      return phoneMq ? phoneMq.matches : window.innerWidth <= 720;
-    }
 
     function sync() {
-      if (!isPhone()) {
-        shell.classList.remove('has-overflow', 'is-expanded');
-        btn.hidden = true;
-        btn.setAttribute('aria-expanded', 'false');
-        expanded = false;
-        return;
-      }
-      /* Mesure avec max-height levée. */
-      var wasExpanded = shell.classList.contains('is-expanded');
-      shell.classList.add('is-expanded');
-      var fullH = nav.scrollHeight;
-      if (!wasExpanded) shell.classList.remove('is-expanded');
-      var oneRow = 44; /* ~2.65rem */
-      var overflow = fullH > oneRow + 8;
-      shell.classList.toggle('has-overflow', overflow);
-      btn.hidden = !overflow;
-      if (!overflow) {
-        expanded = false;
-        shell.classList.remove('is-expanded');
-      } else if (expanded) {
-        shell.classList.add('is-expanded');
-      }
-      btn.setAttribute('aria-expanded', expanded ? 'true' : 'false');
-      btn.textContent = expanded ? 'Réduire le menu' : 'Toutes les rubriques';
+      /* Téléphone : toutes les rubriques restent visibles, en ligne de
+         liens à points (parité LE-RADAR). Le bouton d’expansion n’a plus
+         lieu d’être. Ordinateur : inchangé, menu toujours déployé. */
+      shell.classList.remove('has-overflow', 'is-expanded');
+      btn.hidden = true;
+      btn.setAttribute('aria-expanded', 'false');
+      expanded = false;
     }
 
     btn.addEventListener('click', function () {
@@ -2067,12 +2216,13 @@
     var card = cards[cards.length - 1];
     if (!card) return false;
     card.remove();
-    /* Gabarit suite : rôle tail sans image (parité source-view / noImageRoles). */
-    card.classList.remove('article--compact', 'article--brief', 'article--thumb', 'has-image');
+    /* Gabarit suite : rôle tail, vignette conservée s’il y a une photo
+       (parité LE-RADAR et source-view / imageRoles). */
+    card.classList.remove('article--compact', 'article--brief');
     card.classList.add('article--tail');
-    card.querySelectorAll('.article-media').forEach(function (media) {
-      media.remove();
-    });
+    if (!card.querySelector('.article-media')) {
+      card.classList.remove('article--thumb', 'has-image');
+    }
     var tail = ensureNewsTailSection(layout);
     var body = tail.querySelector('.news-tail-body') || tail;
     /* En tête de suite (plus frais que le bas du fil historique). */
@@ -2594,12 +2744,29 @@
     var root = document.documentElement;
     if (!banner) {
       root.style.removeProperty('--demo-banner-sticky-h');
+      if (document.body) document.body.style.removeProperty('--demo-banner-sticky-h');
+    } else {
+      var h = Math.ceil(banner.getBoundingClientRect().height);
+      if (h > 0) {
+        /* Sur :root ET body : un jeton posé seulement sur html était
+           écrasé par le fallback 2.85rem déclaré sur body (mobile). */
+        root.style.setProperty('--demo-banner-sticky-h', h + 'px');
+        if (document.body) document.body.style.setProperty('--demo-banner-sticky-h', h + 'px');
+      }
+    }
+    syncRadioStickyOffset();
+  }
+
+  /** Hauteur réelle de la barre radio → scroll-margin des ancres. */
+  function syncRadioStickyOffset() {
+    var root = document.documentElement;
+    var slot = document.querySelector('.radar-radio-slot:not([data-radar-radio="off"])');
+    if (!slot || !document.body.classList.contains('with-radio')) {
+      root.style.removeProperty('--radio-sticky-h');
       return;
     }
-    var h = Math.ceil(banner.getBoundingClientRect().height);
-    if (h > 0) {
-      root.style.setProperty('--demo-banner-sticky-h', h + 'px');
-    }
+    var h = Math.ceil(slot.getBoundingClientRect().height);
+    if (h > 0) root.style.setProperty('--radio-sticky-h', h + 'px');
   }
 
   function initDemoBannerStickyOffset() {
@@ -2608,13 +2775,13 @@
     initDemoBannerStickyOffset._bound = true;
     window.addEventListener('resize', syncDemoBannerStickyOffset, { passive: true });
     if (typeof ResizeObserver === 'function') {
-      var banner = document.querySelector('.demo-banner');
-      if (banner) {
-        try {
-          var ro = new ResizeObserver(function () { syncDemoBannerStickyOffset(); });
-          ro.observe(banner);
-        } catch (_) { /* ignore */ }
-      }
+      try {
+        var ro = new ResizeObserver(function () { syncDemoBannerStickyOffset(); });
+        var banner = document.querySelector('.demo-banner');
+        if (banner) ro.observe(banner);
+        var slot = document.querySelector('.radar-radio-slot');
+        if (slot) ro.observe(slot);
+      } catch (_) { /* ignore */ }
     }
   }
 

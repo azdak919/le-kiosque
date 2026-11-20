@@ -51,6 +51,11 @@ export interface KiosqueConfig {
     mode: 'demo-local' | 'socle-vivant' | 'git-sveltia' | 'external';
     /** Réservé aux intégrations futures, par exemple PocketBase. */
     externalBackend?: string;
+    /**
+     * Adresse publique de l’espace de rédaction, si ce n’est pas `<basePath>/redaction/`.
+     * Réservé à la vitrine : la démo du Quorum pointe vers `/admin/` (ou `/…/admin/`).
+     */
+    redactionHref?: string;
   };
 
   /** Quel backend éditorial alimente le miroir. */
