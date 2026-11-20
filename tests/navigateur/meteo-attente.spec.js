@@ -33,7 +33,7 @@ for (const [largeur, mobile] of [[1024, false], [1280, false], [360, true], [430
 
 // Téléphone : puce pleine largeur avec max/min du jour et « Demain » (même
 // appel Open-Meteo), même hauteur que la puce d'attente et que la date.
-// Ordinateur : la puce reste « Ville 6° ».
+// Ordinateur : la même puce élargie, dans le mât, à côté de la date.
 const FAUX_GEO = { results: [{ name: 'Québec', latitude: 46.81, longitude: -71.21 }] };
 const FAUX_METEO = {
   current: { temperature_2m: 5.6, weather_code: 2, is_day: 1 },
@@ -84,15 +84,30 @@ for (const largeur of [360, 390]) {
     await ctx.close();
   });
 }
-test('ordinateur : la puce météo élargie (max/min et demain) est dans le dock', async ({ browser }) => {
-  const ctx = await browser.newContext({ viewport: { width: 1280, height: 900 } });
+test('ordinateur : la puce météo élargie (max/min et demain) est à côté de la date', async ({ browser }) => {
+  const ctx = await browser.newContext({ viewport: { width: 1440, height: 900 } });
   await fausseMeteo(ctx);
   const page = await ctx.newPage();
   await page.goto('/autre-nom/demo/');
-  const puce = page.locator('.masthead-weather-dock .weather-chip:not(.weather-chip--attente)').first();
+  const puce = page.locator('.masthead-utility .weather-chip:not(.weather-chip--attente)').first();
   await expect(puce).toBeVisible({ timeout: 10000 });
+  await page.evaluate(() => new Promise((resolve) => {
+    requestAnimationFrame(() => requestAnimationFrame(resolve));
+  }));
   await expect(puce.locator('.weather-chip__max')).toBeVisible();
   await expect(puce.locator('.weather-chip__tomorrow')).toBeVisible();
-  await expect(page.locator('.masthead-utilities .weather-chip, .masthead-top .weather-chip')).toHaveCount(0);
+  await expect(page.locator('#masthead-weather-dock .weather-chip')).toHaveCount(0);
+  await expect(page.locator('.weather-chip:not(.weather-chip--attente)')).toHaveCount(1);
+  const rangee = await page.evaluate(() => {
+    const puce = document.querySelector('.masthead-utility .weather-chip');
+    const date = document.querySelector('.masthead-clock');
+    const boutons = document.querySelector('.masthead-tools');
+    const a = puce.getBoundingClientRect();
+    const d = date.getBoundingClientRect();
+    const b = boutons.getBoundingClientRect();
+    return { memeRangee: Math.abs((a.top + a.height / 2) - (d.top + d.height / 2)) <= 2, avantBoutons: a.right <= b.left - 8 };
+  });
+  expect(rangee.memeRangee).toBe(true);
+  expect(rangee.avantBoutons).toBe(true);
   await ctx.close();
 });

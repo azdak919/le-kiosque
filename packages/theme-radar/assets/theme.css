@@ -1722,7 +1722,8 @@ a.masthead-weather__city:focus-visible {
   flex: 0 0 auto;
   filter: brightness(1.12) saturate(1.05);
 }
-/* Prévisions de la puce (max/min, demain) : seulement dans le dock du téléphone. */
+/* Prévisions (max/min, demain) : cachées par défaut, révélées dans le dock
+   et, au bureau, dans la rangée du mât (voir la fin du fichier). */
 .weather-chip__today,
 .weather-chip__tomorrow { display: none; }
 /* Dock sous la radio (tous les formats) : max/min du jour et demain visibles. */
@@ -3453,8 +3454,8 @@ html {
 }
 
 
-/* Puce météo élargie sous la radio, ordinateur compris (parité visuelle
- * des pastilles LE-RADAR : verre ardoise, ton de condition). */
+/* Puce météo élargie sous la radio (téléphone, tablette, et repli bureau
+ * si la rangée du mât est trop juste). Verre ardoise, ton de condition. */
 .masthead-weather-dock:not(:empty) { padding: 8px var(--pad, 24px) 0; }
 .masthead-weather-dock:not(:has(.weather-chip)) { display: none; }
 .masthead-weather-dock .masthead-status {
@@ -3895,5 +3896,79 @@ html {
   .nav-toggle,
   .nav-shell.has-overflow .nav-toggle {
     display: none !important;
+  }
+}
+
+/*
+ * Placement de la météo.
+ * Sous 1100 px, la colonne fait 800 px : la puce élargie quitte le mât
+ * (le JS la pose sous la radio). On la cache tant qu’elle n’est pas
+ * dockée, pour qu’elle ne clignote pas à côté des boutons.
+ * À partir de 1100 px, elle reste dans la rangée, collée à la date,
+ * à sa largeur naturelle. Les boutons gardent la colonne de droite.
+ * Max, min et « Demain » restent lisibles ; le toponyme n’est pas ellipsé.
+ */
+@media (min-width: 721px) {
+  /* La météo quitte la grille sous 1100 px. Sans cette colonne explicite,
+     les boutons glisseraient contre la date. Ils restent à droite. */
+  .masthead-utility > .masthead-tools {
+    grid-column: 3;
+    justify-self: end;
+  }
+}
+@media (max-width: 1099.98px) {
+  .masthead-status:not(.masthead-status--docked),
+  .masthead-utility > .masthead-weather:not(.masthead-weather--docked) {
+    display: none !important;
+  }
+}
+@media (min-width: 1100px) {
+  .masthead-utility > .masthead-status:not(.masthead-status--docked) {
+    width: max-content;
+    max-width: 100%;
+    flex: 0 0 auto;
+    overflow: visible;
+    justify-self: start;
+  }
+  .masthead-utility > .masthead-status:not(.masthead-status--docked) .masthead-weather,
+  .masthead-utility > .masthead-status:not(.masthead-status--docked) .weather-chip,
+  .masthead-utility > .masthead-status:not(.masthead-status--docked) .masthead-weather__city {
+    width: max-content;
+    max-width: none;
+    flex: 0 0 auto;
+    overflow: visible;
+  }
+  .masthead-utility > .masthead-status:not(.masthead-status--docked) .weather-chip__name,
+  .masthead-utility > .masthead-status:not(.masthead-status--docked) .masthead-weather__name {
+    flex: 0 0 auto;
+    overflow: visible;
+    text-overflow: clip;
+  }
+  .masthead-utility > .masthead-status:not(.masthead-status--docked) .weather-chip__today,
+  .masthead-utility > .masthead-status:not(.masthead-status--docked) .weather-chip__tomorrow {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    flex: 0 0 auto;
+    white-space: nowrap;
+    font-variant-numeric: tabular-nums;
+    font-weight: 650;
+  }
+  .masthead-utility > .masthead-status:not(.masthead-status--docked) .weather-chip__today {
+    margin-left: 2px;
+    gap: 6px;
+  }
+  .masthead-utility > .masthead-status:not(.masthead-status--docked) .weather-chip__tomorrow {
+    margin-left: 6px;
+    padding-left: 6px;
+    border-left: 1px solid rgba(255, 255, 255, 0.28);
+  }
+  .masthead-utility > .masthead-status:not(.masthead-status--docked) .weather-chip__label {
+    font-weight: 600;
+    opacity: .72;
+  }
+  .masthead-utility > .masthead-status:not(.masthead-status--docked) .weather-chip .weather-chip__tomorrow-icon {
+    width: 16px;
+    height: 16px;
   }
 }
