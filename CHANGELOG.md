@@ -1,6 +1,7 @@
 # Journal
 
 ## Non publié
+- Barre radio activée : elle reste collée en haut de l’écran au défilement, comme sur LE-RADAR (position sticky, sous le bandeau de démonstration s’il y en a un, au-dessus du fil, encoche respectée, ancres décalées). Les cartes sports, la météo et la navigation défilent normalement en dessous. Radio éteinte : rien ne change.
 - Version 0.4.1. Socle épinglé à 1.4.1 (7ecf21d).
 - Accueil au téléphone : un petit espace entre le mât et la barre radio, le même qu’entre la météo et la carte sport. La place de la barre reste réservée pendant le chargement.
 - Accueil au téléphone, façon LE-RADAR : mât plus court, météo et sport plus compacts, navigation en ligne de liens séparés par des points, « Le fil étudiant » juste en dessous. Les hauteurs réservées et les cibles tactiles de 44 px sont conservées. Toutes les rubriques restent accessibles.

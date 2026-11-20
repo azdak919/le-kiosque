@@ -347,6 +347,36 @@ body:has(.demo-banner) {
   padding: 0 var(--pad, 16px);
   box-sizing: border-box;
 }
+/*
+ * Barre radio collante (parité LE-RADAR .tuner) : quand la radio est
+ * activée, l'emplacement reste en haut du viewport au défilement.
+ * top = hauteur du bandeau démo (0 sans bandeau) ; encoche : on s'ancre
+ * sous safe-area seulement s'il n'y a pas de bandeau (sinon double compte).
+ * z-index 100, sous le bandeau démo (110), au-dessus du fil.
+ * Fond de page sur l'emplacement : le contenu ne transparaît pas dans le
+ * padding autour de la barre arrondie. Rien ne saute : sticky n'ôte
+ * aucune place du flux. Radio éteinte : ces règles ne s'appliquent pas
+ * (l'emplacement reste display:none).
+ */
+body.with-radio .radar-radio-slot:not([data-radar-radio]),
+body.with-radio .radar-radio-slot[data-radar-radio="ready"] {
+  position: sticky;
+  top: var(--demo-banner-sticky-h, 0px);
+  z-index: 100;
+  background: var(--bg);
+  width: 100%;
+}
+body.with-radio:not(:has(.demo-banner)) .radar-radio-slot:not([data-radar-radio]),
+body.with-radio:not(:has(.demo-banner)) .radar-radio-slot[data-radar-radio="ready"] {
+  top: env(safe-area-inset-top, 0px);
+}
+/* Ancres : s'arrêter sous la barre collante, pas sous elle. */
+body.with-radio #contenu,
+body.with-radio .nav-wrap,
+body.with-radio .sports-panel,
+body.with-radio [id] {
+  scroll-margin-top: calc(var(--demo-banner-sticky-h, 0px) + var(--radio-sticky-h, 5.5rem) + 8px);
+}
 .radar-radio-slot:not([data-radar-radio])::before {
   content: "";
   display: block;
