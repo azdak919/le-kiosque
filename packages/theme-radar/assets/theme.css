@@ -3439,8 +3439,9 @@ html {
 .masthead-weather-dock .weather-chip--attente .weather-chip__today,
 .masthead-weather-dock .weather-chip--attente .weather-chip__tomorrow-temp { opacity: .6; }
 @media (max-width: 374.98px) {
-  .masthead-weather-dock .weather-chip__today { gap: 5px; }
-  .masthead-weather-dock .weather-chip__tomorrow { margin-left: 6px; padding-left: 6px; }
+  .masthead-weather-dock .weather-chip { padding: 0 8px; gap: 4px; }
+  .masthead-weather-dock .weather-chip__today { gap: 4px; }
+  .masthead-weather-dock .weather-chip__tomorrow { margin-left: 4px; padding-left: 4px; }
 }
 
 /* Bandeau sports sous la radio (parité LE-RADAR PR 394) : hors du mât,

@@ -1,7 +1,7 @@
 # Journal
 
 ## Non publié
-- Météo du mât à l’ordinateur : comme au téléphone, la puce passe sous la radio et montre le maximum et le minimum du jour, puis « Demain », dans le style des pastilles de LE-RADAR. La rangée d’utilitaires du mât reste dégagée.
+- Météo du mât à l’ordinateur : comme au téléphone, la puce passe sous la radio et montre le maximum et le minimum du jour, puis « Demain », dans le style des pastilles de LE-RADAR. La rangée d’utilitaires du mât reste dégagée. Aux très petites largeurs, les marges de la puce sont un peu resserrées pour que rien ne soit coupé.
 - Version 0.4.1. Socle épinglé à 1.4.1 (7ecf21d).
 - Accueil au téléphone : un petit espace entre le mât et la barre radio, le même qu’entre la météo et la carte sport. La place de la barre reste réservée pendant le chargement.
 - Accueil au téléphone, façon LE-RADAR : mât plus court, météo et sport plus compacts, navigation en ligne de liens séparés par des points, « Le fil étudiant » juste en dessous. Les hauteurs réservées et les cibles tactiles de 44 px sont conservées. Toutes les rubriques restent accessibles.
