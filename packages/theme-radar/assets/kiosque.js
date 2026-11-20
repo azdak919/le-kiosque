@@ -750,6 +750,14 @@
       && window.matchMedia('(prefers-reduced-motion: reduce)').matches);
   } catch (_) {}
   var sportsLaneTimers = { result: null, next: null, live: null };
+  var sportsVisible = [];
+  var sportsSlotTimers = [];
+  var sportsWaveTimer = 0;
+  var sportsNextCursor = 0;
+  var SPORTS_CASCADE_STEP_MS = (window.KiosqueSportsBoard && window.KiosqueSportsBoard.SPORTS_CASCADE_STEP_MS) || 440;
+  var SPORTS_BOARD_HOLD_MIN_MS = (window.KiosqueSportsBoard && window.KiosqueSportsBoard.SPORTS_BOARD_HOLD_MIN_MS) || 9000;
+  var SPORTS_BOARD_HOLD_MAX_MS = (window.KiosqueSportsBoard && window.KiosqueSportsBoard.SPORTS_BOARD_HOLD_MAX_MS) || 12000;
+
   var SPORTS_SUB_MARQUEE_PX_PER_S = 16;
   var SPORTS_SUB_MARQUEE_MIN_SEC = 8;
 
@@ -1377,10 +1385,65 @@
     chip.classList.toggle('is-abrege', i > 0);
   }
 
-  function sportsUseSplitLanes() {
-    return sportsIsDesktopLabel() && sportsSlides.filter(function (s) {
-      return s.mode === 'result' || s.mode === 'next' || sportsSlideIsLive(s);
-    }).length >= 2;
+  function sportsBoardLib() {
+    return window.KiosqueSportsBoard || null;
+  }
+
+  function sportsSlideToBoardItem(slide) {
+    if (!slide) return null;
+    return {
+      key: slide.key,
+      mode: sportsSlideIsLive(slide) ? 'live' : slide.mode,
+      live: sportsSlideIsLive(slide),
+      sport: sportsSlideSportKey(slide),
+      slide: slide,
+    };
+  }
+
+  function sportsBoardPool() {
+    return sportsSlides.map(sportsSlideToBoardItem).filter(Boolean);
+  }
+
+  function sportsStripAvailWidth(host) {
+    if (!host) return 0;
+    var w = host.clientWidth;
+    if (w > 0) return w;
+    var parent = host.parentNode;
+    if (parent && parent.clientWidth) return parent.clientWidth;
+    return window.innerWidth || 0;
+  }
+
+  function sportsBoardCount(host) {
+    var lib = sportsBoardLib();
+    var avail = sportsStripAvailWidth(host);
+    if (lib && typeof lib.sportsBoardCountFromWidth === 'function') {
+      return lib.sportsBoardCountFromWidth(avail, { desktop: sportsIsDesktopLabel() });
+    }
+    if (!sportsIsDesktopLabel()) return 1;
+    var minSlot = 240, gap = 6, maxN = avail >= 1100 ? 5 : 4;
+    var n = 1;
+    for (var tryN = maxN; tryN >= 2; tryN -= 1) {
+      if (avail >= tryN * minSlot + gap * (tryN - 1)) { n = tryN; break; }
+    }
+    return n;
+  }
+
+  function sportsUseSplitLanes(host) {
+    var count = sportsBoardCount(host || document.querySelector('.masthead-sports[data-sports-payload]'));
+    return count >= 2 && sportsSlides.length >= 2;
+  }
+
+  function sportsPickVisible(host) {
+    var lib = sportsBoardLib();
+    var n = sportsBoardCount(host);
+    var pool = sportsBoardPool();
+    var picked;
+    if (lib && typeof lib.sportsSplitVisible === 'function') {
+      picked = lib.sportsSplitVisible(pool, n);
+    } else {
+      picked = pool.slice(0, n);
+    }
+    return picked.map(function (item) { return item.slide || sportsSlides.find(function (s) { return s.key === item.key; }); }).filter(Boolean);
   }
 
   function sportsLanePool(lane) {
@@ -1402,69 +1465,106 @@
         sportsLaneTimers[lane] = null;
       }
     });
+    clearSportsWave();
+    clearSportsSlotTimers();
   }
 
-  function sportsVisibleSportKeys(host, exceptLane) {
-    var keys = [];
-    Array.prototype.forEach.call(host.querySelectorAll('.sports-chip'), function (chip) {
-      if (exceptLane && chip.dataset.sportsLane === exceptLane) return;
-      if (chip.dataset.sportsSport) keys.push(String(chip.dataset.sportsSport).toLowerCase());
-    });
-    return keys;
+  function clearSportsSlotTimers() {
+    sportsSlotTimers.forEach(function (id) { if (id) window.clearTimeout(id); });
+    sportsSlotTimers = [];
   }
 
-  function sportsPickFromPool(pool, avoidKey, avoidSports) {
-    if (!pool.length) return null;
-    var i;
-    var start = 0;
-    if (avoidKey) {
-      for (i = 0; i < pool.length; i += 1) {
-        if (pool[i].key === avoidKey) { start = i + 1; break; }
-      }
+  function clearSportsWave() {
+    if (sportsWaveTimer) {
+      window.clearTimeout(sportsWaveTimer);
+      sportsWaveTimer = 0;
     }
-    var ordered = pool.slice(start).concat(pool.slice(0, start));
-    var prefer = ordered.find(function (slide) {
-      return avoidSports.indexOf(sportsSlideSportKey(slide)) === -1 && slide.key !== avoidKey;
+  }
+
+  function sportsBoardHoldMs() {
+    var n = Math.max(1, sportsVisible.length);
+    var hold = Math.max(SPORTS_BOARD_HOLD_MIN_MS, 1400 * n);
+    return Math.min(SPORTS_BOARD_HOLD_MAX_MS, hold);
+  }
+
+  function sportsVisibleOccupyKeys(exceptSlot) {
+    var used = new Set();
+    sportsVisible.forEach(function (slide, i) {
+      if (i === exceptSlot || !slide || !slide.key) return;
+      used.add(slide.key);
     });
-    return prefer || ordered.find(function (slide) { return slide.key !== avoidKey; }) || ordered[0] || null;
+    return used;
   }
 
-  function scheduleSportsLaneRotate(host, lane, delayMs) {
-    if (sportsLaneTimers[lane]) {
-      window.clearTimeout(sportsLaneTimers[lane]);
-      sportsLaneTimers[lane] = null;
-    }
-    var pool = sportsLanePool(lane);
-    if (pool.length < 2 || sportsReducedMotion) return;
-    sportsLaneTimers[lane] = window.setTimeout(function () {
-      sportsLaneTimers[lane] = null;
-      rotateSportsLane(host, lane);
-    }, Math.max(SPORTS_ROTATE_MIN_MS, delayMs | 0));
-  }
-
-  function rotateSportsLane(host, lane) {
-    if (!host || !host.isConnected || !sportsUseSplitLanes()) return;
-    var chip = host.querySelector('.sports-chip[data-sports-lane="' + lane + '"]');
-    var pool = sportsLanePool(lane);
-    var next = sportsPickFromPool(pool, chip && chip.dataset.sportsKey, sportsVisibleSportKeys(host, lane));
-    if (!next || (chip && chip.dataset.sportsKey === next.key)) return;
+  function rotateSportsSlot(host, slot) {
+    if (!host || !host.isConnected || slot < 0 || slot >= sportsVisible.length) return 80;
+    var chips = host.querySelectorAll('.sports-chip');
+    var oldChip = chips[slot];
+    if (oldChip && document.activeElement && oldChip.contains(document.activeElement)) return 0;
+    var lib = sportsBoardLib();
+    var pool = sportsBoardPool();
+    var visibleItems = sportsVisible.map(sportsSlideToBoardItem);
+    var nextItem = lib && typeof lib.sportsNextForSlot === 'function'
+      ? lib.sportsNextForSlot(pool, visibleItems, slot, sportsNextCursor++)
+      : null;
+    var next = nextItem && (nextItem.slide || sportsSlides.find(function (s) { return s.key === nextItem.key; }));
+    if (!next || (sportsVisible[slot] && sportsVisible[slot].key === next.key)) return 80;
+    sportsVisible[slot] = next;
     var replace = function () {
       if (!host.isConnected) return;
-      var anchor = chip && chip.nextSibling;
-      if (chip && chip.parentNode) chip.parentNode.removeChild(chip);
-      var painted = paintSportsChip(host, next, true, { append: true, split: true, before: anchor });
-      if (painted) painted.dataset.sportsLane = lane;
+      var painted = paintSportsChip(host, next, true, { append: true, split: true, before: oldChip && oldChip.nextSibling });
+      if (oldChip && oldChip.parentNode) oldChip.parentNode.removeChild(oldChip);
+      if (painted) painted.dataset.sportsSlot = String(slot);
       syncMastheadWeatherDock();
-      scheduleSportsLaneRotate(host, lane, SPORTS_ROTATE_MIN_MS + 3500);
     };
-    if (chip && !sportsReducedMotion) {
-      chip.classList.remove('is-arriving');
-      chip.classList.add('is-leaving');
-      chip.style.pointerEvents = 'none';
+    if (oldChip && !sportsReducedMotion) {
+      oldChip.classList.remove('is-arriving');
+      oldChip.classList.add('is-leaving');
+      oldChip.style.pointerEvents = 'none';
       window.setTimeout(replace, SPORTS_CHIP_LEAVE_MS);
-      return;
+      return SPORTS_CHIP_LEAVE_MS + SPORTS_ARRIVE_MS;
     }
     replace();
+    return 80;
+  }
+
+  function scheduleSportsWave(host, opts) {
+    opts = opts || {};
+    clearSportsSlotTimers();
+    clearSportsWave();
+    if (!host || !host.isConnected) return;
+    var n = sportsVisible.length;
+    if (n < 1 || sportsSlides.length < 2) return;
+    var fromSlot = opts.fromSlot | 0;
+    var firstWait = opts.firstWait !== false;
+    var stepMs = sportsReducedMotion ? 80 : SPORTS_CASCADE_STEP_MS;
+    var lib = sportsBoardLib();
+    var plan = lib && typeof lib.sportsWaveSchedule === 'function'
+      ? lib.sportsWaveSchedule(n, { stepMs: stepMs, holdMs: sportsBoardHoldMs(), firstWait: firstWait, fromSlot: fromSlot })
+      : null;
+    var step = function (index) {
+      if (!host.isConnected) return;
+      var liveN = sportsVisible.length;
+      if (liveN < 1) return;
+      if (index >= liveN) {
+        sportsWaveTimer = window.setTimeout(function () {
+          sportsWaveTimer = 0;
+          scheduleSportsWave(host, { fromSlot: 0, firstWait: false });
+        }, sportsBoardHoldMs());
+        return;
+      }
+      rotateSportsSlot(host, index);
+      sportsWaveTimer = window.setTimeout(function () { step(index + 1); }, stepMs);
+    };
+    if (firstWait) {
+      var wait = plan && plan[0] ? plan[0].at : sportsBoardHoldMs();
+      sportsWaveTimer = window.setTimeout(function () {
+        sportsWaveTimer = 0;
+        step(fromSlot);
+      }, wait);
+      return;
+    }
+    step(fromSlot);
   }
 
   function paintSportsSplit(host, animate) {
@@ -1472,48 +1572,40 @@
     clearSportsLaneTimers();
     host.textContent = '';
     host.classList.add('masthead-sports--split');
-    var lives = sportsLanePool('live');
-    var results = sportsLanePool('result');
-    var nexts = sportsLanePool('next');
-    var usedSports = [];
-    var resultSlide = sportsPickFromPool(results, '', usedSports);
-    if (resultSlide) usedSports.push(sportsSlideSportKey(resultSlide));
-    var liveSlide = sportsPickFromPool(lives, '', usedSports);
-    if (liveSlide) usedSports.push(sportsSlideSportKey(liveSlide));
-    var nextSlide = sportsPickFromPool(nexts, '', usedSports);
-    var lanes = [];
-    if (resultSlide) lanes.push(['result', resultSlide]);
-    if (liveSlide) lanes.push(['live', liveSlide]);
-    if (nextSlide) lanes.push(['next', nextSlide]);
-    if (!lanes.length) {
+    var slides = sportsPickVisible(host);
+    if (!slides.length) {
       host.classList.remove('masthead-sports--split');
       var fallback = orderSportsDeck(sportsSlides.slice())[0] || sportsSlides[0];
-      paintSportsChip(host, fallback, animate);
+      sportsVisible = fallback ? [fallback] : [];
+      if (fallback) paintSportsChip(host, fallback, animate);
       return;
     }
-    if (lanes.length === 1) {
+    if (slides.length === 1) {
       host.classList.remove('masthead-sports--split');
-      paintSportsChip(host, lanes[0][1], animate);
+      sportsVisible = [slides[0]];
+      paintSportsChip(host, slides[0], animate);
+      scheduleSportsWave(host, { firstWait: true });
       return;
     }
-    lanes.forEach(function (item) {
-      var painted = paintSportsChip(host, item[1], animate, { append: true, split: true });
-      if (painted) painted.dataset.sportsLane = item[0];
+    sportsVisible = slides.slice();
+    sportsVisible.forEach(function (slide, index) {
+      var painted = paintSportsChip(host, slide, animate, { append: true, split: true });
+      if (painted) painted.dataset.sportsSlot = String(index);
     });
     syncMastheadWeatherDock();
-    lanes.forEach(function (item) {
-      scheduleSportsLaneRotate(host, item[0], SPORTS_ROTATE_MIN_MS + 3500);
-    });
+    scheduleSportsWave(host, { fromSlot: 0, firstWait: true });
   }
 
   function renderMastheadSports(host, animate) {
-    if (sportsUseSplitLanes()) paintSportsSplit(host, animate);
+    if (sportsUseSplitLanes(host)) paintSportsSplit(host, animate);
     else {
       clearSportsLaneTimers();
       host.classList.remove('masthead-sports--split');
       refillSportsDeck(null);
       var first = sportsDeck.shift() || sportsSlides[0];
+      sportsVisible = first ? [first] : [];
       paintSportsChip(host, first, animate);
+      if (sportsSlides.length >= 2) scheduleSportsRotate(SPORTS_ROTATE_MIN_MS + 3500);
     }
   }
 
@@ -1586,6 +1678,17 @@
       if (mq) {
         if (typeof mq.addEventListener === 'function') mq.addEventListener('change', onDensityChange);
         else if (typeof mq.addListener === 'function') mq.addListener(onDensityChange);
+      }
+      if (!initMastheadSports._resizeBound) {
+        initMastheadSports._resizeBound = true;
+        var resizeTimer = 0;
+        window.addEventListener('resize', function () {
+          window.clearTimeout(resizeTimer);
+          resizeTimer = window.setTimeout(onDensityChange, 180);
+        }, { passive: true });
+        document.addEventListener('visibilitychange', function () {
+          if (document.visibilityState === 'visible') onDensityChange();
+        });
       }
     }
   }
