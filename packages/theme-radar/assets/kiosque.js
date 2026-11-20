@@ -2571,10 +2571,14 @@
     var root = document.documentElement;
     if (!banner) {
       root.style.removeProperty('--demo-banner-sticky-h');
+      if (document.body) document.body.style.removeProperty('--demo-banner-sticky-h');
     } else {
       var h = Math.ceil(banner.getBoundingClientRect().height);
       if (h > 0) {
+        /* Sur :root ET body : un jeton posé seulement sur html était
+           écrasé par le fallback 2.85rem déclaré sur body (mobile). */
         root.style.setProperty('--demo-banner-sticky-h', h + 'px');
+        if (document.body) document.body.style.setProperty('--demo-banner-sticky-h', h + 'px');
       }
     }
     syncRadioStickyOffset();

@@ -86,6 +86,9 @@ for (const theme of ['light', 'dark']) {
       const expectedTop = mid.banner?.height || 0;
       expect(Math.abs(mid.slot.top - expectedTop), `slot.top=${mid.slot.top} attendu ${expectedTop}`).toBeLessThanOrEqual(2);
       expect(Number(mid.slot.zIndex)).toBe(100);
+      // Pleine largeur : rien du fil ne transparaît à côté de la barre.
+      expect(Math.abs(mid.slot.left), `slot.left=${mid.slot.left}`).toBeLessThanOrEqual(1);
+      expect(Math.abs(mid.slot.width - mid.viewport.w), `slot.w=${mid.slot.width} vp=${mid.viewport.w}`).toBeLessThanOrEqual(2);
       // Sports et nav ont défilé (plus bas que le haut de page, éventuellement sous la barre).
       if (mid.sports && mid.sports.height > 0) {
         expect(mid.sports.top).toBeLessThan(mid.slot.top);

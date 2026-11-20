@@ -17,4 +17,7 @@ test('barre radio collante : mêmes repères que LE-RADAR, seulement si elle est
   const js = read('packages/theme-radar/assets/kiosque.js');
   assert.match(js, /function syncRadioStickyOffset/);
   assert.match(js, /--radio-sticky-h/);
+  assert.match(js, /body.style.setProperty\('--demo-banner-sticky-h'/);
+  assert.match(css, /html:has\(\.demo-banner\)/);
+  assert.match(css, /max-width: none;/);
 });

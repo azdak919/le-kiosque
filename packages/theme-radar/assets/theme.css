@@ -265,8 +265,10 @@ a { color: inherit; }
 :root {
   --demo-banner-sticky-h: 0px;
 }
-body:has(.demo-banner) {
-  /* 1 ligne : 7+7 padding + ~14 px de ligne ≈ 28–32 px. */
+html:has(.demo-banner) {
+  /* 1 ligne : 7+7 padding + ~14 px de ligne ≈ 28–32 px.
+   * Posé sur :root (pas sur body) pour que la mesure JS
+   * (documentElement.style) ne soit pas écrasée par un jeton body. */
   --demo-banner-sticky-h: 2rem;
 }
 
@@ -305,7 +307,7 @@ body:has(.demo-banner) {
  *   JOURNAL ÉTUDIANT FICTIF
  * (évite « FICTIF » seul sur la 2ᵉ ligne par wrap naturel). */
 @media (max-width: 720px) {
-  body:has(.demo-banner) {
+  html:has(.demo-banner) {
     /* Fallback 2 lignes tant que le JS n’a pas mesuré. */
     --demo-banner-sticky-h: 2.85rem;
   }
@@ -364,7 +366,16 @@ body.with-radio .radar-radio-slot[data-radar-radio="ready"] {
   top: var(--demo-banner-sticky-h, 0px);
   z-index: 100;
   background: var(--bg);
+  /* Pleine largeur du viewport, comme .tuner de LE-RADAR : le contenu
+   * ne transparaît pas dans les marges autour de la barre arrondie.
+   * Le padding recentre la barre sur la même colonne (--maxw). */
   width: 100%;
+  max-width: none;
+  margin-left: 0;
+  margin-right: 0;
+  padding-left: max(var(--pad, 16px), calc((100% - var(--maxw, 1200px)) / 2));
+  padding-right: max(var(--pad, 16px), calc((100% - var(--maxw, 1200px)) / 2));
+  box-sizing: border-box;
 }
 body.with-radio:not(:has(.demo-banner)) .radar-radio-slot:not([data-radar-radio]),
 body.with-radio:not(:has(.demo-banner)) .radar-radio-slot[data-radar-radio="ready"] {
