@@ -1,6 +1,6 @@
 {
   "name": "kiosque",
-  "version": "0.4.1",
+  "version": "0.4.2",
   "private": true,
   "description": "Le Kiosque — plateforme libre pour les journaux étudiants",
   "license": "GPL-2.0-only",
@@ -29,7 +29,7 @@
     "node": ">=22.18"
   },
   "dependencies": {
-    "le-socle": "github:azdak919/le-socle#7ecf21d505a7ef1a05c4fe1e6a7335ace6dd892d",
+    "le-socle": "github:azdak919/le-socle#8a623c9bb45a4d32d3d63cfe0b1e58ee5ce304ae",
     "marked": "^18.2.0",
     "yaml": "^2.9.1"
   },
