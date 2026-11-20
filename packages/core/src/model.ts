@@ -375,6 +375,11 @@ export interface Publication {
   masthead?: {
     backgrounds?: {
       enabled?: boolean;
+      /**
+       * Si vrai (défaut) : une photo au hasard à chaque visite.
+       * Si faux : toujours commencer par la première de `images`.
+       */
+      randomOrder?: boolean;
       images: MediaAsset[];
     };
     weather?: {
