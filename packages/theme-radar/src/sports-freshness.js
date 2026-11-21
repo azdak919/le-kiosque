@@ -199,26 +199,102 @@ export function shiftSportsPayloadDates(payload, deltaDays) {
   return out;
 }
 
+/** Minutes locales depuis minuit — même horloge que le mât (fuseau du navigateur). */
+function localClockMinutes(now) {
+  return now.getHours() * 60 + now.getMinutes();
+}
+
+function minutesToHm(total) {
+  const mins = ((total % 1440) + 1440) % 1440;
+  const h = Math.floor(mins / 60);
+  const m = mins % 60;
+  return `${String(h).padStart(2, '0')}:${String(m).padStart(2, '0')}`;
+}
+
+function eachScheduledGame(payload, visit) {
+  const teams = Array.isArray(payload?.teams) ? payload.teams : [];
+  for (const team of teams) {
+    if (team?.nextGame) visit(team.nextGame);
+    if (Array.isArray(team?.nextGames)) team.nextGames.forEach(visit);
+  }
+  if (payload?.nextGame) visit(payload.nextGame);
+  if (Array.isArray(payload?.nextGames)) payload.nextGames.forEach(visit);
+}
+
+/**
+ * Un match « en cours » de la démo a commencé avant l’heure affichée au
+ * chargement, et avant les autres coups d’envoi du même jour. Sinon la
+ * carte dit « En cours · 20 h 00 » à 16 h 40 et passe devant « 19 h 00 ».
+ */
+function scheduleDemoLiveKickoffs(payload, now) {
+  if (!payload) return payload;
+  const nowMin = localClockMinutes(now);
+  let beforeNow = Math.floor(nowMin / 60) * 60;
+  if (beforeNow >= nowMin) beforeNow -= 60;
+  const mapGame = (game) => {
+    if (!game || game.live !== true || !game.date) return game;
+    const day = String(game.date).slice(0, 10);
+    let ceiling = beforeNow;
+    eachScheduledGame(payload, (other) => {
+      if (!other || other === game || other.live === true) return;
+      if (String(other.date || '').slice(0, 10) !== day) return;
+      const kick = parseSportsTimeMinutes(other.time);
+      if (Number.isFinite(kick)) ceiling = Math.min(ceiling, kick - 60);
+    });
+    let date = day;
+    let minutes = ceiling;
+    if (minutes < 0) {
+      minutes = ((minutes % 1440) + 1440) % 1440;
+      date = shiftIsoDate(date, -1);
+    }
+    if (date === dayKey(now) && minutes >= nowMin) {
+      minutes -= 60;
+      if (minutes < 0) {
+        minutes += 1440;
+        date = shiftIsoDate(date, -1);
+      }
+    }
+    return { ...game, date, time: minutesToHm(minutes) };
+  };
+  const out = { ...payload };
+  if (Array.isArray(payload.teams)) {
+    out.teams = payload.teams.map((team) => {
+      if (!team || typeof team !== 'object') return team;
+      const t = { ...team };
+      if (t.nextGame) t.nextGame = mapGame(t.nextGame);
+      if (Array.isArray(t.nextGames)) t.nextGames = t.nextGames.map(mapGame);
+      return t;
+    });
+  }
+  if (out.nextGame) out.nextGame = mapGame(out.nextGame);
+  if (Array.isArray(out.nextGames)) out.nextGames = out.nextGames.map(mapGame);
+  return out;
+}
+
 /**
  * Démo « live » : ancre `demoAsOf` (fixtures inventées) → jour courant.
  * Ex. fixtures rédigées autour du 2026-09-20 restent « aujourd’hui / hier /
- * demain » quel que soit le jour de consultation.
+ * demain » quel que soit le jour de consultation. L’heure d’un match en
+ * cours est recalculée à ce moment-là, pas figée dans le YAML.
  */
 export function alignDemoSportsToToday(payload, now = new Date()) {
   if (!payload || payload.demoLive !== true) return payload;
+  const instant = now instanceof Date && Number.isFinite(now.getTime()) ? now : new Date();
   const anchor = parseGameDay(payload.demoAsOf);
   if (!anchor) return payload;
-  const todayKey = dayKey(now instanceof Date && Number.isFinite(now.getTime()) ? now : new Date());
+  const todayKey = dayKey(instant);
   const anchorKey = dayKey(anchor);
+  let aligned;
   if (anchorKey === todayKey) {
-    return { ...payload, demoAsOf: todayKey };
+    aligned = { ...payload, demoAsOf: todayKey };
+  } else {
+    const anchorNoon = parseGameDay(anchorKey);
+    const todayNoon = parseGameDay(todayKey);
+    if (!anchorNoon || !todayNoon) return payload;
+    const deltaDays = Math.round((todayNoon.getTime() - anchorNoon.getTime()) / 86_400_000);
+    aligned = { ...shiftSportsPayloadDates(payload, deltaDays), demoAsOf: todayKey, demoLive: true };
   }
-  const anchorNoon = parseGameDay(anchorKey);
-  const todayNoon = parseGameDay(todayKey);
-  if (!anchorNoon || !todayNoon) return payload;
-  const deltaDays = Math.round((todayNoon.getTime() - anchorNoon.getTime()) / 86_400_000);
-  const shifted = shiftSportsPayloadDates(payload, deltaDays);
-  return { ...shifted, demoAsOf: todayKey, demoLive: true };
+  return scheduleDemoLiveKickoffs(aligned, instant);
 }
 
 export function pruneSportsPayload(payload, opts = {}) {

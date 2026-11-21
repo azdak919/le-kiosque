@@ -121,6 +121,31 @@ test('demoLive aligne les fixtures sur le jour courant', () => {
   assert.ok(pruned.teams[1].nextGame, 'prochain futur dans l’horizon');
 });
 
+test('démo : un match en cours commence avant l’heure du chargement et avant les autres du jour', () => {
+  const now = new Date('2026-11-21T16:40:00');
+  const payload = {
+    demoAsOf: '2026-09-20',
+    demoLive: true,
+    teams: [
+      { id: 'hockey', nextGame: { date: '2026-09-20', time: '20:00', live: true, opponent: 'Géants' } },
+      { id: 'volley', nextGame: { date: '2026-09-20', time: '19:00', opponent: 'Géants' } },
+    ],
+  };
+  const aligned = alignDemoSportsToToday(payload, now);
+  const live = aligned.teams?.[0].nextGame;
+  const later = aligned.teams?.[1].nextGame;
+  assert.equal(live?.live, true);
+  assert.equal(live?.date, '2026-11-21');
+  assert.equal(later?.time, '19:00', 'les autres heures restent celles du calendrier');
+  assert.ok(parseSportsTimeMinutes(live?.time) < 16 * 60 + 40, 'avant 16 h 40');
+  assert.ok(parseSportsTimeMinutes(live?.time) < parseSportsTimeMinutes(later?.time), 'avant le match de 19 h');
+
+  const onTheHour = alignDemoSportsToToday(payload, new Date('2026-11-21T20:00:00'));
+  const kicked = onTheHour.teams?.[0].nextGame;
+  assert.ok(parseSportsTimeMinutes(kicked?.time) < 20 * 60);
+  assert.ok(parseSportsTimeMinutes(kicked?.time) < parseSportsTimeMinutes('19:00'));
+});
+
 test('sans demoLive, les dates YAML restent figées', () => {
   const payload = {
     demoAsOf: '2026-09-20',
