@@ -1,6 +1,8 @@
 # Journal
 
 ## Non publié
+- Démonstration Le Quorum : un drapeau `demoEditorialEntry` (désactivé par défaut, activé seulement sur la vitrine) ajoute une pastille d’accent dans le mât — « Essayer l’espace de rédaction (démo) », et « Espace de rédaction (démo) » au téléphone — et le même libellé explicite au pied de page. Elle mène à l’espace de rédaction déjà servi à `/admin/`, en mode local (données dans le navigateur). Un vrai journal, ou le thème sans ce drapeau, n’affiche jamais ce bouton.
+
 - La vitrine est servie à la racine de <https://kiosque.le-radar.ca/> (`basePath` vide, fichier `CNAME` dans l’artefact Pages). Les adresses canoniques, Open Graph, le sitemap et le manifeste suivent ce domaine. La page du Socle est <https://socle.le-radar.ca/>.
 - Météo du mât : à partir de 1100 px (la colonne passe alors à 1180 px), la puce revient à côté de la date, comme sur LE-RADAR, et garde le maximum, le minimum et « Demain ». Sous 1100 px, au téléphone et à la tablette, elle reste entre la barre radio et les cartes sports. Une seule puce est visible. Si elle empiétait sur les boutons, elle redescend sous la radio au lieu de les serrer. La barre radio collante et le petit espace sous le mât ne changent pas.
 - Version 0.4.2. Socle épinglé à 1.4.2 (8a623c9).

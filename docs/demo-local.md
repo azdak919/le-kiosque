@@ -6,6 +6,16 @@ dans le navigateur avec sql.js (MIT) et conserve ses données dans IndexedDB.
 La base (environ 0,7 Mo) vient de l’admin du socle et ne se charge que pour
 `/admin/` ou le configurateur.
 
+## Comment y entrer depuis la démo publique
+
+Sur la démonstration Le Quorum, une pastille d’accent dans le mât et un lien
+au pied de page portent le libellé « Essayer l’espace de rédaction (démo) »
+(au téléphone : « Espace de rédaction (démo) »). Les deux mènent à `/admin/`.
+Rien n’est enregistré sur un serveur : les données restent dans ce navigateur
+et se réinitialisent. Ce bouton n’existe que si le drapeau de configuration
+`demoEditorialEntry` est activé, ce qui n’est le cas que de la vitrine. Un
+journal installé n’a jamais cette pastille.
+
 ## Ce qui fonctionne
 
 - création, modification, suppression et prévisualisation d’articles;
