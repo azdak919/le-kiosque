@@ -162,7 +162,7 @@ marked.setOptions({ gfm: true, breaks: false });
 
 /**
  * Préfixe les chemins racine `/media/…` avec le basePath de déploiement
- * (ex. `/le-kiosque/demo`) pour que les photos du corps d’article se chargent
+ * (ex. `/mon-journal/demo`) pour que les photos du corps d’article se chargent
  * sous un sous-chemin GitHub Pages.
  */
 function rewriteBodyMediaUrls(html: string, basePath: string): string {

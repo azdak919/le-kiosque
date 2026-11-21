@@ -47,17 +47,15 @@ jobs:
       - name: PHP (installateur 0.2.1)
         run: sudo apt-get update && sudo apt-get install -y php-cli
       - run: npm test
-      # On prend le sous-chemin que GitHub Pages annonce, sans rien configurer.
+      # Le chemin publié est celui de kiosque.config.ts (racine du domaine
+      # kiosque.le-radar.ca). On n’utilise pas le base_path annoncé par
+      # configure-pages : tant que le domaine n’est pas enregistré dans les
+      # réglages Pages, GitHub répond encore /le-kiosque et le site serait
+      # reconstruit avec l’ancien sous-chemin.
       - if: github.event_name != 'pull_request'
-        id: pages
         uses: actions/configure-pages@v6
       - name: Construire le site
-        env:
-          EVENT: ${{ github.event_name }}
-          PAGES_BASE: ${{ steps.pages.outputs.base_path }}
-        run: |
-          if [ "$EVENT" != pull_request ]; then export BASE="$PAGES_BASE"; fi
-          npm run site
+        run: npm run site
       - if: github.event_name != 'pull_request'
         uses: actions/upload-pages-artifact@v5
         with:

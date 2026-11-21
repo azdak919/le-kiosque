@@ -2,7 +2,7 @@
 
 Configure un WordPress **neuf** en quelques clics à partir du fichier
 `kiosque-config.json` téléchargé à la dernière étape du
-[configurateur](https://azdak919.github.io/le-kiosque/configurer/).
+[configurateur](https://kiosque.le-radar.ca/configurer/).
 
 1. Compressez le dossier `le-kiosque/` en `le-kiosque.zip` (ou prenez celui de la trousse).
 2. WordPress → **Extensions → Ajouter → Téléverser une extension** → choisir le zip → **Installer** → **Activer**.

@@ -1,6 +1,7 @@
 # Journal
 
 ## Non publié
+- La vitrine est servie à la racine de <https://kiosque.le-radar.ca/> (`basePath` vide, fichier `CNAME` dans l’artefact Pages). Les adresses canoniques, Open Graph, le sitemap et le manifeste suivent ce domaine. La page du Socle est <https://socle.le-radar.ca/>.
 - Version 0.4.2. Socle épinglé à 1.4.2 (8a623c9).
 - Photos du mât : le journal peut en retenir plusieurs, choisies dans la médiathèque. Le bouton de rotation (↻) apparaît dès qu’il y a au moins deux photos, et se cache s’il n’y en a qu’une. Réglage « Ordre aléatoire » (activé par défaut) : une photo au hasard à chaque visite ; désactivé, le mât commence toujours par la première de la liste. La rotation reprend le comportement de LE-RADAR (même transition, crédit qui suit la photo, préchargement, mouvement réduit). La démonstration Le Quorum en montre plusieurs. Le tirage au sort du premier écran ne casse plus le chargement de la page.
 - Barre radio activée : elle reste collée en haut de l’écran au défilement, comme sur LE-RADAR (position sticky, sous le bandeau de démonstration s’il y en a un, au-dessus du fil, encoche respectée, ancres décalées). L’emplacement reste dans la colonne (les bords de la barre s’alignent sur le dock météo et les cartes sports) ; seul un fond opaque derrière la barre collée traverse le viewport, pour que le fil ne transparaisse pas à côté. L’offset suit la hauteur réelle du bandeau, aussi au téléphone. Les cartes sports, la météo et la navigation défilent normalement en dessous. Radio éteinte : rien ne change.

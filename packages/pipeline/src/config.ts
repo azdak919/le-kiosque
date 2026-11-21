@@ -21,8 +21,14 @@ export interface DeployConfig {
    * Laisser vide dès qu'un domaine personnalisé est en place.
    */
   basePath?: string;
-  /** Domaine personnalisé écrit dans dist/CNAME. */
+  /** Domaine personnalisé écrit dans dist/CNAME (sans schéma). */
   cname?: string;
+  /**
+   * Origine publique du site, sans barre finale.
+   * Canonical, Open Graph, sitemap et manifeste s’en servent.
+   * Ex. 'https://lequorum.ca'. Vide : l’adresse se déduit au build.
+   */
+  origin?: string;
 }
 
 export interface CmsConfig {

@@ -11,13 +11,13 @@
 
 Un journal étudiant ne disparaît presque jamais par manque de talent. Il disparaît parce que le domaine a expiré, que l’hébergement n’est plus payé, ou que le compte d’administration est parti avec quelqu’un qui a gradué. Le Kiosque répond à ce problème : chaque journal installe sa propre copie, sans dépendre d’aucun serveur central, et garde ses archives.
 
-[![Page d’accueil du Quorum, journal de démonstration](site/assets/captures/quorum-accueil-ordi.jpg)](https://azdak919.github.io/le-kiosque/demo/)
+[![Page d’accueil du Quorum, journal de démonstration](site/assets/captures/quorum-accueil-ordi.jpg)](https://kiosque.le-radar.ca/demo/)
 
 <p align="center"><em>Le Quorum, journal de démonstration — météo, sports, barre radio et fil d’articles.</em></p>
 
-- **Page de présentation :** <https://azdak919.github.io/le-kiosque/>
-- **Démonstration :** <https://azdak919.github.io/le-kiosque/demo/>
-- **Guide d’une page :** <https://azdak919.github.io/le-kiosque/guide/>
+- **Page de présentation :** <https://kiosque.le-radar.ca/>
+- **Démonstration :** <https://kiosque.le-radar.ca/demo/>
+- **Guide d’une page :** <https://kiosque.le-radar.ca/guide/>
 - **Paquet complet :** <https://github.com/azdak919/le-kiosque/releases/latest/download/kiosque-journal.zip>
 
 Le Radar est l’agrégateur des médias étudiants. Le Kiosque est la plateforme qui permet d’en faire paraître un. Les deux projets sont distincts : un journal sous le Kiosque reste maître de son domaine, de son hébergement, de ses comptes et de ses contenus.
@@ -37,7 +37,7 @@ Aux équipes de journaux étudiants et de médias de campus qui veulent un site 
 3. **Ouvrez** `https://votre-journal.com/redaction/` et remplissez l’assistant : nom, rubriques, logo au besoin, compte administrateur. Attendez le message « Le journal est installé ».
 4. **Écrivez**, relisez, publiez. L’article paraît tout de suite. Téléchargez une sauvegarde à chaque fin de session.
 
-Le détail, pour un étudiant, tient dans le [guide d’une page](https://azdak919.github.io/le-kiosque/guide/). Le [guide étudiant complet](docs/guide-etudiant.md) couvre aussi les autres chemins : site public sur GitHub Pages, serveur de l’établissement, auto-hébergement.
+Le détail, pour un étudiant, tient dans le [guide d’une page](https://kiosque.le-radar.ca/guide/). Le [guide étudiant complet](docs/guide-etudiant.md) couvre aussi les autres chemins : site public sur GitHub Pages, serveur de l’établissement, auto-hébergement.
 
 ---
 
@@ -51,7 +51,7 @@ Le détail, pour un étudiant, tient dans le [guide d’une page](https://azdak9
 - Chaque article porte toutes ses signatures ; chaque photo porte son crédit et sa licence.
 - Sur la démonstration et sur un site statique (par exemple GitHub Pages) : archives, plan du site et fil RSS.
 
-**Dans l’espace de rédaction** (c’est [le Socle](https://azdak919.github.io/le-socle/) : l’interface d’administration et son serveur)
+**Dans l’espace de rédaction** (c’est [le Socle](https://socle.le-radar.ca/) : l’interface d’administration et son serveur)
 
 - Assistant d’installation dans le navigateur.
 - Rôles : auteur, photographe, réviseur, chef de pupitre, éditeur, administrateur. Un auteur ou un chef de pupitre peut être limité à certaines rubriques.

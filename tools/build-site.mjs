@@ -18,7 +18,10 @@ import { localAdminPage, SOCLE_COMMIT, SOCLE_VERSION } from '../packages/theme-r
 import { updatePage } from '../packages/theme-radar/src/update-page.ts';
 
 const repoRoot = path.resolve(fileURLToPath(new URL('..', import.meta.url)));
-const outDir = path.join(repoRoot, 'dist');
+const outDir = process.env.OUT_DIR ? path.resolve(process.env.OUT_DIR) : path.join(repoRoot, 'dist');
+if (outDir === repoRoot || outDir === path.parse(outDir).root) {
+  throw new Error(`OUT_DIR refuse (${outDir}) : le build efface ce dossier avant d’écrire.`);
+}
 const siteDir = path.join(repoRoot, 'site');
 const journalRoot = path.resolve(repoRoot, rootConfig.root ?? 'examples/demo-journal');
 const basePath = normalizeBasePath(process.env.BASE ?? rootConfig.deploy?.basePath);
@@ -48,11 +51,23 @@ async function readBundle() {
 }
 
 function deployedOrigin() {
-  if (process.env.SITE_ORIGIN) return process.env.SITE_ORIGIN.replace(/\/+$/, '');
+  // SITE_ORIGIN sert aux essais. Sinon l’origine du journal (kiosque.config.ts)
+  // prime sur github.io : tant que le domaine n’est pas enregistré dans Pages,
+  // GitHub annonce encore azdak919.github.io et un sous-chemin /le-kiosque.
+  const fromEnv = String(process.env.SITE_ORIGIN || '').trim();
+  if (fromEnv) return fromEnv.replace(/\/+$/, '');
+  const fromConfig = String(rootConfig.deploy?.origin || '').trim();
+  if (fromConfig) return fromConfig.replace(/\/+$/, '');
   if (process.env.GITHUB_REPOSITORY_OWNER) {
     return `https://${process.env.GITHUB_REPOSITORY_OWNER}.github.io`;
   }
   return 'https://journal-exemple.invalid';
+}
+
+/** URL absolue d’une page de la vitrine (origine + chemin de base). */
+function publicUrl(urlPath) {
+  const prefixed = withBase(basePath, urlPath);
+  return `${deployedOrigin()}${prefixed.startsWith('/') ? prefixed : `/${prefixed}`}`;
 }
 
 /**
@@ -86,11 +101,13 @@ async function addDemoIcons(dir) {
   }
 }
 
-function injectBase(html) {
+function injectBase(html, urlPath) {
+  const canonical = publicUrl(urlPath);
   return html
     .replaceAll('{{ICONES}}', kiosqueIcons())
     .replaceAll('{{BASE_PATH}}', basePath)
-    .replaceAll('{{DEMO_PATH}}', withBase(basePath, '/demo/'));
+    .replaceAll('{{DEMO_PATH}}', withBase(basePath, '/demo/'))
+    .replaceAll('{{CANONICAL}}', canonical);
 }
 
 function prefill(bundle) {
@@ -157,7 +174,8 @@ await build({
     root: journalRoot,
     // Markdown local, jamais l'adaptateur du journal publié : la démo ne parle à aucun socle.
     source: { adapter: 'markdown' },
-    deploy: { ...rootConfig.deploy, basePath: demoBase },
+    // Pas de CNAME ici : il appartient à la racine de l’artefact, pas à /demo/.
+    deploy: { basePath: demoBase },
     // La rédaction de la vitrine vit à /admin/, pas sous une page redaction du dossier demo.
     // mode et demoContent sont forcés. Un journal configuré (`external`,
     // demoContent false) n'émettrait pas seed.json : l'admin ne démarre pas.
@@ -218,20 +236,20 @@ await cp(path.join(siteDir, 'assets'), path.join(outDir, 'assets'), { recursive:
 
 await writeFile(
   path.join(outDir, 'index.html'),
-  injectBase(await readFile(path.join(siteDir, 'index.html'), 'utf8')),
+  injectBase(await readFile(path.join(siteDir, 'index.html'), 'utf8'), '/'),
   'utf8',
 );
 await mkdir(path.join(outDir, 'guide'), { recursive: true });
 await writeFile(
   path.join(outDir, 'guide', 'index.html'),
-  injectBase(await readFile(path.join(siteDir, 'guide/index.html'), 'utf8')),
+  injectBase(await readFile(path.join(siteDir, 'guide/index.html'), 'utf8'), '/guide/'),
   'utf8',
 );
 await cp(path.join(repoRoot, 'docs/guide-une-page.pdf'), path.join(outDir, 'guide', 'guide.pdf'));
 await mkdir(path.join(outDir, 'configurer'), { recursive: true });
 await writeFile(
   path.join(outDir, 'configurer', 'index.html'),
-  injectBase(await readFile(path.join(siteDir, 'configurer/index.html'), 'utf8')),
+  injectBase(await readFile(path.join(siteDir, 'configurer/index.html'), 'utf8'), '/configurer/'),
   'utf8',
 );
 await cp(
@@ -250,4 +268,48 @@ await writeFile(
 );
 await writeFile(path.join(outDir, '.nojekyll'), '', 'utf8');
 
-console.log(`[site] site complet produit dans ${outDir} (basePath « ${basePath || '/'} »)`);
+const origin = deployedOrigin();
+const pages = ['/', '/guide/', '/configurer/', '/demo/'];
+await writeFile(
+  path.join(outDir, 'sitemap.xml'),
+  `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n${pages.map((urlPath) => `  <url><loc>${publicUrl(urlPath)}</loc></url>`).join('\n')}\n</urlset>\n`,
+  'utf8',
+);
+await writeFile(
+  path.join(outDir, 'robots.txt'),
+  `User-agent: *\nAllow: /\n\nSitemap: ${publicUrl('/sitemap.xml')}\n`,
+  'utf8',
+);
+const icon = (file, type, sizes) => ({
+  src: publicUrl(`/assets/logo/${file}`),
+  sizes,
+  type,
+  purpose: 'any',
+});
+await writeFile(
+  path.join(outDir, 'manifest.webmanifest'),
+  `${JSON.stringify({
+    name: 'Le Kiosque',
+    short_name: 'Kiosque',
+    lang: 'fr-CA',
+    id: publicUrl('/'),
+    start_url: publicUrl('/'),
+    scope: publicUrl('/'),
+    display: 'standalone',
+    theme_color: '#6c2163',
+    background_color: '#ffffff',
+    icons: [
+      icon('icone-512.png', 'image/png', '512x512'),
+      icon('apple-touch-icon.png', 'image/png', '180x180'),
+      icon('icone.svg', 'image/svg+xml', 'any'),
+    ],
+  }, null, 2)}\n`,
+  'utf8',
+);
+
+// GitHub Pages lit ce fichier à la racine de l’artefact et en fait le domaine
+// personnalisé. Le DNS kiosque.le-radar.ca pointe déjà vers le compte.
+const cname = String(rootConfig.deploy?.cname || '').trim();
+if (cname) await writeFile(path.join(outDir, 'CNAME'), `${cname}\n`, 'utf8');
+
+console.log(`[site] site complet produit dans ${outDir} (basePath « ${basePath || '/'} », ${origin})`);

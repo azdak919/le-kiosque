@@ -26,7 +26,9 @@ test('pied de page : « Tous droits réservés » par défaut, CC BY-NC-ND 4.0 a
   const pub = { name: 'La Vigie', founded: '1998' };
   assert.equal(footCopyright(pub, 2026), '© 1998–2026 La Vigie. Tous droits réservés.');
   assert.equal(footCopyright({ name: 'La <b>' }, 2026), '© 2026 La &lt;b&gt;. Tous droits réservés.');
-  assert.equal(KIOSQUE_SITE_URL, 'https://azdak919.github.io/le-kiosque/');
+  assert.equal(KIOSQUE_SITE_URL, 'https://kiosque.le-radar.ca/');
+  assert.match(live, /const KIOSQUE_SITE_URL = 'https:\/\/kiosque\.le-radar\.ca\/'/);
+  assert.doesNotMatch(live, /github\.io\/le-kiosque/);
 });
 
 test('site vivant : même pied de page, logo à la place du nom, licence sur les cartes', () => {
