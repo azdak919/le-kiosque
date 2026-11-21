@@ -121,29 +121,61 @@ test('demoLive aligne les fixtures sur le jour courant', () => {
   assert.ok(pruned.teams[1].nextGame, 'prochain futur dans l’horizon');
 });
 
-test('démo : un match en cours commence avant l’heure du chargement et avant les autres du jour', () => {
-  const now = new Date('2026-11-21T16:40:00');
-  const payload = {
+test('démo : un match en cours a commencé depuis moins de 90 minutes', () => {
+  const payload = () => ({
     demoAsOf: '2026-09-20',
     demoLive: true,
     teams: [
-      { id: 'hockey', nextGame: { date: '2026-09-20', time: '20:00', live: true, opponent: 'Géants' } },
-      { id: 'volley', nextGame: { date: '2026-09-20', time: '19:00', opponent: 'Géants' } },
+      { id: 'hockey', results: [], nextGame: { date: '2026-09-20', time: '20:00', live: true, opponent: 'Géants' } },
+      { id: 'soccer', results: [], nextGame: { date: '2026-09-20', time: '9:00', opponent: 'Barons' } },
+      { id: 'volley', results: [], nextGame: { date: '2026-09-20', time: '19:00', opponent: 'Géants' } },
     ],
+  });
+  const ago = (game, now) => {
+    const today = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')}`;
+    const y = new Date(now);
+    y.setDate(y.getDate() - 1);
+    const yesterday = `${y.getFullYear()}-${String(y.getMonth() + 1).padStart(2, '0')}-${String(y.getDate()).padStart(2, '0')}`;
+    const nowMin = now.getHours() * 60 + now.getMinutes();
+    const kick = parseSportsTimeMinutes(game?.time);
+    if (game?.date === today) return nowMin - kick;
+    if (game?.date === yesterday) return nowMin + 1440 - kick;
+    return Number.POSITIVE_INFINITY;
   };
-  const aligned = alignDemoSportsToToday(payload, now);
-  const live = aligned.teams?.[0].nextGame;
-  const later = aligned.teams?.[1].nextGame;
-  assert.equal(live?.live, true);
-  assert.equal(live?.date, '2026-11-21');
-  assert.equal(later?.time, '19:00', 'les autres heures restent celles du calendrier');
-  assert.ok(parseSportsTimeMinutes(live?.time) < 16 * 60 + 40, 'avant 16 h 40');
-  assert.ok(parseSportsTimeMinutes(live?.time) < parseSportsTimeMinutes(later?.time), 'avant le match de 19 h');
+  const checkLive = (now) => {
+    const aligned = alignDemoSportsToToday(payload(), now);
+    const live = aligned.teams?.[0].nextGame;
+    assert.equal(live?.live, true);
+    const started = ago(live, now);
+    assert.ok(started > 0 && started < 90, `${now.toTimeString().slice(0, 5)} : commencé depuis ${started} min`);
+    return aligned;
+  };
 
-  const onTheHour = alignDemoSportsToToday(payload, new Date('2026-11-21T20:00:00'));
-  const kicked = onTheHour.teams?.[0].nextGame;
-  assert.ok(parseSportsTimeMinutes(kicked?.time) < 20 * 60);
-  assert.ok(parseSportsTimeMinutes(kicked?.time) < parseSportsTimeMinutes('19:00'));
+  const afternoon = checkLive(new Date('2026-11-21T16:57:00'));
+  assert.equal(afternoon.teams?.[0].nextGame?.time, '16:15');
+  assert.equal(afternoon.teams?.[1].nextGame, null, 'le soccer de 9 h est terminé');
+  assert.equal(afternoon.teams?.[1].results?.[0]?.time, '9:00');
+  assert.ok(parseSportsTimeMinutes(afternoon.teams?.[1].results?.[0]?.time) < parseSportsTimeMinutes('16:15'));
+  assert.equal(afternoon.teams?.[2].nextGame?.time, '19:00', '19 h reste à venir');
+
+  const morning = checkLive(new Date('2026-11-21T06:10:00'));
+  assert.equal(morning.teams?.[0].nextGame?.time, '05:30');
+  assert.equal(morning.teams?.[1].nextGame?.time, '9:00', '9 h est encore à venir le matin');
+  assert.equal(morning.teams?.[2].nextGame?.time, '19:00');
+
+  const late = checkLive(new Date('2026-11-21T23:50:00'));
+  assert.equal(late.teams?.[0].nextGame?.time, '23:15');
+  assert.equal(late.teams?.[1].nextGame, null);
+  assert.equal(late.teams?.[2].nextGame, null, '19 h est passé : terminé avant le direct');
+
+  const afterMidnight = checkLive(new Date('2026-11-22T00:10:00'));
+  assert.equal(afterMidnight.teams?.[0].nextGame?.time, '23:30');
+  assert.notEqual(afterMidnight.teams?.[0].nextGame?.date, '2026-11-22');
+  assert.equal(afterMidnight.teams?.[1].nextGame?.time, '9:00', 'le lendemain matin, 9 h est à venir');
+  assert.equal(afterMidnight.teams?.[2].nextGame?.time, '19:00');
+  const kept = pruneSportsPayload(payload(), { demoLive: true, referenceDate: new Date('2026-11-22T00:10:00') });
+  assert.equal(kept.teams?.[0].nextGame?.live, true, 'le direct de la veille n’est pas élagué');
+  assert.equal(kept.teams?.[0].nextGame?.time, '23:30');
 });
 
 test('sans demoLive, les dates YAML restent figées', () => {

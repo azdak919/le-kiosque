@@ -109,6 +109,15 @@ export function prunePastGames(games = [], referenceDate = new Date()) {
 
 export function pruneNextGame(game, referenceDate = new Date()) {
   if (!game) return null;
+  if (game.live === true) {
+    const d = parseGameDay(game);
+    if (!d) return null;
+    const refKey = dayKey(referenceDate);
+    const gameKey = dayKey(d);
+    // Un direct peut avoir commencé la veille (chargement juste après minuit).
+    if (gameKey === refKey || gameKey === shiftIsoDate(refKey, -1)) return { ...game };
+    return null;
+  }
   return isNextGameInHorizon(game, referenceDate) ? { ...game } : null;
 }
 
@@ -211,63 +220,128 @@ function minutesToHm(total) {
   return `${String(h).padStart(2, '0')}:${String(m).padStart(2, '0')}`;
 }
 
-function eachScheduledGame(payload, visit) {
-  const teams = Array.isArray(payload?.teams) ? payload.teams : [];
-  for (const team of teams) {
-    if (team?.nextGame) visit(team.nextGame);
-    if (Array.isArray(team?.nextGames)) team.nextGames.forEach(visit);
+/**
+ * Coup d’envoi d’un match en cours : quart d’heure précédent, moins 30 min.
+ * Toujours commencé, toujours depuis moins de 90 minutes, quelle que soit l’heure.
+ */
+function demoLiveKickoff(now) {
+  const nowMin = localClockMinutes(now);
+  const quarter = Math.floor(nowMin / 15) * 15;
+  let minutes = quarter - 30;
+  let date = dayKey(now);
+  if (minutes < 0) {
+    minutes += 1440;
+    date = shiftIsoDate(date, -1);
   }
-  if (payload?.nextGame) visit(payload.nextGame);
-  if (Array.isArray(payload?.nextGames)) payload.nextGames.forEach(visit);
+  return { date, minutes, time: minutesToHm(minutes) };
+}
+
+/** Match déjà joué : l’heure reste plausible et la partie est finie avant le direct. */
+function asFinishedBefore(game, kick) {
+  const day = String(game.date || '').slice(0, 10);
+  const mins = parseSportsTimeMinutes(game.time);
+  let date = day || kick.date;
+  let minutes = Number.isFinite(mins) ? mins : kick.minutes - 120;
+  const sameOrLiveDay = date === kick.date;
+  if (sameOrLiveDay && kick.minutes - minutes < 90) {
+    minutes = kick.minutes - 120;
+    if (minutes < 0) {
+      minutes += 1440;
+      date = shiftIsoDate(kick.date, -1);
+    }
+  }
+  const kept = date === day && Number.isFinite(mins) && minutes === mins;
+  const finished = { ...game, date, time: kept ? String(game.time) : minutesToHm(minutes) };
+  delete finished.live;
+  if (!finished.result) {
+    finished.result = 'D';
+    finished.scoreFor = finished.scoreFor ?? 1;
+    finished.scoreAgainst = finished.scoreAgainst ?? 1;
+  }
+  return finished;
+}
+
+/** Plus tard que le direct : reste à venir, et après l’heure affichée. */
+function asUpcomingAfter(game, kick, now) {
+  const nowMin = localClockMinutes(now);
+  const today = dayKey(now);
+  let date = String(game.date || '').slice(0, 10) || today;
+  let minutes = parseSportsTimeMinutes(game.time);
+  if (!Number.isFinite(minutes)) minutes = nowMin + 60;
+  const stillAhead = date > today || (date === today && minutes > nowMin);
+  if (!stillAhead) {
+    let future = Math.ceil((nowMin + 1) / 15) * 15;
+    date = today;
+    if (future >= 1440) {
+      future -= 1440;
+      date = shiftIsoDate(today, 1);
+    }
+    minutes = future;
+  }
+  const upcoming = { ...game, date, time: stillAhead ? String(game.time) : minutesToHm(minutes) };
+  delete upcoming.live;
+  return upcoming;
 }
 
 /**
- * Un match « en cours » de la démo a commencé avant l’heure affichée au
- * chargement, et avant les autres coups d’envoi du même jour. Sinon la
- * carte dit « En cours · 20 h 00 » à 16 h 40 et passe devant « 19 h 00 ».
+ * Le direct de la démo a commencé récemment. Les autres rencontres du même
+ * jour ne le repoussent pas : plus tôt, elles sont terminées avant ; plus
+ * tard, elles restent à venir après.
  */
 function scheduleDemoLiveKickoffs(payload, now) {
   if (!payload) return payload;
-  const nowMin = localClockMinutes(now);
-  let beforeNow = Math.floor(nowMin / 60) * 60;
-  if (beforeNow >= nowMin) beforeNow -= 60;
-  const mapGame = (game) => {
-    if (!game || game.live !== true || !game.date) return game;
-    const day = String(game.date).slice(0, 10);
-    let ceiling = beforeNow;
-    eachScheduledGame(payload, (other) => {
-      if (!other || other === game || other.live === true) return;
-      if (String(other.date || '').slice(0, 10) !== day) return;
-      const kick = parseSportsTimeMinutes(other.time);
-      if (Number.isFinite(kick)) ceiling = Math.min(ceiling, kick - 60);
-    });
-    let date = day;
-    let minutes = ceiling;
-    if (minutes < 0) {
-      minutes = ((minutes % 1440) + 1440) % 1440;
-      date = shiftIsoDate(date, -1);
+  const kick = demoLiveKickoff(now);
+  const place = (game) => {
+    if (!game || typeof game !== 'object') return { role: 'keep', game };
+    if (game.live === true) {
+      return { role: 'live', game: { ...game, date: kick.date, time: kick.time } };
     }
-    if (date === dayKey(now) && minutes >= nowMin) {
-      minutes -= 60;
-      if (minutes < 0) {
-        minutes += 1440;
-        date = shiftIsoDate(date, -1);
-      }
-    }
-    return { ...game, date, time: minutesToHm(minutes) };
+    const day = String(game.date || '').slice(0, 10);
+    if (day !== kick.date && day !== dayKey(now)) return { role: 'keep', game };
+    const mins = parseSportsTimeMinutes(game.time);
+    const earlier = !Number.isFinite(mins)
+      || (day === kick.date && mins <= kick.minutes)
+      || day < kick.date;
+    return earlier
+      ? { role: 'finished', game: asFinishedBefore(game, kick) }
+      : { role: 'upcoming', game: asUpcomingAfter(game, kick, now) };
   };
   const out = { ...payload };
   if (Array.isArray(payload.teams)) {
     out.teams = payload.teams.map((team) => {
       if (!team || typeof team !== 'object') return team;
       const t = { ...team };
-      if (t.nextGame) t.nextGame = mapGame(t.nextGame);
-      if (Array.isArray(t.nextGames)) t.nextGames = t.nextGames.map(mapGame);
+      const results = Array.isArray(t.results) ? t.results.slice() : [];
+      if (t.nextGame) {
+        const placed = place(t.nextGame);
+        if (placed.role === 'finished') {
+          results.unshift(placed.game);
+          t.nextGame = null;
+        } else t.nextGame = placed.game;
+      }
+      if (Array.isArray(t.nextGames)) {
+        const upcoming = [];
+        for (const game of t.nextGames) {
+          const placed = place(game);
+          if (placed.role === 'finished') results.unshift(placed.game);
+          else upcoming.push(placed.game);
+        }
+        t.nextGames = upcoming;
+      }
+      t.results = results;
       return t;
     });
   }
-  if (out.nextGame) out.nextGame = mapGame(out.nextGame);
-  if (Array.isArray(out.nextGames)) out.nextGames = out.nextGames.map(mapGame);
+  if (out.nextGame) {
+    const placed = place(out.nextGame);
+    out.nextGame = placed.role === 'finished' ? null : placed.game;
+  }
+  if (Array.isArray(out.nextGames)) {
+    out.nextGames = out.nextGames.flatMap((game) => {
+      const placed = place(game);
+      return placed.role === 'finished' ? [] : [placed.game];
+    });
+  }
   return out;
 }
 
