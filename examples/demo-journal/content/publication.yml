@@ -92,18 +92,8 @@ masthead:
         width: 2400
         height: 1800
         focalPoint: { x: 50, y: 46 }
-      - id: f45f6860-ba3f-536d-9db0-12ddbf5bc5db
-        src: /media/demo-library/uqam-jasmin.jpg
-        alt: "Pavillon Judith-Jasmin de l’UQAM à Montréal"
-        caption: "UQAM (Montréal)."
-        credit: "Great11"
-        creditUrl: https://commons.wikimedia.org/wiki/File:Pavillon_Judith-Jasmin_UQAM_1.jpg
-        license: CC BY-SA 4.0
-        licenseUrl: https://creativecommons.org/licenses/by-sa/4.0/
-        sourceUrl: https://commons.wikimedia.org/wiki/File:Pavillon_Judith-Jasmin_UQAM_1.jpg
-        width: 2400
-        height: 1600
-        focalPoint: { x: 50, y: 38 }
+      # Pavillon Judith-Jasmin (rosace, Great11) reste dans la banque, pas dans
+      # la rotation : les trous blancs se confondent avec le titre blanc du mât.
       - id: e1345729-c51f-585e-9c97-105d82bcccff
         src: /media/demo-library/concordia-hall.jpg
         alt: "Édifice Henry F. Hall de l’Université Concordia"
