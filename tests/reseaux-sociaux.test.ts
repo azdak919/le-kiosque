@@ -5,7 +5,7 @@ import test from 'node:test';
 import { SOCIAL_NETWORKS, socialHref, socialLinks, socialNavHtml } from '../packages/theme-radar/src/social.js';
 
 test('réseaux sociaux : les dix réseaux, dans l’ordre de la Configuration', () => {
-  assert.deepEqual(SOCIAL_NETWORKS.map((item) => item.id), ['facebook', 'instagram', 'x', 'bluesky', 'mastodon', 'tiktok', 'youtube', 'linkedin', 'threads', 'email']);
+  assert.deepEqual(SOCIAL_NETWORKS.map((item) => item.id), ['instagram', 'facebook', 'tiktok', 'linkedin', 'threads', 'x', 'bluesky', 'mastodon', 'youtube', 'email']);
   // Mêmes tracés que LE-RADAR (nav-shell.js) : Simple Icons 16.36.0, Bootstrap Icons 1.13.2 pour LinkedIn.
   const path = (id: string) => SOCIAL_NETWORKS.find((item) => item.id === id)!.path;
   assert.ok(path('x').startsWith('M14.234 10.162 22.977 0h-2.072l-7.591 8.824L7.251 0H.258'));
