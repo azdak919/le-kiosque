@@ -7,17 +7,30 @@
 #    create and approve pull requests » décoché), ouvre une issue avec le lien
 #    tout prêt : un clic sur « Create pull request », puis « Merge ».
 # Le lien est aussi écrit dans le résumé du workflow.
+# Une coupure réseau est retentée ; un refus de permission ne l'est pas.
 set -euo pipefail
 branche="$1"; titre="$2"; corps="$3"
 lien="https://github.com/${REPO}/compare/main...${branche}?expand=1"
+
 # --repo : le dépôt du journal, jamais « upstream » (l'amont, ajouté par la
 # mise à jour de la plateforme), où le jeton du workflow ne peut rien créer.
-if gh pr create --repo "$REPO" --base main --head "$branche" --title "$titre" --body-file "$corps" 2>erreur.txt; then
+ok=0
+for n in 1 2 3; do
+  if gh pr create --repo "$REPO" --base main --head "$branche" --title "$titre" --body-file "$corps" 2>erreur.txt; then
+    ok=1
+    break
+  fi
+  if grep -qi "already exists" erreur.txt; then echo "Une pull request est déjà ouverte."; exit 0; fi
+  if grep -qi "not permitted to create or approve pull requests" erreur.txt; then break; fi
+  echo "Création de la pull request interrompue ($n/3)." >&2
+  cat erreur.txt >&2
+  if [ "$n" -lt 3 ]; then sleep $((n * 5)); fi
+done
+if [ "$ok" -eq 1 ]; then
   echo "Pull request ouverte." | tee -a "${GITHUB_STEP_SUMMARY:-/dev/null}"
   exit 0
 fi
 cat erreur.txt
-if grep -qi "already exists" erreur.txt; then echo "Une pull request est déjà ouverte."; exit 0; fi
 {
   echo "### $titre"
   echo
@@ -28,4 +41,12 @@ if grep -qi "already exists" erreur.txt; then echo "Une pull request est déjà 
   echo "_GitHub ne laisse pas les workflows ouvrir eux-mêmes une pull request (réglage par défaut). Le lien ci-dessus fait la même chose en un clic._"
 } > issue.md
 cat issue.md >> "${GITHUB_STEP_SUMMARY:-/dev/null}"
-gh issue create --repo "$REPO" --title "$titre — disponible" --body-file issue.md || echo "::warning::Ouvrez la proposition : $lien"
+for n in 1 2 3; do
+  if gh issue create --repo "$REPO" --title "$titre — disponible" --body-file issue.md; then
+    exit 0
+  fi
+  echo "Création de l'issue interrompue ($n/3)." >&2
+  if [ "$n" -lt 3 ]; then sleep $((n * 5)); fi
+done
+echo "::warning::Ouvrez la proposition : $lien"
+exit 1

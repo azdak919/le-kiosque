@@ -29,7 +29,15 @@ done
 # l'amont (par « Mise à jour du socle »), on la garde.
 apres=$(epingle package.json)
 if [ -n "$avant" ] && [ -n "$apres" ] && [ "$avant" != "$apres" ]; then
-  etat=$(gh api "repos/azdak919/le-socle/compare/${apres}...${avant}" --jq .status 2>/dev/null || echo inconnu)
+  etat=inconnu
+  for n in 1 2 3; do
+    if etat=$(gh api "repos/azdak919/le-socle/compare/${apres}...${avant}" --jq .status); then
+      break
+    fi
+    etat=inconnu
+    echo "Comparaison du socle interrompue ($n/3)." >&2
+    if [ "$n" -lt 3 ]; then sleep $((n * 5)); fi
+  done
   if [ "$etat" = ahead ]; then
     npm install --ignore-scripts --save-exact --no-audit --no-fund "le-socle@github:azdak919/le-socle#${avant}" >/dev/null
     git add package.json package-lock.json

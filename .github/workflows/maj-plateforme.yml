@@ -32,10 +32,15 @@ permissions:
   pull-requests: write
   issues: write
 
+concurrency:
+  group: maj-plateforme
+  cancel-in-progress: false
+
 jobs:
   proposer:
     if: github.repository != 'azdak919/le-kiosque'
     runs-on: ubuntu-latest
+    timeout-minutes: 20
     steps:
       - uses: actions/checkout@v4
         with:
@@ -44,16 +49,23 @@ jobs:
       - name: Récupérer l'amont
         id: amont
         run: |
+          set -euo pipefail
           git remote add upstream https://github.com/azdak919/le-kiosque.git 2>/dev/null || true
-          git fetch upstream main
+          n=1
+          until git fetch upstream main; do
+            if [ "$n" -ge 3 ]; then exit 1; fi
+            echo "fetch interrompu ($n/3), nouvel essai."
+            sleep $((n * 5))
+            n=$((n+1))
+          done
           echo "sha=$(git rev-parse --short=7 upstream/main)" >> "$GITHUB_OUTPUT"
 
-      # Une branche par version de l'amont : jamais de push forcé. Si elle
-      # existe déjà, la proposition est déjà faite.
       - uses: actions/setup-node@v4
         with:
           node-version: '22'
 
+      # Une branche par version de l'amont : jamais de push forcé. Si elle
+      # existe déjà, la proposition est déjà faite.
       - name: Préparer la branche de mise à jour
         id: branche
         env:
@@ -63,9 +75,20 @@ jobs:
           set -euo pipefail
           branche="maj-plateforme-$SHA"
           echo "nom=$branche" >> "$GITHUB_OUTPUT"
-          if git ls-remote --exit-code origin "refs/heads/$branche" >/dev/null; then
+          code=1
+          for n in 1 2 3; do
+            set +e
+            git ls-remote --exit-code origin "refs/heads/$branche" >/dev/null
+            code=$?
+            set -e
+            if [ "$code" -eq 0 ] || [ "$code" -eq 2 ]; then break; fi
+            echo "git ls-remote interrompu ($n/3)." >&2
+            sleep $((n * 5))
+          done
+          if [ "$code" -eq 0 ]; then
             echo "change=false" >> "$GITHUB_OUTPUT"; echo "Déjà proposée."; exit 0
           fi
+          if [ "$code" -ne 2 ]; then echo "git ls-remote a échoué ($code)." >&2; exit 1; fi
           git checkout -b "$branche"
           # Le script de l'amont, pas une copie locale peut-être ancienne.
           git show upstream/main:tools/maj-plateforme.sh > /tmp/maj-plateforme.sh
@@ -74,7 +97,13 @@ jobs:
           git config user.name  "kiosque-bot"
           git config user.email "kiosque-bot@users.noreply.github.com"
           git commit -qm "Mise à jour de la plateforme Le Kiosque ($SHA)"
-          git push origin "$branche"
+          n=1
+          until git push origin "$branche"; do
+            if [ "$n" -ge 3 ]; then exit 1; fi
+            echo "push interrompu ($n/3), nouvel essai."
+            sleep $((n * 5))
+            n=$((n+1))
+          done
 
       - name: Proposer la mise à jour
         if: steps.branche.outputs.change == 'true'
