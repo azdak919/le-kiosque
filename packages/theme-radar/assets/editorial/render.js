@@ -746,6 +746,16 @@ export function applyBranding(bundle, base) {
     sportsHost.classList.add('masthead-sports-strip', 'masthead-sports');
     if (!sportsHost.id) sportsHost.id = 'masthead-sports-strip';
     const sportsHref = sportsBoardHref(base, sports);
+    // Source d’origine : le HTML du build peut être en UTC. kiosque.js
+    // recalcule le direct avec l’horloge du visiteur à partir de cette ancre.
+    const demoSource = sports.demoLive === true ? {
+      teams: sportsTeams,
+      results: sports.results || [],
+      nextGame: sports.nextGame || null,
+      nextGames: sports.nextGames || [],
+      demoAsOf: sports.demoAsOf || null,
+      demoLive: true,
+    } : undefined;
     // setAttribute : évite les surprises dataset + garantit le re-parse kiosque.js
     const sportsPayload = pruneSportsPayload({
       teams: sportsTeams,
@@ -767,6 +777,7 @@ export function applyBranding(bundle, base) {
       href: sportsHref,
       demoAsOf: sportsPayload.demoAsOf || sports.demoAsOf || null,
       demoLive: sports.demoLive || null,
+      demoSource,
       timeZone: bundle.publication.timeZone || 'America/Toronto',
     }));
     sportsHost.setAttribute('aria-label', 'Au tableau — scores et matchs');
