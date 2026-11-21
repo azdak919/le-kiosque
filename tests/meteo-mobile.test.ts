@@ -12,11 +12,15 @@ test('météo du téléphone : prévisions du jour et de demain dans le même ap
   assert.match(js, /appendWeatherExtras\(wait, null, ''\)/, 'la puce d’attente a le même gabarit');
   assert.match(js, /function weatherFetch\(url\)/, 'Open-Meteo muet : abandon après un délai');
   const css = read('packages/theme-radar/assets/theme.css');
-  assert.match(css, /\.weather-chip__today,\n\.weather-chip__tomorrow \{ display: none; \}/, 'dans le mât, la puce reste compacte');
-  assert.match(css, /\.masthead-weather-dock \.weather-chip__today,\n\.masthead-weather-dock \.weather-chip__tomorrow \{/, 'dock : max/min et demain visibles à tous les formats');
+  assert.match(css, /\.weather-chip__today,\n\.weather-chip__tomorrow \{ display: none; \}/, 'prévisions cachées hors dock et hors mât bureau');
+  assert.match(css, /\.masthead-weather-dock \.weather-chip__today,\n\.masthead-weather-dock \.weather-chip__tomorrow \{/, 'dock : max/min et demain visibles');
+  assert.match(css, /\.masthead-utility > \.masthead-status:not\(\.masthead-status--docked\) \.weather-chip__today,/, 'bureau : max/min et demain dans le mât');
+  assert.match(css, /@media \(max-width: 1099\.98px\) \{[\s\S]*\.masthead-status:not\(\.masthead-status--docked\)/, 'sous 1100 px la puce quitte le mât');
   assert.match(css, /\.masthead-weather-dock \.masthead-weather \{ display: grid !important; grid-template-columns: 1fr;/);
   const jsDock = read('packages/theme-radar/assets/kiosque.js');
-  assert.match(jsDock, /Toujours sous la radio \(ordinateur comme téléphone\)/);
+  assert.match(jsDock, /max-width: 1099\.98px/, 'le dock suit le palier de colonne 1100 px');
+  assert.match(jsDock, /dans le mât, à côté de la date/);
+  assert.doesNotMatch(jsDock, /Toujours sous la radio \(ordinateur comme téléphone\)/);
 });
 
 test('mât illustré : pas de pastille de crédit vide ; crédit et licence comme dans la rotation', () => {

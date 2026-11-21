@@ -289,7 +289,7 @@ function radioTuner(ctx: RenderContext): string {
   return radioBarHtml(ctx.publication.radio);
 }
 
-/** Emplacement sous le tuner pour la météo mobile (rempli en JS). */
+/** Emplacement sous le tuner pour la météo téléphone/tablette (rempli en JS). */
 function weatherDockHtml(): string {
   return `<div class="masthead-weather-dock" id="masthead-weather-dock" hidden aria-label="Météo"></div>`;
 }
