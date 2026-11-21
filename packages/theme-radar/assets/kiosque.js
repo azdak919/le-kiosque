@@ -1440,7 +1440,10 @@
     if (opts.before && opts.before.parentNode === host) host.insertBefore(chip, opts.before);
     else host.appendChild(chip);
     host.hidden = false;
-    if (!desktop) sportsAbregerSiTropLong(chip);
+    /* Au bureau aussi : « Boomerang (François-Xavier-Garneau) » dépasse la
+       puce et le débordement caché coupe le mot. On passe au surnom, puis
+       au sigle, avant tout défilement. */
+    sportsAbregerSiTropLong(chip);
 
     /* Titre : aller-retour si débordement. Sous-ligne : boucle lente (PR 404/408). */
     var readDwell = SPORTS_ROTATE_MIN_MS + 3500;

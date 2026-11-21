@@ -1851,7 +1851,7 @@ a.masthead-weather__city:focus-visible {
   display: inline-block;
   max-width: 100%;
   overflow: hidden;
-  text-overflow: clip;
+  text-overflow: ellipsis;
   white-space: nowrap;
   vertical-align: middle;
   font-size: 11px;
@@ -3553,7 +3553,7 @@ html {
   opacity: 0.72;
   white-space: nowrap;
   overflow: hidden;
-  text-overflow: clip;
+  text-overflow: ellipsis;
   max-width: 100%;
 }
 .masthead-sports-strip .sports-chip .sports-chip__line,
