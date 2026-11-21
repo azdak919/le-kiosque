@@ -3457,8 +3457,16 @@ html {
 
 
 /* Puce météo élargie sous la radio (téléphone, tablette, et repli bureau
- * si la rangée du mât est trop juste). Verre ardoise, ton de condition. */
-.masthead-weather-dock:not(:empty) { padding: 8px var(--pad, 24px) 0; }
+ * si la rangée du mât est trop juste). Verre ardoise, ton de condition.
+ * À 721 px et plus : 8 px au-dessus, égal à l’écart de la rangée.
+ * Sous 720 px, le rythme est 4 px (même air qu’entre météo et sport) —
+ * cette règle ne doit plus écraser le padding mobile défini plus haut. */
+@media (min-width: 721px) {
+  .masthead-weather-dock:not(:empty) { padding: 8px var(--pad, 24px) 0; }
+}
+@media (max-width: 720px) {
+  .masthead-weather-dock:not(:empty) { padding: 4px var(--pad, 18px) 0; }
+}
 .masthead-weather-dock:not(:has(.weather-chip)) { display: none; }
 .masthead-weather-dock .masthead-status {
   display: flex !important;
@@ -3673,7 +3681,11 @@ html {
   /* Phrase « Propulsé par Le Kiosque, … » en flux normal : un flex ici
      isolait la virgule en tête de ligne après le lien. */
   .share__btn { min-height: 44px; padding-top: 0.55rem; padding-bottom: 0.55rem; }
-  .site-foot { padding-bottom: 88px; }
+  /* Place pour les boutons flottants, y compris l’encoche.
+     « Espace de rédaction » sur sa propre ligne : sans le « · »,
+     le lien se collait à la phrase « Propulsé par ». */
+  .site-foot { padding-bottom: calc(88px + env(safe-area-inset-bottom, 0px)); }
+  .site-foot__redaction { display: block; margin-top: 0.35em; }
 }
 
 /* Partage d’un article : boutons simples, sans script tiers. */

@@ -78,4 +78,6 @@ test('pied mobile : le « · » de « Espace de rédaction » est masqué comme 
   const css = readFileSync(new URL('../packages/theme-radar/assets/theme.css', import.meta.url), 'utf8');
   assert.match(css, /\.site-foot__built \.site-foot__sep \{ display: none; \}/);
   assert.match(css, /\.site-foot__license \{ white-space: nowrap; \}/);
+  assert.match(css, /\.site-foot__redaction \{ display: block; margin-top: 0\.35em; \}/);
+  assert.match(css, /@media \(max-width: 720px\) \{[\s\S]*?\.masthead-weather-dock:not\(:empty\) \{ padding: 4px var\(--pad, 18px\) 0; \}/);
 });
