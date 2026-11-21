@@ -1,0 +1,234 @@
+name: CI en échec (réutilisable)
+# Appelé par ci-en-echec-appel.yml. Pas de workflow_run ici : ce fichier
+# ne doit pas se déclencher tout seul dans le-kiosque, en double de l'appelant.
+# Une seule issue « CI en échec sur main », étiquette ci-en-echec.
+# Jeton : GITHUB_TOKEN seulement. Aucun secret de dépôt.
+on:
+  workflow_call:
+    inputs:
+      nom:
+        description: Nom du workflow terminé
+        required: true
+        type: string
+      conclusion:
+        description: Conclusion du run
+        required: true
+        type: string
+      url:
+        description: Lien du run
+        required: true
+        type: string
+      heure:
+        description: Horodatage de mise à jour du run
+        required: true
+        type: string
+
+permissions:
+  issues: write
+  actions: read
+
+# Groupe distinct de l'appelant : le même groupe des deux côtés se bloquerait,
+# l'appelant tenant le verrou pendant que l'appelé l'attend.
+concurrency:
+  group: ci-en-echec-${{ github.repository }}
+  cancel-in-progress: false
+
+jobs:
+  signaler:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 2
+    permissions:
+      issues: write
+      actions: read
+    steps:
+      - name: Tenir l'issue
+        env:
+          NOM: ${{ inputs.nom }}
+          CONCLUSION: ${{ inputs.conclusion }}
+          URL: ${{ inputs.url }}
+          HEURE: ${{ inputs.heure }}
+          REPO: ${{ github.repository }}
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          # Tient une seule issue « CI en échec sur main ».
+          # Le titre et l'étiquette sont le contrat : on ne crée jamais une deuxième
+          # issue ouverte, et un retour au vert ne ferme que si plus aucun workflow
+          # listé n'est en échec.
+          set -euo pipefail
+
+          TITRE="CI en échec sur main"
+          ETIQUETTE="ci-en-echec"
+
+          command -v gh >/dev/null || { echo "gh est absent du runner. Relancer sur ubuntu-24.04." >&2; exit 1; }
+          command -v jq >/dev/null || { echo "jq est absent du runner. Relancer sur ubuntu-24.04." >&2; exit 1; }
+
+          : "${NOM:?Le nom du workflow est vide. L'appelant doit passer le nom du run.}"
+          : "${CONCLUSION:?La conclusion du run est vide.}"
+          : "${URL:?Le lien du run est vide.}"
+          : "${HEURE:?L'heure du run est vide.}"
+          : "${REPO:?Le dépôt est vide.}"
+          : "${GH_TOKEN:?GITHUB_TOKEN manquant. Définir GH_TOKEN avec le jeton du workflow, sans secret supplémentaire.}"
+
+          nettoyer() {
+            local v=$1
+            v=${v//$'\n'/ }
+            v=${v//$'\r'/ }
+            v=${v//-->/}
+            printf '%s' "$v"
+          }
+
+          NOM=$(nettoyer "$NOM")
+          URL=$(nettoyer "$URL")
+          HEURE=$(nettoyer "$HEURE")
+          [ -n "$NOM" ] || { echo "Le nom du workflow est vide après nettoyage." >&2; exit 1; }
+
+          case "$CONCLUSION" in
+            failure|timed_out|startup_failure) ACTION=echec ;;
+            success) ACTION=vert ;;
+            *)
+              echo "Conclusion « ${CONCLUSION} » ignorée (ni échec, ni retour au vert)."
+              exit 0
+              ;;
+          esac
+
+          travail=$(mktemp -d)
+          trap 'rm -rf "$travail"' EXIT
+
+          # Liste REST, pas la recherche : l'index de recherche retarde et ouvrirait
+          # deux issues pour le même échec.
+          ouverts=$(gh issue list --repo "$REPO" --state open --limit 100 \
+            --json number,title,state,body)
+          liste=$(printf '%s' "$ouverts" | jq -c --arg titre "$TITRE" '
+            [ .[] | select(.title == $titre) ] | sort_by(.number)
+          ')
+
+          # Fusionne les tableaux des doublons ouverts. Sans ça, fermer le doublon
+          # effacerait un workflow encore en échec qui n'était écrit que là.
+          etat=$(printf '%s' "$liste" | jq -c '
+            def extraire:
+              (.body // "")
+              | split("\n")[]
+              | select(startswith("<!-- ci-en-echec "))
+              | sub("^<!-- ci-en-echec "; "")
+              | sub(" -->$"; "")
+              | fromjson? // empty
+              | .echecs[]? ;
+            [ .[] | extraire ]
+            | group_by(.nom)
+            | map(max_by(.heure))
+            | sort_by(.nom)
+            | {echecs: .}
+          ')
+
+          etait=$(printf '%s' "$etat" | jq --arg nom "$NOM" '[.echecs[] | select(.nom == $nom)] | length')
+
+          if [ "$ACTION" = echec ]; then
+            etat=$(printf '%s' "$etat" | jq -c --arg nom "$NOM" --arg url "$URL" --arg heure "$HEURE" '
+              .echecs |= (map(select(.nom != $nom)) + [{nom:$nom, url:$url, heure:$heure}] | sort_by(.nom))
+            ')
+          else
+            etat=$(printf '%s' "$etat" | jq -c --arg nom "$NOM" '
+              .echecs |= map(select(.nom != $nom))
+            ')
+          fi
+
+          reste=$(printf '%s' "$etat" | jq '.echecs | length')
+          nb_ouverts=$(printf '%s' "$liste" | jq 'length')
+          garder=$(printf '%s' "$liste" | jq -r '.[0].number // empty')
+
+          if [ "$ACTION" = vert ] && [ "$etait" = 0 ] && [ "$nb_ouverts" -le 1 ]; then
+            echo "« ${NOM} » n'était pas en échec. Rien à changer."
+            exit 0
+          fi
+
+          if [ "$ACTION" = vert ] && [ -z "$garder" ]; then
+            echo "Aucun échec en cours. Pas d'issue à fermer."
+            exit 0
+          fi
+
+          assurer_etiquette() {
+            gh label create "$ETIQUETTE" --repo "$REPO" --color B60205 \
+              --description "Un workflow échoue sur main" --force >/dev/null \
+              || { echo "Impossible de tenir l'étiquette ${ETIQUETTE}. Vérifier la permission issues: write, puis relancer le workflow." >&2; exit 1; }
+          }
+
+          ecrire_corps() {
+            local json tableau
+            json=$(printf '%s' "$etat" | jq -c .)
+            tableau=$(printf '%s' "$etat" | jq -r '
+              def cell: gsub("`"; "\u0027") | gsub("[|]"; "/") | gsub("\n"; " ");
+              def lien:
+                if test("^https://github\\.com/[^ |)<>]+$") then .
+                else "`" + (gsub("`"; "\u0027")) + "`"
+                end;
+              .echecs
+              | map("| `" + (.nom|cell) + "` | " + (.url|lien) + " | `" + (.heure|cell) + "` |")
+              | join("\n")
+            ')
+            {
+              printf '<!-- ci-en-echec %s -->\n\n' "$json"
+              if [ "$reste" = 0 ]; then
+                printf 'Aucun workflow en échec sur `main`.\n'
+              else
+                printf 'La CI de `main` a au moins un workflow en échec. Cette issue est unique : elle est mise à jour ici, puis fermée quand le dernier workflow repasse au vert.\n\n'
+                printf '| Workflow | Run | Heure (UTC) |\n| --- | --- | --- |\n'
+                printf '%s\n' "$tableau"
+              fi
+            } > "$travail/corps.md"
+          }
+
+          if [ "$ACTION" = echec ]; then
+            printf 'Le workflow « %s » a échoué sur main : %s (%s).\n' "$NOM" "$URL" "$HEURE" > "$travail/commentaire.md"
+          elif [ "$etait" = 0 ]; then
+            printf 'Doublons fermés. La liste des workflows en échec a été réconciliée.\n' > "$travail/commentaire.md"
+          elif [ "$reste" = 0 ]; then
+            printf 'Le workflow « %s » est repassé au vert : %s (%s).\n' "$NOM" "$URL" "$HEURE" > "$travail/commentaire.md"
+          else
+            printf 'Le workflow « %s » est repassé au vert : %s (%s). D'\''autres workflows échouent encore sur main.\n' "$NOM" "$URL" "$HEURE" > "$travail/commentaire.md"
+          fi
+
+          ecrire_corps
+          assurer_etiquette
+
+          if [ -z "$garder" ]; then
+            # Rouvrir la plus récente issue fermée de ce titre plutôt que d'en créer
+            # une nouvelle : une seule issue dans le temps, jamais deux ouvertes.
+            fermes=$(gh issue list --repo "$REPO" --state closed --limit 30 \
+              --json number,title,state,body)
+            garder=$(printf '%s' "$fermes" | jq -r --arg titre "$TITRE" '
+              [ .[] | select(.title == $titre) ] | sort_by(.number) | .[-1].number // empty
+            ')
+            if [ -n "$garder" ]; then
+              gh issue reopen "$garder" --repo "$REPO"
+              echo "Issue #${garder} rouverte."
+            fi
+          fi
+
+          if [ -z "$garder" ]; then
+            cree=$(gh issue create --repo "$REPO" --title "$TITRE" \
+              --body-file "$travail/corps.md" --label "$ETIQUETTE")
+            garder=${cree##*/}
+            echo "Issue ouverte : ${cree}"
+          else
+            gh issue edit "$garder" --repo "$REPO" --body-file "$travail/corps.md" --add-label "$ETIQUETTE" >/dev/null
+          fi
+
+          if [ "$ACTION" = vert ] && [ "$reste" = 0 ]; then
+            gh issue close "$garder" --repo "$REPO" --reason completed \
+              --comment "$(cat "$travail/commentaire.md")"
+            echo "Issue #${garder} fermée."
+          elif [ "$ACTION" = vert ] && [ "$etait" = 0 ]; then
+            echo "Issue #${garder} dédoublonnée."
+          else
+            gh issue comment "$garder" --repo "$REPO" --body-file "$travail/commentaire.md" >/dev/null
+            echo "Issue #${garder} mise à jour."
+          fi
+
+          while IFS= read -r doublon; do
+            [ -n "$doublon" ] || continue
+            [ "$doublon" = "$garder" ] && continue
+            gh issue close "$doublon" --repo "$REPO" --reason duplicate \
+              --duplicate-of "$garder" \
+              --comment "Doublon fermé. Une seule issue « ${TITRE} » est tenue (#${garder})."
+            echo "Doublon #${doublon} fermé."
+          done < <(printf '%s' "$liste" | jq -r '.[].number')

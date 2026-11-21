@@ -1,0 +1,31 @@
+name: Essai CI en échec
+# Déclenché à la main pour prouver l'ouverture puis la fermeture de l'issue.
+# Retiré une fois la preuve faite. Il ne fait partie d'aucune CI habituelle.
+on:
+  workflow_dispatch:
+    inputs:
+      issue:
+        description: echec ou vert
+        required: true
+        type: choice
+        options:
+          - echec
+          - vert
+
+permissions:
+  contents: read
+
+jobs:
+  essai:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 2
+    steps:
+      - name: Conclure comme demandé
+        env:
+          ISSUE: ${{ inputs.issue }}
+        run: |
+          if [ "$ISSUE" = echec ]; then
+            echo "Échec demandé pour prouver l'ouverture de l'issue."
+            exit 1
+          fi
+          echo "Retour au vert demandé pour prouver la fermeture de l'issue."
