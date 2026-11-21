@@ -29,10 +29,15 @@ permissions:
   pull-requests: write
   issues: write
 
+concurrency:
+  group: maj-socle
+  cancel-in-progress: false
+
 jobs:
   proposer:
     if: github.repository != 'azdak919/le-kiosque'
     runs-on: ubuntu-latest
+    timeout-minutes: 20
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
@@ -44,15 +49,31 @@ jobs:
           DEMANDE: ${{ inputs.commit }}
         run: |
           set -euo pipefail
-          if [ -n "${DEMANDE:-}" ]; then cible="$DEMANDE"
-          else cible=$(git ls-remote https://github.com/azdak919/le-socle.git refs/heads/main | cut -f1); fi
+          if [ -n "${DEMANDE:-}" ]; then
+            echo "commit=$DEMANDE" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+          n=1
+          until cible=$(git ls-remote https://github.com/azdak919/le-socle.git refs/heads/main | cut -f1) && [ -n "$cible" ]; do
+            if [ "$n" -ge 3 ]; then exit 1; fi
+            echo "ls-remote interrompu ($n/3), nouvel essai."
+            sleep $((n * 5))
+            n=$((n+1))
+          done
           echo "commit=$cible" >> "$GITHUB_OUTPUT"
       - name: Sauvegarder puis épingler
         id: maj
         env:
           CIBLE: ${{ steps.cible.outputs.commit }}
         run: |
-          npm ci --ignore-scripts
+          set -euo pipefail
+          n=1
+          until npm ci --ignore-scripts; do
+            if [ "$n" -ge 3 ]; then exit 1; fi
+            echo "npm ci interrompu ($n/3), nouvel essai."
+            sleep $((n * 5))
+            n=$((n+1))
+          done
           node tools/maj-socle.mjs "$CIBLE"
       - name: Vérifier que le journal se construit
         if: steps.maj.outputs.change == 'true'
@@ -68,13 +89,30 @@ jobs:
         run: |
           set -euo pipefail
           branche="maj-socle-${CIBLE:0:7}"
-          if git ls-remote --exit-code origin "refs/heads/$branche" >/dev/null; then echo "Déjà proposée."; exit 0; fi
+          code=1
+          for n in 1 2 3; do
+            set +e
+            git ls-remote --exit-code origin "refs/heads/$branche" >/dev/null
+            code=$?
+            set -e
+            if [ "$code" -eq 0 ] || [ "$code" -eq 2 ]; then break; fi
+            echo "git ls-remote interrompu ($n/3)." >&2
+            sleep $((n * 5))
+          done
+          if [ "$code" -eq 0 ]; then echo "Déjà proposée."; exit 0; fi
+          if [ "$code" -ne 2 ]; then echo "git ls-remote a échoué ($code)." >&2; exit 1; fi
           git config user.name  "kiosque-bot"
           git config user.email "kiosque-bot@users.noreply.github.com"
           git checkout -b "$branche"
           git add package.json package-lock.json "$SAUVEGARDE"
           git commit -m "Socle : ${AVANT:0:7} → ${CIBLE:0:7}"
-          git push origin "$branche"
+          n=1
+          until git push origin "$branche"; do
+            if [ "$n" -ge 3 ]; then exit 1; fi
+            echo "push interrompu ($n/3), nouvel essai."
+            sleep $((n * 5))
+            n=$((n+1))
+          done
           printf '%s\n' \
             "Nouvelle version du socle (l'admin de rédaction)." \
             "" \

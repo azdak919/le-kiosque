@@ -27,13 +27,23 @@ jobs:
     name: test
     if: github.repository == 'azdak919/le-kiosque'
     runs-on: ubuntu-24.04
+    timeout-minutes: 20
     steps:
       - uses: actions/checkout@v7
       - uses: actions/setup-node@v7
         with:
           node-version: '22'
           cache: npm
-      - run: npm ci
+      - name: Installer les dépendances
+        run: |
+          set -euo pipefail
+          n=1
+          until npm ci; do
+            if [ "$n" -ge 3 ]; then exit 1; fi
+            echo "npm ci interrompu ($n/3), nouvel essai."
+            sleep $((n * 5))
+            n=$((n+1))
+          done
       - name: PHP (installateur 0.2.1)
         run: sudo apt-get update && sudo apt-get install -y php-cli
       - run: npm test
@@ -58,6 +68,7 @@ jobs:
   navigateur:
     name: navigateur
     runs-on: ubuntu-24.04
+    timeout-minutes: 40
     needs: test
     steps:
       - uses: actions/checkout@v7
@@ -65,7 +76,16 @@ jobs:
         with:
           node-version: '22'
           cache: npm
-      - run: npm ci
+      - name: Installer les dépendances
+        run: |
+          set -euo pipefail
+          n=1
+          until npm ci; do
+            if [ "$n" -ge 3 ]; then exit 1; fi
+            echo "npm ci interrompu ($n/3), nouvel essai."
+            sleep $((n * 5))
+            n=$((n+1))
+          done
       - name: Cache Playwright Chromium
         uses: actions/cache@v6
         id: playwright-cache
@@ -74,7 +94,15 @@ jobs:
           key: playwright-${{ runner.os }}-${{ hashFiles('package-lock.json') }}
       - name: Install Chromium
         if: steps.playwright-cache.outputs.cache-hit != 'true'
-        run: npx playwright install chromium
+        run: |
+          set -euo pipefail
+          n=1
+          until npx playwright install chromium; do
+            if [ "$n" -ge 3 ]; then exit 1; fi
+            echo "Installation de Chromium interrompue ($n/3), nouvel essai."
+            sleep $((n * 5))
+            n=$((n+1))
+          done
       - run: BASE=/autre-nom npm run site && npx playwright test
       - if: failure()
         uses: actions/upload-artifact@v7
@@ -90,6 +118,7 @@ jobs:
     if: github.event_name != 'pull_request'
     needs: test
     runs-on: ubuntu-24.04
+    timeout-minutes: 15
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
