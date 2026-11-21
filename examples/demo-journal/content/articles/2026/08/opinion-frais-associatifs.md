@@ -23,8 +23,8 @@ lead:
   license: "CC BY-SA 3.0"
   licenseUrl: "https://creativecommons.org/licenses/by-sa/3.0"
   sourceUrl: "https://commons.wikimedia.org/wiki/File:C%C3%A9gep_de_Sainte-Foy_(int%C3%A9rieur).JPG"
-  width: 1920
-  height: 1285
+  width: 2400
+  height: 1606
   focalPoint: { x: 50, y: 48 }
 ---
 

@@ -17,14 +17,14 @@ tags: []
 lang: fr-CA
 lead:
   src: /media/demo-library/articles/biblio-pc.jpg
-  alt: "Ordinateurs en bibliothèque"
-  credit: "Mshuang2"
-  license: "CC0"
-  licenseUrl: "https://creativecommons.org/publicdomain/zero/1.0/deed.en"
-  sourceUrl: "https://commons.wikimedia.org/wiki/File:Library_computers.jpg"
-  width: 1920
-  height: 1440
-  focalPoint: { x: 50, y: 48 }
+  alt: "Étudiantes au travail dans une bibliothèque universitaire"
+  credit: "Tulane Public Relations"
+  license: "CC BY 2.0"
+  licenseUrl: "https://creativecommons.org/licenses/by/2.0/"
+  sourceUrl: "https://commons.wikimedia.org/wiki/File:2012_-_studying_in_Howard-Tilton_Library_New_Orleans.jpg"
+  width: 2400
+  height: 1596
+  focalPoint: { x: 48, y: 42 }
 ---
 
 La bibliothèque augmente son parc d'ordinateurs de prêt et prolonge la durée maximale d'emprunt de trois à sept jours. L'objectif affiché : permettre aux étudiantes et étudiants de travailler hors campus pendant les périodes d'examens sans devoir renouveler le prêt chaque 72 heures.

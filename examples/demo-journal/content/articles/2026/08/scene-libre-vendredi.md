@@ -24,8 +24,8 @@ lead:
   license: "CC BY 2.0"
   licenseUrl: "https://creativecommons.org/licenses/by/2.0"
   sourceUrl: "https://commons.wikimedia.org/wiki/File:Le_chant_des_cageux%2C_C%C3%A9g%C3%A9p_du_Vieux_Montr%C3%A9al%2C_2020._(49623021442).jpg"
-  width: 1920
-  height: 1440
+  width: 2400
+  height: 1800
   focalPoint: { x: 50, y: 48 }
 ---
 

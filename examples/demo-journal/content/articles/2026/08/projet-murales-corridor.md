@@ -25,8 +25,8 @@ lead:
   license: "CC BY-SA 2.0"
   licenseUrl: "https://creativecommons.org/licenses/by-sa/2.0"
   sourceUrl: "https://commons.wikimedia.org/wiki/File:Montreal_Street_Art_Graffiti_(29241125286).jpg"
-  width: 1920
-  height: 1209
+  width: 2400
+  height: 1512
   focalPoint: { x: 50, y: 48 }
 ---
 

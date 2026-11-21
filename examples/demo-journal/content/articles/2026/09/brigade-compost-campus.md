@@ -20,12 +20,12 @@ lang: fr-CA
 lead:
   src: /media/demo-library/articles/compost.jpg
   alt: "Bac de compost et matières organiques"
-  credit: "fir0002"
+  credit: "fir0002  flagstaffotos [at] gmail.com\n\t\tCanon 20D + Tamron 28-75mm f/2.8"
   license: "GFDL 1.2"
   licenseUrl: "https://www.gnu.org/licenses/old-licenses/fdl-1.2.html"
   sourceUrl: "https://commons.wikimedia.org/wiki/File:Compost_bin.jpg"
   width: 1600
-  height: 1135
+  height: 1136
   focalPoint: { x: 50, y: 48 }
 ---
 

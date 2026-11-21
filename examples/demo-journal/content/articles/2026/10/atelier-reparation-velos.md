@@ -25,8 +25,8 @@ lead:
   license: "CC BY-SA 4.0"
   licenseUrl: "https://creativecommons.org/licenses/by-sa/4.0"
   sourceUrl: "https://commons.wikimedia.org/wiki/File:Bike_repair_station.jpg"
-  width: 1920
-  height: 2560
+  width: 1800
+  height: 2400
   focalPoint: { x: 50, y: 48 }
 ---
 

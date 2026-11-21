@@ -17,14 +17,14 @@ tags: []
 lang: fr-CA
 lead:
   src: /media/demo-library/articles/radio.jpg
-  alt: "Studio de radio avec microphones"
-  credit: "Ethan Long"
-  license: "CC BY-SA 2.0"
-  licenseUrl: "https://creativecommons.org/licenses/by-sa/2.0/"
-  sourceUrl: "https://commons.wikimedia.org/wiki/File:Broadcast_Studio_(53998133689).jpg"
-  width: 1920
-  height: 2880
-  focalPoint: { x: 50, y: 48 }
+  alt: "Console et micro d’un studio de radio"
+  credit: "Arielinson"
+  license: "CC BY-SA 4.0"
+  licenseUrl: "https://creativecommons.org/licenses/by-sa/4.0/"
+  sourceUrl: "https://commons.wikimedia.org/wiki/File:Kol_Israel_Heleni_Hamalka_DSC0094.jpg"
+  width: 2000
+  height: 1334
+  focalPoint: { x: 62, y: 48 }
 ---
 
 Cette rentrée, on a écouté pour vous. Voici trois balados faits par et pour des communautés étudiantes — parfaits entre deux arrêts d’autobus ou pendant qu’on attend que le micro-ondes se libère.

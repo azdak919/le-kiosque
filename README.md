@@ -33,7 +33,7 @@ Aux équipes de journaux étudiants et de médias de campus qui veulent un site 
 ## Installer un journal
 
 1. **Téléchargez** [`kiosque-journal.zip`](https://github.com/azdak919/le-kiosque/releases/latest/download/kiosque-journal.zip) — toujours la dernière version, à une adresse fixe.
-2. **Déposez** le contenu du dossier `journal/` à la racine de l’espace Web d’un hébergeur **PHP 8.1 ou plus récent, avec SQLite** (serveur du cégep ou de l’association, hébergeur habituel, ou essai gratuit chez [alwaysdata](docs/hebergeur-gratuit.md)). Un sous-dossier reste possible si vous le souhaitez.
+2. **Déposez** le contenu du dossier `kiosque-journal/` à la racine de l’espace Web d’un hébergeur **PHP 8.1 ou plus récent, avec SQLite** (serveur du cégep ou de l’association, hébergeur habituel, ou essai gratuit chez [alwaysdata](docs/hebergeur-gratuit.md)). Un sous-dossier reste possible si vous le souhaitez.
 3. **Ouvrez** `https://votre-journal.com/redaction/` et remplissez l’assistant : nom, rubriques, logo au besoin, compte administrateur. Attendez le message « Le journal est installé ».
 4. **Écrivez**, relisez, publiez. L’article paraît tout de suite. Téléchargez une sauvegarde à chaque fin de session.
 
@@ -45,7 +45,7 @@ Le détail, pour un étudiant, tient dans le [guide d’une page](https://kiosqu
 
 **Sur le site Web public**
 
-- Le mât affiche le nom du journal en grand ; s’il y a un logo, le logo remplace le nom.
+- Le mât affiche le nom du journal en grand ; s’il y a un logo, le logo remplace le nom. On peut y choisir plusieurs photos, affichées dans un ordre aléatoire.
 - Rubriques, pages d’articles, pages des signatures, recherche dans la page, mode sombre.
 - Météo locale, résultats sportifs et barre radio, au choix. La radio est un module du [Radar](https://le-radar.ca), chargé depuis le-radar.ca.
 - Chaque article porte toutes ses signatures ; chaque photo porte son crédit et sa licence.
@@ -67,6 +67,10 @@ Le détail, pour un étudiant, tient dans le [guide d’une page](https://kiosqu
 ![Banque de photos](site/assets/captures/banque-photos.jpg)
 
 <p align="center"><em>La banque de photos, avec crédit et licence.</em></p>
+
+![Réglage du mât illustré](site/assets/captures/configuration-mat.jpg)
+
+<p align="center"><em>Plusieurs photos de mât, et l’ordre aléatoire activé par défaut.</em></p>
 
 ---
 

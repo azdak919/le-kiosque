@@ -138,7 +138,7 @@ test('demo et template reçoivent le même theme.css / kiosque.js (packages/them
     'intro équipe reformulée',
   );
   const seed = await readFile(path.join(demo.out, 'assets/editorial/seed.json'), 'utf8');
-  assert.match(seed, /"version":\s*26/, 'seed démo v26 (dates sports live + matchs du jour campus)');
+  assert.match(seed, /"version":\s*27/, 'seed démo v27 (photos de banque en haute résolution)');
   assert.match(seed, /Les Élans/, 'seed embarque le surnom maison Élans');
   assert.doesNotMatch(seed, /Les Quorums/, 'plus de surnom redondant Quorums');
   assert.match(seed, /hockey-interieur\.jpg/, 'photo corps hockey intérieur distincte du lead');

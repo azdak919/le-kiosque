@@ -23,8 +23,8 @@ lead:
   license: "CC BY-SA 4.0"
   licenseUrl: "https://creativecommons.org/licenses/by-sa/4.0"
   sourceUrl: "https://commons.wikimedia.org/wiki/File:Checking_blood_pressure.jpg"
-  width: 1920
-  height: 1440
+  width: 2400
+  height: 1800
   focalPoint: { x: 50, y: 48 }
 ---
 

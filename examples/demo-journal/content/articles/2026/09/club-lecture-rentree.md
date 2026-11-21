@@ -20,8 +20,8 @@ lead:
   license: "Public domain"
   licenseUrl: "https://commons.wikimedia.org/wiki/File:Bookshelves.jpg"
   sourceUrl: "https://commons.wikimedia.org/wiki/File:Bookshelves.jpg"
-  width: 1920
-  height: 1318
+  width: 2010
+  height: 1380
   focalPoint: { x: 50, y: 48 }
 ---
 

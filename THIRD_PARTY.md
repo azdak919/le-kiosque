@@ -51,3 +51,67 @@ THE SOFTWARE.
 
 Simple Icons est sous CC0 1.0 (dédication au domaine public) : aucune
 condition, crédit donné par courtoisie.
+
+### Photos de la démonstration Le Quorum
+
+Ces photos n’entrent pas dans le paquet d’installation : la banque d’un journal
+neuf reste vide. Elles illustrent seulement la démonstration (`examples/demo-journal/media/demo-library/`)
+et les captures des pages publiques. Fichiers JPEG tirés de l’original Wikimedia
+Commons, long côté au plus 2400 px, proportions conservées. Licences CC0, CC BY
+ou CC BY-SA. Le code du Kiosque reste GPL-2.0-only ; ces photos gardent leur
+propre licence et ne sont pas fondues dans le programme.
+
+| Fichier | Crédit | Licence | Source |
+| --- | --- | --- | --- |
+| `campus-sainte-foy.jpg` | Khayman | CC BY-SA 3.0 | [source](https://commons.wikimedia.org/wiki/File:Campus_du_C%C3%A9gep_de_Sainte-Foy01.JPG) |
+| `interieur-sainte-foy.jpg` | Khayman | CC BY-SA 3.0 | [source](https://commons.wikimedia.org/wiki/File:C%C3%A9gep_de_Sainte-Foy_(int%C3%A9rieur).JPG) |
+| `batiment-jonquiere.jpg` | Khayman | CC BY-SA 3.0 | [source](https://commons.wikimedia.org/wiki/File:B%C3%A2timent_du_C%C3%A9gep_de_Jonqui%C3%A8re.JPG) |
+| `football-jonquiere.jpg` | Khayman | CC BY-SA 3.0 | [source](https://commons.wikimedia.org/wiki/File:Terrain_de_football_du_C%C3%A9gep_de_Jonqui%C3%A8re.JPG) |
+| `campus-limoilou.jpg` | Pierre-Paul Beaumont | CC BY 2.0 ca | [source](https://commons.wikimedia.org/wiki/File:Campus_de_Qu%C3%A9bec.jpg) |
+| `mcgill-roddick.jpg` | Gene.arboit | CC BY-SA 3.0 | [source](https://commons.wikimedia.org/wiki/File:Roddick_Gates_(McGill_University)_2005-09-02.jpg) |
+| `uqam-jasmin.jpg` | Great11 | CC BY-SA 4.0 | [source](https://commons.wikimedia.org/wiki/File:Pavillon_Judith-Jasmin_UQAM_1.jpg) |
+| `ulaval-campus.jpg` | Wilfredor | CC0 | [source](https://commons.wikimedia.org/wiki/File:Universit%C3%A9_Laval%2C_Quebec%2C_Canada_02.jpg) |
+| `ulaval-parc.jpg` | Wilfredor | CC BY-SA 4.0 | [source](https://commons.wikimedia.org/wiki/File:Park_in_Universit%C3%A9_Laval.jpg) |
+| `concordia-hall.jpg` | Jeangagnon | CC BY-SA 3.0 | [source](https://commons.wikimedia.org/wiki/File:Henry_F._Hall_Building_07.JPG) |
+| `udem-gaudry.jpg` | Funke | CC BY-SA 4.0 | [source](https://commons.wikimedia.org/wiki/File:Pavillon_Roger-Gaudry_II.jpg) |
+| `bishops-campus.jpg` | Balcer | CC BY 3.0 | [source](https://commons.wikimedia.org/wiki/File:Bishop's_University_campus_2011.jpg) |
+| `mcgill-campus.jpg` | Jeangagnon | CC BY-SA 3.0 | [source](https://commons.wikimedia.org/wiki/File:McGill_University_downtown_campus_31.JPG) |
+| `sherbrooke-longueuil.jpg` | Jeangagnon | CC BY-SA 3.0 | [source](https://commons.wikimedia.org/wiki/File:Campus_de_Longueuil_-_Universite_de_Sherbrooke_09.jpg) |
+| `uqtr-boucher.jpg` | Lëa-Kim Châteauneuf | CC BY-SA 4.0 | [source](https://commons.wikimedia.org/wiki/File:Campus_de_l'UQTR_%C3%A0_Drummondville.jpg) |
+| `cegep-vieux-montreal.jpg` | Khayman | CC BY-SA 3.0 | [source](https://commons.wikimedia.org/wiki/File:C%C3%A9gep_du_Vieux_Montr%C3%A9al01.JPG) |
+| `mcgill-arts.jpg` | Gene.arboit | CC BY-SA 3.0 | [source](https://commons.wikimedia.org/wiki/File:Arts_Building%2C_McGill_University.jpg) |
+| `bishops-mcgreer.jpg` | Balcer | CC BY 3.0 | [source](https://commons.wikimedia.org/wiki/File:Bishop's_University_McGreer_Hall.jpg) |
+| `articles/soccer.jpg` | Noah Riffe | CC0 | [source](https://commons.wikimedia.org/wiki/File:Stoney_Brook_vs._Penn_State_Women's_Soccer.jpg) |
+| `articles/basketball.jpg` | Bama in ATL | CC BY-SA 4.0 | [source](https://commons.wikimedia.org/wiki/File:2016_Auburn_at_Alabama_NCAAM_Basketball_Game.jpg) |
+| `articles/course.jpg` | Isaacvp | CC BY-SA 4.0 | [source](https://commons.wikimedia.org/wiki/File:2018_Orizaba_Running_race_01.jpg) |
+| `articles/serre.jpg` | Rodrigo.Argenton | CC BY-SA 4.0 | [source](https://commons.wikimedia.org/wiki/File:Estufa_principal_do_Jardim_Bot%C3%A2nico_de_Curitiba_02.jpg) |
+| `articles/labo.jpg` | Horia Varlan | CC BY 2.0 | [source](https://commons.wikimedia.org/wiki/File:Chemistry_laboratory.jpg) |
+| `articles/radio.jpg` | Arielinson | CC BY-SA 4.0 | [source](https://commons.wikimedia.org/wiki/File:Kol_Israel_Heleni_Hamalka_DSC0094.jpg) |
+| `articles/campus-vie.jpg` | Tulane Public Relations | CC BY 2.0 | [source](https://commons.wikimedia.org/wiki/File:Students_enjoy_springtime_weather._(5554288570).jpg) |
+| `articles/velo.jpg` | Briana18091440 | CC BY-SA 4.0 | [source](https://commons.wikimedia.org/wiki/File:Bike_repair_station.jpg) |
+| `articles/compost.jpg` | fir0002  flagstaffotos [at] gmail.com
+		Canon 20D + Tamron 28-75mm f/2.8 | GFDL 1.2 | [source](https://commons.wikimedia.org/wiki/File:Compost_bin.jpg) |
+| `articles/biblio-pc.jpg` | Tulane Public Relations | CC BY 2.0 | [source](https://commons.wikimedia.org/wiki/File:2012_-_studying_in_Howard-Tilton_Library_New_Orleans.jpg) |
+| `articles/amphi.jpg` | Kannan5645 | CC BY-SA 3.0 | [source](https://commons.wikimedia.org/wiki/File:Lecture_hall.jpg) |
+| `articles/caf.jpg` | Tanvir Hussain | CC BY-SA 3.0 | [source](https://commons.wikimedia.org/wiki/File:Cafeteria.jpg) |
+| `articles/cinema.jpg` | Mr N | CC BY-SA 4.0 | [source](https://commons.wikimedia.org/wiki/File:Kinolino-Kellerkino_02.jpg) |
+| `articles/livres.jpg` | w:it:Utente:OrbiliusMagister | Public domain | [source](https://commons.wikimedia.org/wiki/File:Bookshelves.jpg) |
+| `articles/bus.jpg` | Bouchecl | CC BY-SA 3.0 | [source](https://commons.wikimedia.org/wiki/File:Qu%C3%A9bec_RTC_-_Nova_Bus_LFS.jpg) |
+| `articles/calme.jpg` | Mourial | CC BY-SA 3.0 | [source](https://commons.wikimedia.org/wiki/File:Grande_Bibliotheque_Quebec_Interieur.JPG) |
+| `articles/arts.jpg` | YessMendez | CC BY-SA 4.0 | [source](https://commons.wikimedia.org/wiki/File:Art_exhibition.jpg) |
+| `articles/parking.jpg` | David Shay | CC BY-SA 2.5 | [source](https://commons.wikimedia.org/wiki/File:Bicycle_parking.jpg) |
+| `articles/hockey.jpg` | Daniel Case | CC BY-SA 3.0 | [source](https://commons.wikimedia.org/wiki/File:Shot_on_goal_during_youth_hockey_tournament_at_West_Edmonton_Mall_Ice_Palace.jpg) |
+| `articles/hockey-interieur.jpg` | U.S. Navy photo by Mass Communication Specialist 2nd Class Joshua Scott | Public domain | [source](https://commons.wikimedia.org/wiki/File:Championship_floor_hockey_game_150303-N-GT589-067.jpg) |
+| `articles/volleyball.jpg` | Zorro2212 | CC BY-SA 3.0 | [source](https://commons.wikimedia.org/wiki/File:Volleyball_match_-_shakehands_before_the_match.jpg) |
+| `articles/chess.jpg` | Wilfredor | CC0 | [source](https://commons.wikimedia.org/wiki/File:Chess_game_Staunton_No._6_perfil_view_8.jpg) |
+| `articles/blood.jpg` | Staff Sgt. Stephanie Rubi, U.S. Air Force | Public domain | [source](https://commons.wikimedia.org/wiki/File:Patient_gets_blood_drawn_to_be_screened_as_a_blood_donor.jpg) |
+| `articles/mural.jpg` | Coastal Elite from Halifax, Canada | CC BY-SA 2.0 | [source](https://commons.wikimedia.org/wiki/File:Montreal_Street_Art_Graffiti_(29241125286).jpg) |
+| `articles/tutoring.jpg` | JBouchez | CC BY-SA 4.0 | [source](https://commons.wikimedia.org/wiki/File:Formation_condens%C3%A9e_%C3%A0_Wikip%C3%A9dia_lors_du_cours_IPMSH_du_C%C3%A9gep_du_Vieux_Montr%C3%A9al.jpg) |
+| `articles/resume.jpg` | HeatherKatz001 | CC BY-SA 4.0 | [source](https://commons.wikimedia.org/wiki/File:What_to_Expect_at_a_Job_Interview_at_a_Teaching_School.jpg) |
+| `articles/nursing.jpg` | Pambelle12 | CC BY-SA 4.0 | [source](https://commons.wikimedia.org/wiki/File:Checking_blood_pressure.jpg) |
+| `articles/career.jpg` | German Embassy London | CC BY 2.0 | [source](https://commons.wikimedia.org/wiki/File:Exhibitors_at_the_Career_Fair_(30983205220).jpg) |
+| `articles/stage.jpg` | art_inthecity from Montréal, CA | CC BY 2.0 | [source](https://commons.wikimedia.org/wiki/File:Le_chant_des_cageux%2C_C%C3%A9g%C3%A9p_du_Vieux_Montr%C3%A9al%2C_2020._(49623021442).jpg) |
+| `articles/trail.jpg` | Jean Gagnon | CC BY-SA 3.0 | [source](https://commons.wikimedia.org/wiki/File:Parc_du_Mont-Royal_015.jpg) |
+| `articles/graduation.jpg` | Stewart Oak, Imperial College London | CC BY 4.0 | [source](https://commons.wikimedia.org/wiki/File:Imperial_College_London_graduation_gowns.jpg) |
+| `articles/participatory.jpg` | Khayman | CC BY-SA 3.0 | [source](https://commons.wikimedia.org/wiki/File:C%C3%A9gep_de_Sainte-Foy_(int%C3%A9rieur).JPG) |
+| `articles/photo-club.jpg` | Coastal Elite from Halifax, Canada | CC BY-SA 2.0 | [source](https://commons.wikimedia.org/wiki/File:Montreal_Street_Art_Graffiti_(29241125286).jpg) |

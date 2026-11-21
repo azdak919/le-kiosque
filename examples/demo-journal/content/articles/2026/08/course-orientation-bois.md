@@ -24,8 +24,8 @@ lead:
   license: "CC BY-SA 3.0"
   licenseUrl: "https://creativecommons.org/licenses/by-sa/3.0"
   sourceUrl: "https://commons.wikimedia.org/wiki/File:Parc_du_Mont-Royal_015.jpg"
-  width: 1920
-  height: 1440
+  width: 2400
+  height: 1800
   focalPoint: { x: 50, y: 48 }
 ---
 

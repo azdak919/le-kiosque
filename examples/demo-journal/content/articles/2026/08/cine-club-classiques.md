@@ -23,8 +23,8 @@ lead:
   license: "CC BY-SA 4.0"
   licenseUrl: "https://creativecommons.org/licenses/by-sa/4.0/"
   sourceUrl: "https://commons.wikimedia.org/wiki/File:Kinolino-Kellerkino_02.jpg"
-  width: 1920
-  height: 1443
+  width: 2400
+  height: 1804
   focalPoint: { x: 50, y: 48 }
 ---
 
