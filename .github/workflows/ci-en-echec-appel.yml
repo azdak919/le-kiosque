@@ -6,7 +6,6 @@ on:
   workflow_run:
     workflows:
       - "Dependabot fusion auto"
-      - "Essai CI en échec"
       - "Mise à jour de la plateforme"
       - "Mise à jour du socle"
       - "Paquet complet"
