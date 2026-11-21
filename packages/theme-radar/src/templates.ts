@@ -462,18 +462,19 @@ function sportsPayload(ctx: RenderContext): string {
   if (!sports || sports.enabled === false) return '';
   const teams = sportsTeamRoster(sports);
   if (!teams.length) return '';
-  /* Focus-group B : prune sessions (demoAsOf / demoLive en démo, sinon now). */
-  const pruned = pruneSportsPayload(
-    {
-      teams,
-      results: sports.results ?? [],
-      nextGame: sports.nextGame ?? null,
-      nextGames: sports.nextGames ?? [],
-      demoAsOf: sports.demoAsOf,
-      demoLive: sports.demoLive,
-    },
-    { demoAsOf: sports.demoAsOf, demoLive: sports.demoLive },
-  );
+  /* Focus-group B : prune sessions (demoAsOf / demoLive en démo, sinon now).
+   * Le HTML fige ce calcul dans le fuseau du build (sans JS). `demoSource`
+   * garde l’ancre et les heures d’origine : au chargement, le navigateur
+   * refait le même calcul avec l’horloge du visiteur. */
+  const source = {
+    teams,
+    results: sports.results ?? [],
+    nextGame: sports.nextGame ?? null,
+    nextGames: sports.nextGames ?? [],
+    demoAsOf: sports.demoAsOf,
+    demoLive: sports.demoLive,
+  };
+  const pruned = pruneSportsPayload(source, { demoAsOf: sports.demoAsOf, demoLive: sports.demoLive });
   const prunedTeams = pruned.teams ?? [];
   if (!prunedTeams.length) return '';
   const payload = {
@@ -485,6 +486,7 @@ function sportsPayload(ctx: RenderContext): string {
     href: sportsPagePath(sports, ctx),
     demoAsOf: pruned.demoAsOf ?? sports.demoAsOf,
     demoLive: sports.demoLive,
+    demoSource: sports.demoLive === true ? source : undefined,
     timeZone: ctx.publication.timeZone || 'America/Toronto',
   };
   return `<div class="masthead-sports-strip masthead-sports" id="masthead-sports-strip" hidden data-sports-payload="${esc(JSON.stringify(payload))}" aria-label="Au tableau — scores et matchs" aria-live="polite"></div>`;
@@ -1117,6 +1119,7 @@ ${content}
 </div>
 <script src="${asset('/assets/bg-rotation-lib.js', ctx)}" defer></script>
 <script src="${asset('/assets/sports-board-lib.js', ctx)}" defer></script>
+${pub.masthead?.sports?.demoLive === true ? `<script type="module" src="${asset('/assets/sports-live.js', ctx)}"></script>` : ''}
 <script src="${asset('/assets/kiosque.js', ctx)}" defer></script>
 ${ctx.editorial ? `<script>window.KIOSQUE_EDITORIAL=${JSON.stringify(ctx.editorial.mode === 'socle-vivant'
   // Paquet complet : le socle PHP de la même installation remet le sous-dossier dans ces chemins.

@@ -109,6 +109,15 @@ export function prunePastGames(games = [], referenceDate = new Date()) {
 
 export function pruneNextGame(game, referenceDate = new Date()) {
   if (!game) return null;
+  if (game.live === true) {
+    const d = parseGameDay(game);
+    if (!d) return null;
+    const refKey = dayKey(referenceDate);
+    const gameKey = dayKey(d);
+    // Un direct peut avoir commencé la veille (chargement juste après minuit).
+    if (gameKey === refKey || gameKey === shiftIsoDate(refKey, -1)) return { ...game };
+    return null;
+  }
   return isNextGameInHorizon(game, referenceDate) ? { ...game } : null;
 }
 
@@ -199,26 +208,167 @@ export function shiftSportsPayloadDates(payload, deltaDays) {
   return out;
 }
 
+/** Minutes locales depuis minuit — même horloge que le mât (fuseau du navigateur). */
+function localClockMinutes(now) {
+  return now.getHours() * 60 + now.getMinutes();
+}
+
+function minutesToHm(total) {
+  const mins = ((total % 1440) + 1440) % 1440;
+  const h = Math.floor(mins / 60);
+  const m = mins % 60;
+  return `${String(h).padStart(2, '0')}:${String(m).padStart(2, '0')}`;
+}
+
+/**
+ * Coup d’envoi d’un match en cours : quart d’heure précédent, moins 30 min.
+ * Toujours commencé, toujours depuis moins de 90 minutes, quelle que soit l’heure.
+ */
+function demoLiveKickoff(now) {
+  const nowMin = localClockMinutes(now);
+  const quarter = Math.floor(nowMin / 15) * 15;
+  let minutes = quarter - 30;
+  let date = dayKey(now);
+  if (minutes < 0) {
+    minutes += 1440;
+    date = shiftIsoDate(date, -1);
+  }
+  return { date, minutes, time: minutesToHm(minutes) };
+}
+
+/** Match déjà joué : l’heure reste plausible et la partie est finie avant le direct. */
+function asFinishedBefore(game, kick) {
+  const day = String(game.date || '').slice(0, 10);
+  const mins = parseSportsTimeMinutes(game.time);
+  let date = day || kick.date;
+  let minutes = Number.isFinite(mins) ? mins : kick.minutes - 120;
+  const sameOrLiveDay = date === kick.date;
+  if (sameOrLiveDay && kick.minutes - minutes < 90) {
+    minutes = kick.minutes - 120;
+    if (minutes < 0) {
+      minutes += 1440;
+      date = shiftIsoDate(kick.date, -1);
+    }
+  }
+  const kept = date === day && Number.isFinite(mins) && minutes === mins;
+  const finished = { ...game, date, time: kept ? String(game.time) : minutesToHm(minutes) };
+  delete finished.live;
+  if (!finished.result) {
+    finished.result = 'D';
+    finished.scoreFor = finished.scoreFor ?? 1;
+    finished.scoreAgainst = finished.scoreAgainst ?? 1;
+  }
+  return finished;
+}
+
+/** Plus tard que le direct : reste à venir, et après l’heure affichée. */
+function asUpcomingAfter(game, kick, now) {
+  const nowMin = localClockMinutes(now);
+  const today = dayKey(now);
+  let date = String(game.date || '').slice(0, 10) || today;
+  let minutes = parseSportsTimeMinutes(game.time);
+  if (!Number.isFinite(minutes)) minutes = nowMin + 60;
+  const stillAhead = date > today || (date === today && minutes > nowMin);
+  if (!stillAhead) {
+    let future = Math.ceil((nowMin + 1) / 15) * 15;
+    date = today;
+    if (future >= 1440) {
+      future -= 1440;
+      date = shiftIsoDate(today, 1);
+    }
+    minutes = future;
+  }
+  const upcoming = { ...game, date, time: stillAhead ? String(game.time) : minutesToHm(minutes) };
+  delete upcoming.live;
+  return upcoming;
+}
+
+/**
+ * Le direct de la démo a commencé récemment. Les autres rencontres du même
+ * jour ne le repoussent pas : plus tôt, elles sont terminées avant ; plus
+ * tard, elles restent à venir après.
+ */
+function scheduleDemoLiveKickoffs(payload, now) {
+  if (!payload) return payload;
+  const kick = demoLiveKickoff(now);
+  const place = (game) => {
+    if (!game || typeof game !== 'object') return { role: 'keep', game };
+    if (game.live === true) {
+      return { role: 'live', game: { ...game, date: kick.date, time: kick.time } };
+    }
+    const day = String(game.date || '').slice(0, 10);
+    if (day !== kick.date && day !== dayKey(now)) return { role: 'keep', game };
+    const mins = parseSportsTimeMinutes(game.time);
+    const earlier = !Number.isFinite(mins)
+      || (day === kick.date && mins <= kick.minutes)
+      || day < kick.date;
+    return earlier
+      ? { role: 'finished', game: asFinishedBefore(game, kick) }
+      : { role: 'upcoming', game: asUpcomingAfter(game, kick, now) };
+  };
+  const out = { ...payload };
+  if (Array.isArray(payload.teams)) {
+    out.teams = payload.teams.map((team) => {
+      if (!team || typeof team !== 'object') return team;
+      const t = { ...team };
+      const results = Array.isArray(t.results) ? t.results.slice() : [];
+      if (t.nextGame) {
+        const placed = place(t.nextGame);
+        if (placed.role === 'finished') {
+          results.unshift(placed.game);
+          t.nextGame = null;
+        } else t.nextGame = placed.game;
+      }
+      if (Array.isArray(t.nextGames)) {
+        const upcoming = [];
+        for (const game of t.nextGames) {
+          const placed = place(game);
+          if (placed.role === 'finished') results.unshift(placed.game);
+          else upcoming.push(placed.game);
+        }
+        t.nextGames = upcoming;
+      }
+      t.results = results;
+      return t;
+    });
+  }
+  if (out.nextGame) {
+    const placed = place(out.nextGame);
+    out.nextGame = placed.role === 'finished' ? null : placed.game;
+  }
+  if (Array.isArray(out.nextGames)) {
+    out.nextGames = out.nextGames.flatMap((game) => {
+      const placed = place(game);
+      return placed.role === 'finished' ? [] : [placed.game];
+    });
+  }
+  return out;
+}
+
 /**
  * Démo « live » : ancre `demoAsOf` (fixtures inventées) → jour courant.
  * Ex. fixtures rédigées autour du 2026-09-20 restent « aujourd’hui / hier /
- * demain » quel que soit le jour de consultation.
+ * demain » quel que soit le jour de consultation. L’heure d’un match en
+ * cours est recalculée à ce moment-là, pas figée dans le YAML.
  */
 export function alignDemoSportsToToday(payload, now = new Date()) {
   if (!payload || payload.demoLive !== true) return payload;
+  const instant = now instanceof Date && Number.isFinite(now.getTime()) ? now : new Date();
   const anchor = parseGameDay(payload.demoAsOf);
   if (!anchor) return payload;
-  const todayKey = dayKey(now instanceof Date && Number.isFinite(now.getTime()) ? now : new Date());
+  const todayKey = dayKey(instant);
   const anchorKey = dayKey(anchor);
+  let aligned;
   if (anchorKey === todayKey) {
-    return { ...payload, demoAsOf: todayKey };
+    aligned = { ...payload, demoAsOf: todayKey };
+  } else {
+    const anchorNoon = parseGameDay(anchorKey);
+    const todayNoon = parseGameDay(todayKey);
+    if (!anchorNoon || !todayNoon) return payload;
+    const deltaDays = Math.round((todayNoon.getTime() - anchorNoon.getTime()) / 86_400_000);
+    aligned = { ...shiftSportsPayloadDates(payload, deltaDays), demoAsOf: todayKey, demoLive: true };
   }
-  const anchorNoon = parseGameDay(anchorKey);
-  const todayNoon = parseGameDay(todayKey);
-  if (!anchorNoon || !todayNoon) return payload;
-  const deltaDays = Math.round((todayNoon.getTime() - anchorNoon.getTime()) / 86_400_000);
-  const shifted = shiftSportsPayloadDates(payload, deltaDays);
-  return { ...shifted, demoAsOf: todayKey, demoLive: true };
+  return scheduleDemoLiveKickoffs(aligned, instant);
 }
 
 export function pruneSportsPayload(payload, opts = {}) {

@@ -998,7 +998,7 @@
     }
   }
 
-  /** « Les Élans » → « Élans » pour la puce (place limitée). */
+  /** « Les Touladis » → « Touladis » pour la puce (place limitée). */
   function sportsShortTeamName(name) {
     var n = String(name || '').trim();
     return n.replace(/^(Les|Le|La|L’|L')\s+/i, '') || n;
@@ -1286,7 +1286,7 @@
   /**
    * Format scoreboard (parité LE-RADAR / RDS) :
    *   mobile  — codes institution :  🏐 V  SLHH  3–1  GAR
-   *   bureau  —  🏐 V  Élans  3–1  Boomerang (Garneau)
+   *   bureau  —  🏐 V  Touladis  3–1  Boomerang (Garneau)
    *             (maison = surnom seul ; adversaire = surnom + institution)
    * Détail long toujours dans title/aria.
    */
@@ -1752,6 +1752,34 @@
     syncMastheadWeatherDock();
   }
 
+  /**
+   * Le HTML fige le direct à l’heure du build. On repart de `demoSource`
+   * (ancre et heures d’origine) et on refait en cours / terminé / à venir
+   * avec l’horloge du visiteur. Sans le module, le HTML bâti reste affiché.
+   */
+  function alignVisitorDemoSports(payload) {
+    if (!payload || payload.demoLive !== true) return payload;
+    var align = window.KiosqueAlignDemoSports;
+    if (typeof align !== 'function') return payload;
+    var source = payload.demoSource && payload.demoSource.demoLive === true
+      ? payload.demoSource
+      : payload;
+    var next;
+    try { next = align(source, new Date()); } catch (_) { return payload; }
+    if (!next || typeof next !== 'object') return payload;
+    var merged = {};
+    var key;
+    for (key in payload) {
+      if (Object.prototype.hasOwnProperty.call(payload, key)) merged[key] = payload[key];
+    }
+    for (key in next) {
+      if (Object.prototype.hasOwnProperty.call(next, key)) merged[key] = next[key];
+    }
+    if (payload.demoSource) merged.demoSource = payload.demoSource;
+    if (merged.teams && merged.teams.length) merged.team = merged.teams[0];
+    return merged;
+  }
+
   function initMastheadSports() {
     clearSportsRotateTimer();
     var host = document.querySelector('.masthead-sports[data-sports-payload]');
@@ -1761,6 +1789,10 @@
       payload = JSON.parse(host.getAttribute('data-sports-payload') || host.dataset.sportsPayload || 'null');
     } catch (_) {
       payload = null;
+    }
+    payload = alignVisitorDemoSports(payload);
+    if (payload && payload.demoLive === true) {
+      try { host.setAttribute('data-sports-payload', JSON.stringify(payload)); } catch (_) {}
     }
     if (!payload) {
       syncSportsStripVisibility(host, false);

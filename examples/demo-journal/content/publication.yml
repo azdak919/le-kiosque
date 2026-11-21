@@ -29,119 +29,107 @@ masthead:
   backgrounds:
     enabled: true
     randomOrder: true
-    # Pool mât : extérieurs campus lisibles (pas d’intérieurs / toits plats /
-    # terrains vides). Ordre = priorité d’affichage ; aléatoire à chaque visite.
+    # Pool mât : Saint-Louis-du-Ha! Ha! et le Témiscouata, lieux réels.
+    # La légende nomme le lieu. Jamais un campus, jamais un autre établissement.
+    # Ordre = priorité avant le tirage aléatoire. Le ciel clair reste lisible
+    # pour le titre blanc ; les y hors 42–58 sont respectés tels quels.
     images:
-      - id: 1c05402e-3d91-54df-8638-1105d7dbcdd8
-        src: /media/demo-library/mcgill-roddick.jpg
-        alt: "Portails Roddick de l’Université McGill à Montréal"
-        caption: "Campus McGill (Montréal)."
-        credit: "Gene.arboit"
-        creditUrl: https://commons.wikimedia.org/wiki/User:Gene.arboit
-        license: CC BY-SA 3.0
-        licenseUrl: https://creativecommons.org/licenses/by-sa/3.0/
-        sourceUrl: https://commons.wikimedia.org/wiki/File:Roddick_Gates_(McGill_University)_2005-09-02.jpg
-        width: 2400
-        height: 1800
-        focalPoint: { x: 50, y: 42 }
-      - id: 556552aa-0082-5038-a067-57c87da0996c
-        src: /media/demo-library/mcgill-campus.jpg
-        alt: "Campus centre-ville de l’Université McGill"
-        caption: "McGill (Montréal)."
-        credit: "Jeangagnon"
-        creditUrl: https://commons.wikimedia.org/wiki/File:McGill_University_downtown_campus_31.JPG
-        license: CC BY-SA 3.0
-        licenseUrl: https://creativecommons.org/licenses/by-sa/3.0/
-        sourceUrl: https://commons.wikimedia.org/wiki/File:McGill_University_downtown_campus_31.JPG
-        width: 2400
-        height: 1800
-        focalPoint: { x: 50, y: 42 }
-      - id: 90e7c65a-3dc6-5b98-8694-19c7a320701c
-        src: /media/demo-library/ulaval-parc.jpg
-        alt: "Parc sur le campus de l’Université Laval"
-        caption: "Université Laval (Québec)."
-        credit: "Wilfredor"
-        creditUrl: https://commons.wikimedia.org/wiki/File:Park_in_Universit%C3%A9_Laval.jpg
+      - id: 13cc6735-b623-5a85-a5ec-5b3bc3d9f706
+        src: /media/demo-library/lac-temiscouata.jpg
+        alt: "Le lac Témiscouata sous un ciel chargé"
+        caption: "Le lac Témiscouata."
+        credit: "Amqui"
+        creditUrl: https://commons.wikimedia.org/wiki/User:Amqui
         license: CC BY-SA 4.0
         licenseUrl: https://creativecommons.org/licenses/by-sa/4.0/
-        sourceUrl: https://commons.wikimedia.org/wiki/File:Park_in_Universit%C3%A9_Laval.jpg
-        width: 2400
-        height: 1600
-        focalPoint: { x: 50, y: 46 }
-      - id: d46be5d9-6524-5846-8576-68d9680fd191
-        src: /media/demo-library/ulaval-campus.jpg
-        alt: "Campus de l’Université Laval à Québec"
-        caption: "Université Laval (Québec)."
-        credit: "Wilfredor"
-        creditUrl: https://commons.wikimedia.org/wiki/File:Universit%C3%A9_Laval%2C_Quebec%2C_Canada_02.jpg
-        license: CC0
-        licenseUrl: https://creativecommons.org/publicdomain/zero/1.0/
-        sourceUrl: https://commons.wikimedia.org/wiki/File:Universit%C3%A9_Laval%2C_Quebec%2C_Canada_02.jpg
-        width: 2400
-        height: 1630
-        focalPoint: { x: 50, y: 48 }
-      - id: 00117e7b-3263-55db-99dd-b89436785bb5
-        src: /media/demo-library/bishops-campus.jpg
-        alt: "Campus de Bishop’s University"
-        caption: "Bishop’s University."
-        credit: "Balcer"
-        creditUrl: https://commons.wikimedia.org/wiki/File:Bishop's_University_campus_2011.jpg
-        license: CC BY 3.0
-        licenseUrl: https://creativecommons.org/licenses/by/3.0/
-        sourceUrl: https://commons.wikimedia.org/wiki/File:Bishop's_University_campus_2011.jpg
+        sourceUrl: https://commons.wikimedia.org/wiki/File:Lac_T%C3%A9miscouata.jpg
         width: 2400
         height: 1800
-        focalPoint: { x: 50, y: 46 }
-      # Pavillon Judith-Jasmin (rosace, Great11) reste dans la banque, pas dans
-      # la rotation : les trous blancs se confondent avec le titre blanc du mât.
-      - id: e1345729-c51f-585e-9c97-105d82bcccff
-        src: /media/demo-library/concordia-hall.jpg
-        alt: "Édifice Henry F. Hall de l’Université Concordia"
-        caption: "Concordia (Montréal)."
-        credit: "Jeangagnon"
-        creditUrl: https://commons.wikimedia.org/wiki/File:Henry_F._Hall_Building_07.JPG
-        license: CC BY-SA 3.0
-        licenseUrl: https://creativecommons.org/licenses/by-sa/3.0/
-        sourceUrl: https://commons.wikimedia.org/wiki/File:Henry_F._Hall_Building_07.JPG
+        focalPoint: { x: 50, y: 38 }
+      - id: 506eab88-88d1-5cfa-ae44-baf4fc0bb5c5
+        src: /media/demo-library/fort-ingall-aerien.jpg
+        alt: "Le fort Ingall et le lac Témiscouata, vus du ciel"
+        caption: "Le fort Ingall et le lac Témiscouata, à Témiscouata-sur-le-Lac."
+        credit: "Gabriel Picard"
+        creditUrl: https://commons.wikimedia.org/wiki/User:Gacard
+        license: CC BY-SA 4.0
+        licenseUrl: https://creativecommons.org/licenses/by-sa/4.0/
+        sourceUrl: https://commons.wikimedia.org/wiki/File:Fort_Ingall_-_Aerial_view_08-2025_(01).jpg
+        width: 2400
+        height: 1598
+        focalPoint: { x: 50, y: 62 }
+      - id: cc4eb4c0-fc98-58b7-a710-f55c9dd0d93b
+        src: /media/demo-library/montagne-fourneau.jpg
+        alt: "La montagne du Fourneau au-dessus du lac Témiscouata"
+        caption: "La montagne du Fourneau, vue du fort Ingall à Cabano."
+        credit: "Fralambert"
+        creditUrl: https://commons.wikimedia.org/wiki/User:Fralambert
+        license: CC BY-SA 4.0
+        licenseUrl: https://creativecommons.org/licenses/by-sa/4.0/
+        sourceUrl: https://commons.wikimedia.org/wiki/File:Montagne_du_Fourneau.JPG
         width: 2400
         height: 1800
         focalPoint: { x: 50, y: 40 }
-      - id: 77b1f574-1be1-57af-8413-ca80b7f3bccc
-        src: /media/demo-library/udem-gaudry.jpg
-        alt: "Pavillon Roger-Gaudry de l’Université de Montréal"
-        caption: "Université de Montréal."
-        credit: "Funke"
-        creditUrl: https://commons.wikimedia.org/wiki/File:Pavillon_Roger-Gaudry_II.jpg
+      - id: 44c96f89-a219-5355-a40c-c7f1820fa8a0
+        src: /media/demo-library/cascades-sutherland.jpg
+        alt: "Les cascades Sutherland dans la forêt du parc national du Lac-Témiscouata"
+        caption: "Les cascades Sutherland, dans le parc national du Lac-Témiscouata."
+        credit: "Fralambert"
+        creditUrl: https://commons.wikimedia.org/wiki/User:Fralambert
         license: CC BY-SA 4.0
         licenseUrl: https://creativecommons.org/licenses/by-sa/4.0/
-        sourceUrl: https://commons.wikimedia.org/wiki/File:Pavillon_Roger-Gaudry_II.jpg
-        width: 2400
-        height: 1350
-        focalPoint: { x: 50, y: 38 }
-      - id: abb5f292-a46a-5b09-8fbd-fb13640cd680
-        src: /media/demo-library/batiment-jonquiere.jpg
-        alt: "Bâtiment du Cégep de Jonquière vu de l’extérieur"
-        caption: "Bâtiment du Cégep de Jonquière."
-        credit: "Khayman"
-        creditUrl: https://commons.wikimedia.org/wiki/User:Khayman
-        license: CC BY-SA 3.0
-        licenseUrl: https://creativecommons.org/licenses/by-sa/3.0/
-        sourceUrl: https://commons.wikimedia.org/wiki/File:B%C3%A2timent_du_C%C3%A9gep_de_Jonqui%C3%A8re.JPG
-        width: 2400
-        height: 1606
-        focalPoint: { x: 50, y: 48 }
-      - id: 4ad82ff9-79a6-5a8f-9c40-3e2073a54b9b
-        src: /media/demo-library/sherbrooke-longueuil.jpg
-        alt: "Campus de Longueuil de l’Université de Sherbrooke"
-        caption: "Université de Sherbrooke (Longueuil)."
-        credit: "Jeangagnon"
-        creditUrl: https://commons.wikimedia.org/wiki/File:Campus_de_Longueuil_-_Universite_de_Sherbrooke_09.jpg
-        license: CC BY-SA 3.0
-        licenseUrl: https://creativecommons.org/licenses/by-sa/3.0/
-        sourceUrl: https://commons.wikimedia.org/wiki/File:Campus_de_Longueuil_-_Universite_de_Sherbrooke_09.jpg
+        sourceUrl: https://commons.wikimedia.org/wiki/File:Cascades_Sutherland_01.jpg
         width: 2400
         height: 1800
-        focalPoint: { x: 50, y: 46 }
+        focalPoint: { x: 50, y: 41 }
+      - id: 30328125-10d0-5d07-a87e-713148f962fe
+        src: /media/demo-library/cabano-aerien.jpg
+        alt: "Vue aérienne de Cabano, le long du lac Témiscouata"
+        caption: "Cabano et le lac Témiscouata, à Témiscouata-sur-le-Lac."
+        credit: "Gabriel Picard"
+        creditUrl: https://commons.wikimedia.org/wiki/User:Gacard
+        license: CC BY-SA 4.0
+        licenseUrl: https://creativecommons.org/licenses/by-sa/4.0/
+        sourceUrl: https://commons.wikimedia.org/wiki/File:Cabano_-_Vue_a%C3%A9rienne_08-2025.jpg
+        width: 2400
+        height: 1598
+        focalPoint: { x: 50, y: 64 }
+      - id: c719d84b-477b-5531-aa8a-215d5183085d
+        src: /media/demo-library/st-louis-aerien.jpg
+        alt: "Vue aérienne de Saint-Louis-du-Ha! Ha! en hiver"
+        caption: "Saint-Louis-du-Ha! Ha!."
+        credit: "Quintin Soloviev"
+        creditUrl: https://commons.wikimedia.org/wiki/User:Quintin_Soloviev
+        license: CC BY 4.0
+        licenseUrl: https://creativecommons.org/licenses/by/4.0/
+        sourceUrl: https://commons.wikimedia.org/wiki/File:Aerial_view_of_Saint-Louis-du-Ha!_Ha!,_Qu%C3%A9bec.jpg
+        width: 2400
+        height: 1714
+        focalPoint: { x: 50, y: 28 }
+      - id: 3fad67b4-89a8-5cc0-af67-1308a051ce8f
+        src: /media/demo-library/grand-lac-touladi.jpg
+        alt: "Le Grand lac Touladi vu à travers les arbres"
+        caption: "Le Grand lac Touladi, dans le parc national du Lac-Témiscouata."
+        credit: "Fralambert"
+        creditUrl: https://commons.wikimedia.org/wiki/User:Fralambert
+        license: CC BY-SA 4.0
+        licenseUrl: https://creativecommons.org/licenses/by-sa/4.0/
+        sourceUrl: https://commons.wikimedia.org/wiki/File:Grand_lac_Touladi_01.jpg
+        width: 2400
+        height: 1800
+        focalPoint: { x: 50, y: 60 }
+      - id: fe7dd44e-ee4f-53bb-abc1-ee1e5adae82e
+        src: /media/demo-library/st-louis-monument.jpg
+        alt: "Monument de pierre surmonté d’une statue, à Saint-Louis-du-Ha! Ha!"
+        caption: "Saint-Louis-du-Ha! Ha!, devant l’église."
+        credit: "Judith Bourque"
+        creditUrl: https://commons.wikimedia.org/wiki/File:Church_of_Saint-Louis-du-Ha!-Ha!_-_52048153321.jpg
+        license: CC BY-SA 2.0
+        licenseUrl: https://creativecommons.org/licenses/by-sa/2.0/
+        sourceUrl: https://commons.wikimedia.org/wiki/File:Church_of_Saint-Louis-du-Ha!-Ha!_-_52048153321.jpg
+        width: 2048
+        height: 1365
+        focalPoint: { x: 50, y: 22 }
   weather:
     enabled: true
     # Localité du cégep fictif (Bas-Saint-Laurent). Coords OSM (WGS84) + slug
@@ -153,9 +141,12 @@ masthead:
         meteomediaSlug: saint-louis-du-ha-ha
   # Scoreboard mât — un seul surnom maison pour tous les sports (comme le RSEQ :
   # une institution = un club, plusieurs formations). Code institution = SLHH.
-  # Surnom : « Les Élans » (focus-group le-kiosque-team-nickname) — pas « Quorums ».
+  # Surnom : « Les Touladis ». Le touladi est le poisson du lac Témiscouata
+  # et du Grand lac Touladi. « Les Élans » est le surnom réel du Cégep Garneau :
+  # il n’est pas repris. Aucun club collégial du RSEQ ne s’appelle Touladis
+  # (revue de rseq.ca, novembre 2026). Pas « Quorums ».
   # Adversaires = clubs RSEQ collégial ; scores/dates de calendrier.
-  # Mobile : codes (SLHH vs SLA). Bureau : Élans vs Barons (Champlain Saint-Lambert)
+  # Mobile : codes (SLHH vs SLA). Bureau : Touladis vs Barons (Champlain Saint-Lambert)
   # (maison sans parenthèse institution — évidente dans le journal du campus).
   # Rotation type gare LE-RADAR (deck brassé, ~5,2 s, animation is-arriving).
   sports:
@@ -166,10 +157,10 @@ masthead:
     # (scores récents, matchs du jour, prochains) — la démo ne vieillit pas.
     demoAsOf: '2026-09-20'
     demoLive: true
-    # Formations Élans : H / F / mixte + plusieurs sports (parité RSEQ multi-cartes).
+    # Formations Touladis : H / F / mixte + plusieurs sports (parité RSEQ multi-cartes).
     teams:
-      - id: demo-elans-volley-f
-        name: Les Élans
+      - id: demo-touladis-volley-f
+        name: Les Touladis
         code: SLHH
         institution: Cégep de Saint-Louis-du-Ha! Ha!
         sport: volleyball
@@ -208,8 +199,8 @@ masthead:
           opponentInstitution: Cégep de Sainte-Foy
           home: true
           competition: RSEQ collégial
-      - id: demo-elans-volley-m
-        name: Les Élans
+      - id: demo-touladis-volley-m
+        name: Les Touladis
         code: SLHH
         institution: Cégep de Saint-Louis-du-Ha! Ha!
         sport: volleyball
@@ -246,8 +237,8 @@ masthead:
           opponentInstitution: Champlain College Saint-Lambert
           home: false
           competition: RSEQ collégial
-      - id: demo-elans-basket-m
-        name: Les Élans
+      - id: demo-touladis-basket-m
+        name: Les Touladis
         code: SLHH
         institution: Cégep de Saint-Louis-du-Ha! Ha!
         sport: basketball
@@ -284,8 +275,8 @@ masthead:
           opponentInstitution: Cégep de Valleyfield
           home: true
           competition: RSEQ collégial
-      - id: demo-elans-basket-f
-        name: Les Élans
+      - id: demo-touladis-basket-f
+        name: Les Touladis
         code: SLHH
         institution: Cégep de Saint-Louis-du-Ha! Ha!
         sport: basketball
@@ -322,8 +313,8 @@ masthead:
           opponentInstitution: Cégep de Sainte-Foy
           home: true
           competition: RSEQ collégial
-      - id: demo-elans-soccer-x
-        name: Les Élans
+      - id: demo-touladis-soccer-x
+        name: Les Touladis
         code: SLHH
         institution: Cégep de Saint-Louis-du-Ha! Ha!
         sport: soccer
@@ -361,8 +352,8 @@ masthead:
           opponentInstitution: Champlain College Saint-Lambert
           home: false
           competition: RSEQ collégial
-      - id: demo-elans-soccer-f
-        name: Les Élans
+      - id: demo-touladis-soccer-f
+        name: Les Touladis
         code: SLHH
         institution: Cégep de Saint-Louis-du-Ha! Ha!
         sport: soccer
@@ -399,8 +390,8 @@ masthead:
           opponentInstitution: Cégep Limoilou
           home: true
           competition: RSEQ collégial
-      - id: demo-elans-hockey-m
-        name: Les Élans
+      - id: demo-touladis-hockey-m
+        name: Les Touladis
         code: SLHH
         institution: Cégep de Saint-Louis-du-Ha! Ha!
         sport: hockey
@@ -438,8 +429,8 @@ masthead:
           opponentInstitution: Cégep de Sainte-Foy
           home: true
           competition: RSEQ collégial
-      - id: demo-elans-hockey-f
-        name: Les Élans
+      - id: demo-touladis-hockey-f
+        name: Les Touladis
         code: SLHH
         institution: Cégep de Saint-Louis-du-Ha! Ha!
         sport: hockey
@@ -476,8 +467,8 @@ masthead:
           opponentInstitution: Cégep Édouard-Montpetit
           home: true
           competition: RSEQ collégial
-      - id: demo-elans-flag-x
-        name: Les Élans
+      - id: demo-touladis-flag-x
+        name: Les Touladis
         code: SLHH
         institution: Cégep de Saint-Louis-du-Ha! Ha!
         sport: flag-football
@@ -514,8 +505,8 @@ masthead:
           opponentInstitution: Cégep de Valleyfield
           home: false
           competition: RSEQ collégial
-      - id: demo-elans-flag-f
-        name: Les Élans
+      - id: demo-touladis-flag-f
+        name: Les Touladis
         code: SLHH
         institution: Cégep de Saint-Louis-du-Ha! Ha!
         sport: flag-football
@@ -559,6 +550,7 @@ masthead:
   textAlignment: left
 
 # Barre radio de LE-RADAR (module radio-barre.js), station chyz.
+# Les vraies radios du Radar, pas une radio du cégep fictif.
 radio:
   enabled: true
   station: chyz

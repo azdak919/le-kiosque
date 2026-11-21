@@ -11,8 +11,11 @@ test('réglage ordre aléatoire, manifeste enrichi, lib de rotation LE-RADAR', (
   assert.match(cms, /name: 'randomOrder', label: 'Ordre aléatoire'/);
   const yml = read('examples/demo-journal/content/publication.yml');
   assert.match(yml, /randomOrder: true/);
-  assert.match(yml, /- id: 1c05402e-3d91-54df-8638-1105d7dbcdd8/);
-  assert.match(yml, /- id: 556552aa-0082-5038-a067-57c87da0996c/);
+  assert.match(yml, /- id: 13cc6735-b623-5a85-a5ec-5b3bc3d9f706/);
+  assert.match(yml, /- id: 506eab88-88d1-5cfa-ae44-baf4fc0bb5c5/);
+  assert.match(yml, /caption: "Le lac Témiscouata\."/);
+  assert.match(yml, /credit: "Gabriel Picard"/);
+  assert.doesNotMatch(yml, /caption: ".*[Cc]ampus/);
   const tpl = read('packages/theme-radar/src/templates.ts');
   assert.match(tpl, /randomOrder: settings.randomOrder !== false/);
   assert.match(tpl, /bg-rotation-lib\.js/);
