@@ -1,6 +1,7 @@
 # Journal
 
 ## Non publié
+- La vitrine est servie à la racine de <https://kiosque.le-radar.ca/> (`basePath` vide, fichier `CNAME` dans l’artefact Pages). Les adresses canoniques, Open Graph, le sitemap et le manifeste suivent ce domaine. La page du Socle est <https://socle.le-radar.ca/>.
 - Météo du mât : à partir de 1100 px (la colonne passe alors à 1180 px), la puce revient à côté de la date, comme sur LE-RADAR, et garde le maximum, le minimum et « Demain ». Sous 1100 px, au téléphone et à la tablette, elle reste entre la barre radio et les cartes sports. Une seule puce est visible. Si elle empiétait sur les boutons, elle redescend sous la radio au lieu de les serrer. La barre radio collante et le petit espace sous le mât ne changent pas.
 - Version 0.4.2. Socle épinglé à 1.4.2 (8a623c9).
 - Photos du mât : le journal peut en retenir plusieurs, choisies dans la médiathèque. Le bouton de rotation (↻) apparaît dès qu’il y a au moins deux photos, et se cache s’il n’y en a qu’une. Réglage « Ordre aléatoire » (activé par défaut) : une photo au hasard à chaque visite ; désactivé, le mât commence toujours par la première de la liste. La rotation reprend le comportement de LE-RADAR (même transition, crédit qui suit la photo, préchargement, mouvement réduit). La démonstration Le Quorum en montre plusieurs. Le tirage au sort du premier écran ne casse plus le chargement de la page.
