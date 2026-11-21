@@ -21,7 +21,9 @@ test('pied de page : « Tous droits réservés » par défaut, CC BY-NC-ND 4.0 a
   for (const f of [footRights]) {
     assert.equal(f(undefined), 'Tous droits réservés.');
     assert.equal(f('Tous droits réservés'), 'Tous droits réservés.');
-    assert.match(f('CC BY-NC-ND 4.0'), /<a href="https:\/\/creativecommons\.org\/licenses\/by-nc-nd\/4\.0\/deed\.fr" rel="license noopener">CC BY-NC-ND 4\.0<\/a>/);
+    assert.match(f('CC BY-NC-ND 4.0'), /<a href="https:\/\/creativecommons\.org\/licenses\/by-nc-nd\/4\.0\/deed\.fr" rel="license noopener" class="site-foot__license">CC BY-NC-ND 4\.0<\/a>/);
+    assert.match(f('CC-BY-SA-4.0'), /<span class="site-foot__license">CC-BY-SA-4\.0<\/span>/);
+    assert.match(f('CC BY-SA 4.0'), /<span class="site-foot__license">CC BY-SA 4\.0<\/span>/);
   }
   const pub = { name: 'La Vigie', founded: '1998' };
   assert.equal(footCopyright(pub, 2026), '© 1998–2026 La Vigie. Tous droits réservés.');
@@ -75,4 +77,5 @@ test('démo de la vitrine : le pied pointe vers /admin/, les journaux gardent /r
 test('pied mobile : le « · » de « Espace de rédaction » est masqué comme les autres', () => {
   const css = readFileSync(new URL('../packages/theme-radar/assets/theme.css', import.meta.url), 'utf8');
   assert.match(css, /\.site-foot__built \.site-foot__sep \{ display: none; \}/);
+  assert.match(css, /\.site-foot__license \{ white-space: nowrap; \}/);
 });

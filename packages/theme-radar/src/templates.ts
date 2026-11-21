@@ -93,8 +93,8 @@ export function footYears(founded: string | undefined, year: number): string {
 export function footRights(license: string | undefined): string {
   const value = String(license ?? '').trim();
   if (!value || /^tous droits réservés\.?$/i.test(value)) return 'Tous droits réservés.';
-  if (/by-nc-nd/i.test(value)) return `Contenus sous licence <a href="${CC_BY_NC_ND_URL}" rel="license noopener">CC BY-NC-ND 4.0</a>.`;
-  return `Contenus sous licence ${esc(value)}.`;
+  if (/by-nc-nd/i.test(value)) return `Contenus sous licence <a href="${CC_BY_NC_ND_URL}" rel="license noopener" class="site-foot__license">CC BY-NC-ND 4.0</a>.`;
+  return `Contenus sous licence <span class="site-foot__license">${esc(value)}</span>.`;
 }
 
 /** Première ligne du bas de page : « © 2026 La Vigie. Tous droits réservés. » */

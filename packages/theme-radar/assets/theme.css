@@ -1222,6 +1222,8 @@ body.with-radio .nav {
   line-height: 1.5;
   color: var(--muted);
 }
+/* Nom de licence d’un seul tenant, même à 360 px (pas de coupe sur les tirets). */
+.site-foot__license { white-space: nowrap; }
 .site-foot__built,
 .footer-built {
   margin: 10px 0 0;

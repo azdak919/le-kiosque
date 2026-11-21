@@ -559,8 +559,8 @@ export function footYears(founded, year) {
 export function footRights(license) {
   const value = String(license ?? '').trim();
   if (!value || /^tous droits réservés\.?$/i.test(value)) return 'Tous droits réservés.';
-  if (/by-nc-nd/i.test(value)) return 'Contenus sous licence <a href="https://creativecommons.org/licenses/by-nc-nd/4.0/deed.fr" rel="license noopener">CC BY-NC-ND 4.0</a>.';
-  return `Contenus sous licence ${esc(value)}.`;
+  if (/by-nc-nd/i.test(value)) return 'Contenus sous licence <a href="https://creativecommons.org/licenses/by-nc-nd/4.0/deed.fr" rel="license noopener" class="site-foot__license">CC BY-NC-ND 4.0</a>.';
+  return `Contenus sous licence <span class="site-foot__license">${esc(value)}</span>.`;
 }
 
 export function footCopyright(publication, year) {
