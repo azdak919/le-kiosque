@@ -30,7 +30,8 @@ masthead:
     enabled: true
     randomOrder: true
     # Pool mât : extérieurs campus lisibles (pas d’intérieurs / toits plats /
-    # terrains vides). Ordre = priorité d’affichage ; aléatoire à chaque visite.
+    # terrains vides). Le chalet du Cégep de Jonquière sort : en bandeau
+    # on ne voit que le toit bleu. Ordre = priorité d’affichage ; aléatoire à chaque visite.
     images:
       - id: 1c05402e-3d91-54df-8638-1105d7dbcdd8
         src: /media/demo-library/mcgill-roddick.jpg
@@ -118,18 +119,6 @@ masthead:
         width: 2400
         height: 1350
         focalPoint: { x: 50, y: 38 }
-      - id: abb5f292-a46a-5b09-8fbd-fb13640cd680
-        src: /media/demo-library/batiment-jonquiere.jpg
-        alt: "Bâtiment du Cégep de Jonquière vu de l’extérieur"
-        caption: "Bâtiment du Cégep de Jonquière."
-        credit: "Khayman"
-        creditUrl: https://commons.wikimedia.org/wiki/User:Khayman
-        license: CC BY-SA 3.0
-        licenseUrl: https://creativecommons.org/licenses/by-sa/3.0/
-        sourceUrl: https://commons.wikimedia.org/wiki/File:B%C3%A2timent_du_C%C3%A9gep_de_Jonqui%C3%A8re.JPG
-        width: 2400
-        height: 1606
-        focalPoint: { x: 50, y: 48 }
       - id: 4ad82ff9-79a6-5a8f-9c40-3e2073a54b9b
         src: /media/demo-library/sherbrooke-longueuil.jpg
         alt: "Campus de Longueuil de l’Université de Sherbrooke"
