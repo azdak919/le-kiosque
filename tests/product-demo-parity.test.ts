@@ -119,7 +119,14 @@ test('demo et template reçoivent le même theme.css / kiosque.js (packages/them
   assert.match(tplHome, /id="masthead-weather-dock"/);
   assert.match(demoHome, /data-sports-payload/, 'équipe sports démo embarquée');
   assert.match(demoHome, /Les Touladis/, 'surnom maison unique (Touladis)');
-  assert.match(demoHome, /Le module radio du Radar, avec ses vraies radios\./, 'mention : vraies radios du Radar, pas une radio du cégep fictif');
+  assert.doesNotMatch(demoHome, /module radio du Radar|vraies radios/, 'pas de mention méta sous la barre radio');
+  assert.match(demoHome, /class="social-links masthead-social"/, 'icônes sociales au mât');
+  assert.match(demoHome, /class="social-links site-foot__social"/, 'icônes sociales au pied');
+  assert.match(demoHome, /href="https:\/\/www\.instagram\.com\/lequorum\.exemple"/);
+  assert.match(demoHome, /href="https:\/\/www\.facebook\.com\/lequorum\.exemple"/);
+  assert.match(demoHome, /href="https:\/\/x\.com\/lequorum_exemple"/);
+  assert.match(demoHome, /href="mailto:redaction@lequorum\.ca"/);
+  assert.doesNotMatch(tplHome, /class="social-links"/, 'le gabarit vide n’affiche pas d’icônes sociales');
   assert.match(demoHome, /code&quot;:&quot;SLHH&quot;|"code":"SLHH"/, 'code équipe SLHH (override mainteneur)');
   assert.match(demoHome, /data-nav-shell/, 'shell nav mobile');
   assert.match(tplHome, /data-nav-shell/);

@@ -66,7 +66,7 @@ test('la barre radio est le module de LE-RADAR, appelé en une ligne', async (t)
   const home = await readFile(path.join(out, 'index.html'), 'utf8');
   const client = await readFile(path.join(out, 'assets/kiosque.js'), 'utf8');
   const theme = await readFile(path.join(out, 'assets/theme.css'), 'utf8');
-  assert.match(home, /<div class="radar-radio-slot" data-station="chyz"><script src="https:\/\/le-radar\.ca\/radio-barre\.js" data-station="chyz" async onerror="this\.parentNode\.dataset\.radarRadio='off'"><\/script><p class="radar-radio-note">Le module radio du Radar, avec ses vraies radios\.<\/p><\/div>/);
+  assert.match(home, /<div class="radar-radio-slot" data-station="chyz"><script src="https:\/\/le-radar\.ca\/radio-barre\.js" data-station="chyz" async onerror="this\.parentNode\.dataset\.radarRadio='off'"><\/script><\/div>/);
   assert.match(home, /<body class="[^"]*with-radio/);
   assert.ok(!home.includes('<iframe'), 'aucune iframe radio');
   assert.ok(!home.includes('tuner-embed'));
@@ -153,7 +153,13 @@ test('la vitrine expose le bandeau illustré, les outils et la composition magaz
   assert.match(home, /Les Touladis/);
   assert.match(home, /lac-temiscouata\.jpg/, 'le mât part du lac Témiscouata');
   assert.match(home, /Photo : Amqui \(CC BY-SA 4\.0\)/, 'crédit exact de la première photo du mât');
-  assert.match(home, /Le module radio du Radar, avec ses vraies radios\./);
+  assert.doesNotMatch(home, /module radio du Radar|vraies radios/, 'pas de mention méta sous la barre radio');
+  assert.match(home, /class="social-links masthead-social"/, 'icônes sociales au mât');
+  assert.match(home, /class="social-links site-foot__social"/, 'icônes sociales au pied');
+  assert.match(home, /href="https:\/\/www\.instagram\.com\/lequorum\.exemple"/);
+  assert.match(home, /href="https:\/\/www\.facebook\.com\/lequorum\.exemple"/);
+  assert.match(home, /href="https:\/\/x\.com\/lequorum_exemple"/);
+  assert.match(home, /href="mailto:redaction@lequorum\.ca"/);
   assert.doesNotMatch(home, /mcgill-|ulaval-|bishops-|concordia-hall|udem-gaudry|sherbrooke-longueuil|batiment-jonquiere/, 'plus de campus réels dans la rotation du mât');
   assert.match(home, /\/sports\//, 'puce sports pointe vers la page résultats');
   const sportsPage = await readFile(path.join(out, 'sports/index.html'), 'utf8');

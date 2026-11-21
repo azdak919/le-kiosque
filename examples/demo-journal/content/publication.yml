@@ -557,6 +557,14 @@ radio:
   theme: dark
   position: top
 
+# Comptes fictifs du journal de démonstration, distincts de tout compte réel.
+# Affichés en icônes au mât et au pied de page. Un réseau laissé vide n’apparaît pas.
+social:
+  facebook: https://www.facebook.com/lequorum.exemple
+  instagram: https://www.instagram.com/lequorum.exemple
+  x: https://x.com/lequorum_exemple
+  email: redaction@lequorum.ca
+
 founded: '2026'
 license: CC-BY-SA-4.0
 

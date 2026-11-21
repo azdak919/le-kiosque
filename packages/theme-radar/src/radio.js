@@ -33,7 +33,7 @@ export function radioBarHtml(radio) {
   if (!station) return '';
   // La place de la barre est réservée dès le départ (theme.css) ; si le module
   // ne se charge pas, l'emplacement se replie aussitôt (« off »).
-  return `<div class="radar-radio-slot" data-station="${station}"><script src="${RADAR_MODULE}" data-station="${station}" async onerror="this.parentNode.dataset.radarRadio='off'"></script><p class="radar-radio-note">Le module radio du Radar, avec ses vraies radios.</p></div>`;
+  return `<div class="radar-radio-slot" data-station="${station}"><script src="${RADAR_MODULE}" data-station="${station}" async onerror="this.parentNode.dataset.radarRadio='off'"></script></div>`;
 }
 
 /**
@@ -51,9 +51,6 @@ export function radioSlotElement(radio, doc = document) {
   script.async = true;
   script.dataset.station = station;
   script.addEventListener('error', () => { slot.dataset.radarRadio = 'off'; });
-  const note = doc.createElement('p');
-  note.className = 'radar-radio-note';
-  note.textContent = 'Le module radio du Radar, avec ses vraies radios.';
-  slot.append(script, note);
+  slot.append(script);
   return slot;
 }
