@@ -24,7 +24,7 @@ lead:
   licenseUrl: "https://creativecommons.org/licenses/by-sa/2.5"
   sourceUrl: "https://commons.wikimedia.org/wiki/File:Bicycle_parking.jpg"
   width: 1120
-  height: 845
+  height: 846
   focalPoint: { x: 50, y: 48 }
 ---
 

@@ -23,8 +23,8 @@ lead:
   license: "CC BY-SA 4.0"
   licenseUrl: "https://creativecommons.org/licenses/by-sa/4.0"
   sourceUrl: "https://commons.wikimedia.org/wiki/File:What_to_Expect_at_a_Job_Interview_at_a_Teaching_School.jpg"
-  width: 1920
-  height: 1484
+  width: 2400
+  height: 1854
   focalPoint: { x: 50, y: 48 }
 ---
 

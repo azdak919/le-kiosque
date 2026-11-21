@@ -20,8 +20,8 @@ lead:
   license: "CC BY-SA 4.0"
   licenseUrl: "https://creativecommons.org/licenses/by-sa/4.0/"
   sourceUrl: "https://commons.wikimedia.org/wiki/File:Kinolino-Kellerkino_02.jpg"
-  width: 1920
-  height: 1443
+  width: 2400
+  height: 1804
   focalPoint: { x: 50, y: 48 }
 ---
 
@@ -34,7 +34,7 @@ La discussion qui suit la projection se révèle souvent aussi intéressante que
 Les projections ont lieu le mercredi de 12 h 15 à 13 h 10 dans la petite salle du pavillon des arts. L'entrée est libre pour la communauté collégiale; une contribution volontaire finance les sous-titres et la location occasionnelle de copies. Les prochaines séances annonceront leurs titres une semaine à l'avance sur le site du journal.
 
 <figure class="post-figure post-figure--right">
-<img src="/media/demo-library/articles/stage.jpg" alt="Public lors d’un spectacle étudiant au cégep" width="800" height="600" loading="lazy" decoding="async">
+<img src="/media/demo-library/articles/stage.jpg" alt="Scène et public lors d’un spectacle étudiant au cégep" width="2400" height="1800" loading="lazy" decoding="async">
 <figcaption>Photo : art_inthecity (Montréal) — après le générique, la discussion (démo).</figcaption>
 </figure>
 

@@ -24,8 +24,8 @@ lead:
   license: "CC BY-SA 3.0"
   licenseUrl: "https://creativecommons.org/licenses/by-sa/3.0"
   sourceUrl: "https://commons.wikimedia.org/wiki/File:Shot_on_goal_during_youth_hockey_tournament_at_West_Edmonton_Mall_Ice_Palace.jpg"
-  width: 1920
-  height: 1360
+  width: 2400
+  height: 1700
   focalPoint: { x: 50, y: 48 }
 ---
 
@@ -40,7 +40,7 @@ Les créneaux de 21 h collent au rythme collégial : après les labs, avant le d
 Passez au local des sports avant vendredi pour confirmer votre présence. Les absences répétées sans avis libèrent la place au profit de la liste d’attente — une liste qui, cette année, ressemble déjà à une file de billetterie.
 
 <figure class="post-figure post-figure--right">
-<img src="/media/demo-library/articles/hockey-interieur.jpg" alt="Match de hockey intérieur (floor hockey) en gymnase" width="960" height="638" loading="lazy" decoding="async">
+<img src="/media/demo-library/articles/hockey-interieur.jpg" alt="Match de hockey intérieur (floor hockey) en gymnase" width="2400" height="1594" loading="lazy" decoding="async">
 <figcaption>Photo : Joshua Scott (U.S. Navy) — hockey intérieur en gymnase (démo, domaine public).</figcaption>
 </figure>
 

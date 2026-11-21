@@ -41,8 +41,8 @@ masthead:
         license: CC BY-SA 3.0
         licenseUrl: https://creativecommons.org/licenses/by-sa/3.0/
         sourceUrl: https://commons.wikimedia.org/wiki/File:Roddick_Gates_(McGill_University)_2005-09-02.jpg
-        width: 1920
-        height: 1440
+        width: 2400
+        height: 1800
         focalPoint: { x: 50, y: 42 }
       - id: 556552aa-0082-5038-a067-57c87da0996c
         src: /media/demo-library/mcgill-campus.jpg
@@ -53,8 +53,8 @@ masthead:
         license: CC BY-SA 3.0
         licenseUrl: https://creativecommons.org/licenses/by-sa/3.0/
         sourceUrl: https://commons.wikimedia.org/wiki/File:McGill_University_downtown_campus_31.JPG
-        width: 1920
-        height: 1440
+        width: 2400
+        height: 1800
         focalPoint: { x: 50, y: 42 }
       - id: 90e7c65a-3dc6-5b98-8694-19c7a320701c
         src: /media/demo-library/ulaval-parc.jpg
@@ -65,8 +65,8 @@ masthead:
         license: CC BY-SA 4.0
         licenseUrl: https://creativecommons.org/licenses/by-sa/4.0/
         sourceUrl: https://commons.wikimedia.org/wiki/File:Park_in_Universit%C3%A9_Laval.jpg
-        width: 1920
-        height: 1280
+        width: 2400
+        height: 1600
         focalPoint: { x: 50, y: 46 }
       - id: d46be5d9-6524-5846-8576-68d9680fd191
         src: /media/demo-library/ulaval-campus.jpg
@@ -77,8 +77,8 @@ masthead:
         license: CC0
         licenseUrl: https://creativecommons.org/publicdomain/zero/1.0/
         sourceUrl: https://commons.wikimedia.org/wiki/File:Universit%C3%A9_Laval%2C_Quebec%2C_Canada_02.jpg
-        width: 1920
-        height: 1305
+        width: 2400
+        height: 1630
         focalPoint: { x: 50, y: 48 }
       - id: 00117e7b-3263-55db-99dd-b89436785bb5
         src: /media/demo-library/bishops-campus.jpg
@@ -89,8 +89,8 @@ masthead:
         license: CC BY 3.0
         licenseUrl: https://creativecommons.org/licenses/by/3.0/
         sourceUrl: https://commons.wikimedia.org/wiki/File:Bishop's_University_campus_2011.jpg
-        width: 1920
-        height: 1440
+        width: 2400
+        height: 1800
         focalPoint: { x: 50, y: 46 }
       - id: f45f6860-ba3f-536d-9db0-12ddbf5bc5db
         src: /media/demo-library/uqam-jasmin.jpg
@@ -101,8 +101,8 @@ masthead:
         license: CC BY-SA 4.0
         licenseUrl: https://creativecommons.org/licenses/by-sa/4.0/
         sourceUrl: https://commons.wikimedia.org/wiki/File:Pavillon_Judith-Jasmin_UQAM_1.jpg
-        width: 1920
-        height: 1280
+        width: 2400
+        height: 1600
         focalPoint: { x: 50, y: 38 }
       - id: e1345729-c51f-585e-9c97-105d82bcccff
         src: /media/demo-library/concordia-hall.jpg
@@ -113,8 +113,8 @@ masthead:
         license: CC BY-SA 3.0
         licenseUrl: https://creativecommons.org/licenses/by-sa/3.0/
         sourceUrl: https://commons.wikimedia.org/wiki/File:Henry_F._Hall_Building_07.JPG
-        width: 1920
-        height: 1440
+        width: 2400
+        height: 1800
         focalPoint: { x: 50, y: 40 }
       - id: 77b1f574-1be1-57af-8413-ca80b7f3bccc
         src: /media/demo-library/udem-gaudry.jpg
@@ -125,8 +125,8 @@ masthead:
         license: CC BY-SA 4.0
         licenseUrl: https://creativecommons.org/licenses/by-sa/4.0/
         sourceUrl: https://commons.wikimedia.org/wiki/File:Pavillon_Roger-Gaudry_II.jpg
-        width: 1920
-        height: 1080
+        width: 2400
+        height: 1350
         focalPoint: { x: 50, y: 38 }
       - id: abb5f292-a46a-5b09-8fbd-fb13640cd680
         src: /media/demo-library/batiment-jonquiere.jpg
@@ -137,8 +137,8 @@ masthead:
         license: CC BY-SA 3.0
         licenseUrl: https://creativecommons.org/licenses/by-sa/3.0/
         sourceUrl: https://commons.wikimedia.org/wiki/File:B%C3%A2timent_du_C%C3%A9gep_de_Jonqui%C3%A8re.JPG
-        width: 1920
-        height: 1285
+        width: 2400
+        height: 1606
         focalPoint: { x: 50, y: 48 }
       - id: 4ad82ff9-79a6-5a8f-9c40-3e2073a54b9b
         src: /media/demo-library/sherbrooke-longueuil.jpg
@@ -149,8 +149,8 @@ masthead:
         license: CC BY-SA 3.0
         licenseUrl: https://creativecommons.org/licenses/by-sa/3.0/
         sourceUrl: https://commons.wikimedia.org/wiki/File:Campus_de_Longueuil_-_Universite_de_Sherbrooke_09.jpg
-        width: 1920
-        height: 1440
+        width: 2400
+        height: 1800
         focalPoint: { x: 50, y: 46 }
   weather:
     enabled: true

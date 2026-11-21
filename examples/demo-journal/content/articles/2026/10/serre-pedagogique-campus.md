@@ -25,8 +25,8 @@ lead:
   license: "CC BY-SA 4.0"
   licenseUrl: "https://creativecommons.org/licenses/by-sa/4.0/"
   sourceUrl: "https://commons.wikimedia.org/wiki/File:Estufa_principal_do_Jardim_Bot%C3%A2nico_de_Curitiba_02.jpg"
-  width: 1920
-  height: 1317
+  width: 2400
+  height: 1646
   focalPoint: { x: 50, y: 48 }
 ---
 
@@ -42,7 +42,7 @@ réglables. L’important, disent les porteuses du dossier, est d’avoir un lie
 partagé avant l’hiver.
 
 <figure class="post-figure post-figure--right">
-<img src="/media/demo-library/articles/compost.jpg" alt="Bac de compost et matières organiques sur le campus" width="800" height="567" loading="lazy" decoding="async">
+<img src="/media/demo-library/articles/compost.jpg" alt="Bac de compost et matières organiques" width="1600" height="1136" loading="lazy" decoding="async">
 <figcaption>Photo : fir0002 — compost du comité environnemental (cycle des semis, démo).</figcaption>
 </figure>
 

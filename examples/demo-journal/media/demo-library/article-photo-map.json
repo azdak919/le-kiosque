@@ -1,16 +1,16 @@
 {
   "tournoi-soccer-interprogramme": {
     "src": "/media/demo-library/articles/soccer.jpg",
-    "alt": "Ballon de soccer sur un terrain en herbe",
-    "credit": "Peter Glaser baraida",
+    "alt": "Joueuses de soccer universitaire pendant un match",
+    "credit": "Noah Riffe",
     "license": "CC0",
-    "licenseUrl": "https://creativecommons.org/publicdomain/mark/1.0/",
-    "sourceUrl": "https://commons.wikimedia.org/wiki/File:Adidas_soccer_ball_on_a_grass_pitch_(Unsplash).jpg",
-    "width": 1920,
-    "height": 1280,
+    "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/",
+    "sourceUrl": "https://commons.wikimedia.org/wiki/File:Stoney_Brook_vs._Penn_State_Women's_Soccer.jpg",
+    "width": 2400,
+    "height": 1600,
     "focalPoint": {
-      "x": 50,
-      "y": 48
+      "x": 48,
+      "y": 46
     },
     "theme": "soccer"
   },
@@ -21,8 +21,8 @@
     "license": "CC BY-SA 4.0",
     "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0/",
     "sourceUrl": "https://commons.wikimedia.org/wiki/File:2016_Auburn_at_Alabama_NCAAM_Basketball_Game.jpg",
-    "width": 1920,
-    "height": 1440,
+    "width": 2400,
+    "height": 1800,
     "focalPoint": {
       "x": 50,
       "y": 48
@@ -36,8 +36,8 @@
     "license": "CC BY-SA 4.0",
     "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0/",
     "sourceUrl": "https://commons.wikimedia.org/wiki/File:2018_Orizaba_Running_race_01.jpg",
-    "width": 1920,
-    "height": 1080,
+    "width": 2400,
+    "height": 1350,
     "focalPoint": {
       "x": 50,
       "y": 48
@@ -51,8 +51,8 @@
     "license": "CC BY-SA 4.0",
     "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0/",
     "sourceUrl": "https://commons.wikimedia.org/wiki/File:Estufa_principal_do_Jardim_Bot%C3%A2nico_de_Curitiba_02.jpg",
-    "width": 1920,
-    "height": 1317,
+    "width": 2400,
+    "height": 1646,
     "focalPoint": {
       "x": 50,
       "y": 48
@@ -66,8 +66,8 @@
     "license": "CC BY 2.0",
     "licenseUrl": "https://creativecommons.org/licenses/by/2.0/",
     "sourceUrl": "https://commons.wikimedia.org/wiki/File:Chemistry_laboratory.jpg",
-    "width": 1920,
-    "height": 1325,
+    "width": 2101,
+    "height": 1450,
     "focalPoint": {
       "x": 50,
       "y": 48
@@ -76,30 +76,30 @@
   },
   "radio-campus-cinquante-ans": {
     "src": "/media/demo-library/articles/radio.jpg",
-    "alt": "Studio de radio avec microphones",
-    "credit": "Ethan Long",
-    "license": "CC BY-SA 2.0",
-    "licenseUrl": "https://creativecommons.org/licenses/by-sa/2.0/",
-    "sourceUrl": "https://commons.wikimedia.org/wiki/File:Broadcast_Studio_(53998133689).jpg",
-    "width": 1920,
-    "height": 2880,
+    "alt": "Console et micro d’un studio de radio",
+    "credit": "Arielinson",
+    "license": "CC BY-SA 4.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0/",
+    "sourceUrl": "https://commons.wikimedia.org/wiki/File:Kol_Israel_Heleni_Hamalka_DSC0094.jpg",
+    "width": 2000,
+    "height": 1334,
     "focalPoint": {
-      "x": 50,
+      "x": 62,
       "y": 48
     },
     "theme": "radio"
   },
   "balado-histoire-campus": {
     "src": "/media/demo-library/articles/radio.jpg",
-    "alt": "Studio de radio avec microphones",
-    "credit": "Ethan Long",
-    "license": "CC BY-SA 2.0",
-    "licenseUrl": "https://creativecommons.org/licenses/by-sa/2.0/",
-    "sourceUrl": "https://commons.wikimedia.org/wiki/File:Broadcast_Studio_(53998133689).jpg",
-    "width": 1920,
-    "height": 2880,
+    "alt": "Console et micro d’un studio de radio",
+    "credit": "Arielinson",
+    "license": "CC BY-SA 4.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0/",
+    "sourceUrl": "https://commons.wikimedia.org/wiki/File:Kol_Israel_Heleni_Hamalka_DSC0094.jpg",
+    "width": 2000,
+    "height": 1334,
     "focalPoint": {
-      "x": 50,
+      "x": 62,
       "y": 48
     },
     "theme": "radio"
@@ -111,8 +111,8 @@
     "license": "CC BY 2.0",
     "licenseUrl": "https://creativecommons.org/licenses/by/2.0/",
     "sourceUrl": "https://commons.wikimedia.org/wiki/File:Students_enjoy_springtime_weather._(5554288570).jpg",
-    "width": 1920,
-    "height": 1286,
+    "width": 2400,
+    "height": 1606,
     "focalPoint": {
       "x": 50,
       "y": 48
@@ -126,8 +126,8 @@
     "license": "CC BY-SA 4.0",
     "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
     "sourceUrl": "https://commons.wikimedia.org/wiki/File:Bike_repair_station.jpg",
-    "width": 1920,
-    "height": 2560,
+    "width": 1800,
+    "height": 2400,
     "focalPoint": {
       "x": 50,
       "y": 48
@@ -142,7 +142,7 @@
     "licenseUrl": "https://www.gnu.org/licenses/old-licenses/fdl-1.2.html",
     "sourceUrl": "https://commons.wikimedia.org/wiki/File:Compost_bin.jpg",
     "width": 1600,
-    "height": 1135,
+    "height": 1136,
     "focalPoint": {
       "x": 50,
       "y": 48
@@ -151,16 +151,16 @@
   },
   "pret-ordinateurs-bibliotheque": {
     "src": "/media/demo-library/articles/biblio-pc.jpg",
-    "alt": "Ordinateurs en bibliothèque",
-    "credit": "Mshuang2",
-    "license": "CC0",
-    "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/deed.en",
-    "sourceUrl": "https://commons.wikimedia.org/wiki/File:Library_computers.jpg",
-    "width": 1920,
-    "height": 1440,
+    "alt": "Étudiantes au travail dans une bibliothèque universitaire",
+    "credit": "Tulane Public Relations",
+    "license": "CC BY 2.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by/2.0/",
+    "sourceUrl": "https://commons.wikimedia.org/wiki/File:2012_-_studying_in_Howard-Tilton_Library_New_Orleans.jpg",
+    "width": 2400,
+    "height": 1596,
     "focalPoint": {
-      "x": 50,
-      "y": 48
+      "x": 48,
+      "y": 42
     },
     "theme": "biblio-pc"
   },
@@ -171,8 +171,8 @@
     "license": "Public domain",
     "licenseUrl": "https://commons.wikimedia.org/wiki/File:Bookshelves.jpg",
     "sourceUrl": "https://commons.wikimedia.org/wiki/File:Bookshelves.jpg",
-    "width": 1920,
-    "height": 1318,
+    "width": 2010,
+    "height": 1380,
     "focalPoint": {
       "x": 50,
       "y": 48
@@ -201,8 +201,8 @@
     "license": "CC BY-SA 3.0",
     "licenseUrl": "https://creativecommons.org/licenses/by-sa/3.0/",
     "sourceUrl": "https://commons.wikimedia.org/wiki/File:Cafeteria.jpg",
-    "width": 1920,
-    "height": 1440,
+    "width": 2027,
+    "height": 1520,
     "focalPoint": {
       "x": 50,
       "y": 48
@@ -216,8 +216,8 @@
     "license": "CC BY-SA 4.0",
     "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0/",
     "sourceUrl": "https://commons.wikimedia.org/wiki/File:Kinolino-Kellerkino_02.jpg",
-    "width": 1920,
-    "height": 1443,
+    "width": 2400,
+    "height": 1804,
     "focalPoint": {
       "x": 50,
       "y": 48
@@ -231,8 +231,8 @@
     "license": "Public domain",
     "licenseUrl": "https://commons.wikimedia.org/wiki/File:Bookshelves.jpg",
     "sourceUrl": "https://commons.wikimedia.org/wiki/File:Bookshelves.jpg",
-    "width": 1920,
-    "height": 1318,
+    "width": 2010,
+    "height": 1380,
     "focalPoint": {
       "x": 50,
       "y": 48
@@ -246,8 +246,8 @@
     "license": "CC BY-SA 3.0",
     "licenseUrl": "https://creativecommons.org/licenses/by-sa/3.0",
     "sourceUrl": "https://commons.wikimedia.org/wiki/File:Grande_Bibliotheque_Quebec_Interieur.JPG",
-    "width": 1920,
-    "height": 1440,
+    "width": 2400,
+    "height": 1800,
     "focalPoint": {
       "x": 50,
       "y": 48
@@ -261,8 +261,8 @@
     "license": "CC BY-SA 4.0",
     "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
     "sourceUrl": "https://commons.wikimedia.org/wiki/File:Art_exhibition.jpg",
-    "width": 1920,
-    "height": 1440,
+    "width": 2400,
+    "height": 1800,
     "focalPoint": {
       "x": 50,
       "y": 48
@@ -276,8 +276,8 @@
     "license": "CC BY-SA 3.0",
     "licenseUrl": "https://creativecommons.org/licenses/by-sa/3.0/",
     "sourceUrl": "https://commons.wikimedia.org/wiki/File:Qu%C3%A9bec_RTC_-_Nova_Bus_LFS.jpg",
-    "width": 1920,
-    "height": 1440,
+    "width": 2400,
+    "height": 1800,
     "focalPoint": {
       "x": 50,
       "y": 48
@@ -292,7 +292,7 @@
     "licenseUrl": "https://creativecommons.org/licenses/by-sa/2.5",
     "sourceUrl": "https://commons.wikimedia.org/wiki/File:Bicycle_parking.jpg",
     "width": 1120,
-    "height": 845,
+    "height": 846,
     "focalPoint": {
       "x": 50,
       "y": 48
@@ -306,8 +306,8 @@
     "license": "CC BY-SA 3.0",
     "licenseUrl": "https://creativecommons.org/licenses/by-sa/3.0",
     "sourceUrl": "https://commons.wikimedia.org/wiki/File:Shot_on_goal_during_youth_hockey_tournament_at_West_Edmonton_Mall_Ice_Palace.jpg",
-    "width": 1920,
-    "height": 1360,
+    "width": 2400,
+    "height": 1700,
     "focalPoint": {
       "x": 50,
       "y": 48
@@ -321,8 +321,8 @@
     "license": "CC BY-SA 3.0",
     "licenseUrl": "https://creativecommons.org/licenses/by-sa/3.0",
     "sourceUrl": "https://commons.wikimedia.org/wiki/File:Volleyball_match_-_shakehands_before_the_match.jpg",
-    "width": 1920,
-    "height": 1285,
+    "width": 2400,
+    "height": 1606,
     "focalPoint": {
       "x": 50,
       "y": 48
@@ -336,8 +336,8 @@
     "license": "CC0",
     "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/deed.en",
     "sourceUrl": "https://commons.wikimedia.org/wiki/File:Chess_game_Staunton_No._6_perfil_view_8.jpg",
-    "width": 1920,
-    "height": 1260,
+    "width": 2400,
+    "height": 1574,
     "focalPoint": {
       "x": 50,
       "y": 48
@@ -351,8 +351,8 @@
     "license": "Public domain",
     "licenseUrl": "https://commons.wikimedia.org/wiki/File:Patient_gets_blood_drawn_to_be_screened_as_a_blood_donor.jpg",
     "sourceUrl": "https://commons.wikimedia.org/wiki/File:Patient_gets_blood_drawn_to_be_screened_as_a_blood_donor.jpg",
-    "width": 1920,
-    "height": 1275,
+    "width": 2400,
+    "height": 1594,
     "focalPoint": {
       "x": 50,
       "y": 48
@@ -366,8 +366,8 @@
     "license": "CC BY-SA 2.0",
     "licenseUrl": "https://creativecommons.org/licenses/by-sa/2.0",
     "sourceUrl": "https://commons.wikimedia.org/wiki/File:Montreal_Street_Art_Graffiti_(29241125286).jpg",
-    "width": 1920,
-    "height": 1209,
+    "width": 2400,
+    "height": 1512,
     "focalPoint": {
       "x": 50,
       "y": 48
@@ -396,8 +396,8 @@
     "license": "CC BY-SA 4.0",
     "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
     "sourceUrl": "https://commons.wikimedia.org/wiki/File:What_to_Expect_at_a_Job_Interview_at_a_Teaching_School.jpg",
-    "width": 1920,
-    "height": 1484,
+    "width": 2400,
+    "height": 1854,
     "focalPoint": {
       "x": 50,
       "y": 48
@@ -411,8 +411,8 @@
     "license": "CC BY-SA 4.0",
     "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
     "sourceUrl": "https://commons.wikimedia.org/wiki/File:Checking_blood_pressure.jpg",
-    "width": 1920,
-    "height": 1440,
+    "width": 2400,
+    "height": 1800,
     "focalPoint": {
       "x": 50,
       "y": 48
@@ -426,8 +426,8 @@
     "license": "CC BY 2.0",
     "licenseUrl": "https://creativecommons.org/licenses/by/2.0",
     "sourceUrl": "https://commons.wikimedia.org/wiki/File:Exhibitors_at_the_Career_Fair_(30983205220).jpg",
-    "width": 1920,
-    "height": 1280,
+    "width": 2400,
+    "height": 1600,
     "focalPoint": {
       "x": 50,
       "y": 48
@@ -441,8 +441,8 @@
     "license": "CC BY 2.0",
     "licenseUrl": "https://creativecommons.org/licenses/by/2.0",
     "sourceUrl": "https://commons.wikimedia.org/wiki/File:Le_chant_des_cageux%2C_C%C3%A9g%C3%A9p_du_Vieux_Montr%C3%A9al%2C_2020._(49623021442).jpg",
-    "width": 1920,
-    "height": 1440,
+    "width": 2400,
+    "height": 1800,
     "focalPoint": {
       "x": 50,
       "y": 48
@@ -456,8 +456,8 @@
     "license": "CC BY-SA 3.0",
     "licenseUrl": "https://creativecommons.org/licenses/by-sa/3.0",
     "sourceUrl": "https://commons.wikimedia.org/wiki/File:Parc_du_Mont-Royal_015.jpg",
-    "width": 1920,
-    "height": 1440,
+    "width": 2400,
+    "height": 1800,
     "focalPoint": {
       "x": 50,
       "y": 48
@@ -471,8 +471,8 @@
     "license": "CC BY 4.0",
     "licenseUrl": "https://commons.wikimedia.org/wiki/File:Imperial_College_London_graduation_gowns.jpg",
     "sourceUrl": "https://commons.wikimedia.org/wiki/File:Imperial_College_London_graduation_gowns.jpg",
-    "width": 1920,
-    "height": 1334,
+    "width": 2400,
+    "height": 1668,
     "focalPoint": {
       "x": 50,
       "y": 48
@@ -486,8 +486,8 @@
     "license": "CC BY-SA 3.0",
     "licenseUrl": "https://creativecommons.org/licenses/by-sa/3.0",
     "sourceUrl": "https://commons.wikimedia.org/wiki/File:C%C3%A9gep_de_Sainte-Foy_(int%C3%A9rieur).JPG",
-    "width": 1920,
-    "height": 1285,
+    "width": 2400,
+    "height": 1606,
     "focalPoint": {
       "x": 50,
       "y": 48
@@ -501,8 +501,8 @@
     "license": "CC BY-SA 2.0",
     "licenseUrl": "https://creativecommons.org/licenses/by-sa/2.0",
     "sourceUrl": "https://commons.wikimedia.org/wiki/File:Montreal_Street_Art_Graffiti_(29241125286).jpg",
-    "width": 1920,
-    "height": 1209,
+    "width": 2400,
+    "height": 1512,
     "focalPoint": {
       "x": 50,
       "y": 48
@@ -516,8 +516,8 @@
     "license": "CC BY-SA 4.0",
     "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0/",
     "sourceUrl": "https://commons.wikimedia.org/wiki/File:Kinolino-Kellerkino_02.jpg",
-    "width": 1920,
-    "height": 1443,
+    "width": 2400,
+    "height": 1804,
     "focalPoint": {
       "x": 50,
       "y": 48
@@ -526,15 +526,15 @@
   },
   "chronique-podcasts-etudiants": {
     "src": "/media/demo-library/articles/radio.jpg",
-    "alt": "Studio de radio avec microphones",
-    "credit": "Ethan Long",
-    "license": "CC BY-SA 2.0",
-    "licenseUrl": "https://creativecommons.org/licenses/by-sa/2.0/",
-    "sourceUrl": "https://commons.wikimedia.org/wiki/File:Broadcast_Studio_(53998133689).jpg",
-    "width": 1920,
-    "height": 2880,
+    "alt": "Console et micro d’un studio de radio",
+    "credit": "Arielinson",
+    "license": "CC BY-SA 4.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0/",
+    "sourceUrl": "https://commons.wikimedia.org/wiki/File:Kol_Israel_Heleni_Hamalka_DSC0094.jpg",
+    "width": 2000,
+    "height": 1334,
     "focalPoint": {
-      "x": 50,
+      "x": 62,
       "y": 48
     },
     "theme": "radio"
@@ -546,8 +546,8 @@
     "license": "CC BY-SA 3.0",
     "licenseUrl": "https://creativecommons.org/licenses/by-sa/3.0",
     "sourceUrl": "https://commons.wikimedia.org/wiki/File:Grande_Bibliotheque_Quebec_Interieur.JPG",
-    "width": 1920,
-    "height": 1440,
+    "width": 2400,
+    "height": 1800,
     "focalPoint": {
       "x": 50,
       "y": 48
@@ -561,8 +561,8 @@
     "license": "CC BY 2.0",
     "licenseUrl": "https://creativecommons.org/licenses/by/2.0/",
     "sourceUrl": "https://commons.wikimedia.org/wiki/File:Chemistry_laboratory.jpg",
-    "width": 1920,
-    "height": 1325,
+    "width": 2101,
+    "height": 1450,
     "focalPoint": {
       "x": 50,
       "y": 48
@@ -576,8 +576,8 @@
     "license": "CC BY-SA 3.0",
     "licenseUrl": "https://creativecommons.org/licenses/by-sa/3.0/",
     "sourceUrl": "https://commons.wikimedia.org/wiki/File:Qu%C3%A9bec_RTC_-_Nova_Bus_LFS.jpg",
-    "width": 1920,
-    "height": 1440,
+    "width": 2400,
+    "height": 1800,
     "focalPoint": {
       "x": 50,
       "y": 48
@@ -591,8 +591,8 @@
     "license": "CC BY-SA 3.0",
     "licenseUrl": "https://creativecommons.org/licenses/by-sa/3.0",
     "sourceUrl": "https://commons.wikimedia.org/wiki/File:C%C3%A9gep_de_Sainte-Foy_(int%C3%A9rieur).JPG",
-    "width": 1920,
-    "height": 1285,
+    "width": 2400,
+    "height": 1606,
     "focalPoint": {
       "x": 50,
       "y": 48

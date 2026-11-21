@@ -24,14 +24,14 @@ previousUrls:
   - https://journal-exemple.invalid/blogue/radio-campus-cinquante-ans/
 lead:
   src: /media/demo-library/articles/radio.jpg
-  alt: "Studio de radio avec microphones"
-  credit: "Ethan Long"
-  license: "CC BY-SA 2.0"
-  licenseUrl: "https://creativecommons.org/licenses/by-sa/2.0/"
-  sourceUrl: "https://commons.wikimedia.org/wiki/File:Broadcast_Studio_(53998133689).jpg"
-  width: 1920
-  height: 2880
-  focalPoint: { x: 50, y: 48 }
+  alt: "Console et micro d’un studio de radio"
+  credit: "Arielinson"
+  license: "CC BY-SA 4.0"
+  licenseUrl: "https://creativecommons.org/licenses/by-sa/4.0/"
+  sourceUrl: "https://commons.wikimedia.org/wiki/File:Kol_Israel_Heleni_Hamalka_DSC0094.jpg"
+  width: 2000
+  height: 1334
+  focalPoint: { x: 62, y: 48 }
 ---
 
 La station de radio étudiante fête cette année un demi-siècle de diffusion. Ses archives, longtemps entassées dans un local du sous-sol, viennent d'être numérisées. L'anniversaire est l'occasion de relire une histoire faite de bricolage, de bénévolat et de formats qui n'ont pas toujours survécu à leurs machines de lecture.

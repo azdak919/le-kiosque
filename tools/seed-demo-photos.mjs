@@ -34,11 +34,12 @@ const DELAY_MS = 1800;
 /** Thèmes article : fichier Commons + métadonnées éditoriales. */
 const ARTICLE_THEMES = {
   soccer: {
-    file: 'Adidas soccer ball on a grass pitch (Unsplash).jpg',
-    alt: 'Ballon de soccer sur un terrain en herbe',
-    credit: 'Peter Glaser baraida',
+    // Match universitaire (pas un gros plan de ballon de marque).
+    file: "Stoney Brook vs. Penn State Women's Soccer.jpg",
+    alt: 'Joueuses de soccer universitaire pendant un match',
+    credit: 'Noah Riffe',
     license: 'CC0',
-    licenseUrl: 'https://creativecommons.org/publicdomain/mark/1.0/',
+    licenseUrl: 'https://creativecommons.org/publicdomain/zero/1.0/',
   },
   basketball: {
     file: '2016 Auburn at Alabama NCAAM Basketball Game.jpg',
@@ -69,11 +70,12 @@ const ARTICLE_THEMES = {
     licenseUrl: 'https://creativecommons.org/licenses/by/2.0/',
   },
   radio: {
-    file: 'Broadcast Studio (53998133689).jpg',
-    alt: 'Studio de radio avec microphones',
-    credit: 'Ethan Long',
-    license: 'CC BY-SA 2.0',
-    licenseUrl: 'https://creativecommons.org/licenses/by-sa/2.0/',
+    // Console réelle, cadrage horizontal, sans affiche.
+    file: 'Kol Israel Heleni Hamalka DSC0094.jpg',
+    alt: 'Console et micro d’un studio de radio',
+    credit: 'Arielinson',
+    license: 'CC BY-SA 4.0',
+    licenseUrl: 'https://creativecommons.org/licenses/by-sa/4.0/',
   },
   'campus-vie': {
     // Portrait étudiant contemporain (adultes sur campus). Pas d’archives historiques.
@@ -99,11 +101,11 @@ const ARTICLE_THEMES = {
     licenseUrl: 'https://commons.wikimedia.org/wiki/File:Compost_bin.jpg',
   },
   'biblio-pc': {
-    file: 'Library computers.jpg',
-    alt: 'Ordinateurs en bibliothèque',
-    credit: 'Wikimedia Commons',
-    license: 'voir source',
-    licenseUrl: 'https://commons.wikimedia.org/wiki/File:Library_computers.jpg',
+    file: '2012 - studying in Howard-Tilton Library New Orleans.jpg',
+    alt: 'Étudiantes au travail dans une bibliothèque universitaire',
+    credit: 'Tulane Public Relations',
+    license: 'CC BY 2.0',
+    licenseUrl: 'https://creativecommons.org/licenses/by/2.0/',
   },
   amphi: {
     file: 'Lecture hall.jpg',
@@ -532,15 +534,15 @@ const MASTHEAD = [
   {
     id: 'mast-uqtr',
     local: 'uqtr-boucher.jpg',
-    file: 'Pavillon Pierre-Boucher UQTR.jpg',
-    alt: 'Pavillon Pierre-Boucher de l’UQTR',
-    caption: 'UQTR (Trois-Rivières) — illustration de démonstration uniquement.',
-    credit: 'Jeangagnon',
-    license: 'CC BY-SA 3.0',
-    licenseUrl: 'https://creativecommons.org/licenses/by-sa/3.0/',
+    file: "Campus de l'UQTR à Drummondville.jpg",
+    alt: 'Campus de l’UQTR à Drummondville, à l’automne',
+    caption: 'UQTR (Drummondville) — illustration de démonstration uniquement.',
+    credit: 'Lëa-Kim Châteauneuf',
+    license: 'CC BY-SA 4.0',
+    licenseUrl: 'https://creativecommons.org/licenses/by-sa/4.0/',
     institution: 'UQTR',
-    campus: 'Trois-Rivières',
-    keywords: ['campus', 'architecture', 'Trois-Rivières'],
+    campus: 'Drummondville',
+    keywords: ['campus', 'architecture', 'automne', 'Drummondville'],
     focalPoint: { x: 50, y: 45 },
   },
   {

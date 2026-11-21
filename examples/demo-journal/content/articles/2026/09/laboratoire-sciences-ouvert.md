@@ -24,8 +24,8 @@ lead:
   license: "CC BY 2.0"
   licenseUrl: "https://creativecommons.org/licenses/by/2.0/"
   sourceUrl: "https://commons.wikimedia.org/wiki/File:Chemistry_laboratory.jpg"
-  width: 1920
-  height: 1325
+  width: 2101
+  height: 1450
   focalPoint: { x: 50, y: 48 }
 ---
 
@@ -38,7 +38,7 @@ L'événement vise à rendre visibles des travaux qui restent souvent confinés 
 Les visites commenceront à 13 h et se termineront à 16 h 30. Un atelier de trente minutes sur la sécurité en laboratoire s'adressera aux personnes curieuses qui n'ont jamais mis les pieds dans un local technique. Les familles et les collégiens des programmes d'accueil sont explicitement invités.
 
 <figure class="post-figure post-figure--right">
-<img src="/media/demo-library/articles/nursing.jpg" alt="Démonstration de soins en clinique-école" width="800" height="600" loading="lazy" decoding="async">
+<img src="/media/demo-library/articles/nursing.jpg" alt="Prise de tension artérielle en clinique-école" width="2400" height="1800" loading="lazy" decoding="async">
 <figcaption>Photo : Pambelle12 — atelier sécurité et gestes de base (clinique-école, démo).</figcaption>
 </figure>
 

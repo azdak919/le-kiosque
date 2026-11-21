@@ -27,8 +27,8 @@ lead:
   license: "CC BY 2.0"
   licenseUrl: "https://creativecommons.org/licenses/by/2.0/"
   sourceUrl: "https://commons.wikimedia.org/wiki/File:Students_enjoy_springtime_weather._(5554288570).jpg"
-  width: 1920
-  height: 1286
+  width: 2400
+  height: 1606
   focalPoint: { x: 50, y: 48 }
 ---
 

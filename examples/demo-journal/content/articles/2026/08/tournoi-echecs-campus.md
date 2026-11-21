@@ -24,8 +24,8 @@ lead:
   license: "CC0"
   licenseUrl: "https://creativecommons.org/publicdomain/zero/1.0/deed.en"
   sourceUrl: "https://commons.wikimedia.org/wiki/File:Chess_game_Staunton_No._6_perfil_view_8.jpg"
-  width: 1920
-  height: 1260
+  width: 2400
+  height: 1574
   focalPoint: { x: 50, y: 48 }
 ---
 

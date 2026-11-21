@@ -24,8 +24,8 @@ lead:
   license: "CC BY 4.0"
   licenseUrl: "https://commons.wikimedia.org/wiki/File:Imperial_College_London_graduation_gowns.jpg"
   sourceUrl: "https://commons.wikimedia.org/wiki/File:Imperial_College_London_graduation_gowns.jpg"
-  width: 1920
-  height: 1334
+  width: 2400
+  height: 1668
   focalPoint: { x: 50, y: 48 }
 ---
 
