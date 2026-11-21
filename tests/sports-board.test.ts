@@ -21,13 +21,18 @@ const lib = sandbox.module.exports as {
   sportsWaveStaggered: (events: Array<{ at: number }>) => boolean;
 };
 
-test('nombre de cartes selon la largeur : pas de case vide, plus que 3 à 1280 px', () => {
+test('nombre de cartes selon la largeur : 1 au téléphone, 2 à la tablette, 3 à l’ordinateur', () => {
   assert.equal(lib.sportsBoardCountFromWidth(390, { desktop: false }), 1);
-  const at1280 = lib.sportsBoardCountFromWidth(1152, { desktop: true });
-  assert.ok(at1280 >= 4, `1280 px → ${at1280}`);
+  assert.equal(lib.sportsBoardCountFromWidth(700, { desktop: true }), 1);
+  assert.equal(lib.sportsBoardCountFromWidth(720, { desktop: true }), 2);
+  assert.equal(lib.sportsBoardCountFromWidth(768, { desktop: true }), 2);
+  assert.equal(lib.sportsBoardCountFromWidth(899, { desktop: true }), 2);
+  assert.equal(lib.sportsBoardCountFromWidth(900, { desktop: true }), 3);
+  assert.equal(lib.sportsBoardCountFromWidth(1152, { desktop: true }), 3);
+  assert.equal(lib.sportsBoardCountFromWidth(1920, { desktop: true }), 3);
   const need = (n: number) => n * lib.SPORTS_MIN_SLOT_PX + lib.SPORTS_GAP_PX * (n - 1);
-  assert.ok(1152 >= need(at1280));
-  assert.ok(1152 < need(at1280 + 1) || at1280 >= 5);
+  assert.ok(1152 >= need(3));
+  assert.ok(720 < need(3));
 });
 
 function slide(key: string, mode: 'live' | 'result' | 'next', sport: string) {

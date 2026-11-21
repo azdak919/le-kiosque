@@ -41,7 +41,7 @@ test('bandeau sports à 1280 px : plusieurs cartes, aucune case vide', async ({ 
   });
   expect(info).toBeTruthy();
   expect(info.hidden).toBeFalsy();
-  expect(info.count).toBeGreaterThanOrEqual(4);
+  expect(info.count).toBe(3);
   expect(info.count).toBe(info.expected);
   expect(info.empty).toBe(0);
   info.widths.forEach((w) => expect(w).toBeGreaterThan(80));

@@ -3667,7 +3667,10 @@ html {
   .site-foot__nav .site-foot__sep,
   .site-foot__links .site-foot__sep,
   .site-foot__built .site-foot__sep { display: none; }
-  .site-foot__nav, .site-foot__links, .site-foot__built { display: flex; flex-wrap: wrap; gap: 4px 18px; }
+  .site-foot__nav, .site-foot__links { display: flex; flex-wrap: wrap; gap: 4px 18px; }
+  /* Phrase « Propulsé par Le Kiosque, … » en flux normal : un flex ici
+     isolait la virgule en tête de ligne après le lien. */
+  .share__btn { min-height: 44px; padding-top: 0.55rem; padding-bottom: 0.55rem; }
   .site-foot { padding-bottom: 88px; }
 }
 
@@ -3824,7 +3827,7 @@ html {
 @media (max-width: 640px) {
   .masthead-meta { flex-wrap: wrap; }
   .masthead-social { flex-wrap: nowrap; width: calc(100% + 16px); margin-left: -8px; margin-right: -8px; gap: 0; }
-  .masthead-social a { flex: 1 1 0; min-width: 28px; max-width: 44px; height: 40px; }
+  .masthead-social a { flex: 1 1 0; min-width: 44px; max-width: 44px; height: 44px; }
 }
 @media print { .social-links { display: none !important; } }
 

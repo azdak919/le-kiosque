@@ -24,12 +24,12 @@
     var minSlot = options.minSlot || SPORTS_MIN_SLOT_PX;
     var gap = options.gap == null ? SPORTS_GAP_PX : options.gap;
     var width = Math.max(0, avail | 0);
-    var maxN = 4;
-    if (width >= 1700) maxN = 7;
-    else if (width >= 1400) maxN = 6;
-    else if (width >= 1100) maxN = 5;
-    else if (width >= 720) maxN = 4;
-    else return 1;
+    // 1 au téléphone, 2 à la tablette (rangée d’environ 720 px),
+    // 3 à l’ordinateur. Les cartes s’élargissent pour remplir la rangée.
+    var maxN = 3;
+    if (width < 720) return 1;
+    // Tablette (~768 px) : 3 cartes descendent sous 240 px et coupent les lignes.
+    if (width < 900) maxN = 2;
     if (options.maxN) maxN = Math.min(maxN, options.maxN);
     var n = 1;
     for (var tryN = maxN; tryN >= 2; tryN -= 1) {

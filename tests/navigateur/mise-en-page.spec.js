@@ -212,3 +212,42 @@ test('pendant le chargement de LE-RADAR, la place de la barre est réservée', a
     await ctx.close();
   }
 });
+
+/**
+ * Accueil, article, recherche et pied : aucune vue mobile ne déborde
+ * horizontalement (360–430 px, et tablette 768 px), en clair et en sombre.
+ */
+const vuesMobiles = [360, 390, 412, 430, 768];
+for (const theme of ['light', 'dark']) for (const largeur of vuesMobiles) {
+  test(`pas de défilement horizontal à ${largeur} px (${theme}) : accueil, article, recherche`, async ({ browser }) => {
+    const ctx = await browser.newContext({
+      viewport: { width: largeur, height: 900 },
+      colorScheme: theme,
+      isMobile: largeur < 768,
+      hasTouch: true,
+    });
+    await fauxRadar(ctx);
+    const page = await ctx.newPage();
+    const pages = ['/autre-nom/demo/', '/autre-nom/demo/articles/basketball-equipe-recrues/', '/autre-nom/demo/recherche/'];
+    for (const url of pages) {
+      await page.goto(url);
+      await page.waitForTimeout(800);
+      const accueil = await page.evaluate(() => document.documentElement.scrollWidth - window.innerWidth);
+      expect(accueil, `débordement à l’arrivée sur ${url}`).toBeLessThanOrEqual(1);
+      await page.evaluate(() => window.scrollTo(0, document.body.scrollHeight));
+      await page.waitForTimeout(200);
+      const pied = await page.evaluate(() => document.documentElement.scrollWidth - window.innerWidth);
+      expect(pied, `débordement au pied de ${url}`).toBeLessThanOrEqual(1);
+    }
+    await page.goto('/autre-nom/demo/');
+    await page.waitForTimeout(400);
+    const loupe = page.locator('#news-search-toggle');
+    if (await loupe.count()) {
+      await loupe.click();
+      await page.waitForTimeout(300);
+      const ouvert = await page.evaluate(() => document.documentElement.scrollWidth - window.innerWidth);
+      expect(ouvert, 'débordement avec la recherche ouverte').toBeLessThanOrEqual(1);
+    }
+    await ctx.close();
+  });
+}

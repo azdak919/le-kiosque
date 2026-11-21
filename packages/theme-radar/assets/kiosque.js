@@ -1533,7 +1533,7 @@
       return lib.sportsBoardCountFromWidth(avail, { desktop: sportsIsDesktopLabel() });
     }
     if (!sportsIsDesktopLabel()) return 1;
-    var minSlot = 240, gap = 6, maxN = avail >= 1100 ? 5 : 4;
+    var minSlot = 240, gap = 6, maxN = avail >= 900 ? 3 : 2;
     var n = 1;
     for (var tryN = maxN; tryN >= 2; tryN -= 1) {
       if (avail >= tryN * minSlot + gap * (tryN - 1)) { n = tryN; break; }
@@ -3188,9 +3188,58 @@
     }
   }
 
+
+  /**
+   * La barre radio vient de LE-RADAR (Shadow DOM ouvert). Les titres longs
+   * défilent (marquee), mais le module coupe le texte net (text-overflow: clip)
+   * avant et pendant le défilement. Un masque à droite, ajouté ici, adoucit
+   * la coupe sans copier le module ni dépasser le bord de la barre.
+   */
+  function softenRadarRadioMarquee(slot) {
+    var host = (slot || document.querySelector('.radar-radio-slot')) &&
+      (slot || document.querySelector('.radar-radio-slot')).querySelector('.radar-radio');
+    var root = host && host.shadowRoot;
+    if (!root || root.getElementById('kiosque-radio-marquee-mask')) return;
+    var style = document.createElement('style');
+    style.id = 'kiosque-radio-marquee-mask';
+    style.textContent = [
+      '.now { position: relative; }',
+      '.now:has(.is-marquee)::after {',
+      '  content: ""; position: absolute; top: 0; right: 0; bottom: 0; width: 48px;',
+      '  pointer-events: none; z-index: 2;',
+      '  background: linear-gradient(to right, rgba(16,24,22,0), #101816 85%);',
+      '}',
+      '@container (max-width: 679px) {',
+      '  .now:has(.is-marquee)::after {',
+      '    width: 32px;',
+      '    background: linear-gradient(to right, rgba(37,40,48,0), #252830 85%);',
+      '  }',
+      '}',
+      '.air:has(.is-marquee) { position: relative; }',
+      '.air:has(.is-marquee)::after {',
+      '  content: ""; position: absolute; top: 0; right: 0; bottom: 0; width: 24px;',
+      '  pointer-events: none; z-index: 2;',
+      '  background: linear-gradient(to right, rgba(16,24,22,0), #101816 85%);',
+      '}',
+    ].join('');
+    root.appendChild(style);
+  }
+
+  function initRadarRadioMarqueeMask() {
+    var slot = document.querySelector('.radar-radio-slot');
+    if (!slot) return;
+    function apply() { softenRadarRadioMarquee(slot); }
+    apply();
+    if (typeof MutationObserver === 'function' && !initRadarRadioMarqueeMask._obs) {
+      initRadarRadioMarqueeMask._obs = new MutationObserver(apply);
+      initRadarRadioMarqueeMask._obs.observe(slot, { childList: true, subtree: true, attributes: true, attributeFilter: ['data-radar-radio'] });
+    }
+  }
+
   function init() {
     initTheme();
     initDemoBannerStickyOffset();
+    initRadarRadioMarqueeMask();
     initMastheadClock();
     initMastheadBackgrounds();
     initMastheadSports();
