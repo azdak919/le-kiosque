@@ -61,6 +61,8 @@ test('démo de la vitrine : le pied pointe vers /admin/, les journaux gardent /r
   const templates = readFileSync(new URL('../packages/theme-radar/src/templates.ts', import.meta.url), 'utf8');
   const site = readFileSync(new URL('../tools/build-site.mjs', import.meta.url), 'utf8');
   assert.match(site, /redactionHref: withBase\(basePath, '\/admin\/'\)/);
+  assert.match(site, /mode: 'demo-local'/);
+  assert.match(site, /demoContent: true/);
   assert.match(templates, /ctx\.redactionHref \?\? asset\('\/redaction\/', ctx\)/);
   assert.match(templates, /ctx\.redactionHref \?\? `\$\{ctx\.basePath\}\/admin`/);
   assert.match(live, /mode === 'demo-local' && editorial\.adminBasePath/);

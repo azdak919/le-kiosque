@@ -155,10 +155,14 @@ await build({
   config: {
     ...rootConfig,
     root: journalRoot,
-    source: rootConfig.source ?? { adapter: 'markdown' },
+    // Markdown local, jamais l'adaptateur du journal publié : la démo ne parle à aucun socle.
+    source: { adapter: 'markdown' },
     deploy: { ...rootConfig.deploy, basePath: demoBase },
     // La rédaction de la vitrine vit à /admin/, pas sous une page redaction du dossier demo.
-    editorial: { ...rootConfig.editorial, redactionHref: withBase(basePath, '/admin/') },
+    // mode et demoContent sont forcés. Un journal configuré (`external`,
+    // demoContent false) n'émettrait pas seed.json : l'admin ne démarre pas.
+    editorial: { ...rootConfig.editorial, mode: 'demo-local', redactionHref: withBase(basePath, '/admin/') },
+    demoContent: true,
   },
   bundle: demoBundle,
   outDir: path.join(outDir, 'demo'),
