@@ -36,7 +36,7 @@ jobs:
           size=$(gh api "repos/$REPO" --jq .size)
           [ "$size" -gt 1048576 ] && echo "- Dépôt volumineux : $((size/1024)) Mo." >> alertes.md || true
           # Démo en ligne
-          code=$(curl -s -o /dev/null -w '%{http_code}' "https://${GITHUB_REPOSITORY_OWNER}.github.io/${REPO#*/}/" || echo 000)
+          code=$(curl -s -o /dev/null -w '%{http_code}' "https://kiosque.le-radar.ca/" || echo 000)
           [ "$code" = 200 ] || echo "- La démo en ligne répond $code." >> alertes.md
           # Node utilisé par la CI : fin de vie ?
           node_major=$(grep -ho "node-version: '[0-9]*'" .github/workflows/*.yml | grep -o '[0-9]\+' | sort -n | head -1)

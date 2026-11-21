@@ -220,7 +220,7 @@ Notez l'**adresse de Le Socle** : `https://<votre-site>/socle`.
 
 ## B3. Configurer le journal
 
-1. Ouvrez le configurateur : <https://azdak919.github.io/le-kiosque/configurer/>.
+1. Ouvrez le configurateur : <https://kiosque.le-radar.ca/configurer/>.
 2. Étapes **Votre journal**, **Apparence** et **Sections** : nom,
    établissement, couleurs, logo, sections, radio (facultative). Rien n'est
    prérempli : ce qui est vide reste vide.
