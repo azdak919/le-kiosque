@@ -998,7 +998,7 @@
     }
   }
 
-  /** « Les Élans » → « Élans » pour la puce (place limitée). */
+  /** « Les Touladis » → « Touladis » pour la puce (place limitée). */
   function sportsShortTeamName(name) {
     var n = String(name || '').trim();
     return n.replace(/^(Les|Le|La|L’|L')\s+/i, '') || n;
@@ -1286,7 +1286,7 @@
   /**
    * Format scoreboard (parité LE-RADAR / RDS) :
    *   mobile  — codes institution :  🏐 V  SLHH  3–1  GAR
-   *   bureau  —  🏐 V  Élans  3–1  Boomerang (Garneau)
+   *   bureau  —  🏐 V  Touladis  3–1  Boomerang (Garneau)
    *             (maison = surnom seul ; adversaire = surnom + institution)
    * Détail long toujours dans title/aria.
    */

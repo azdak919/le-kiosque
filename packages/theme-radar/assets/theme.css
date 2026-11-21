@@ -405,6 +405,18 @@ body.with-radio [id] {
   animation: radar-radio-attente 1.6s ease-in-out infinite;
 }
 .radar-radio-slot:not([data-radar-radio]) > .radar-radio { display: none; }
+/* Mention sous la barre, une fois le module prêt : les stations sont celles
+ * du Radar, pas une radio inventée pour le journal. Cachée pendant le
+ * chargement, pour ne pas gonfler la place réservée. */
+.radar-radio-note {
+  display: none;
+  margin: 4px 0 0;
+  font-size: 0.75rem;
+  line-height: 1.35;
+  text-align: center;
+  color: var(--muted, #5c6570);
+}
+.radar-radio-slot[data-radar-radio="ready"] .radar-radio-note { display: block; }
 @media (max-width: 720px) {
   .radar-radio-slot:not([data-radar-radio])::before { height: 58px; }
   /* Même air qu’entre la puce météo et la carte sport (padding-top 4 px du bandeau). */
@@ -421,7 +433,8 @@ body.with-radio [id] {
   .radar-radio-slot:not([data-radar-radio])::before { animation: none; }
 }
 @media print {
-  .radar-radio-slot::before { display: none !important; }
+  .radar-radio-slot::before,
+  .radar-radio-note { display: none !important; }
 }
 /* Petit air entre la barre radio et la rangée de rubriques. */
 body.with-radio .nav-wrap {

@@ -148,10 +148,14 @@ test('configurer, rédiger, prévisualiser, publier, persister et exporter sans 
   await page.getByLabel('Cadrage horizontal').fill('73');
   await page.getByLabel('Cadrage vertical').fill('42');
   await page.getByRole('button', { name: 'Enregistrer' }).click();
-  // Le manifeste retient McGill en tête ; l’image peinte peut être une autre
-  // des photos retenues si l’ordre aléatoire est actif (plusieurs photos).
-  await expect(front.locator('.masthead-background')).toHaveAttribute('src', /\/media\/.+\.(jpe?g|webp)$/i);
+  await expect(page.getByText('Configuration enregistrée')).toBeVisible();
+  // La page déjà ouverte garde le mât du premier rendu. Après rechargement,
+  // la photo retenue dans la banque (McGill) est seule en tête.
+  await front.reload();
+  await front.waitForFunction(() => document.documentElement.dataset.editorialReady === 'true', null, { timeout: 45_000 });
+  await expect(front.locator('.masthead-background')).toHaveAttribute('src', /mcgill-(roddick|campus|arts)\.jpg/);
   const mastheadPayload = JSON.parse(await front.locator('#masthead-backgrounds').textContent());
+  expect(mastheadPayload.images).toHaveLength(1);
   expect(mastheadPayload.images[0].src).toMatch(/mcgill-(roddick|campus|arts)\.jpg/);
 
   await page.locator('.admin-nav').getByRole('link', { name: 'Exporter', exact: true }).click();

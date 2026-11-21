@@ -66,7 +66,7 @@ test('la barre radio est le module de LE-RADAR, appelé en une ligne', async (t)
   const home = await readFile(path.join(out, 'index.html'), 'utf8');
   const client = await readFile(path.join(out, 'assets/kiosque.js'), 'utf8');
   const theme = await readFile(path.join(out, 'assets/theme.css'), 'utf8');
-  assert.match(home, /<div class="radar-radio-slot" data-station="chyz"><script src="https:\/\/le-radar\.ca\/radio-barre\.js" data-station="chyz" async onerror="this\.parentNode\.dataset\.radarRadio='off'"><\/script><\/div>/);
+  assert.match(home, /<div class="radar-radio-slot" data-station="chyz"><script src="https:\/\/le-radar\.ca\/radio-barre\.js" data-station="chyz" async onerror="this\.parentNode\.dataset\.radarRadio='off'"><\/script><p class="radar-radio-note">Le module radio du Radar, avec ses vraies radios\.<\/p><\/div>/);
   assert.match(home, /<body class="[^"]*with-radio/);
   assert.ok(!home.includes('<iframe'), 'aucune iframe radio');
   assert.ok(!home.includes('tuner-embed'));
@@ -150,7 +150,11 @@ test('la vitrine expose le bandeau illustré, les outils et la composition magaz
   assert.ok(stripAt > dockAt, 'cartes sports sous le dock météo');
   assert.ok(stripAt < navAt, 'cartes sports avant la nav et le fil');
   assert.ok(!home.slice(0, mastEnd).includes('data-sports-payload="'), 'pas de payload sports dans le mât');
-  assert.match(home, /Les Élans|Les &Eacute;lans/);
+  assert.match(home, /Les Touladis/);
+  assert.match(home, /lac-temiscouata\.jpg/, 'le mât part du lac Témiscouata');
+  assert.match(home, /Photo : Amqui \(CC BY-SA 4\.0\)/, 'crédit exact de la première photo du mât');
+  assert.match(home, /Le module radio du Radar, avec ses vraies radios\./);
+  assert.doesNotMatch(home, /mcgill-|ulaval-|bishops-|concordia-hall|udem-gaudry|sherbrooke-longueuil|batiment-jonquiere/, 'plus de campus réels dans la rotation du mât');
   assert.match(home, /\/sports\//, 'puce sports pointe vers la page résultats');
   const sportsPage = await readFile(path.join(out, 'sports/index.html'), 'utf8');
   assert.match(sportsPage, /Au tableau/);
