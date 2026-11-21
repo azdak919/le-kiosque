@@ -20,7 +20,7 @@ function link(base, path) {
 /**
  * URL de la page Au tableau pour la puce mât.
  * Le YAML stocke souvent « /sports/ » sans basePath : après applyBranding SPA
- * il faut préfixer (ex. /le-kiosque/demo/sports/), sinon clic → 404 racine.
+ * il faut préfixer (ex. /demo/sports/), sinon clic → 404 racine.
  */
 function sportsBoardHref(base, sports) {
   const raw = String(sports?.href || '/sports/').trim() || '/sports/';
@@ -568,7 +568,7 @@ export function footCopyright(publication, year) {
   return `© ${footYears(publication.founded, year)}${name ? ` ${esc(name)}` : ''}. ${footRights(publication.license)}`;
 }
 
-const KIOSQUE_SITE_URL = 'https://azdak919.github.io/le-kiosque/';
+const KIOSQUE_SITE_URL = 'https://kiosque.le-radar.ca/';
 const POWERED_BY = `Propulsé par <a href="${KIOSQUE_SITE_URL}" rel="noopener">Le Kiosque</a>, plateforme libre sous licence GPL pour les journaux étudiants.`;
 
 /** Ligne du bas : mention Propulsé par, puis un lien discret vers l’espace de rédaction. */

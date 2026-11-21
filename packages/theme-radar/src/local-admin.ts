@@ -49,6 +49,20 @@ export interface LocalAdminPageOptions {
 
 export const adminNav: (adminBasePath: string, active: string, updateHref?: string) => string = socleAdminNav;
 
+/**
+ * Le socle épinglé écrit encore les anciennes adresses Pages. On les remplace
+ * à la génération : le Kiosque ne recopie pas l’admin, il ne fait que brancher
+ * la coquille.
+ */
+const ADRESSES_PUBLIQUES: ReadonlyArray<readonly [string, string]> = [
+  ['https://azdak919.github.io/le-socle/', 'https://socle.le-radar.ca/'],
+  ['https://azdak919.github.io/le-kiosque/', 'https://kiosque.le-radar.ca/'],
+];
+
+export function adressesPubliques(html: string): string {
+  return ADRESSES_PUBLIQUES.reduce((out, [from, to]) => out.replaceAll(from, to), html);
+}
+
 export const adminShell: (options: {
   lang: string;
   title: string;
@@ -61,9 +75,9 @@ export const adminShell: (options: {
   main: string;
   scripts?: string;
   updateHref?: string;
-}) => string = socleAdminShell;
+}) => string = (options) => adressesPubliques(socleAdminShell(options));
 
 /** La page de l'admin en mode navigateur (démo, données dans ce navigateur). */
 export function localAdminPage(options: LocalAdminPageOptions): string {
-  return adminPage({ ...options, mode: 'navigateur' });
+  return adressesPubliques(adminPage({ ...options, mode: 'navigateur' }));
 }

@@ -5,7 +5,13 @@ const config: Partial<KiosqueConfig> = {
   root: './examples/demo-journal',
   source: { adapter: 'markdown' },
   editorial: { mode: 'demo-local' },
-  deploy: { basePath: '/le-kiosque' },
+  // La vitrine Pages est servie à la racine de kiosque.le-radar.ca.
+  // Un fork sans domaine remet basePath à '/nom-du-depot'.
+  deploy: {
+    basePath: '/',
+    cname: 'kiosque.le-radar.ca',
+    origin: 'https://kiosque.le-radar.ca',
+  },
   demoNotice: 'Démonstration du Kiosque — journal étudiant fictif',
   demoContent: true,
   feedLimit: 30,
