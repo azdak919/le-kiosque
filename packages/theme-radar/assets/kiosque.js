@@ -725,8 +725,16 @@
   var weatherDocked = false;
   var weatherHomeParent = null;
   var weatherHomeNext = null;
-  var WEATHER_PHONE_MQ = typeof window.matchMedia === 'function'
-    ? window.matchMedia('(max-width: 720px)')
+  var weatherDockMeasure = 0;
+  /*
+   * Sous 1100 px la colonne reste à 800 px (--maxw). La puce élargie
+   * (ville, température, max/min, demain) n’y tient pas à côté de la date
+   * et des boutons. LE-RADAR décroche à 1024 px parce que son mât est
+   * pleine largeur ; ici le palier utile est celui où la colonne passe
+   * à 1180 px. Au-dessus, la même puce reste dans la rangée du mât.
+   */
+  var WEATHER_DOCK_MQ = typeof window.matchMedia === 'function'
+    ? window.matchMedia('(max-width: 1099.98px)')
     : null;
 
   /**
@@ -780,12 +788,47 @@
     });
   }
 
+  /* La puce mord les boutons, sort de l’écran, ou son toponyme est coupé. */
+  function weatherCrowdsToolbar() {
+    var host = mastheadStatusHost();
+    if (!host || host.closest('#masthead-weather-dock')) return false;
+    var tools = document.querySelector('.masthead-utility .masthead-tools');
+    if (!tools) return false;
+    var toolsBox = tools.getBoundingClientRect();
+    if (toolsBox.width < 1) return false;
+    var chips = host.querySelectorAll('.weather-chip, .masthead-weather__city');
+    if (!chips.length) return false;
+    for (var i = 0; i < chips.length; i++) {
+      var box = chips[i].getBoundingClientRect();
+      if (box.width < 1) continue;
+      if (box.right > toolsBox.left - 8 || box.right > window.innerWidth - 1) return true;
+      var name = chips[i].querySelector('.weather-chip__name, .masthead-weather__name');
+      if (name && name.scrollWidth > name.clientWidth + 1) return true;
+    }
+    return false;
+  }
+
   function syncMastheadWeatherDock() {
-    /* Toujours sous la radio (ordinateur comme téléphone) : la puce élargie
-     * (max/min du jour + demain) ne tient pas dans la rangée d’utilitaires du mât. */
+    /* Téléphone et tablette : sous la radio, entre le syntoniseur et les
+       cartes sports. Bureau : dans le mât, à côté de la date. Un seul nœud
+       est déplacé — jamais deux puces visibles. */
     var dock = document.getElementById('masthead-weather-dock');
-    var shouldDock = Boolean(dock && mastheadStatusHost());
-    setMastheadWeatherDocked(shouldDock);
+    var host = mastheadStatusHost();
+    if (!dock || !host) return;
+    var narrow = Boolean(WEATHER_DOCK_MQ && WEATHER_DOCK_MQ.matches);
+    if (narrow) {
+      weatherDockMeasure += 1;
+      setMastheadWeatherDocked(true);
+      return;
+    }
+    setMastheadWeatherDocked(false);
+    var token = weatherDockMeasure += 1;
+    window.requestAnimationFrame(function () {
+      if (token !== weatherDockMeasure) return;
+      if (WEATHER_DOCK_MQ && WEATHER_DOCK_MQ.matches) return;
+      /* La puce élargie ne serre pas les boutons : elle redescend. */
+      if (weatherCrowdsToolbar()) setMastheadWeatherDocked(true);
+    });
   }
 
   /* Rotation scoreboard — ordre récent→prochain, leave puis arrive (LE-RADAR).
@@ -1397,7 +1440,10 @@
     if (opts.before && opts.before.parentNode === host) host.insertBefore(chip, opts.before);
     else host.appendChild(chip);
     host.hidden = false;
-    if (!desktop) sportsAbregerSiTropLong(chip);
+    /* Au bureau aussi : « Boomerang (François-Xavier-Garneau) » dépasse la
+       puce et le débordement caché coupe le mot. On passe au surnom, puis
+       au sigle, avant tout défilement. */
+    sportsAbregerSiTropLong(chip);
 
     /* Titre : aller-retour si débordement. Sous-ligne : boucle lente (PR 404/408). */
     var readDwell = SPORTS_ROTATE_MIN_MS + 3500;
@@ -1806,8 +1852,8 @@
   }
 
   /* Maximum et minimum du jour, puis « Demain » avec icône et température.
-     Affiché seulement dans le dock du téléphone (CSS) ; value null = puce
-     d’attente (tirets, rond à la place de l’icône), même gabarit. */
+     Visibles dans le dock (sous 1100 px) et dans le mât au bureau (CSS).
+     value null = puce d’attente (tirets, rond à la place de l’icône), même gabarit. */
   function appendWeatherExtras(chip, value, meteoBase) {
     if (value && !value.today && !value.tomorrow) return;
     var span = function (cls, text) {
@@ -2707,12 +2753,23 @@
 
   function initMastheadStatusDock() {
     syncMastheadWeatherDock();
-    if (!WEATHER_PHONE_MQ) return;
-    var onMq = function () { syncMastheadWeatherDock(); };
-    if (typeof WEATHER_PHONE_MQ.addEventListener === 'function') {
-      WEATHER_PHONE_MQ.addEventListener('change', onMq);
-    } else if (typeof WEATHER_PHONE_MQ.addListener === 'function') {
-      WEATHER_PHONE_MQ.addListener(onMq);
+    var onChange = function () { syncMastheadWeatherDock(); };
+    if (WEATHER_DOCK_MQ) {
+      if (typeof WEATHER_DOCK_MQ.addEventListener === 'function') {
+        WEATHER_DOCK_MQ.addEventListener('change', onChange);
+      } else if (typeof WEATHER_DOCK_MQ.addListener === 'function') {
+        WEATHER_DOCK_MQ.addListener(onChange);
+      }
+    }
+    /* Le palier 1100 px ne suffit pas : une fenêtre bureau étroite, ou
+       plusieurs localités, peut encore manger les boutons. */
+    if (!initMastheadStatusDock._resize) {
+      initMastheadStatusDock._resize = true;
+      var timer = 0;
+      window.addEventListener('resize', function () {
+        window.clearTimeout(timer);
+        timer = window.setTimeout(onChange, 120);
+      }, { passive: true });
     }
   }
 
