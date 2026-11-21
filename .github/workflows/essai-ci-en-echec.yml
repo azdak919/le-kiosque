@@ -24,7 +24,6 @@ jobs:
     runs-on: ubuntu-24.04
     timeout-minutes: 2
     steps:
-      - name: Échec demandé
+      - name: Retour au vert
         run: |
-          echo "Échec demandé pour prouver l'ouverture de l'issue."
-          exit 1
+          echo "Retour au vert demandé pour prouver la fermeture de l'issue."
