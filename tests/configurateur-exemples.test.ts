@@ -14,7 +14,7 @@ test('configurateur : exemples pâles en placeholder, aucune valeur préremplie'
     assert.match(input, /placeholder="[^"]+"/, `exemple pour ${key}`);
     assert.doesNotMatch(input, /\svalue=/, `aucune valeur pour ${key}`);
   }
-  for (const example of ['La Vigie', 'Cégep de Sainte-Foy', 'redaction@exemple.ca']) assert.ok(html.includes(`placeholder="${example}"`), example);
+  for (const example of ['Le Sillage', 'Cégep du Val-des-Brumes', 'redaction@exemple.ca']) assert.ok(html.includes(`placeholder="${example}"`), example);
   // Les sections proposées sont un exemple ; on les reprend seulement d'un clic.
   assert.match(js, /\n  sections: '',\n/);
   assert.match(js, /\$\('config-sections'\)\.placeholder = K\.SECTIONS_PROPOSEES/);
