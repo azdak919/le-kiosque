@@ -1,7 +1,7 @@
 # Journal
 
 ## Non publié
-- Socle épinglé à de9cef4 ([PR 84](https://github.com/azdak919/le-socle/pull/84)) : en démonstration, le changement de courriel sur « Mon profil » reste local, dans le navigateur. Une page d’accueil ou une erreur HTML (404 ou 405) n’est plus affichée sous le bouton.
+- Socle épinglé à 501e1d0 ([PR 84](https://github.com/azdak919/le-socle/pull/84)) : en démonstration, le changement de courriel sur « Mon profil » reste local, dans le navigateur. Une page d’accueil ou une erreur HTML (404 ou 405) n’est plus affichée sous le bouton. Un seul texte à la fois : l’aide courte avant le clic, le message de statut après, sans répétition.
 
 - Socle épinglé à 2c34940 (fusions des PR azdak919/le-socle#81 et #82) : le second bouton « Voir le journal » du tableau de bord, sous les compteurs, à côté de « Créer un article », est retiré. Celui de l’en-tête reste. Les mentions « Propulsé par Le Socle » mènent à <https://socle.le-radar.ca/>.
 - Démonstration Le Quorum : un drapeau `demoEditorialEntry` (désactivé par défaut, activé seulement sur la vitrine) ajoute une pastille d’accent dans le mât — « Essayer l’espace de rédaction (démo) », et « Espace de rédaction (démo) » au téléphone — et le même libellé explicite au pied de page. Elle mène à l’espace de rédaction déjà servi à `/admin/`, en mode local (données dans le navigateur). Un vrai journal, ou le thème sans ce drapeau, n’affiche jamais ce bouton.
