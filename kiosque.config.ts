@@ -14,6 +14,8 @@ const config: Partial<KiosqueConfig> = {
   },
   demoNotice: 'Démonstration du Kiosque — journal étudiant fictif',
   demoContent: true,
+  // Pastille et libellé explicites, uniquement sur cette vitrine.
+  demoEditorialEntry: true,
   feedLimit: 30,
 };
 

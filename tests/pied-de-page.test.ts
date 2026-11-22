@@ -53,7 +53,7 @@ test('pied de page : lien discret « Espace de rédaction » après Propulsé pa
   assert.ok(root.indexOf('Propulsé par') < root.indexOf('Espace de rédaction'));
   assert.doesNotMatch(root, /<img\b/);
   const templates = readFileSync(new URL('../packages/theme-radar/src/templates.ts', import.meta.url), 'utf8');
-  assert.match(templates, /footBuiltHtml\(ctx\.redactionHref \?\? asset\('\/redaction\/', ctx\)\)/);
+  assert.match(templates, /footBuiltHtml\(ctx\.redactionHref \?\? asset\('\/redaction\/', ctx\), showDemoEditorialEntry\(ctx\)\)/);
   assert.match(live, /link\(base, '\/redaction\/'\)/);
   assert.match(live, /Espace de rédaction/);
   assert.doesNotMatch(live, /site-foot__built[\s\S]{0,200}<img/);

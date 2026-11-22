@@ -571,9 +571,23 @@ export function footCopyright(publication, year) {
 const KIOSQUE_SITE_URL = 'https://kiosque.le-radar.ca/';
 const POWERED_BY = `Propulsé par <a href="${KIOSQUE_SITE_URL}" rel="noopener">Le Kiosque</a>, plateforme libre sous licence GPL pour les journaux étudiants.`;
 
-/** Ligne du bas : mention Propulsé par, puis un lien discret vers l’espace de rédaction. */
-export function footBuiltHtml(redactionHref) {
-  return `${POWERED_BY} <span class="site-foot__sep" aria-hidden="true">·</span> <a class="site-foot__redaction" href="${esc(redactionHref)}">Espace de rédaction</a>`;
+const DEMO_EDITORIAL_FULL = 'Essayer l’espace de rédaction (démo)';
+const DEMO_EDITORIAL_SHORT = 'Espace de rédaction (démo)';
+
+function demoEditorialEntryOn(editorial) {
+  return editorial?.mode === 'demo-local' && editorial.demoEditorialEntry === true;
+}
+
+function footRedactionLabel(demoEntry = false) {
+  return demoEntry
+    ? `<span class="site-foot__redaction-full">${DEMO_EDITORIAL_FULL}</span><span class="site-foot__redaction-short">${DEMO_EDITORIAL_SHORT}</span>`
+    : 'Espace de rédaction';
+}
+
+/** Ligne du bas : mention Propulsé par, puis un lien vers l’espace de rédaction. */
+export function footBuiltHtml(redactionHref, demoEntry = false) {
+  const attrs = demoEntry ? ` aria-label="${DEMO_EDITORIAL_FULL}"` : '';
+  return `<span class="site-foot__powered">${POWERED_BY}</span> <span class="site-foot__sep" aria-hidden="true">·</span> <a class="site-foot__redaction" href="${esc(redactionHref)}"${attrs}>${footRedactionLabel(demoEntry)}</a>`;
 }
 
 
@@ -654,7 +668,7 @@ export function applyBranding(bundle, base) {
     const redactionHref = editorial?.mode === 'demo-local' && editorial.adminBasePath
       ? `${String(editorial.adminBasePath).replace(/\/+$/, '')}/`
       : link(base, '/redaction/');
-    built.innerHTML = footBuiltHtml(redactionHref);
+    built.innerHTML = footBuiltHtml(redactionHref, demoEditorialEntryOn(editorial));
     credit.append(built);
   });
   document.querySelectorAll('.masthead-meta > span').forEach((node) => { node.textContent = publication.institution || ''; });

@@ -42,6 +42,11 @@ export interface RenderContext {
   authorsBySlug: Map<string, Author>;
   /** Bandeau « démonstration » affiché en tête de chaque page. */
   demoNotice?: string;
+  /**
+   * Accès explicite à l’espace de rédaction, seulement si le drapeau de
+   * démo est activé. Un vrai journal ne le pose jamais.
+   */
+  demoEditorialEntry?: boolean;
   /** Année de génération, pour le pied de page. */
   buildYear: number;
   /** Active uniquement pour la démonstration éditoriale navigateur. */
@@ -108,9 +113,36 @@ export const KIOSQUE_SITE_URL = 'https://kiosque.le-radar.ca/';
 
 const POWERED_BY = `Propulsé par <a href="${KIOSQUE_SITE_URL}" rel="noopener">Le Kiosque</a>, plateforme libre sous licence GPL pour les journaux étudiants.`;
 
-/** Ligne du bas : mention Propulsé par, puis un lien discret vers l’espace de rédaction. */
-export function footBuiltHtml(redactionHref: string): string {
-  return `${POWERED_BY} <span class="site-foot__sep" aria-hidden="true">·</span> <a class="site-foot__redaction" href="${esc(redactionHref)}">Espace de rédaction</a>`;
+/** Accès explicite à l’espace de rédaction : drapeau de démo et mode local. */
+export function showDemoEditorialEntry(ctx: Pick<RenderContext, 'demoEditorialEntry' | 'editorial'>): boolean {
+  return ctx.demoEditorialEntry === true && ctx.editorial?.mode === 'demo-local';
+}
+
+const DEMO_EDITORIAL_FULL = 'Essayer l’espace de rédaction (démo)';
+const DEMO_EDITORIAL_SHORT = 'Espace de rédaction (démo)';
+
+/** Libellé du pied : explicite sur la démo, discret sur un vrai journal. */
+export function footRedactionLabel(demoEntry = false): string {
+  return demoEntry
+    ? `<span class="site-foot__redaction-full">${DEMO_EDITORIAL_FULL}</span><span class="site-foot__redaction-short">${DEMO_EDITORIAL_SHORT}</span>`
+    : 'Espace de rédaction';
+}
+
+/** Ligne du bas : mention Propulsé par, puis un lien vers l’espace de rédaction. */
+export function footBuiltHtml(redactionHref: string, demoEntry = false): string {
+  const attrs = demoEntry ? ` aria-label="${DEMO_EDITORIAL_FULL}"` : '';
+  return `<span class="site-foot__powered">${POWERED_BY}</span> <span class="site-foot__sep" aria-hidden="true">·</span> <a class="site-foot__redaction" href="${esc(redactionHref)}"${attrs}>${footRedactionLabel(demoEntry)}</a>`;
+}
+
+/** Pastille d’accent du mât, uniquement quand le drapeau de démo est activé. */
+export function mastheadDemoEditorialHtml(ctx: RenderContext): string {
+  if (!showDemoEditorialEntry(ctx)) return '';
+  const href = esc(ctx.redactionHref ?? asset('/admin/', ctx));
+  return `<a class="masthead-demo-editorial" href="${href}" aria-label="${DEMO_EDITORIAL_FULL}">` +
+    `<svg class="masthead-demo-editorial__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 20h9"/><path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4Z"/></svg>` +
+    `<span class="masthead-demo-editorial__full">${DEMO_EDITORIAL_FULL}</span>` +
+    `<span class="masthead-demo-editorial__short">${DEMO_EDITORIAL_SHORT}</span>` +
+    `</a>`;
 }
 
 /** L'organisme responsable, sauf s'il répète ce que le pied de page dit déjà. */
@@ -1002,6 +1034,7 @@ ${demoBannerHtml(ctx.demoNotice)}
       <div>
         <p class="wordmark"><a href="${asset('/', ctx)}">${wordmarkInner(masthead, ctx)}</a></p>
         ${masthead.signature ? `<p class="masthead-tagline">${esc(masthead.signature)}</p>` : ''}
+        ${mastheadDemoEditorialHtml(ctx)}
       </div>
       <div class="masthead-meta">
         <span>${esc(masthead.institution)}</span>
@@ -1057,7 +1090,7 @@ ${content}
             : ''
       }
       <p class="site-foot__legal">${footCopyright(pub, ctx.buildYear)}</p>
-      <p class="site-foot__built">${footBuiltHtml(ctx.redactionHref ?? asset('/redaction/', ctx))}</p>
+      <p class="site-foot__built">${footBuiltHtml(ctx.redactionHref ?? asset('/redaction/', ctx), showDemoEditorialEntry(ctx))}</p>
     </div>
   </div>
 </footer>
@@ -1121,7 +1154,7 @@ ${content}
 ${ctx.editorial ? `<script>window.KIOSQUE_EDITORIAL=${JSON.stringify(ctx.editorial.mode === 'socle-vivant'
   // Paquet complet : le socle PHP de la même installation remet le sous-dossier dans ces chemins.
   ? { mode: 'socle-vivant', apiBase: ctx.basePath, publicBasePath: ctx.basePath, adminBasePath: `${ctx.basePath}/redaction`, assetsBase: ctx.editorial.assetsBase }
-  : { mode: 'demo-local', publicBasePath: ctx.basePath, adminBasePath: (ctx.redactionHref ?? `${ctx.basePath}/admin`).replace(/\/+$/, ''), assetsBase: ctx.editorial.assetsBase, seedUrl: ctx.editorial.seedUrl, publicationSlug: pub.slug, databaseKey: ctx.editorial.databaseKey }).replace(/</g, '\\u003c')};</script>
+  : { mode: 'demo-local', publicBasePath: ctx.basePath, adminBasePath: (ctx.redactionHref ?? `${ctx.basePath}/admin`).replace(/\/+$/, ''), assetsBase: ctx.editorial.assetsBase, seedUrl: ctx.editorial.seedUrl, publicationSlug: pub.slug, databaseKey: ctx.editorial.databaseKey, demoEditorialEntry: showDemoEditorialEntry(ctx) }).replace(/</g, '\\u003c')};</script>
 <script type="module" src="${ctx.editorial.assetsBase}/front.js"></script>` : ''}
 </body>
 </html>
