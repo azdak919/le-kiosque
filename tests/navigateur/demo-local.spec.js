@@ -50,7 +50,8 @@ test('configurer, rédiger, prévisualiser, publier, persister et exporter sans 
   await page.getByRole('link', { name: 'Ouvrir /admin/' }).click();
   await expect(page.getByText('Mode démonstration local — données conservées dans ce navigateur')).toBeVisible({ timeout: 45_000 });
   await expect(page.getByRole('heading', { name: 'Tableau de bord' })).toBeVisible({ timeout: 45_000 });
-  await expect(page.locator('.admin-brand').getByRole('img', { name: 'La Relève locale' })).toBeVisible();
+  await expect(page.locator('.admin-brand').getByRole('img', { name: 'Le Socle' })).toBeVisible();
+  await expect(page.locator('.admin-brand')).toContainText('La Relève locale');
   await expect(page).toHaveTitle('Tableau de bord — La Relève locale');
 
   await page.locator('.admin-nav').getByRole('link', { name: 'Photos', exact: true }).click();
@@ -132,7 +133,8 @@ test('configurer, rédiger, prévisualiser, publier, persister et exporter sans 
   // Import banque + sql.js : long en CI. Le toast (#toast) est éphémère (CSS/timing) —
   // attendre le bouton redevenu utilisable puis les exemples en liste.
   await expect(page.getByRole('button', { name: 'Restaurer Le Quorum' })).toBeEnabled({ timeout: 90_000 });
-  await expect(page.locator('.admin-brand').getByRole('img', { name: 'La Relève locale' })).toBeVisible();
+  await expect(page.locator('.admin-brand').getByRole('img', { name: 'Le Socle' })).toBeVisible();
+  await expect(page.locator('.admin-brand')).toContainText('La Relève locale');
   await page.locator('.admin-nav').getByRole('link', { name: 'Articles', exact: true }).click();
   await expect(page.getByText('Exemple local').first()).toBeVisible({ timeout: 60_000 });
 

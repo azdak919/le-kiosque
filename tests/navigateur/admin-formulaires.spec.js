@@ -1,12 +1,12 @@
 import { expect, test } from '@playwright/test';
 
-test('annuler une signature revient à la liste sans enregistrer', async ({ page }) => {
+test('annuler un auteur revient à la liste sans enregistrer', async ({ page }) => {
   await page.goto('/autre-nom/admin/');
   await expect(page.getByRole('heading', { name: 'Tableau de bord' })).toBeVisible({ timeout: 45_000 });
   await page.locator('.admin-nav').getByRole('link', { name: 'Équipe', exact: true }).click();
   await expect(page.getByRole('heading', { name: 'Auteurs', exact: true })).toBeVisible();
   await page.getByRole('button', { name: 'Modifier' }).first().click();
-  await expect(page.getByRole('heading', { name: 'Modifier une signature' })).toBeVisible();
+  await expect(page.getByRole('heading', { name: 'Modifier un auteur' })).toBeVisible();
   const name = page.getByLabel('Nom', { exact: true });
   const original = await name.inputValue();
   await name.fill('Nom qui ne doit pas rester');
