@@ -569,7 +569,7 @@ export function footCopyright(publication, year) {
 }
 
 const KIOSQUE_SITE_URL = 'https://kiosque.le-radar.ca/';
-const POWERED_BY = `Propulsé par <a href="${KIOSQUE_SITE_URL}" rel="noopener">Le Kiosque</a>, plateforme libre sous licence GPL pour les journaux étudiants.`;
+const POWERED_BY = `Propulsé par <a href="${KIOSQUE_SITE_URL}" rel="noopener">Le Kiosque</a>, plateforme libre sous licence GNU AGPLv3 pour les journaux étudiants.`;
 
 const DEMO_EDITORIAL_FULL = 'Essayer l’espace de rédaction (démo)';
 const DEMO_EDITORIAL_SHORT = 'Espace de rédaction (démo)';

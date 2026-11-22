@@ -88,8 +88,22 @@ npm run site
 
 ---
 
-## Licence et crédits
+## Licence et crédits / License
 
-Le logiciel est sous [GPL version 2 seulement](LICENSE). Les contenus publiés par chaque journal appartiennent à leurs autrices, auteurs et à l’équipe. Les composants tiers sont listés dans [`THIRD_PARTY.md`](THIRD_PARTY.md). Le logo du Kiosque, un kiosque à auvent rayé, est un dessin original publié sous la même licence que le logiciel.
+| Partie | Licence | Fichier |
+| --- | --- | --- |
+| Code source : moteur, adaptateurs, thème, configurateur, outils | [GNU AGPLv3](https://www.gnu.org/licenses/agpl-3.0.html) (`AGPL-3.0-or-later`) | [`LICENSE`](LICENSE) |
+| Site produit pour un journal (fichiers que le build écrit ou recopie dans son site) | Libre d’usage pour le journal, sans obligation de l’AGPLv3 | [`LICENSE-EXCEPTIONS.md`](LICENSE-EXCEPTIONS.md) |
+| Extension WordPress (`wordpress/le-kiosque/`) | MIT | en-tête de `le-kiosque.php` |
+| Articles, photos et nom de chaque journal | Propriété exclusive de leurs autrices, auteurs et de l’équipe qui les publie | — |
+
+- Le Kiosque n’a pas de kit-média ni de scripts d’intégration propres. La barre radio vient de LE-RADAR : `radio-barre.js` y est sous MIT.
+- Les photos de la démonstration gardent leur licence d’origine (CC0, CC BY ou CC BY-SA), listée dans [`THIRD_PARTY.md`](THIRD_PARTY.md), comme les autres composants tiers.
+- Le logo du Kiosque, un kiosque à auvent rayé, est un dessin original publié sous la même licence que le logiciel.
+- Le projet est indépendant. Il n’est affilié à aucun journal ni à aucun établissement.
+
+*English:* the source code is under the GNU AGPLv3 (`AGPL-3.0-or-later`). An additional permission frees the site that Le Kiosque builds for a newspaper: the newspaper may modify its theme without publishing its code. Articles and photos belong to their authors and newspapers.
+
+Projets liés : [LE-RADAR](https://github.com/azdak919/le-radar) (<https://le-radar.ca/>) et [LE SOCLE](https://github.com/azdak919/le-socle) (<https://socle.le-radar.ca/>), sous la même licence.
 
 L’identité visuelle reprend celle du [Radar](https://github.com/azdak919/le-radar), sans y être liée : chaque projet peut évoluer de son côté.
