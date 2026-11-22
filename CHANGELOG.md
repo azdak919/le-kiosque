@@ -1,8 +1,10 @@
 # Journal
 
 ## Non publié
-- Socle épinglé à 50e14e0 ([azdak919/le-socle#86](https://github.com/azdak919/le-socle/pull/86)) : code d’installation à usage unique, routeur pour le serveur intégré de PHP (la base n’est plus téléchargeable ; les pages Sauvegarde et Mise à jour s’ouvrent), auteur créé pour le compte qui installe le journal, exemples de formulaire « Le Sillage » et « Cégep du Val-des-Brumes ».
+- Socle épinglé à 4d0ff90 ([azdak919/le-socle#86](https://github.com/azdak919/le-socle/pull/86)) : code d’installation à usage unique, routeur pour le serveur intégré de PHP (la base n’est plus téléchargeable ; les pages Sauvegarde et Mise à jour s’ouvrent), auteur créé pour le compte qui installe le journal, exemples de formulaire « Le Sillage » et « Cégep du Val-des-Brumes ». Cette épingle inclut aussi la PR 84 (courriel de la démo sur « Mon profil »).
 - Configurateur et exemples de réseaux sociaux : les exemples « La Vigie » et « Cégep de Sainte-Foy » sont remplacés par ces mêmes noms fictifs (compte lesillage). Les crédits de photos réelles et les données de démonstration déjà enregistrées ne changent pas.
+
+- Socle épinglé à aa316a3 ([PR 84](https://github.com/azdak919/le-socle/pull/84)) : en démonstration, le changement de courriel sur « Mon profil » reste local, dans le navigateur. L’adresse fictive redaction@exemple.ca s’affiche dès l’ouverture. Une page d’accueil ou une erreur HTML (404 ou 405) n’est plus affichée sous le bouton. Un seul texte à la fois : l’aide courte avant le clic, le message de statut après, sans répétition.
 
 - Socle épinglé à 2c34940 (fusions des PR azdak919/le-socle#81 et #82) : le second bouton « Voir le journal » du tableau de bord, sous les compteurs, à côté de « Créer un article », est retiré. Celui de l’en-tête reste. Les mentions « Propulsé par Le Socle » mènent à <https://socle.le-radar.ca/>.
 - Démonstration Le Quorum : un drapeau `demoEditorialEntry` (désactivé par défaut, activé seulement sur la vitrine) ajoute une pastille d’accent dans le mât — « Essayer l’espace de rédaction (démo) », et « Espace de rédaction (démo) » au téléphone — et le même libellé explicite au pied de page. Elle mène à l’espace de rédaction déjà servi à `/admin/`, en mode local (données dans le navigateur). Un vrai journal, ou le thème sans ce drapeau, n’affiche jamais ce bouton.
