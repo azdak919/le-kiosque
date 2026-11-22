@@ -76,7 +76,7 @@ l’administration comme fonctionnelle.
    Markdown en suivant `AJOUTER-UN-ARTICLE.md`.
 2. Gardez le statut `draft` pendant l’écriture, puis `in-review` pendant la
    révision. Seul `published` apparaît publiquement.
-3. Ajoutez une signature, une section et `publishedAt` avant de publier.
+3. Ajoutez un auteur, une section et `publishedAt` avant de publier.
 4. Confirmez le changement. Le workflow reconstruit le site depuis `content/`
    et `media/`, jamais depuis le CMS.
 

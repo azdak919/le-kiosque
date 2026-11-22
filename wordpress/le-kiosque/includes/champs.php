@@ -9,7 +9,7 @@ defined( 'ABSPATH' ) || exit;
 const LE_KIOSQUE_CHAMPS = array(
 	'kiosque_chapeau'      => 'Chapeau (texte d’introduction sous le titre)',
 	'kiosque_credit_photo' => 'Crédit de la photo principale',
-	'kiosque_signatures'   => 'Signatures (une par ligne, si plusieurs auteurs)',
+	'kiosque_signatures'   => 'Auteurs (une personne par ligne, s’il y en a plusieurs)',
 );
 
 add_action(

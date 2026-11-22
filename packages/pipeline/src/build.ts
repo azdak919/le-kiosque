@@ -482,7 +482,7 @@ export async function build(options: BuildOptions): Promise<BuildResult> {
     page(
       `<div class="wrap wire">
       <div class="wire-head"><h1 class="wire-title">Plan du site</h1></div>
-      <p class="section-intro">${listed.length} article${listed.length > 1 ? 's' : ''} sur le fil, ${paged.length} dans les <a href="${basePath}/archives/">archives</a>, ${bundle.taxonomies.sections.length} sections, ${bundle.authors.length} signatures.</p>
+      <p class="section-intro">${listed.length} article${listed.length > 1 ? 's' : ''} sur le fil, ${paged.length} dans les <a href="${basePath}/archives/">archives</a>, ${bundle.taxonomies.sections.length} sections, ${bundle.authors.length} auteur${bundle.authors.length > 1 ? 's' : ''}.</p>
       <ul>
         <li><a href="${basePath}/archives/">Archives</a> — registre chronologique complet</li>
         ${sportsCfg && sportsCfg.enabled !== false && sportsTeams.length

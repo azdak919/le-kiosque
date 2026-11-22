@@ -3,6 +3,7 @@ slug: philippe-lavoie
 name: Philippe Lavoie
 role: Ancien journaliste sports
 cohort: '2022-2024'
+status: former
 active: false
 avatar:
   src: /media/demo-library/auteurs/philippe-lavoie.jpg

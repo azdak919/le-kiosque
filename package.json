@@ -29,7 +29,7 @@
     "node": ">=22.18"
   },
   "dependencies": {
-    "le-socle": "github:azdak919/le-socle#2c34940cd6510ba2bf851513f8cf9ad43af47b0d",
+    "le-socle": "github:azdak919/le-socle#46cd021018a126fa8f71219aebce0ea809a6a76e",
     "marked": "^18.2.0",
     "yaml": "^2.9.1"
   },

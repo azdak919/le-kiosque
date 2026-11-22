@@ -574,7 +574,12 @@ export class MarkdownSource implements ContentSource<MarkdownConfig> {
         email: str(data.email),
         social: (data.social as Record<string, string> | undefined) ?? undefined,
         cohort: str(data.cohort),
-        active: data.active === undefined ? true : Boolean(data.active),
+        ...(() => {
+          const raw = str(data.status);
+          const status: 'active' | 'former' =
+            raw === 'former' || raw === 'ancien' || data.active === false ? 'former' : 'active';
+          return { status, active: status === 'active' };
+        })(),
         source: attribution,
       });
     }

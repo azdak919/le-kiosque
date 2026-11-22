@@ -17,7 +17,7 @@ Montrez la signature : **Publier aujourd’hui. Transmettre demain.**
 ## 1:00 — Le résultat
 
 Ouvrez **Voir la démonstration**. Montrez le fil du Quorum, un article avec
-image, une section, une signature et le flux. Dites que tout est fictif et que
+image, une section, un auteur et le flux. Dites que tout est fictif et que
 le brouillon et l’article en révision n’existent dans aucune sortie publique.
 
 ## 2:00 — Personnaliser sans terminal

@@ -3,6 +3,7 @@ slug: nicolas-petit
 name: Nicolas Petit
 role: Ancien réviseur
 cohort: '2021-2023'
+status: former
 active: false
 avatar:
   src: /media/demo-library/auteurs/nicolas-petit.jpg

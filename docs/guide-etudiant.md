@@ -104,13 +104,13 @@ brouillon. Rien de coché = toutes les rubriques.
 L'ancien nom « responsable » s'appelle maintenant **administrateur**. Un
 compte créé sous l'ancien nom est lu comme administrateur : rien à refaire.
 
-**Nouvelle signature** (plus bas dans **Auteurs**) crée le nom que le public
-voit sous les articles ; une signature n'est pas un compte.
+**Nouvel auteur** (plus bas dans **Auteurs**) crée le nom que le public
+voit sous les articles ; un auteur n'est pas un compte.
 
 ## 6. Écrire et publier un article
 
 1. **Articles → Nouvel article** : titre, chapeau, texte (l'éditeur visuel
-   enregistre ce que vous voyez), section, signature(s).
+   enregistre ce que vous voyez), section, auteur(s).
 2. **Photo** : placez le curseur à l'endroit voulu et insérez l'image. Le
    **crédit** est obligatoire ; inscrivez toujours la **licence** à côté
    (le site l'affiche avec le crédit). Pour des photos libres,
@@ -123,7 +123,7 @@ voit sous les articles ; une signature n'est pas un compte.
 ## 7. Sauvegarde
 
 **Sauvegarde → Télécharger la sauvegarde complète** (administrateur) : un ZIP
-avec les articles, les photos, les signatures, les sections, l'équipe (sans les
+avec les articles, les photos, les auteurs, les sections, l'équipe (sans les
 mots de passe) et les réglages. Il s'ouvre comme n'importe quel ZIP. Faites-le chaque fin
 de session et avant toute opération délicate, et gardez-le hors du serveur.
 La même page restaure une archive.
@@ -258,8 +258,8 @@ tout ressaisir.
    configurateur** et choisissez `kiosque-config.json`. Vérifiez l'adresse du site et l'organisme responsable,
    puis **Enregistrer** (une seule fois suffit).
 2. **Auteurs → Équipe : comptes et rôles** ajoute les comptes de l'équipe
-   (rôles et rubriques : voir la section 5). Plus bas, **Nouvelle
-   signature** crée le nom que le public voit sous les articles.
+   (rôles et rubriques : voir la section 5). Plus bas, **Nouvel
+   auteur** crée le nom que le public voit sous les articles.
 
 ## B6. Écrire et publier un article
 

@@ -293,7 +293,7 @@ export function buildCmsConfig(options: CmsConfigOptions): Record<string, unknow
           },
           {
             name: 'authors',
-            label: 'Signature',
+            label: 'Auteurs',
             widget: 'relation',
             collection: 'auteurs',
             search_fields: ['name'],
@@ -424,7 +424,7 @@ export function buildCmsConfig(options: CmsConfigOptions): Record<string, unknow
             widget: 'boolean',
             default: true,
             required: false,
-            hint: 'Décocher au départ de la personne. Ses signatures restent sur ses articles : une archive ne se réécrit pas.',
+            hint: 'Décocher pour passer la personne dans les anciens. Son nom reste sur ses articles : une archive ne se réécrit pas.',
           },
           { name: 'email', label: 'Courriel', widget: 'string', required: false },
           { name: 'avatar', label: 'Portrait', widget: 'image', required: false },
