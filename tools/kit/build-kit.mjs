@@ -33,6 +33,7 @@ for (const part of ['package.json', 'LICENSE', 'THIRD_PARTY.md', 'admin']) fs.cp
 // Le build lit la version du Kiosque dans package.json (page Mise à jour).
 fs.copyFileSync(path.join(REPO, 'package.json'), path.join(KIT, 'package.json'));
 fs.copyFileSync(path.join(REPO, 'LICENSE'), path.join(KIT, 'LICENSE'));
+fs.copyFileSync(path.join(REPO, 'LICENSE-EXCEPTIONS.md'), path.join(KIT, 'LICENSE-EXCEPTIONS.md'));
 
 // 2. Outils et documents
 const here = path.join(REPO, 'tools', 'kit');

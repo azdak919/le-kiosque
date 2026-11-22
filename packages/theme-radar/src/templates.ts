@@ -111,7 +111,7 @@ export function footCopyright(pub: { name?: string; founded?: string; license?: 
 /** Page de présentation du Kiosque, liée au bas de chaque page publique (seul endroit à changer). */
 export const KIOSQUE_SITE_URL = 'https://kiosque.le-radar.ca/';
 
-const POWERED_BY = `Propulsé par <a href="${KIOSQUE_SITE_URL}" rel="noopener">Le Kiosque</a>, plateforme libre sous licence GPL pour les journaux étudiants.`;
+const POWERED_BY = `Propulsé par <a href="${KIOSQUE_SITE_URL}" rel="noopener">Le Kiosque</a>, plateforme libre sous licence GNU AGPLv3 pour les journaux étudiants.`;
 
 /** Accès explicite à l’espace de rédaction : drapeau de démo et mode local. */
 export function showDemoEditorialEntry(ctx: Pick<RenderContext, 'demoEditorialEntry' | 'editorial'>): boolean {

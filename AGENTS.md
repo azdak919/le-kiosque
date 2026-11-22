@@ -109,7 +109,7 @@ objects. *Un fichier qui viole ça plante au chargement, pas au build.*
 **Trois dépendances de production, `yaml`, `marked` et `le-socle`.** `le-socle` est épinglé sur un commit précis (`github:azdak919/le-socle#<sha>`) : c'est lui qui fournit l'admin de rédaction. Playwright
 est une dépendance de développement verrouillée, qui ne sert qu’aux tests. La base
 de la démo (sql.js, MIT) arrive avec l’admin du socle et n’est copiée que dans une
-sortie `demo-local`. PGlite (Apache-2.0, incompatible avec GPL-2.0-only) est retiré :
+sortie `demo-local`. PGlite (Apache-2.0, incompatible avec la GPL-2.0-only en vigueur à l’époque) est retiré :
 ne pas le remettre. N'en ajoute pas sans
 raison forte. Chaque dépendance est une dette de survie : le projet doit se
 reconstruire dans dix ans.
