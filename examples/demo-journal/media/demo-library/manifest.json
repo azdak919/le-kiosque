@@ -90,48 +90,6 @@
       }
     },
     {
-      "id": "9cdaed82-7e4c-59ec-a54b-b4025769c4a6",
-      "kind": "image",
-      "src": "/media/demo-library/batiment-jonquiere.jpg",
-      "remoteSrc": "https://commons.wikimedia.org/wiki/Special:FilePath/B%C3%A2timent_du_C%C3%A9gep_de_Jonqui%C3%A8re.JPG?width=2400",
-      "sourceUrl": "https://commons.wikimedia.org/wiki/File:B%C3%A2timent_du_C%C3%A9gep_de_Jonqui%C3%A8re.JPG",
-      "alt": "Bâtiment du Cégep de Jonquière vu de l’extérieur",
-      "caption": "Bâtiment du Cégep de Jonquière.",
-      "credit": "Khayman",
-      "creditUrl": "https://commons.wikimedia.org/wiki/User:Khayman",
-      "license": "CC BY-SA 3.0",
-      "licenseUrl": "https://creativecommons.org/licenses/by-sa/3.0/",
-      "width": 2400,
-      "height": 1606,
-      "mime": "image/jpeg",
-      "checksum": "c07b627d841caa09011944353109b8b4c31723a3519904e044463d6f6e1aeda4",
-      "focalPoint": {
-        "x": 50,
-        "y": 51
-      },
-      "institution": "Cégep de Jonquière",
-      "campus": "Jonquière",
-      "keywords": [
-        "campus",
-        "bâtiment",
-        "extérieur",
-        "Saguenay"
-      ],
-      "usages": [
-        "exterior",
-        "article"
-      ],
-      "source": {
-        "backend": "wikimedia-commons",
-        "backendId": "File:Bâtiment du Cégep de Jonquière.JPG",
-        "backendUrl": "https://commons.wikimedia.org/wiki/File:B%C3%A2timent_du_C%C3%A9gep_de_Jonqui%C3%A8re.JPG",
-        "fetchedAt": "2026-11-21T08:09:58.549Z",
-        "revision": "2400px-from-original",
-        "license": "CC BY-SA 3.0",
-        "originalPublisher": "Wikimedia Commons"
-      }
-    },
-    {
       "id": "09b590b4-62c5-5da4-ab61-36087073a079",
       "kind": "image",
       "src": "/media/demo-library/football-jonquiere.jpg",

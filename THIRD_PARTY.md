@@ -65,7 +65,6 @@ propre licence et ne sont pas fondues dans le programme.
 | --- | --- | --- | --- |
 | `campus-sainte-foy.jpg` | Khayman | CC BY-SA 3.0 | [source](https://commons.wikimedia.org/wiki/File:Campus_du_C%C3%A9gep_de_Sainte-Foy01.JPG) |
 | `interieur-sainte-foy.jpg` | Khayman | CC BY-SA 3.0 | [source](https://commons.wikimedia.org/wiki/File:C%C3%A9gep_de_Sainte-Foy_(int%C3%A9rieur).JPG) |
-| `batiment-jonquiere.jpg` | Khayman | CC BY-SA 3.0 | [source](https://commons.wikimedia.org/wiki/File:B%C3%A2timent_du_C%C3%A9gep_de_Jonqui%C3%A8re.JPG) |
 | `football-jonquiere.jpg` | Khayman | CC BY-SA 3.0 | [source](https://commons.wikimedia.org/wiki/File:Terrain_de_football_du_C%C3%A9gep_de_Jonqui%C3%A8re.JPG) |
 | `campus-limoilou.jpg` | Pierre-Paul Beaumont | CC BY 2.0 ca | [source](https://commons.wikimedia.org/wiki/File:Campus_de_Qu%C3%A9bec.jpg) |
 | `mcgill-roddick.jpg` | Gene.arboit | CC BY-SA 3.0 | [source](https://commons.wikimedia.org/wiki/File:Roddick_Gates_(McGill_University)_2005-09-02.jpg) |
