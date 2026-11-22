@@ -1,6 +1,6 @@
 {
   "name": "kiosque",
-  "version": "0.4.2",
+  "version": "1.0.0",
   "private": true,
   "description": "Le Kiosque — plateforme libre pour les journaux étudiants",
   "license": "AGPL-3.0-or-later",

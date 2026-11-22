@@ -1,6 +1,7 @@
 # Journal
 
 ## Non publié
+- Version 1.0.0. Socle épinglé à d9ed3a8. Première version majeure : le Kiosque et le Socle passent à la GNU AGPLv3, et le site produit appartient au journal (`LICENSE-EXCEPTIONS.md`). Aucune opération à la main pour un journal installé : la mise à jour en un clic suffit.
 - Socle épinglé à d9ed3a8 ([azdak919/le-socle#87](https://github.com/azdak919/le-socle/pull/87)) : le Socle passe lui aussi à la GNU AGPLv3. Le paquet ne contient plus de code sous GPL-2.0-only, et `kiosque-journal.zip` emporte le `LICENSE-EXCEPTIONS.md` du Socle avec son admin.
 - Licence : le Kiosque passe de la GPL-2.0-only à la GNU AGPLv3 (`AGPL-3.0-or-later`). `LICENSE-EXCEPTIONS.md` laisse au journal le site produit : il peut modifier son thème sans publier son code. Le paquet `kiosque-journal.zip` emporte ce fichier. Mentions mises à jour : vitrine, guide, pied « Propulsé par », README, `THIRD_PARTY.md`.
 - Socle épinglé à 4d0ff90 ([azdak919/le-socle#86](https://github.com/azdak919/le-socle/pull/86)) : code d’installation à usage unique, routeur pour le serveur intégré de PHP (la base n’est plus téléchargeable ; les pages Sauvegarde et Mise à jour s’ouvrent), auteur créé pour le compte qui installe le journal, exemples de formulaire « Le Sillage » et « Cégep du Val-des-Brumes ». Cette épingle inclut aussi la PR 84 (courriel de la démo sur « Mon profil »).

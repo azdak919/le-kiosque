@@ -90,6 +90,10 @@ npm run site
 
 ## Licence et crédits / License
 
+**Auteur du code** — Azdak (2026)
+
+**Contact du projet** — [azdak-qc@proton.me](mailto:azdak-qc@proton.me)
+
 | Partie | Licence | Fichier |
 | --- | --- | --- |
 | Code source : moteur, adaptateurs, thème, configurateur, outils | [GNU AGPLv3](https://www.gnu.org/licenses/agpl-3.0.html) (`AGPL-3.0-or-later`) | [`LICENSE`](LICENSE) |
