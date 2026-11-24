@@ -30,13 +30,13 @@
   },
   "dependencies": {
     "le-socle": "github:azdak919/le-socle#69f22348466b2ca6452d4b8a5d2741c142eb94cc",
-    "marked": "^18.2.0",
+    "marked": "^18.2.1",
     "yaml": "^2.9.1"
   },
   "devDependencies": {
     "@playwright/test": "1.65.1",
     "@tailwindcss/cli": "4.3.5",
-    "basecoat-css": "1.1.0",
+    "basecoat-css": "1.2.1",
     "tailwindcss": "4.3.5"
   }
 }
