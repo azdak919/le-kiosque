@@ -60,7 +60,7 @@ jobs:
           done
           echo "sha=$(git rev-parse --short=7 upstream/main)" >> "$GITHUB_OUTPUT"
 
-      - uses: actions/setup-node@v4
+      - uses: actions/setup-node@v7
         with:
           node-version: '22'
 
