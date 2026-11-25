@@ -57,7 +57,8 @@ test('configurer, rédiger, prévisualiser, publier, persister et exporter sans 
   // Banque démo = seed (pas un entier magique 50/51).
   await expect(page.locator('.media-card')).toHaveCount(expectedMediaCount);
   await page.getByLabel('Rechercher une photo (lieu, sujet, mot-clé)').fill('Jonquière');
-  await expect(page.locator('.media-card:visible')).toHaveCount(2);
+  // Le chalet de Jonquière est retiré : il reste une seule photo de Jonquière.
+  await expect(page.locator('.media-card:visible')).toHaveCount(1);
   await page.locator('.admin-nav').getByRole('link', { name: 'Tableau de bord', exact: true }).click();
 
   await page.getByRole('button', { name: 'Créer un article' }).click();
