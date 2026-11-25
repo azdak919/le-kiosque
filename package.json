@@ -1,9 +1,9 @@
 {
   "name": "kiosque",
-  "version": "0.4.2",
+  "version": "1.0.0",
   "private": true,
   "description": "Le Kiosque — plateforme libre pour les journaux étudiants",
-  "license": "GPL-2.0-only",
+  "license": "AGPL-3.0-or-later",
   "type": "module",
   "bin": {
     "kiosque": "packages/pipeline/src/cli.ts"
@@ -29,14 +29,14 @@
     "node": ">=22.18"
   },
   "dependencies": {
-    "le-socle": "github:azdak919/le-socle#8a623c9bb45a4d32d3d63cfe0b1e58ee5ce304ae",
-    "marked": "^18.2.0",
+    "le-socle": "github:azdak919/le-socle#69f22348466b2ca6452d4b8a5d2741c142eb94cc",
+    "marked": "^18.2.1",
     "yaml": "^2.9.1"
   },
   "devDependencies": {
     "@playwright/test": "1.65.1",
     "@tailwindcss/cli": "4.3.5",
-    "basecoat-css": "1.1.0",
+    "basecoat-css": "1.2.1",
     "tailwindcss": "4.3.5"
   }
 }

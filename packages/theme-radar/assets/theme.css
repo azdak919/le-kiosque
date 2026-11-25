@@ -108,6 +108,66 @@ a { color: inherit; }
   margin: 8px 0 0;
   letter-spacing: 0.01em;
 }
+/* Pastille d’accès à l’espace de rédaction : seulement si le drapeau de démo
+   est activé. Distincte des outils ronds du mât (fond d’accent, icône crayon,
+   libellé explicite). */
+.masthead-demo-editorial {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45em;
+  margin-top: 0.7em;
+  max-width: 100%;
+  width: fit-content;
+  padding: 0.42em 0.9em 0.42em 0.72em;
+  border-radius: 999px;
+  background: var(--accent);
+  color: #fff;
+  font-weight: 650;
+  font-size: 0.82rem;
+  line-height: 1.2;
+  letter-spacing: 0.01em;
+  text-decoration: none;
+  position: relative;
+  z-index: 2;
+  box-sizing: border-box;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.22);
+}
+.masthead-demo-editorial:hover,
+.masthead-demo-editorial:focus-visible {
+  background: var(--accent-dark, var(--accent));
+  color: #fff;
+  text-decoration: none;
+}
+.masthead-demo-editorial:focus-visible {
+  outline: 2px solid #fff;
+  outline-offset: 2px;
+}
+:root[data-theme="dark"] .masthead-demo-editorial {
+  background: color-mix(in srgb, var(--accent) 72%, #000);
+  color: #fff;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) .masthead-demo-editorial {
+    background: color-mix(in srgb, var(--accent) 72%, #000);
+    color: #fff;
+  }
+}
+.masthead-demo-editorial__icon {
+  flex: none;
+  width: 1.1em;
+  height: 1.1em;
+}
+.masthead-demo-editorial__short { display: none; }
+@media (max-width: 720px) {
+  .masthead-demo-editorial {
+    font-size: 0.78rem;
+    margin-top: 0.55em;
+    min-height: 44px;
+    padding-inline: 0.85em 0.95em;
+  }
+  .masthead-demo-editorial__full { display: none; }
+  .masthead-demo-editorial__short { display: inline; }
+}
 .masthead-meta {
   display: flex;
   align-items: center;
@@ -1239,10 +1299,22 @@ body.with-radio .nav {
 .site-foot__redaction {
   font-weight: 500;
   color: inherit;
+  white-space: nowrap;
 }
 .site-foot__redaction:hover,
 .site-foot__redaction:focus-visible {
   color: var(--accent);
+}
+.site-foot__redaction-short { display: none; }
+.site-foot__powered { display: inline; }
+@media (max-width: 720px) {
+  .site-foot__redaction-full { display: none; }
+  .site-foot__redaction-short { display: inline; }
+}
+/* À la tablette, le libellé long passe sous « Propulsé par », sans point médian orphelin. */
+@media (max-width: 900px) {
+  .site-foot__built { display: flex; flex-direction: column; align-items: flex-start; gap: 0.35em; }
+  .site-foot__built .site-foot__sep { display: none; }
 }
 
 /* ─────────────── ARCHIVES (catalogue chronologique / SEO) ─────────────── */
@@ -1535,6 +1607,21 @@ body.with-radio .masthead--illustrated {
     0 1px 2px rgba(0, 0, 0, 0.55),
     0 2px 8px rgba(0, 0, 0, 0.32),
     0 0 12px rgba(0, 0, 0, 0.2);
+}
+/* La pastille d’accent reste lisible sur une photo chargée, sans se fondre
+   dans les outils translucides du mât. */
+.masthead--illustrated .masthead-demo-editorial {
+  background: var(--accent);
+  color: #fff;
+  text-shadow: none;
+  box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.28), 0 2px 8px rgba(0, 0, 0, 0.35);
+}
+/* Un peu plus de hauteur pour loger la pastille sans rogner ni chevaucher. */
+.masthead--illustrated:has(.masthead-demo-editorial) {
+  --masthead-ar: 3.15;
+  height: clamp(196px, calc(100vw / var(--masthead-ar)), 258px);
+  min-height: 196px;
+  max-height: 258px;
 }
 .masthead--illustrated .masthead-meta,
 .masthead--illustrated .masthead-clock {

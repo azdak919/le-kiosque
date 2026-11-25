@@ -13,14 +13,22 @@ LE KIOSQUE — paquet complet d'un journal étudiant (site du journal + rédacti
    sous-dossier, déposez le même contenu dans ce dossier : le programme détecte
    le préfixe tout seul, sans casser les liens.
 3. Ouvrez tout de suite https://votre-journal.com/redaction/ et remplissez l'assistant
-   d'installation : nom du journal, couleur, logo, sections, options et compte
-   administrateur (courriel + mot de passe de 10 caractères ou plus).
-   Tant que ce compte n'existe pas, la première personne qui ouvre la page peut le créer.
+   d'installation : nom du journal, couleur, logo, sections, options, votre nom,
+   le compte administrateur (courriel + mot de passe de 10 caractères ou plus)
+   et le code d'installation. Ce code se trouve dans le fichier
+   donnees/code-installation.txt, sur le serveur (il est créé à la première
+   ouverture de la page). Sans ce code, personne ne peut créer le compte.
 4. Le journal est à https://votre-journal.com/ ; tout se change ensuite dans
-   « Configuration ». Aucun dépôt GitHub, aucun terminal n'est nécessaire.
+   « Configuration ». Aucun dépôt GitHub n'est nécessaire.
 
 Les données (articles, photos, comptes) sont dans donnees/. Ce dossier est fermé
-au public. Sauvegarde : dans la rédaction, Sauvegarde → Télécharger la sauvegarde complète.
+au public (fichier .htaccess). Si vous essayez le journal sur votre ordinateur
+avec le serveur intégré de PHP, lancez-le depuis le dossier du journal :
+  php -S 127.0.0.1:8080 routeur.php
+Sans ce fichier routeur.php, la base pourrait être téléchargeable. Les pages
+« Sauvegarde » et « Mise à jour » de la rédaction passent aussi par ce routeur.
+
+Sauvegarde : dans la rédaction, Sauvegarde → Télécharger la sauvegarde complète.
 Mise à jour : dans la rédaction, Mise à jour → Vérifier s'il y a une nouvelle version.
 
 Dernière version, toujours à la même adresse (sans compte GitHub) :

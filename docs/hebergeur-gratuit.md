@@ -63,9 +63,10 @@ GitHub n'a pas besoin de le joindre.
    sous-dossier, créez ce dossier et déposez-y le contenu de `kiosque-journal/` : le programme
    détecte le préfixe tout seul, sans casser les liens.
 5. **Tout de suite**, ouvrez `https://phare-essai.alwaysdata.net/redaction/` et
-   remplissez l'assistant d'installation (guide, section 4) : tant qu'il n'est
-   pas rempli, la première personne qui ouvre la page peut créer le compte
-   administrateur. Gardez **Cacher le journal des moteurs de recherche**
+   remplissez l'assistant d'installation (guide, section 4). Le code
+   d'installation se trouve dans `donnees/code-installation.txt` sur le
+   serveur ; sans ce code, personne ne peut créer le compte administrateur.
+   Gardez **Cacher le journal des moteurs de recherche**
    cochée pendant l'essai, et cochez **Afficher le bandeau « Journal étudiant
    fictif »** si le journal est un exercice. Attendez le message « Le journal
    est installé » avant de fermer l'onglet.
