@@ -150,7 +150,17 @@ test('la vitrine expose le bandeau illustré, les outils et la composition magaz
   assert.ok(stripAt > dockAt, 'cartes sports sous le dock météo');
   assert.ok(stripAt < navAt, 'cartes sports avant la nav et le fil');
   assert.ok(!home.slice(0, mastEnd).includes('data-sports-payload="'), 'pas de payload sports dans le mât');
-  assert.match(home, /Les Élans|Les &Eacute;lans/);
+  assert.match(home, /Les Touladis/);
+  assert.match(home, /lac-temiscouata\.jpg/, 'le mât part du lac Témiscouata');
+  assert.match(home, /Photo : Amqui \(CC BY-SA 4\.0\)/, 'crédit exact de la première photo du mât');
+  assert.doesNotMatch(home, /module radio du Radar|vraies radios/, 'pas de mention méta sous la barre radio');
+  assert.match(home, /class="social-links masthead-social"/, 'icônes sociales au mât');
+  assert.match(home, /class="social-links site-foot__social"/, 'icônes sociales au pied');
+  assert.match(home, /href="https:\/\/www\.instagram\.com\/lequorum\.exemple"/);
+  assert.match(home, /href="https:\/\/www\.facebook\.com\/lequorum\.exemple"/);
+  assert.match(home, /href="https:\/\/x\.com\/lequorum_exemple"/);
+  assert.match(home, /href="mailto:redaction@lequorum\.ca"/);
+  assert.doesNotMatch(home, /mcgill-|ulaval-|bishops-|concordia-hall|udem-gaudry|sherbrooke-longueuil|batiment-jonquiere/, 'plus de campus réels dans la rotation du mât');
   assert.match(home, /\/sports\//, 'puce sports pointe vers la page résultats');
   const sportsPage = await readFile(path.join(out, 'sports/index.html'), 'utf8');
   assert.match(sportsPage, /Au tableau/);

@@ -81,6 +81,14 @@ propre licence et ne sont pas fondues dans le programme.
 | `cegep-vieux-montreal.jpg` | Khayman | CC BY-SA 3.0 | [source](https://commons.wikimedia.org/wiki/File:C%C3%A9gep_du_Vieux_Montr%C3%A9al01.JPG) |
 | `mcgill-arts.jpg` | Gene.arboit | CC BY-SA 3.0 | [source](https://commons.wikimedia.org/wiki/File:Arts_Building%2C_McGill_University.jpg) |
 | `bishops-mcgreer.jpg` | Balcer | CC BY 3.0 | [source](https://commons.wikimedia.org/wiki/File:Bishop's_University_McGreer_Hall.jpg) |
+| `lac-temiscouata.jpg` | Amqui | CC BY-SA 4.0 | [source](https://commons.wikimedia.org/wiki/File:Lac_T%C3%A9miscouata.jpg) |
+| `fort-ingall-aerien.jpg` | Gabriel Picard | CC BY-SA 4.0 | [source](https://commons.wikimedia.org/wiki/File:Fort_Ingall_-_Aerial_view_08-2025_(01).jpg) |
+| `montagne-fourneau.jpg` | Fralambert | CC BY-SA 4.0 | [source](https://commons.wikimedia.org/wiki/File:Montagne_du_Fourneau.JPG) |
+| `cascades-sutherland.jpg` | Fralambert | CC BY-SA 4.0 | [source](https://commons.wikimedia.org/wiki/File:Cascades_Sutherland_01.jpg) |
+| `cabano-aerien.jpg` | Gabriel Picard | CC BY-SA 4.0 | [source](https://commons.wikimedia.org/wiki/File:Cabano_-_Vue_a%C3%A9rienne_08-2025.jpg) |
+| `st-louis-aerien.jpg` | Quintin Soloviev | CC BY 4.0 | [source](https://commons.wikimedia.org/wiki/File:Aerial_view_of_Saint-Louis-du-Ha!_Ha!,_Qu%C3%A9bec.jpg) |
+| `grand-lac-touladi.jpg` | Fralambert | CC BY-SA 4.0 | [source](https://commons.wikimedia.org/wiki/File:Grand_lac_Touladi_01.jpg) |
+| `st-louis-monument.jpg` | Judith Bourque | CC BY-SA 2.0 | [source](https://commons.wikimedia.org/wiki/File:Church_of_Saint-Louis-du-Ha!-Ha!_-_52048153321.jpg) |
 | `articles/soccer.jpg` | Noah Riffe | CC0 | [source](https://commons.wikimedia.org/wiki/File:Stoney_Brook_vs._Penn_State_Women's_Soccer.jpg) |
 | `articles/basketball.jpg` | Bama in ATL | CC BY-SA 4.0 | [source](https://commons.wikimedia.org/wiki/File:2016_Auburn_at_Alabama_NCAAM_Basketball_Game.jpg) |
 | `articles/course.jpg` | Isaacvp | CC BY-SA 4.0 | [source](https://commons.wikimedia.org/wiki/File:2018_Orizaba_Running_race_01.jpg) |
