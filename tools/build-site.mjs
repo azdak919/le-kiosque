@@ -181,6 +181,7 @@ await build({
     // demoContent false) n'émettrait pas seed.json : l'admin ne démarre pas.
     editorial: { ...rootConfig.editorial, mode: 'demo-local', redactionHref: withBase(basePath, '/admin/') },
     demoContent: true,
+    demoEditorialEntry: true,
   },
   bundle: demoBundle,
   outDir: path.join(outDir, 'demo'),

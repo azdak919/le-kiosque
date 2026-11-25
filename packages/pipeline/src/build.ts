@@ -350,6 +350,7 @@ export async function build(options: BuildOptions): Promise<BuildResult> {
     taxonomies: bundle.taxonomies,
     authorsBySlug: new Map(bundle.authors.map((a) => [a.slug, a])),
     demoNotice: config.demoNotice,
+    demoEditorialEntry: config.demoEditorialEntry === true,
     buildYear: new Date().getUTCFullYear(),
     editorial: browserRendered ? {
       mode: live ? 'socle-vivant' : 'demo-local',

@@ -80,6 +80,14 @@ export interface KiosqueConfig {
   /** false retire du site les articles portant `demo: true`, sans les effacer. */
   demoContent?: boolean;
 
+  /**
+   * Accès explicite à l’espace de rédaction (pastille dans le mât et
+   * libellé du pied), réservé à la démonstration. Désactivé par défaut :
+   * un vrai journal n’a jamais ce bouton, même si le thème est le même.
+   * N’a d’effet qu’avec `editorial.mode === 'demo-local'`.
+   */
+  demoEditorialEntry?: boolean;
+
   /** Nombre d'articles dans le flux Atom. */
   feedLimit?: number;
 }
