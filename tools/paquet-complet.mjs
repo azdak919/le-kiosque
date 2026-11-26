@@ -38,7 +38,7 @@ const publication = {
   ...example,
   id: 'journal', slug: 'journal', name: 'Le journal', tagline: '', institution: '', founded: undefined, license: undefined, siteUrl: 'https://journal.invalid',
   governance: { ...(example.governance ?? {}), contact: '', stewardEntity: '' },
-  logo: undefined, radio: undefined, repository: undefined,
+  logo: undefined, radio: undefined, social: undefined, repository: undefined,
   masthead: { ...(example.masthead ?? {}), backgrounds: undefined, weather: undefined, sports: undefined },
   theme: { accent: '#6c2163', typography: 'modern-accessible' },
 };

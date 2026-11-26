@@ -4,6 +4,16 @@ import { fileURLToPath } from 'node:url';
 
 import { expect, test } from '@playwright/test';
 
+/** Horodatage du Socle : date AAAA-MM-JJ, heure et minutes en 24 h, dans le fuseau du journal. */
+async function horodater(page, id, valeur) {
+  const [date, hm] = valeur.split('T');
+  const [heure, minute] = hm.split(':');
+  await page.locator(`#${id}-date`).fill(date);
+  await page.locator(`#${id}-heure`).fill(heure);
+  await page.locator(`#${id}-minute`).fill(minute);
+}
+
+
 const ROOT = path.resolve(fileURLToPath(new URL('../..', import.meta.url)));
 
 /**
@@ -64,7 +74,7 @@ test('configurer, rédiger, prévisualiser, publier, persister et exporter sans 
   await page.getByRole('button', { name: 'Créer un article' }).click();
   await page.getByLabel('Titre').fill('Un article créé dans le navigateur');
   await page.getByLabel('Résumé').fill('Une validation complète du mode local.');
-  await page.getByLabel('Date et heure de publication').fill('2026-07-27T08:45');
+  await horodater(page, 'article-published-at', '2026-07-27T08:45');
   await page.getByLabel('Texte de l’article').fill('## Une vraie prévisualisation\n\nLe contenu demeure dans **ce navigateur**.');
   await page.getByLabel('Marie Tremblay').check();
   await page.getByRole('button', { name: 'Choisir une photo de la banque' }).click();
@@ -150,10 +160,14 @@ test('configurer, rédiger, prévisualiser, publier, persister et exporter sans 
   await page.getByLabel('Cadrage horizontal').fill('73');
   await page.getByLabel('Cadrage vertical').fill('42');
   await page.getByRole('button', { name: 'Enregistrer' }).click();
-  // Le manifeste retient McGill en tête ; l’image peinte peut être une autre
-  // des photos retenues si l’ordre aléatoire est actif (plusieurs photos).
-  await expect(front.locator('.masthead-background')).toHaveAttribute('src', /\/media\/.+\.(jpe?g|webp)$/i);
+  await expect(page.getByText('Configuration enregistrée')).toBeVisible();
+  // La page déjà ouverte garde le mât du premier rendu. Après rechargement,
+  // la photo retenue dans la banque (McGill) est seule en tête.
+  await front.reload();
+  await front.waitForFunction(() => document.documentElement.dataset.editorialReady === 'true', null, { timeout: 45_000 });
+  await expect(front.locator('.masthead-background')).toHaveAttribute('src', /mcgill-(roddick|campus|arts)\.jpg/);
   const mastheadPayload = JSON.parse(await front.locator('#masthead-backgrounds').textContent());
+  expect(mastheadPayload.images).toHaveLength(1);
   expect(mastheadPayload.images[0].src).toMatch(/mcgill-(roddick|campus|arts)\.jpg/);
 
   await page.locator('.admin-nav').getByRole('link', { name: 'Exporter', exact: true }).click();
@@ -243,12 +257,12 @@ test('l’éditeur programme et archive un article', async ({ page }) => {
   await page.getByLabel('Statut').selectOption('scheduled');
   await expect(page.locator('[data-scheduled-field]')).toBeVisible();
   // Une heure passée est refusée.
-  await page.getByLabel('Programmer pour').fill('2020-01-01T08:00');
+  await horodater(page, 'article-scheduled-at', '2020-01-01T08:00');
   await page.getByRole('button', { name: 'Enregistrer', exact: true }).click();
   await expect(page.locator('#toast')).toContainText('déjà passée');
-  const demain = new Date(Date.now() + 24 * 3600_000);
-  const local = new Date(demain.getTime() - demain.getTimezoneOffset() * 60_000).toISOString().slice(0, 16);
-  await page.getByLabel('Programmer pour').fill(local);
+  // Dans trois jours : reste dans le futur quel que soit l’écart entre UTC et le fuseau du journal.
+  const futur = new Date(Date.now() + 3 * 24 * 3600_000).toISOString().slice(0, 16);
+  await horodater(page, 'article-scheduled-at', futur);
   await page.getByRole('button', { name: 'Enregistrer', exact: true }).click();
   const row = page.locator('.entity-list li', { hasText: 'Article programmé' });
   await expect(row).toContainText('Programmé');

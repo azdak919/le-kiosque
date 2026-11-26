@@ -998,7 +998,7 @@
     }
   }
 
-  /** « Les Élans » → « Élans » pour la puce (place limitée). */
+  /** « Les Touladis » → « Touladis » pour la puce (place limitée). */
   function sportsShortTeamName(name) {
     var n = String(name || '').trim();
     return n.replace(/^(Les|Le|La|L’|L')\s+/i, '') || n;
@@ -1286,7 +1286,7 @@
   /**
    * Format scoreboard (parité LE-RADAR / RDS) :
    *   mobile  — codes institution :  🏐 V  SLHH  3–1  GAR
-   *   bureau  —  🏐 V  Élans  3–1  Boomerang (Garneau)
+   *   bureau  —  🏐 V  Touladis  3–1  Boomerang (Garneau)
    *             (maison = surnom seul ; adversaire = surnom + institution)
    * Détail long toujours dans title/aria.
    */
@@ -1533,7 +1533,7 @@
       return lib.sportsBoardCountFromWidth(avail, { desktop: sportsIsDesktopLabel() });
     }
     if (!sportsIsDesktopLabel()) return 1;
-    var minSlot = 240, gap = 6, maxN = avail >= 1100 ? 5 : 4;
+    var minSlot = 240, gap = 6, maxN = avail >= 900 ? 3 : 2;
     var n = 1;
     for (var tryN = maxN; tryN >= 2; tryN -= 1) {
       if (avail >= tryN * minSlot + gap * (tryN - 1)) { n = tryN; break; }
@@ -1752,6 +1752,34 @@
     syncMastheadWeatherDock();
   }
 
+  /**
+   * Le HTML fige le direct à l’heure du build. On repart de `demoSource`
+   * (ancre et heures d’origine) et on refait en cours / terminé / à venir
+   * avec l’horloge du visiteur. Sans le module, le HTML bâti reste affiché.
+   */
+  function alignVisitorDemoSports(payload) {
+    if (!payload || payload.demoLive !== true) return payload;
+    var align = window.KiosqueAlignDemoSports;
+    if (typeof align !== 'function') return payload;
+    var source = payload.demoSource && payload.demoSource.demoLive === true
+      ? payload.demoSource
+      : payload;
+    var next;
+    try { next = align(source, new Date()); } catch (_) { return payload; }
+    if (!next || typeof next !== 'object') return payload;
+    var merged = {};
+    var key;
+    for (key in payload) {
+      if (Object.prototype.hasOwnProperty.call(payload, key)) merged[key] = payload[key];
+    }
+    for (key in next) {
+      if (Object.prototype.hasOwnProperty.call(next, key)) merged[key] = next[key];
+    }
+    if (payload.demoSource) merged.demoSource = payload.demoSource;
+    if (merged.teams && merged.teams.length) merged.team = merged.teams[0];
+    return merged;
+  }
+
   function initMastheadSports() {
     clearSportsRotateTimer();
     var host = document.querySelector('.masthead-sports[data-sports-payload]');
@@ -1761,6 +1789,10 @@
       payload = JSON.parse(host.getAttribute('data-sports-payload') || host.dataset.sportsPayload || 'null');
     } catch (_) {
       payload = null;
+    }
+    payload = alignVisitorDemoSports(payload);
+    if (payload && payload.demoLive === true) {
+      try { host.setAttribute('data-sports-payload', JSON.stringify(payload)); } catch (_) {}
     }
     if (!payload) {
       syncSportsStripVisibility(host, false);
@@ -3156,9 +3188,58 @@
     }
   }
 
+
+  /**
+   * La barre radio vient de LE-RADAR (Shadow DOM ouvert). Les titres longs
+   * défilent (marquee), mais le module coupe le texte net (text-overflow: clip)
+   * avant et pendant le défilement. Un masque à droite, ajouté ici, adoucit
+   * la coupe sans copier le module ni dépasser le bord de la barre.
+   */
+  function softenRadarRadioMarquee(slot) {
+    var host = (slot || document.querySelector('.radar-radio-slot')) &&
+      (slot || document.querySelector('.radar-radio-slot')).querySelector('.radar-radio');
+    var root = host && host.shadowRoot;
+    if (!root || root.getElementById('kiosque-radio-marquee-mask')) return;
+    var style = document.createElement('style');
+    style.id = 'kiosque-radio-marquee-mask';
+    style.textContent = [
+      '.now { position: relative; }',
+      '.now:has(.is-marquee)::after {',
+      '  content: ""; position: absolute; top: 0; right: 0; bottom: 0; width: 48px;',
+      '  pointer-events: none; z-index: 2;',
+      '  background: linear-gradient(to right, rgba(16,24,22,0), #101816 85%);',
+      '}',
+      '@container (max-width: 679px) {',
+      '  .now:has(.is-marquee)::after {',
+      '    width: 32px;',
+      '    background: linear-gradient(to right, rgba(37,40,48,0), #252830 85%);',
+      '  }',
+      '}',
+      '.air:has(.is-marquee) { position: relative; }',
+      '.air:has(.is-marquee)::after {',
+      '  content: ""; position: absolute; top: 0; right: 0; bottom: 0; width: 24px;',
+      '  pointer-events: none; z-index: 2;',
+      '  background: linear-gradient(to right, rgba(16,24,22,0), #101816 85%);',
+      '}',
+    ].join('');
+    root.appendChild(style);
+  }
+
+  function initRadarRadioMarqueeMask() {
+    var slot = document.querySelector('.radar-radio-slot');
+    if (!slot) return;
+    function apply() { softenRadarRadioMarquee(slot); }
+    apply();
+    if (typeof MutationObserver === 'function' && !initRadarRadioMarqueeMask._obs) {
+      initRadarRadioMarqueeMask._obs = new MutationObserver(apply);
+      initRadarRadioMarqueeMask._obs.observe(slot, { childList: true, subtree: true, attributes: true, attributeFilter: ['data-radar-radio'] });
+    }
+  }
+
   function init() {
     initTheme();
     initDemoBannerStickyOffset();
+    initRadarRadioMarqueeMask();
     initMastheadClock();
     initMastheadBackgrounds();
     initMastheadSports();

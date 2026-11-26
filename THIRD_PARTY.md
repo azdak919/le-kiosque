@@ -1,24 +1,24 @@
 # Composants tiers
 
-Le Kiosque est sous GPL-2.0-only. Les interfaces d'outil (vitrine du projet,
+Le Kiosque est sous GNU AGPLv3 (`AGPL-3.0-or-later`), avec une exception pour les sites des journaux ([`LICENSE-EXCEPTIONS.md`](LICENSE-EXCEPTIONS.md)). Les interfaces d'outil (vitrine du projet,
 configurateur, administration locale) reprennent les projets libres suivants.
 Le rendu du journal produit (thème `packages/theme-radar`, hérité de LE-RADAR)
 n'en dépend pas.
 
 | Projet | Licence | Usage | Où |
 | --- | --- | --- | --- |
-| Admin de rédaction de [le-socle](https://github.com/azdak919/le-socle) (`le-socle/admin/`) | GPL-2.0-only, même auteur | Écrans de l’admin, client du socle, démo en mode navigateur ; copiés dans le site par le build | `assets/editorial/` du site construit |
+| Admin de rédaction de [le-socle](https://github.com/azdak919/le-socle) (`le-socle/admin/`) | AGPL-3.0-or-later, même auteur | Écrans de l’admin, client du socle, démo en mode navigateur ; copiés dans le site par le build | `assets/editorial/` du site construit |
 | [Basecoat](https://github.com/hunvreus/basecoat) (`basecoat-css`) © hunvreus | MIT | Jetons et composants style shadcn/ui (bouton, badge, carte, alerte, kbd) | `ui/vendor/basecoat-subset.css` (extrait généré), `site/assets/kiosque-ui.css` ; la feuille de l’admin est compilée dans le socle (`le-socle/admin/assets/admin.css`) |
 | [Tailwind CSS](https://github.com/tailwindlabs/tailwindcss) v4 © Tailwind Labs | MIT | Compilation des feuilles ci-dessus (`npm run ui`) | dépendance de développement |
 | [AstroWind](https://github.com/arthelokyo/astrowind) © arthelokyo | MIT | Inspiration de structure pour la vitrine (en-tête, héros, sections, appel à l'action). Aucun code copié. | `site/index.html` |
 | [Sveltia CMS](https://github.com/sveltia/sveltia-cms) | MIT | CMS facultatif | `packages/theme-radar/assets/admin/` (voir `SVELTIA-LICENSE.txt`) |
-| Barre radio de [LE-RADAR](https://github.com/azdak919/le-radar) (`radio-barre.js`, `radios.json`) | même auteur, GPL-2.0-only | Appelée depuis le-radar.ca, jamais copiée : stations, lecteur et style restent chez LE-RADAR | `packages/theme-radar/src/radio.js` (ligne d’appel seulement) |
-| Bandeau sportif de [LE-RADAR](https://github.com/azdak919/le-radar) (`genderMark`, défilement continu de la sous-ligne, voies scores / en cours / à venir ; notamment les PR 394, 404 et 408) | même auteur, GPL-2.0-only | Reprise adaptée au mât du Kiosque (équipes saisies dans Le Socle, pas moissonnées) : pastilles « (F) » / « (H) », rien si mixte ; libellés longs sur Au tableau ; boucle lente de la sous-ligne ; deux voies sur ordinateur | `packages/theme-radar/assets/kiosque.js`, `packages/theme-radar/src/sports-freshness.js`, `packages/theme-radar/assets/theme.css` |
+| Barre radio de [LE-RADAR](https://github.com/azdak919/le-radar) (`radio-barre.js`, `radios.json`) | même auteur ; `radio-barre.js` sous MIT | Appelée depuis le-radar.ca, jamais copiée : stations, lecteur et style restent chez LE-RADAR | `packages/theme-radar/src/radio.js` (ligne d’appel seulement) |
+| Bandeau sportif de [LE-RADAR](https://github.com/azdak919/le-radar) (`genderMark`, défilement continu de la sous-ligne, voies scores / en cours / à venir ; notamment les PR 394, 404 et 408) | même auteur, AGPL-3.0-or-later | Reprise adaptée au mât du Kiosque (équipes saisies dans Le Socle, pas moissonnées) : pastilles « (F) » / « (H) », rien si mixte ; libellés longs sur Au tableau ; boucle lente de la sous-ligne ; deux voies sur ordinateur | `packages/theme-radar/assets/kiosque.js`, `packages/theme-radar/src/sports-freshness.js`, `packages/theme-radar/assets/theme.css` |
 | [sql.js](https://github.com/sql-js/sql.js) 1.16.0 © 2017 sql.js authors (SQLite : domaine public) | MIT | SQLite dans le navigateur pour la démo, chargé seulement par `/admin/` et le configurateur | fourni par `le-socle/admin/assets/` (`sql-wasm.js`, `sql-wasm.wasm`), copié dans `assets/editorial/` ; licence recopiée dans `le-socle/THIRD_PARTY.md` |
 | Icônes des réseaux sociaux, les mêmes que [LE-RADAR](https://github.com/azdak919/le-radar) (`nav-shell.js`, `assets/social-icons/`) : [Simple Icons](https://github.com/simple-icons/simple-icons) v16.36.0 (Facebook, Instagram, X, Bluesky, Mastodon, TikTok, YouTube, Threads) et [Bootstrap Icons](https://github.com/twbs/icons) v1.13.2 © 2019-2024 The Bootstrap Authors (LinkedIn, courriel `envelope-fill`) | CC0 1.0 (Simple Icons) ; MIT (Bootstrap Icons), toutes deux compatibles avec la GPL-2.0-only | Icônes du mât et du pied de page, tracés copiés sans modification, monochromes (`currentColor`). Les marques restent la propriété de leurs détenteurs. | `packages/theme-radar/src/social.js`, copié dans `assets/editorial/` |
-| Logo du Kiosque : dessin original (kiosque à auvent rayé), même auteur que le projet | GPL-2.0-only, comme le projet | Logo et icônes d’onglet du Kiosque : pages de présentation, guide, configurateur, icône d’onglet de la démonstration, README. Posé sur le carreau sombre de LE-RADAR (même auteur), avec un filet clair en mode sombre, et réduit en 16, 32, 180 et 512 px. Couleurs prises dans la palette de Twemoji, sans reprendre de dessin. Jamais sur le site public d’un journal, qui garde son logo ou son nom. | `site/assets/logo/` |
-| Logo du Socle : emoji « brique » (U+1F9F1) de [Twemoji](https://github.com/jdecked/twemoji) (dépôt `jdecked/twemoji`, commit `b6b55fef1e`), © Twitter, Inc. et autres contributeurs | [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/deed.fr), compatible avec la GPL | Espace de rédaction de la démonstration `/admin/`, fourni par le socle épinglé et crédité dans `le-socle/THIRD_PARTY.md` ; visible aussi dans les captures de la page de présentation | `assets/editorial/` du site construit (en ligne dans la page), `site/assets/captures/` |
-| Icône « tomate » (U+1F345) du bouton Pomodoro du mât, de [Twemoji](https://github.com/jdecked/twemoji), © Twitter, Inc. et autres contributeurs, reprise de LE-RADAR | [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/deed.fr), compatible avec la GPL | Image 72 px sans modification | `packages/theme-radar/assets/emoji/tomato.png` |
+| Logo du Kiosque : dessin original (kiosque à auvent rayé), même auteur que le projet | AGPL-3.0-or-later, comme le projet | Logo et icônes d’onglet du Kiosque : pages de présentation, guide, configurateur, icône d’onglet de la démonstration, README. Posé sur le carreau sombre de LE-RADAR (même auteur), avec un filet clair en mode sombre, et réduit en 16, 32, 180 et 512 px. Couleurs prises dans la palette de Twemoji, sans reprendre de dessin. Jamais sur le site public d’un journal, qui garde son logo ou son nom. | `site/assets/logo/` |
+| Logo du Socle : emoji « brique » (U+1F9F1) de [Twemoji](https://github.com/jdecked/twemoji) (dépôt `jdecked/twemoji`, commit `b6b55fef1e`), © Twitter, Inc. et autres contributeurs | [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/deed.fr), compatible avec l’AGPL | Espace de rédaction de la démonstration `/admin/`, fourni par le socle épinglé et crédité dans `le-socle/THIRD_PARTY.md` ; visible aussi dans les captures de la page de présentation | `assets/editorial/` du site construit (en ligne dans la page), `site/assets/captures/` |
+| Icône « tomate » (U+1F345) du bouton Pomodoro du mât, de [Twemoji](https://github.com/jdecked/twemoji), © Twitter, Inc. et autres contributeurs, reprise de LE-RADAR | [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/deed.fr), compatible avec l’AGPL | Image 72 px sans modification | `packages/theme-radar/assets/emoji/tomato.png` |
 
 Les textes de licence MIT de Basecoat et Tailwind CSS sont fournis avec leurs
 paquets npm (`node_modules/basecoat-css/LICENSE.md`, `node_modules/tailwindcss/LICENSE`).
@@ -58,7 +58,7 @@ Ces photos n’entrent pas dans le paquet d’installation : la banque d’un jo
 neuf reste vide. Elles illustrent seulement la démonstration (`examples/demo-journal/media/demo-library/`)
 et les captures des pages publiques. Fichiers JPEG tirés de l’original Wikimedia
 Commons, long côté au plus 2400 px, proportions conservées. Licences CC0, CC BY
-ou CC BY-SA. Le code du Kiosque reste GPL-2.0-only ; ces photos gardent leur
+ou CC BY-SA. Le code du Kiosque reste AGPL-3.0-or-later ; ces photos gardent leur
 propre licence et ne sont pas fondues dans le programme.
 
 | Fichier | Crédit | Licence | Source |
@@ -81,6 +81,14 @@ propre licence et ne sont pas fondues dans le programme.
 | `cegep-vieux-montreal.jpg` | Khayman | CC BY-SA 3.0 | [source](https://commons.wikimedia.org/wiki/File:C%C3%A9gep_du_Vieux_Montr%C3%A9al01.JPG) |
 | `mcgill-arts.jpg` | Gene.arboit | CC BY-SA 3.0 | [source](https://commons.wikimedia.org/wiki/File:Arts_Building%2C_McGill_University.jpg) |
 | `bishops-mcgreer.jpg` | Balcer | CC BY 3.0 | [source](https://commons.wikimedia.org/wiki/File:Bishop's_University_McGreer_Hall.jpg) |
+| `lac-temiscouata.jpg` | Amqui | CC BY-SA 4.0 | [source](https://commons.wikimedia.org/wiki/File:Lac_T%C3%A9miscouata.jpg) |
+| `fort-ingall-aerien.jpg` | Gabriel Picard | CC BY-SA 4.0 | [source](https://commons.wikimedia.org/wiki/File:Fort_Ingall_-_Aerial_view_08-2025_(01).jpg) |
+| `montagne-fourneau.jpg` | Fralambert | CC BY-SA 4.0 | [source](https://commons.wikimedia.org/wiki/File:Montagne_du_Fourneau.JPG) |
+| `cascades-sutherland.jpg` | Fralambert | CC BY-SA 4.0 | [source](https://commons.wikimedia.org/wiki/File:Cascades_Sutherland_01.jpg) |
+| `cabano-aerien.jpg` | Gabriel Picard | CC BY-SA 4.0 | [source](https://commons.wikimedia.org/wiki/File:Cabano_-_Vue_a%C3%A9rienne_08-2025.jpg) |
+| `st-louis-aerien.jpg` | Quintin Soloviev | CC BY 4.0 | [source](https://commons.wikimedia.org/wiki/File:Aerial_view_of_Saint-Louis-du-Ha!_Ha!,_Qu%C3%A9bec.jpg) |
+| `grand-lac-touladi.jpg` | Fralambert | CC BY-SA 4.0 | [source](https://commons.wikimedia.org/wiki/File:Grand_lac_Touladi_01.jpg) |
+| `st-louis-monument.jpg` | Judith Bourque | CC BY-SA 2.0 | [source](https://commons.wikimedia.org/wiki/File:Church_of_Saint-Louis-du-Ha!-Ha!_-_52048153321.jpg) |
 | `articles/soccer.jpg` | Noah Riffe | CC0 | [source](https://commons.wikimedia.org/wiki/File:Stoney_Brook_vs._Penn_State_Women's_Soccer.jpg) |
 | `articles/basketball.jpg` | Bama in ATL | CC BY-SA 4.0 | [source](https://commons.wikimedia.org/wiki/File:2016_Auburn_at_Alabama_NCAAM_Basketball_Game.jpg) |
 | `articles/course.jpg` | Isaacvp | CC BY-SA 4.0 | [source](https://commons.wikimedia.org/wiki/File:2018_Orizaba_Running_race_01.jpg) |

@@ -560,8 +560,8 @@ export function footYears(founded, year) {
 export function footRights(license) {
   const value = String(license ?? '').trim();
   if (!value || /^tous droits réservés\.?$/i.test(value)) return 'Tous droits réservés.';
-  if (/by-nc-nd/i.test(value)) return 'Contenus sous licence <a href="https://creativecommons.org/licenses/by-nc-nd/4.0/deed.fr" rel="license noopener">CC BY-NC-ND 4.0</a>.';
-  return `Contenus sous licence ${esc(value)}.`;
+  if (/by-nc-nd/i.test(value)) return 'Contenus sous licence <a href="https://creativecommons.org/licenses/by-nc-nd/4.0/deed.fr" rel="license noopener" class="site-foot__license">CC BY-NC-ND 4.0</a>.';
+  return `Contenus sous licence <span class="site-foot__license">${esc(value)}</span>.`;
 }
 
 export function footCopyright(publication, year) {
@@ -570,7 +570,7 @@ export function footCopyright(publication, year) {
 }
 
 const KIOSQUE_SITE_URL = 'https://kiosque.le-radar.ca/';
-const POWERED_BY = `Propulsé par <a href="${KIOSQUE_SITE_URL}" rel="noopener">Le Kiosque</a>, plateforme libre sous licence GPL pour les journaux étudiants.`;
+const POWERED_BY = `Propulsé par <a href="${KIOSQUE_SITE_URL}" rel="noopener">Le Kiosque</a>, plateforme libre sous licence GNU AGPLv3 pour les journaux étudiants.`;
 
 const DEMO_EDITORIAL_FULL = 'Essayer l’espace de rédaction (démo)';
 const DEMO_EDITORIAL_SHORT = 'Espace de rédaction (démo)';
@@ -761,6 +761,16 @@ export function applyBranding(bundle, base) {
     sportsHost.classList.add('masthead-sports-strip', 'masthead-sports');
     if (!sportsHost.id) sportsHost.id = 'masthead-sports-strip';
     const sportsHref = sportsBoardHref(base, sports);
+    // Source d’origine : le HTML du build peut être en UTC. kiosque.js
+    // recalcule le direct avec l’horloge du visiteur à partir de cette ancre.
+    const demoSource = sports.demoLive === true ? {
+      teams: sportsTeams,
+      results: sports.results || [],
+      nextGame: sports.nextGame || null,
+      nextGames: sports.nextGames || [],
+      demoAsOf: sports.demoAsOf || null,
+      demoLive: true,
+    } : undefined;
     // setAttribute : évite les surprises dataset + garantit le re-parse kiosque.js
     const sportsPayload = pruneSportsPayload({
       teams: sportsTeams,
@@ -782,6 +792,7 @@ export function applyBranding(bundle, base) {
       href: sportsHref,
       demoAsOf: sportsPayload.demoAsOf || sports.demoAsOf || null,
       demoLive: sports.demoLive || null,
+      demoSource,
       timeZone: bundle.publication.timeZone || 'America/Toronto',
     }));
     sportsHost.setAttribute('aria-label', 'Au tableau — scores et matchs');

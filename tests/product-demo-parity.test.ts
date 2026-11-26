@@ -118,7 +118,15 @@ test('demo et template reçoivent le même theme.css / kiosque.js (packages/them
   assert.match(demoHome, /id="masthead-weather-dock"/, 'emplacement dock météo');
   assert.match(tplHome, /id="masthead-weather-dock"/);
   assert.match(demoHome, /data-sports-payload/, 'équipe sports démo embarquée');
-  assert.match(demoHome, /Les Élans|Les &Eacute;lans/, 'surnom maison unique (focus-group Élans)');
+  assert.match(demoHome, /Les Touladis/, 'surnom maison unique (Touladis)');
+  assert.doesNotMatch(demoHome, /module radio du Radar|vraies radios/, 'pas de mention méta sous la barre radio');
+  assert.match(demoHome, /class="social-links masthead-social"/, 'icônes sociales au mât');
+  assert.match(demoHome, /class="social-links site-foot__social"/, 'icônes sociales au pied');
+  assert.match(demoHome, /href="https:\/\/www\.instagram\.com\/lequorum\.exemple"/);
+  assert.match(demoHome, /href="https:\/\/www\.facebook\.com\/lequorum\.exemple"/);
+  assert.match(demoHome, /href="https:\/\/x\.com\/lequorum_exemple"/);
+  assert.match(demoHome, /href="mailto:redaction@lequorum\.ca"/);
+  assert.doesNotMatch(tplHome, /class="social-links"/, 'le gabarit vide n’affiche pas d’icônes sociales');
   assert.match(demoHome, /code&quot;:&quot;SLHH&quot;|"code":"SLHH"/, 'code équipe SLHH (override mainteneur)');
   assert.match(demoHome, /data-nav-shell/, 'shell nav mobile');
   assert.match(tplHome, /data-nav-shell/);
@@ -139,7 +147,7 @@ test('demo et template reçoivent le même theme.css / kiosque.js (packages/them
   );
   const seed = await readFile(path.join(demo.out, 'assets/editorial/seed.json'), 'utf8');
   assert.match(seed, /"version":\s*27/, 'seed démo v27 (photos de banque en haute résolution)');
-  assert.match(seed, /Les Élans/, 'seed embarque le surnom maison Élans');
+  assert.match(seed, /Les Touladis/, 'seed embarque le surnom maison Touladis');
   assert.doesNotMatch(seed, /Les Quorums/, 'plus de surnom redondant Quorums');
   assert.match(seed, /hockey-interieur\.jpg/, 'photo corps hockey intérieur distincte du lead');
   assert.match(seed, /Photo : Joshua Scott/, 'figure corps hockey crédite le photographe');

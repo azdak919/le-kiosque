@@ -43,7 +43,7 @@
 
   <main id="contenu">
     <div class="wrap hero">
-      <p class="kicker">Gratuit et libre · Licence GPL</p>
+      <p class="kicker">Gratuit et libre · Licence AGPL</p>
       <h1>La plateforme des <em>journaux étudiants</em>.</h1>
       <p class="sigle">Kit d’Infrastructure Ouverte, Souveraine et de Qualité pour les Usages Éditoriaux</p>
       <p class="lede">Un seul fichier à déposer chez un hébergeur. Un assistant s’ouvre dans le navigateur. Le site Web public et l’espace de rédaction sont prêts, sans aucun serveur central.</p>
@@ -52,7 +52,7 @@
         <a class="btn" data-size="lg" data-variant="outline" href="{{DEMO_PATH}}">Voir la démonstration</a>
         <a class="btn" data-size="lg" data-variant="ghost" href="{{BASE_PATH}}/guide/">Lire le guide</a>
       </div>
-      <p class="note">Le code est sous licence GPL version&nbsp;2 seulement. Les articles restent la propriété du journal.</p>
+      <p class="note">Le code est sous licence GNU AGPLv3. Le site produit appartient au journal, comme ses articles.</p>
     </div>
 
     <div class="wrap">
@@ -64,7 +64,7 @@
             <img src="{{BASE_PATH}}/assets/captures/quorum-accueil-ordi.jpg" width="2880" height="2000" alt="Page d’accueil du Quorum, journal de démonstration : mât, météo, sports, barre radio et fil d’articles." loading="eager">
           </picture>
         </a>
-        <figcaption>Le Quorum, journal de démonstration. Météo, sports et barre radio y figurent ; celle-ci est un module du Radar, chargé depuis le-radar.ca.</figcaption>
+        <figcaption>Le Quorum, journal de démonstration. Météo et sports y figurent. La barre est le module radio du Radar, avec ses vraies radios, et non une radio du cégep fictif.</figcaption>
       </figure>
     </div>
 
@@ -103,7 +103,7 @@
         </figure>
         <div class="features">
           <article><h3>Rubriques, recherche et mode sombre</h3><p>Le menu suit les sections du journal. Une loupe cherche dans les titres, les auteurs, les rubriques et les extraits déjà affichés. Un bouton passe du mode clair au mode sombre.</p></article>
-          <article><h3>Météo, sports et radio</h3><p>Le mât peut afficher la météo locale et les résultats sportifs du campus. La barre radio, facultative, est un module du Radar chargé depuis le-radar.ca : stations, lecteur et style restent chez le Radar.</p></article>
+          <article><h3>Météo, sports et radio</h3><p>Le mât peut afficher la météo locale et les résultats sportifs du campus. La barre radio, facultative, est le module radio du Radar, avec ses vraies radios. Ce n’est pas une station du journal : stations, lecteur et style restent chez le Radar.</p></article>
           <article><h3>Équipe et archives durables</h3><p>Chaque auteur a sa page. Sur la démonstration en site statique, et sur un site construit pour GitHub Pages, s’ajoutent les archives, le plan du site et un fil RSS.</p></article>
           <article><h3>Une copie autonome</h3><p>Après le téléchargement, rien ne dépend d’un serveur du Kiosque. Le journal reste en ligne même si ce dépôt change, ou s’il s’arrête.</p></article>
         </div>
@@ -174,7 +174,7 @@
       <div class="wrap">
         <p class="kicker">Licence et crédits</p>
         <h2>Libre pour le logiciel, au journal pour les textes.</h2>
-        <p class="intro">Le Kiosque est sous <a href="https://github.com/azdak919/le-kiosque/blob/main/LICENSE">licence GPL version&nbsp;2 seulement</a>, comme <a href="https://github.com/azdak919/le-radar">le Radar</a>, dont il reprend l’identité visuelle. Les composants tiers et leurs licences sont listés dans <a href="https://github.com/azdak919/le-kiosque/blob/main/THIRD_PARTY.md">THIRD_PARTY.md</a>. Les articles, les photos et le nom du journal appartiennent à leurs autrices, auteurs et à l’équipe qui les publie.</p>
+        <p class="intro">Le Kiosque est sous <a href="https://github.com/azdak919/le-kiosque/blob/main/LICENSE">licence GNU AGPLv3</a>, comme <a href="https://github.com/azdak919/le-radar">le Radar</a>, dont il reprend l’identité visuelle. Une <a href="https://github.com/azdak919/le-kiosque/blob/main/LICENSE-EXCEPTIONS.md">exception</a> libère le site produit : un journal peut modifier son thème sans publier son code. Les composants tiers et leurs licences sont listés dans <a href="https://github.com/azdak919/le-kiosque/blob/main/THIRD_PARTY.md">THIRD_PARTY.md</a>. Les articles, les photos et le nom du journal appartiennent à leurs autrices, auteurs et à l’équipe qui les publie.</p>
       </div>
     </section>
   </main>
@@ -182,6 +182,7 @@
   <footer class="site-foot">
     <div class="wrap">
       <p><strong>Le Kiosque</strong> — plateforme libre pour les journaux étudiants.</p>
+      <p>Code source sous licence <a href="https://www.gnu.org/licenses/agpl-3.0.html" rel="license">GNU AGPLv3</a> (<a href="https://github.com/azdak919/le-kiosque">dépôt</a>). Les articles et les photos des journaux sont crédités à leurs autrices et auteurs.</p>
       <p>
         <a href="https://github.com/azdak919/le-kiosque">Code source</a>
         · <a href="{{BASE_PATH}}/guide/">Guide</a>

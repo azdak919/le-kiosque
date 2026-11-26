@@ -36,14 +36,14 @@
           <p class="step-count">Étape 1 sur 4</p>
           <h1>Votre journal</h1>
           <div class="fields">
-            <label>Nom du journal (obligatoire) <small class="ou">Tel qu’il doit apparaître en haut du site.</small><input data-key="name" autocomplete="organization" required placeholder="La Vigie"></label>
-            <label>Établissement (obligatoire) <small class="ou">Le nom officiel du cégep, de l’université ou de l’école.</small><input data-key="institution" required placeholder="Cégep de Sainte-Foy"></label>
+            <label>Nom du journal (obligatoire) <small class="ou">Tel qu’il doit apparaître en haut du site.</small><input data-key="name" autocomplete="organization" required placeholder="Le Sillage"></label>
+            <label>Établissement (obligatoire) <small class="ou">Le nom officiel du cégep, de l’université ou de l’école.</small><input data-key="institution" required placeholder="Cégep du Val-des-Brumes"></label>
             <label>Langue <select data-key="langue"><option value="fr-CA">Français</option><option value="en-CA">English</option></select></label>
           </div>
           <details class="avance">
             <summary>Réglages avancés <small>(facultatif : signature, région…)</small></summary>
             <div class="fields two-cols">
-              <label>Nom court <small class="ou">Utilisé dans les adresses, sans accents ni espaces.</small><input data-key="slug" pattern="[a-z0-9-]+" placeholder="la-vigie"></label>
+              <label>Nom court <small class="ou">Utilisé dans les adresses, sans accents ni espaces.</small><input data-key="slug" pattern="[a-z0-9-]+" placeholder="le-sillage"></label>
               <label>Signature éditoriale<input data-key="tagline" placeholder="On vote, on débat, on imprime"></label>
               <label>Type d’établissement <select data-key="institutionType"><option value="cegep">Cégep</option><option value="universite">Université</option><option value="autre">Autre</option></select></label>
               <label>Région<input data-key="region" placeholder="Capitale-Nationale"></label>
@@ -66,7 +66,7 @@
             <div class="fields two-cols">
               <label>Couleur en mode sombre <small class="ou">Calculée automatiquement pour rester lisible.</small><div class="color-field"><input data-key="accentDark" type="color" aria-label="Couleur sombre"><input data-key="accentDarkText" pattern="#[0-9a-fA-F]{6}" aria-label="Code de la couleur sombre"></div></label>
               <label>Typographie <select data-key="typography"><option value="modern-accessible">Moderne accessible — recommandé</option><option value="editorial-classic">Éditoriale classique</option><option value="institutional">Institutionnelle</option></select></label>
-              <label>Texte alternatif du logo <small class="ou">Vide : le nom du journal sert de texte alternatif.</small><input data-key="logoAlt" placeholder="La Vigie"></label>
+              <label>Texte alternatif du logo <small class="ou">Vide : le nom du journal sert de texte alternatif.</small><input data-key="logoAlt" placeholder="Le Sillage"></label>
               <label>Station de radio étudiante<select data-key="station" id="station-list"><option value="">Aucune station choisie</option></select></label>
             </div>
             <label class="choice-card"><input data-key="backgroundsEnabled" type="checkbox"><span><strong>Images de fond dans le mât</strong> Vos propres photos, ajoutées depuis l’administration.</span></label>

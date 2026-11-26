@@ -75,8 +75,16 @@ Ouvrez `https://<votre-site>/redaction/`. La première visite affiche
 est installé » avant de fermer l'onglet (les sections s'écrivent à ce moment). Le site public prend tout de
 suite le nom, le logo, les couleurs et les sections. Tout se change ensuite
 dans **Configuration**. L'assistant ne s'affiche qu'une fois : ensuite, seuls
-les comptes existants se connectent. Les données (base SQLite, photos) vont
-dans `journal/donnees/`, fermé au public.
+les comptes existants se connectent. Il faut le code d'installation, qui se
+trouve dans le fichier `donnees/code-installation.txt` sur le serveur (créé à
+la première ouverture de la page). Sans ce code, personne ne peut créer le
+compte administrateur.
+
+Les données (base SQLite, photos) vont dans `donnees/` si le journal est à la
+racine de l'espace web, ou dans `journal/donnees/` s'il est dans un dossier
+`journal/`. Ce dossier est fermé au public. Pour un essai sur votre ordinateur,
+lancez le serveur intégré de PHP depuis le dossier du journal :
+`php -S 127.0.0.1:8080 routeur.php`.
 
 Vous avez déjà rempli le configurateur en ligne ? **Configuration → Importer
 le fichier du configurateur** reprend `kiosque-config.json` ; c'est facultatif.
