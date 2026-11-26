@@ -463,23 +463,24 @@ export function renderRoute(bundle, base, pathname, renderBody, search = '') {
       return `<span class="author-avatar" style="--author-avatar-size:${size}px">${fallback}</span>`;
     };
     if (!parts[1]) {
-      const active = bundle.authors.filter((a) => a.active !== false);
-      const past = bundle.authors.filter((a) => a.active === false);
+      const estAncien = (a) => a.status === 'former' || a.active === false;
+      const active = bundle.authors.filter((a) => !estAncien(a));
+      const past = bundle.authors.filter(estAncien);
       const card = (author, alumni = false) => {
         const n = published.filter((article) => article.authors.includes(author.slug)).length;
         const href = link(base, `/auteurs/${encodeURIComponent(author.slug)}/`);
-        return `<div class="author-card${alumni ? ' author-card--alumni' : ''}"><a class="author-avatar-link" data-editorial-link href="${href}" aria-hidden="true" tabindex="-1">${avatarHtml(author, 88)}</a><div class="author-card__body"><h2 class="author-name"><a data-editorial-link href="${href}">${esc(author.name)}</a>${alumni ? ' <span class="author-badge">Alumni</span>' : ''}</h2>${author.role ? `<p class="author-role">${esc(author.role)}</p>` : ''}${author.cohort ? `<p class="author-cohort">Cohorte ${esc(author.cohort)}</p>` : ''}${author.bio ? `<p class="author-bio">${esc(author.bio)}</p>` : ''}<p class="author-role">${n} article${n > 1 ? 's' : ''}</p></div></div>`;
+        return `<div class="author-card${alumni ? ' author-card--alumni' : ''}"><a class="author-avatar-link" data-editorial-link href="${href}" aria-hidden="true" tabindex="-1">${avatarHtml(author, 88)}</a><div class="author-card__body"><h2 class="author-name"><a data-editorial-link href="${href}">${esc(author.name)}</a>${alumni ? ' <span class="author-badge">Ancien</span>' : ''}</h2>${author.role ? `<p class="author-role">${esc(author.role)}</p>` : ''}${author.cohort ? `<p class="author-cohort">Cohorte ${esc(author.cohort)}</p>` : ''}${author.bio ? `<p class="author-bio">${esc(author.bio)}</p>` : ''}<p class="author-role">${n} article${n > 1 ? 's' : ''}</p></div></div>`;
       };
       const briefs = published.slice(0, 7);
       const brief = briefs.length
         ? `<aside class="brief-rail" aria-label="En bref"><h2>En bref</h2>${briefs.map((item) => articleCard(item, bundle, base, 'brief')).join('')}</aside>`
         : '';
       const alumniBlock = past.length
-        ? `<div class="wire-head team-alumni-head"><h2 class="wire-title">Alumni</h2></div><p class="section-intro">Membres ayant gradué ou quitté la rédaction. Leurs signatures restent : une archive ne se réécrit pas quand quelqu’un part.</p>${past.map((a) => card(a, true)).join('')}`
+        ? `<div class="wire-head team-alumni-head"><h2 class="wire-title">Anciens</h2></div><p class="section-intro">Membres ayant quitté la rédaction. Leurs noms restent sur les articles déjà parus : une archive ne se réécrit pas quand quelqu’un part.</p>${past.map((a) => card(a, true)).join('')}`
         : '';
       return {
         title: `L’équipe — ${bundle.publication.name}`,
-        html: `<div class="wrap wire"><div class="wire-head"><h1 class="wire-title">L’équipe</h1><span class="wire-status">${active.length} membre${active.length > 1 ? 's' : ''} · ${past.length} alumni</span></div><p class="section-intro">L’équipe en poste : rôle, cohorte et bio de chaque signature.</p><div class="magazine-layout magazine-layout--team"><div class="article-column team-column">${active.map((a) => card(a, false)).join('')}${alumniBlock}</div>${brief}</div></div>`,
+        html: `<div class="wrap wire"><div class="wire-head"><h1 class="wire-title">L’équipe</h1><span class="wire-status">${active.length} membre${active.length > 1 ? 's' : ''} · ${past.length} ancien${past.length > 1 ? 's' : ''}</span></div><p class="section-intro">L’équipe en poste : rôle, cohorte et bio de chaque auteur.</p><div class="magazine-layout magazine-layout--team"><div class="article-column team-column">${active.map((a) => card(a, false)).join('')}${alumniBlock}</div>${brief}</div></div>`,
       };
     }
     const author = bundle.authors.find((item) => item.slug === decodeURIComponent(parts[1]));
@@ -491,7 +492,7 @@ export function renderRoute(bundle, base, pathname, renderBody, search = '') {
       : '';
     return {
       title: `${author.name} — ${bundle.publication.name}`,
-      html: `<div class="wrap wire"><header class="author-page-head">${avatarHtml(author, 112)}<div class="author-page-head__text"><div class="wire-head" style="margin:0;border:0;padding:0"><h1 class="wire-title">${esc(author.name)}</h1><span class="wire-status">${articles.length} signature${articles.length > 1 ? 's' : ''}${author.active === false ? ' · Alumni' : ''}</span></div>${roleLine}${author.bio ? `<p class="author-bio">${esc(author.bio)}</p>` : ''}</div></header>${articles.length ? magazineFeedHtml(articles, bundle, base, `Articles de ${author.name}`, 'Aucun article signé pour le moment.') : '<p class="empty">Aucun article signé pour le moment.</p>'}</div>`,
+      html: `<div class="wrap wire"><header class="author-page-head">${avatarHtml(author, 112)}<div class="author-page-head__text"><div class="wire-head" style="margin:0;border:0;padding:0"><h1 class="wire-title">${esc(author.name)}</h1><span class="wire-status">${articles.length} article${articles.length > 1 ? 's' : ''}${author.active === false || author.status === 'former' ? ' · Ancien' : ''}</span></div>${roleLine}${author.bio ? `<p class="author-bio">${esc(author.bio)}</p>` : ''}</div></header>${articles.length ? magazineFeedHtml(articles, bundle, base, `Articles de ${author.name}`, 'Aucun article signé pour le moment.') : '<p class="empty">Aucun article signé pour le moment.</p>'}</div>`,
     };
   }
   if (parts[0] === 'archives' && !parts[1]) {
@@ -539,7 +540,7 @@ export function renderRoute(bundle, base, pathname, renderBody, search = '') {
     const sportsOn = (bundle.publication.masthead?.sports?.enabled !== false) && (Array.isArray(bundle.publication.masthead?.sports?.teams) ? bundle.publication.masthead.sports.teams.length : bundle.publication.masthead?.sports?.team);
     return {
       title: `Plan du site — ${bundle.publication.name}`,
-      html: `<div class="wrap wire"><div class="wire-head"><h1 class="wire-title">Plan du site</h1></div><p class="section-intro">${published.length} article${published.length > 1 ? 's' : ''} sur le fil, ${paged.length} dans les <a data-editorial-link href="${link(base, '/archives/')}">archives</a>, ${bundle.taxonomies.sections.length} sections, ${bundle.authors.length} signatures.</p><ul><li><a data-editorial-link href="${link(base, '/archives/')}">Archives</a> — registre chronologique complet</li>${sportsOn ? `<li><a data-editorial-link href="${link(base, '/sports/')}">Au tableau</a> — scores et prochains matchs</li>` : ''}<li><a data-editorial-link href="${link(base, '/recherche/')}">Recherche</a></li><li><a data-editorial-link href="${link(base, '/revue/')}">Revue</a> — édition à imprimer</li>${published.map((article) => `<li><a data-editorial-link href="${link(base, `/articles/${encodeURIComponent(article.slug)}/`)}">${esc(article.title)}</a></li>`).join('')}</ul></div>`,
+      html: `<div class="wrap wire"><div class="wire-head"><h1 class="wire-title">Plan du site</h1></div><p class="section-intro">${published.length} article${published.length > 1 ? 's' : ''} sur le fil, ${paged.length} dans les <a data-editorial-link href="${link(base, '/archives/')}">archives</a>, ${bundle.taxonomies.sections.length} sections, ${bundle.authors.length} auteur${bundle.authors.length > 1 ? 's' : ''}.</p><ul><li><a data-editorial-link href="${link(base, '/archives/')}">Archives</a> — registre chronologique complet</li>${sportsOn ? `<li><a data-editorial-link href="${link(base, '/sports/')}">Au tableau</a> — scores et prochains matchs</li>` : ''}<li><a data-editorial-link href="${link(base, '/recherche/')}">Recherche</a></li><li><a data-editorial-link href="${link(base, '/revue/')}">Revue</a> — édition à imprimer</li>${published.map((article) => `<li><a data-editorial-link href="${link(base, `/articles/${encodeURIComponent(article.slug)}/`)}">${esc(article.title)}</a></li>`).join('')}</ul></div>`,
     };
   }
   return {

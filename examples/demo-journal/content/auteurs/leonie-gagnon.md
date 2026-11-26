@@ -3,6 +3,7 @@ slug: leonie-gagnon
 name: Léonie Gagnon
 role: Ancienne rédactrice en chef
 cohort: '2023-2025'
+status: former
 active: false
 avatar:
   src: /media/demo-library/auteurs/leonie-gagnon.jpg

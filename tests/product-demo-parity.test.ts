@@ -142,7 +142,7 @@ test('demo et template reçoivent le même theme.css / kiosque.js (packages/them
   assert.match(demoAuthors, /author-avatar__initials/, 'initiales en secours sous la photo');
   assert.match(
     demoAuthors,
-    /L’équipe en poste : rôle, cohorte et bio de chaque signature/,
+    /L’équipe en poste : rôle, cohorte et bio de chaque auteur/,
     'intro équipe reformulée',
   );
   const seed = await readFile(path.join(demo.out, 'assets/editorial/seed.json'), 'utf8');

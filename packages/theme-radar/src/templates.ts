@@ -1475,7 +1475,7 @@ export function authorPage(author: Author, articles: Article[], ctx: RenderConte
         <div class="author-page-head__text">
           <div class="wire-head" style="margin:0;border:0;padding:0">
             <h1 class="wire-title">${esc(author.name)}</h1>
-            <span class="wire-status">${articles.length} signature${articles.length > 1 ? 's' : ''}${author.active === false ? ' · Alumni' : ''}</span>
+            <span class="wire-status">${articles.length} article${articles.length > 1 ? 's' : ''}${author.active === false || author.status === 'former' ? ' · Ancien' : ''}</span>
           </div>
           ${author.role || author.cohort
             ? `<p class="author-role">${[
@@ -1524,7 +1524,7 @@ export function authorsIndexPage(
       <div class="author-card${alumni ? ' author-card--alumni' : ''}">
         ${authorAvatarHtml(a, ctx, { size: 88 })}
         <div class="author-card__body">
-          <h2 class="author-name"><a href="${safeUrl(relative(authorUrl(ctx.publication, a.slug), ctx))}" style="text-decoration:none;color:inherit">${esc(a.name)}</a>${alumni ? ' <span class="author-badge">Alumni</span>' : ''}</h2>
+          <h2 class="author-name"><a href="${safeUrl(relative(authorUrl(ctx.publication, a.slug), ctx))}" style="text-decoration:none;color:inherit">${esc(a.name)}</a>${alumni ? ' <span class="author-badge">Ancien</span>' : ''}</h2>
           ${a.role ? `<p class="author-role">${esc(a.role)}</p>` : ''}
           ${a.cohort ? `<p class="author-cohort">Cohorte ${esc(a.cohort)}</p>` : ''}
           ${a.bio ? `<p class="author-bio">${esc(a.bio)}</p>` : ''}
@@ -1534,24 +1534,25 @@ export function authorsIndexPage(
       )
       .join('\n');
 
-  const active = authors.filter((a) => a.active !== false);
-  const past = authors.filter((a) => a.active === false);
+  const estAncien = (a: Author) => a.status === 'former' || a.active === false;
+  const active = authors.filter((a) => !estAncien(a));
+  const past = authors.filter(estAncien);
   const brief = briefRailHtml(recentArticles, ctx, 7);
 
   return page(
     `<div class="wrap wire">
       <div class="wire-head">
         <h1 class="wire-title">L’équipe</h1>
-        <span class="wire-status">${active.length} membre${active.length > 1 ? 's' : ''} · ${past.length} alumni</span>
+        <span class="wire-status">${active.length} membre${active.length > 1 ? 's' : ''} · ${past.length} ancien${past.length > 1 ? 's' : ''}</span>
       </div>
-      <p class="section-intro">L’équipe en poste : rôle, cohorte et bio de chaque signature.</p>
+      <p class="section-intro">L’équipe en poste : rôle, cohorte et bio de chaque auteur.</p>
       <div class="magazine-layout magazine-layout--team">
         <div class="article-column team-column">
           ${render(active, false)}
           ${
             past.length
-              ? `<div class="wire-head team-alumni-head"><h2 class="wire-title">Alumni</h2></div>
-          <p class="section-intro">Membres ayant gradué ou quitté la rédaction. Leurs signatures restent : une archive ne se réécrit pas quand quelqu’un part.</p>
+              ? `<div class="wire-head team-alumni-head"><h2 class="wire-title">Anciens</h2></div>
+          <p class="section-intro">Membres ayant quitté la rédaction. Leurs noms restent sur les articles déjà parus : une archive ne se réécrit pas quand quelqu’un part.</p>
           ${render(past, true)}`
               : ''
           }

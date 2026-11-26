@@ -46,9 +46,9 @@ Le détail, pour un étudiant, tient dans le [guide d’une page](https://kiosqu
 **Sur le site Web public**
 
 - Le mât affiche le nom du journal en grand ; s’il y a un logo, le logo remplace le nom. On peut y choisir plusieurs photos, affichées dans un ordre aléatoire.
-- Rubriques, pages d’articles, pages des signatures, recherche dans la page, mode sombre.
+- Rubriques, pages d’articles, pages des auteurs, recherche dans la page, mode sombre.
 - Météo locale, résultats sportifs et barre radio, au choix. La radio est un module du [Radar](https://le-radar.ca), chargé depuis le-radar.ca.
-- Chaque article porte toutes ses signatures ; chaque photo porte son crédit et sa licence.
+- Chaque article porte tous ses auteurs ; chaque photo porte son crédit et sa licence.
 - Sur la démonstration et sur un site statique (par exemple GitHub Pages) : archives, plan du site et fil RSS.
 
 **Dans l’espace de rédaction** (c’est [le Socle](https://socle.le-radar.ca/) : l’interface d’administration et son serveur)

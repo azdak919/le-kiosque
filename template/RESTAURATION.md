@@ -27,7 +27,7 @@ node packages/pipeline/src/cli.ts build
 ```
 
 Ouvrez `dist/index.html`. Si le journal s'affiche, **tout est là** : chaque
-article, chaque photo, chaque signature. Le reste n'est que de l'administration.
+article, chaque photo, chaque auteur. Le reste n'est que de l'administration.
 
 Pourquoi ça marche sans rien : les articles sont des fichiers Markdown dans
 `content/`, les images des fichiers dans `media/`, et `build` ne parle à aucun

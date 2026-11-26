@@ -198,6 +198,6 @@ export async function sync(options: SyncOptions): Promise<SyncResult> {
   const carry = options.since ? ((await readIndex(config.root))?.articles ?? []) : [];
   await writeIndex(config.root, bundle, carry);
 
-  log.info(`${bundle.articles.length} articles, ${authors.length} signatures, ${mediaMirrored} médias`);
+  log.info(`${bundle.articles.length} articles, ${authors.length} auteurs, ${mediaMirrored} médias`);
   return { bundle, mediaMirrored, warnings: warnings.length, idsFrozen };
 }

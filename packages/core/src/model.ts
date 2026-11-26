@@ -171,8 +171,10 @@ export interface Author {
   social?: Record<string, string>;
   /** Spécifique au monde étudiant. Ex. : '2026-2028'. */
   cohort?: string;
-  /** false = a gradué. On garde la signature, on la retire des listes actives. */
+  /** false = dans les anciens. Le nom reste sur les articles déjà signés. */
   active?: boolean;
+  /** Valeur canonique : « active » ou « former ». Si elle manque, on lit `active`. */
+  status?: 'active' | 'former';
   /** Donnée fictive livrée avec une démonstration locale. */
   isDemo?: boolean;
   /** Distingue un exemple personnalisé de sa copie initiale. */

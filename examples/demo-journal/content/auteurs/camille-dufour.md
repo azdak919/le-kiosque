@@ -3,6 +3,7 @@ slug: camille-dufour
 name: Camille Dufour
 role: Ancienne journaliste culture
 cohort: '2023-2025'
+status: former
 active: false
 avatar:
   src: /media/demo-library/auteurs/camille-dufour.jpg
